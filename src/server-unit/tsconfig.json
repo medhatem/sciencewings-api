@@ -1,0 +1,14 @@
+{
+    "extends": "../tsconfig",
+    "compilerOptions": {
+        "module": "commonjs",
+        "rootDir": "../",
+        "outDir": "../../dist",
+        "removeComments": false,
+        "moduleResolution": "node",
+    },
+    "include": [
+        "./**/*.ts",
+        "../typings.d.ts"
+    ]
+}
