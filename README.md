@@ -35,6 +35,7 @@ to get started make sure to fork the repository first
 ```
 git clone `your fork link`
 git remote add upstream git@github.com:org-Mana/manaServices_server.git
-npm i
+npm run init
+npm run watch
 
 ```
