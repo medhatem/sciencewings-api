@@ -39,3 +39,7 @@ npm run init
 npm run watch
 
 ```
+
+to run the server
+
+`npm run dev`
