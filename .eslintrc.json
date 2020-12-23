@@ -17,6 +17,8 @@
     "rules" : {
         "require-jsdoc" : 0,
         "max-len": ["error", { "code": 120 }],
-        "indent":"off"
+        "indent":"off",
+        "object-curly-spacing":"off",
+        "new-cap":"off"
     }
 }

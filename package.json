@@ -10,7 +10,9 @@
     "init": "rm -rf dist/ && npm run clean && npm i && npm run build",
     "build": "tsc -p src/server && tsc -p src/client && tsc -p src/server-unit",
     "watch": "concurrently --names 'server,client,server-unit' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-unit --watch'    ",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon ./dist/server/index.js ",
+    "start": "node ./dist/server/index.js",
+    "test": "intern config=src/server-unit/intern.json"
   },
   "repository": {
     "type": "git",
@@ -22,12 +24,27 @@
     "url": "https://github.com/abdesselamXpack94/manaServices_server/issues"
   },
   "homepage": "https://github.com/abdesselamXpack94/manaServices_server#readme",
+  "dependencies": {
+    "express": "latest",
+    "body-parser": "latest",
+    "cors": "latest",
+    "mongoose": "latest"
+  },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.9.0",
-    "@typescript-eslint/parser": "^4.9.0",
-    "eslint": "^7.15.0",
-    "eslint-config-google": "^0.14.0",
-    "typescript": "^4.1.2",
-    "concurrently": "latest"
+    "@types/body-parser": "latest",
+    "@types/mongoose": "latest",
+    "@types/cors": "latest",
+    "@types/express": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "@types/sinon": "latest",
+    "concurrently": "latest",
+    "dotenv": "latest",
+    "eslint": "latest",
+    "eslint-config-google": "latest",
+    "nodemon": "latest",
+    "typescript": "latest",
+    "intern": "latest",
+    "sinon": "latest"
   }
 }
