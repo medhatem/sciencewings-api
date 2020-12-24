@@ -17,9 +17,10 @@ export class User extends BaseModel<IUser> {
 
   public initProperties(): mongoose.Schema<IUser> {
     return new mongoose.Schema<IUser>({
-      firstname: { type: String, required: true },
-      lastname: { type: String, required: true },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
       username: { type: String, required: true },
+      email: { type: String, required: true },
       password: { type: String, required: true },
       address: {
         appt: Number,

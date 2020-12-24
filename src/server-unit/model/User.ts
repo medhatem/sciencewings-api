@@ -1,17 +1,33 @@
 import * as mongoose from 'mongoose';
 
-import { restore, spy } from 'sinon';
-
+// import { IUser } from '../../server/interface';
+// import { KeysEnum } from '../utils/types';
 import { User } from '../../server/model/User';
 import intern from 'intern';
+import { restore } from 'sinon';
 
-const { Schema } = mongoose;
+// import { validateMongooseSchemaKeys } from '../utils/keysUtil';
 
-// const { describe, it } = intern.getPlugin('interface.bdd');
+// const { Schema } = mongoose;
+
 const { suite, test, beforeEach, afterEach } = intern.getPlugin('interface.tdd');
 const { assert, expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.length), (): void => {
+  //   const user: KeysEnum<IUser> = {
+  //     lastName: true,
+  //     firstName: true,
+  //     username: true,
+  //     password:true
+  //     address: {
+  //       appt: true,
+  //       zip: true,
+  //       city: true,
+  //       street: true,
+  //     },
+  //     _id: true,
+  //   };
+
   beforeEach((): void => {});
   afterEach((): void => {
     restore();
