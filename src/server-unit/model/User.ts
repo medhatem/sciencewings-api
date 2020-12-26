@@ -7,7 +7,6 @@ import intern from 'intern';
 
 const { Schema } = mongoose;
 
-// const { describe, it } = intern.getPlugin('interface.bdd');
 const { suite, test, beforeEach, afterEach } = intern.getPlugin('interface.tdd');
 const { assert, expect } = intern.getPlugin('chai');
 
