@@ -1,9 +1,8 @@
-import * as mongoose from 'mongoose';
-
+import { Credentials, UserDao } from '../dao/UserDao';
 import { container, provideSingleton } from '../di';
 
 import { IUser } from '../interface';
-import { UserDao } from '../dao/UserDao';
+import { userCredentialsSchema } from '../validators/userCredentials';
 import { userValidationSchema } from '../validators/userValidator';
 import { validate } from '../decorators/bodyValidationDecorators/validate';
 
@@ -21,8 +20,13 @@ export class UserService {
   }
 
   @validate(userValidationSchema)
-  public async create(user: IUser): Promise<mongoose.Types.ObjectId | string> {
+  public async create(user: IUser): Promise<{ [key: string]: any }> {
     const createdUser = await this.dao.create(user);
     return createdUser;
+  }
+
+  @validate(userCredentialsSchema)
+  public async signin(credentials: Credentials): Promise<{ token: string; user: IUser }> {
+    return await this.dao.signin(credentials);
   }
 }

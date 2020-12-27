@@ -1,6 +1,7 @@
 import { Container as BaseContainer } from 'inversify';
 import { buildProviderModule } from 'inversify-binding-decorators';
 
+// istanbul ignore next
 export class Container extends BaseContainer {
   constructor() {
     super({ skipBaseClassChecks: true });

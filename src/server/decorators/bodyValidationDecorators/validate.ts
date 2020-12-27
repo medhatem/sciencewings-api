@@ -10,7 +10,7 @@ import { ValidatonError } from '../../errors/ValidationError';
  *
  * @param schema a given Joi schema containg validation definitions for a model
  */
-export function validate<T extends IBase>(
+export function validate<T extends IBase | object>(
   schema: Joi.ObjectSchema<T>,
 ): (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => any {
   return (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>): any => {

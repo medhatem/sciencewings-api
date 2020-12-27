@@ -110,7 +110,6 @@ export class Server {
         .replace('<username>', this.dbConfig.dbUsername)
         .replace('<password>', this.dbConfig.dbPassword)
         .replace('<dbname>', this.dbConfig.dbName);
-
       await this.mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
     } catch (error) {
       console.log('error connecting to database', error);

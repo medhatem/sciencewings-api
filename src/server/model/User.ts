@@ -1,9 +1,9 @@
 import * as mongoose from 'mongoose';
 
+import { IAddress, IUser, IUserProfessionalMetadata } from '../interface';
 import { container, provideSingleton } from '../di';
 
 import { BaseModel } from './BaseModel';
-import { IUser } from '../interface';
 
 @provideSingleton()
 export class User extends BaseModel<IUser> {
@@ -17,16 +17,42 @@ export class User extends BaseModel<IUser> {
 
   public initProperties(): mongoose.Schema<IUser> {
     return new mongoose.Schema<IUser>({
-      firstName: { type: String, required: true },
       lastName: { type: String, required: true },
-      username: { type: String, required: true },
-      email: { type: String, required: true },
+      email: { type: String, required: true, unique: true, index: true },
       password: { type: String, required: true },
       address: {
-        appt: Number,
-        zip: String,
-        city: String,
-        street: String,
+        required: false,
+        type: new mongoose.Schema<IAddress>({
+          appt: { type: Number },
+          zip: {
+            type: String,
+            required: true,
+          },
+          city: {
+            type: String,
+            required: true,
+          },
+          street: {
+            type: String,
+            required: true,
+          },
+        }),
+      },
+      professional: {
+        required: false,
+        type: new mongoose.Schema<IUserProfessionalMetadata>({
+          isProfessional: {
+            type: Boolean,
+            required: true,
+          },
+          job: {
+            type: String,
+            required: function () {
+              // job is required only when isProfessionnal is true
+              return !!this.isProfessional;
+            },
+          },
+        }),
       },
     });
   }
