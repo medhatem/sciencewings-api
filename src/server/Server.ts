@@ -9,7 +9,7 @@ import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 
 import { RequestHandler } from 'express';
 import { Router } from 'express-serve-static-core';
-import { router as ServerRouter } from './Resources';
+import { appRoutes } from './routes/index';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -87,7 +87,7 @@ export class Server {
     router.get('/health', this.healthCheker());
 
     this.expressApp.use(router);
-    this.expressApp.use(ServerRouter);
+    appRoutes.forEach((router: Router) => this.expressApp.use(router));
   }
 
   public healthCheker(): (request: express.Request, response: express.Response) => void {

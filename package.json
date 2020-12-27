@@ -28,7 +28,10 @@
     "express": "latest",
     "body-parser": "latest",
     "cors": "latest",
-    "mongoose": "latest"
+    "mongoose": "latest",
+    "inversify": "latest",
+    "inversify-binding-decorators": "latest",
+    "reflect-metadata": "latest"
   },
   "devDependencies": {
     "@types/body-parser": "latest",
