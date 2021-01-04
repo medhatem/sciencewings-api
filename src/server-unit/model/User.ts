@@ -1,11 +1,8 @@
 import * as mongoose from 'mongoose';
 
-import { restore, spy } from 'sinon';
-
 import { User } from '../../server/model/User';
 import intern from 'intern';
-
-const { Schema } = mongoose;
+import { restore } from 'sinon';
 
 const { suite, test, beforeEach, afterEach } = intern.getPlugin('interface.tdd');
 const { assert, expect } = intern.getPlugin('chai');

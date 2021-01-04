@@ -4,6 +4,8 @@ import { container, provideSingleton } from '../di';
 
 import { IUser } from '../interface';
 import { UserDao } from '../dao/UserDao';
+import { userValidationSchema } from '../validators/userValidator';
+import { validate } from '../decorators/bodyValidationDecorators/validate';
 
 @provideSingleton()
 export class UserService {
@@ -17,7 +19,9 @@ export class UserService {
     const user = await this.dao.get(id);
     return user;
   }
-  public async create(user: IUser): Promise<mongoose.Types.ObjectId> {
+
+  @validate(userValidationSchema)
+  public async create(user: IUser): Promise<mongoose.Types.ObjectId | string> {
     const createdUser = await this.dao.create(user);
     return createdUser;
   }

@@ -1,9 +1,10 @@
 import { IBase } from './IBase';
 
 export interface IUser extends IBase {
-  firstname: String;
+  firstName: String;
   lastName: String;
   username: String;
+  email: String;
   password: String;
   address: {
     appt: Number;

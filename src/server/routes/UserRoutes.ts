@@ -11,7 +11,13 @@ userRouter.get('/', async (req: express.Request, res: express.Response, next: ex
 });
 
 userRouter.post('/user/add', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const user = UserService.getInstance();
-  const createdUserId = await user.create(req.body);
-  res.status(200).send(createdUserId);
+  try {
+    const user = UserService.getInstance();
+    const createdUserId = await user.create(req.body);
+    res.status(200).send(createdUserId);
+  } catch (error) {
+    res.status(error.status ? error.status : 500).send({
+      error: error.message,
+    });
+  }
 });

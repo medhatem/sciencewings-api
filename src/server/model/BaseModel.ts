@@ -14,7 +14,7 @@ export abstract class BaseModel<T extends IBase> {
   }
 
   /**
-   * describes all the properties that a given schema/model needs to have
+   * describes all the properties that a given schema needs to have
    */
   public abstract initProperties(): mongoose.Schema<T>;
 

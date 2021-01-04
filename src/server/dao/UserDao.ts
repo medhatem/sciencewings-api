@@ -25,8 +25,4 @@ export class UserDao {
     console.log('created user is ', createdUser);
     return user._id;
   }
-
-  //   public update(user: User): User {}
-
-  //   public delete(id: string): void {}
 }

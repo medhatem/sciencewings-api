@@ -20,6 +20,8 @@
         "indent":"off",
         "object-curly-spacing":"off",
         "new-cap":"off",
-        "valid-jsdoc":"off"
+        "valid-jsdoc":"off",
+        "space-before-function-paren":"off"
+
     }
 }

@@ -31,7 +31,8 @@
     "mongoose": "latest",
     "inversify": "latest",
     "inversify-binding-decorators": "latest",
-    "reflect-metadata": "latest"
+    "reflect-metadata": "latest",
+    "joi": "latest"
   },
   "devDependencies": {
     "@types/body-parser": "latest",
@@ -41,6 +42,7 @@
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "@types/sinon": "latest",
+    "@types/joi": "latest",
     "concurrently": "latest",
     "dotenv": "latest",
     "eslint": "latest",
