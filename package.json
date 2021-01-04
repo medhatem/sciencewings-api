@@ -10,8 +10,8 @@
     "init": "rm -rf dist/ && npm run clean && npm i && npm run build",
     "build": "tsc -p src/server && tsc -p src/client && tsc -p src/server-unit",
     "watch": "concurrently --names 'server,client,server-unit' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-unit --watch'    ",
-    "mongo-start":"docker-compose -f mongodb.yml up -d",
-    "mongo-stop":"docker-compose -f mongodb.yml down",
+    "mongo-start": "docker-compose -f mongodb.yml up -d",
+    "mongo-stop": "docker-compose -f mongodb.yml down",
     "dev": "nodemon ./dist/server/index.js ",
     "start": "node ./dist/server/index.js",
     "test": "intern config=src/server-unit/intern.json"
