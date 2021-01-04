@@ -90,8 +90,4 @@ export class UserDao {
       throw new ServerError(`User does not exist make sure that the credentials are correct`);
     }
   }
-
-  //   public update(user: User): User {}
-
-  //   public delete(id: string): void {}
 }

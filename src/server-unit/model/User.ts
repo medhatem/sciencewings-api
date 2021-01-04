@@ -1,32 +1,13 @@
 import * as mongoose from 'mongoose';
 
-// import { IUser } from '../../server/interface';
-// import { KeysEnum } from '../utils/types';
 import { User } from '../../server/model/User';
 import intern from 'intern';
 import { restore } from 'sinon';
-
-// import { validateMongooseSchemaKeys } from '../utils/keysUtil';
-
-// const { Schema } = mongoose;
 
 const { suite, test, beforeEach, afterEach } = intern.getPlugin('interface.tdd');
 const { assert, expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.length), (): void => {
-  //   const user: KeysEnum<IUser> = {
-  //     lastName: true,
-  //     firstName: true,
-  //     username: true,
-  //     password:true
-  //     address: {
-  //       appt: true,
-  //       zip: true,
-  //       city: true,
-  //       street: true,
-  //     },
-  //     _id: true,
-  //   };
 
   beforeEach((): void => {});
   afterEach((): void => {
