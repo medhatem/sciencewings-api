@@ -1,4 +1,4 @@
 import { Router } from 'express';
-import { userRouter } from './UserRoutes';
+import { UserRoutes } from './UserRoutes';
 
-export const appRoutes: Router[] = [userRouter];
+export const appRoutes: Router[] = [UserRoutes.getInstance().getRouter()];

@@ -33,20 +33,20 @@ suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.
     assert.deepEqual(instance, userService);
   });
   test('should call create when body validation passes', async () => {
-    await userService.create((user as any) as IUser);
-    assert.isTrue(userDaoStub.create.calledOnceWithExactly((user as any) as IUser));
+    await userService.signup((user as any) as IUser);
+    assert.isTrue(userDaoStub.signup.calledOnceWithExactly((user as any) as IUser));
   });
   test('should throw a validation error when validation fails', async () => {
     const userClone = { ...user };
     delete userClone.email;
     try {
-      await userService.create((userClone as any) as IUser);
+      await userService.signup((userClone as any) as IUser);
       assert.fail('unexpected success!');
     } catch (error) {
       assert.isTrue(error instanceof ValidatonError);
       assert.equal(error.message, 'the email is a required field');
       // make sure that the create is not called when validation does not pass
-      assert.equal(userDaoStub.create.callCount, 0);
+      assert.equal(userDaoStub.signup.callCount, 0);
     }
   });
 });

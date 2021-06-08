@@ -3,6 +3,7 @@ import * as jwt from 'jsonwebtoken';
 
 import { container, provideSingleton } from '../di';
 
+import { BaseDao } from './BaseDao';
 import { IUser } from '../interface';
 import { ServerError } from '../errors/ServerError';
 import { User } from '../model/User';
@@ -11,18 +12,13 @@ export const JWT_SECRET_KEY = 'jwt_secret_2121';
 export type Credentials = { email: string; password: string };
 
 @provideSingleton()
-export class UserDao {
-  private constructor(protected model: User) {
-    model.generateModel();
+export class UserDao extends BaseDao<IUser> {
+  private constructor(public model: User) {
+    super(model);
   }
 
   static getInstance(): UserDao {
     return container.get(UserDao);
-  }
-
-  public async get(id: string): Promise<IUser> {
-    const user = (await this.model.modelClass.findById(id).exec()) as IUser;
-    return user;
   }
 
   /**
@@ -34,7 +30,7 @@ export class UserDao {
    *
    * @param user represents the user to create
    */
-  public async create(user: IUser): Promise<{ [key: string]: any }> {
+  public async signup(user: IUser): Promise<{ [key: string]: any }> {
     // check that a user with the given email does not exist
     const existingUser = await this.model.modelClass.findOne({ email: user.email }).exec();
     if (existingUser) {
@@ -49,7 +45,7 @@ export class UserDao {
       },
       JWT_SECRET_KEY,
     );
-    const createdUser = (await this.model.modelClass.create(user)) as IUser;
+    const createdUser: IUser = await this.create(user);
 
     return {
       token,
@@ -71,21 +67,20 @@ export class UserDao {
     if (user) {
       // compare password
       const isMatch = await bcrypt.compare(password, user.password);
-      if (isMatch) {
-        // generate the token
-        const token = jwt.sign(
-          {
-            email: user.email,
-          },
-          JWT_SECRET_KEY,
-        );
-        return {
-          token,
-          user,
-        };
-      } else {
+      if (!isMatch) {
         throw new ServerError('Wrong credentials');
       }
+      // generate the token
+      const token = jwt.sign(
+        {
+          email: user.email,
+        },
+        JWT_SECRET_KEY,
+      );
+      return {
+        token,
+        user,
+      };
     } else {
       throw new ServerError(`User does not exist make sure that the credentials are correct`);
     }
