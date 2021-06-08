@@ -7,3 +7,8 @@ export type Route = {
   url: string;
   handler: Handler;
 };
+
+export type RouteEntity = {
+  name: string;
+  router: express.Router;
+};
