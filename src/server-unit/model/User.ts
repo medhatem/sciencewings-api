@@ -8,6 +8,7 @@ const { suite, test, beforeEach, afterEach } = intern.getPlugin('interface.tdd')
 const { assert, expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.length), (): void => {
+
   beforeEach((): void => {});
   afterEach((): void => {
     restore();

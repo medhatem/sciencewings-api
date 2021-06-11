@@ -1,17 +1,15 @@
-import 'reflect-metadata';
-
 import * as Joi from 'joi';
 
-import { IUser } from '../interface';
+import { IAddress, IUser, IUserProfessionalMetadata } from '../interface';
 
 export const userValidationSchema = Joi.object<IUser>({
-  username: Joi.string().alphanum().max(30).required().messages({
-    'string.base': 'username should be of type string',
-    'string.empty': 'username is a required field',
-  }),
   firstName: Joi.string().min(1).message('firstName should at least have 1 character'),
   lastName: Joi.string().min(1).message('lastName should at least have 1 characte'),
-  email: Joi.string().email().message('Wrong email!'),
+  email: Joi.string()
+    .email()
+    .message('Wrong email!')
+    .required()
+    .messages({ 'any.required': 'the email is a required field' }),
   /*
      password must have
      Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
@@ -23,12 +21,22 @@ export const userValidationSchema = Joi.object<IUser>({
         - at least one lowercase letter
         - one number and one special character
     `),
-  address: Joi.object({
+  address: Joi.object<IAddress>({
     city: Joi.string().min(2).message('City is a required field').required(),
     appt: Joi.number().integer().min(0).message('Wrong appartment number'),
     zip: Joi.string().required().messages({
       'any.required': 'zip is required',
     }),
     street: Joi.string().min(3).message('Street is required').required(),
+  }).optional(),
+  professional: Joi.object<IUserProfessionalMetadata>({
+    isProfessional: Joi.boolean().required().messages({
+      'any.required': 'isProfessional field is required',
+    }),
+    job: Joi.alternatives().conditional('isProfessional', {
+      is: true,
+      then: Joi.string().required().messages({ 'any.required': 'professional job field is required' }),
+      otherwise: Joi.string().optional(),
+    }),
   }).optional(),
 });

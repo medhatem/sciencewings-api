@@ -10,6 +10,8 @@
     "init": "rm -rf dist/ && npm run clean && npm i && npm run build",
     "build": "tsc -p src/server && tsc -p src/client && tsc -p src/server-unit",
     "watch": "concurrently --names 'server,client,server-unit' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-unit --watch'    ",
+    "mongo-start": "docker-compose -f mongodb.yml up -d",
+    "mongo-stop": "docker-compose -f mongodb.yml down",
     "dev": "nodemon ./dist/server/index.js ",
     "start": "node ./dist/server/index.js",
     "test": "intern config=src/server-unit/intern.json"
@@ -32,7 +34,9 @@
     "inversify": "latest",
     "inversify-binding-decorators": "latest",
     "reflect-metadata": "latest",
-    "joi": "latest"
+    "joi": "latest",
+    "jsonwebtoken": "latest",
+    "bcrypt": "latest"
   },
   "devDependencies": {
     "@types/body-parser": "latest",
@@ -41,8 +45,10 @@
     "@types/express": "latest",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
+    "@types/jsonwebtoken": "latest",
     "@types/sinon": "latest",
     "@types/joi": "latest",
+    "@types/bcrypt": "latest",
     "concurrently": "latest",
     "dotenv": "latest",
     "eslint": "latest",
