@@ -1,8 +1,2 @@
-import { RouteEntity } from './RouteTypes';
-import { UserRoutes } from './UserRoutes';
-export const appRoutes: RouteEntity[] = [
-  {
-    name: 'User',
-    router: UserRoutes.getInstance().getRouter(),
-  },
-];
+export { RouteEntity } from './RouteTypes';
+export { UserRoutes } from './UserRoutes/UserRoutes';

@@ -18,6 +18,6 @@ export class BaseDao<T extends IBase> {
   }
 
   public async create(entry: T): Promise<T> {
-    return this.model.modelClass.create(entry);
+    return this.model.modelClass.create(entry as any);
   }
 }

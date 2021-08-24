@@ -1,15 +1,13 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
+import { CredentialsRO, UserRO, UserSignedInRO, UserSignedUpRO } from '../routes/UserRoutes/RequestObject';
 import { container, provideSingleton } from '../di';
 
 import { BaseDao } from './BaseDao';
 import { IUser } from '../interface';
 import { ServerError } from '../errors/ServerError';
 import { User } from '../model/User';
-
-export const JWT_SECRET_KEY = 'jwt_secret_2121';
-export type Credentials = { email: string; password: string };
 
 @provideSingleton()
 export class UserDao extends BaseDao<IUser> {
@@ -30,7 +28,7 @@ export class UserDao extends BaseDao<IUser> {
    *
    * @param user represents the user to create
    */
-  public async signup(user: IUser): Promise<{ [key: string]: any }> {
+  public async signup(user: UserRO): Promise<UserSignedUpRO> {
     // check that a user with the given email does not exist
     const existingUser = await this.model.modelClass.findOne({ email: user.email }).exec();
     if (existingUser) {
@@ -43,9 +41,9 @@ export class UserDao extends BaseDao<IUser> {
       {
         email: user.email,
       },
-      JWT_SECRET_KEY,
+      process.env.TOKEN_SECRET,
     );
-    const createdUser: IUser = await this.create(user);
+    const createdUser: IUser = await this.create(user as any);
 
     return {
       token,
@@ -60,7 +58,7 @@ export class UserDao extends BaseDao<IUser> {
    *
    * @param param0 the user credentials that corresponds to the email and password
    */
-  public async signin({ email, password }: Credentials): Promise<{ token: string; user: IUser }> {
+  public async signin({ email, password }: CredentialsRO): Promise<UserSignedInRO> {
     // get the user by email
     const user = (await this.model.modelClass.findOne({ email }).exec()) as IUser;
 
@@ -75,7 +73,7 @@ export class UserDao extends BaseDao<IUser> {
         {
           email: user.email,
         },
-        JWT_SECRET_KEY,
+        process.env.TOKEN_SECRET,
       );
       return {
         token,

@@ -1,9 +1,30 @@
-import * as mongoose from 'mongoose';
-
 import { IAddress, IUser, IUserProfessionalMetadata } from '../interface';
 import { container, provideSingleton } from '../di';
 
 import { BaseModel } from './BaseModel';
+import { prop } from '@typegoose/typegoose';
+
+export class Professional {
+  @prop({ required: true })
+  isProfessional: boolean;
+
+  @prop()
+  job?: string;
+}
+
+export class Address {
+  @prop({ required: true })
+  zip: string;
+
+  @prop({ required: true })
+  city: string;
+
+  @prop({ required: true })
+  street: string;
+
+  @prop()
+  appt?: string;
+}
 
 @provideSingleton()
 export class User extends BaseModel<IUser> {
@@ -15,45 +36,21 @@ export class User extends BaseModel<IUser> {
     return container.get(User);
   }
 
-  public initProperties(): mongoose.Schema<IUser> {
-    return new mongoose.Schema<IUser>({
-      lastName: { type: String, required: true },
-      email: { type: String, required: true, unique: true, index: true },
-      password: { type: String, required: true },
-      address: {
-        required: false,
-        type: new mongoose.Schema<IAddress>({
-          appt: { type: Number },
-          zip: {
-            type: String,
-            required: true,
-          },
-          city: {
-            type: String,
-            required: true,
-          },
-          street: {
-            type: String,
-            required: true,
-          },
-        }),
-      },
-      professional: {
-        required: false,
-        type: new mongoose.Schema<IUserProfessionalMetadata>({
-          isProfessional: {
-            type: Boolean,
-            required: true,
-          },
-          job: {
-            type: String,
-            required: function () {
-              // job is required only when isProfessionnal is true
-              return !!this.isProfessional;
-            },
-          },
-        }),
-      },
-    });
-  }
+  @prop()
+  firstName: string;
+  @prop()
+  lastName: string;
+
+  @prop({ required: true, unique: true, index: true })
+  email: string;
+  @prop({ required: true })
+  password: string;
+  @prop({ type: () => Address, required: true, _id: false })
+  address: IAddress;
+
+  @prop({
+    type: () => Professional,
+    _id: false,
+  })
+  professional?: IUserProfessionalMetadata;
 }

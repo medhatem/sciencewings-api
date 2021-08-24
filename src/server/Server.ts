@@ -1,3 +1,5 @@
+import './routes/index';
+
 import * as BodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
@@ -7,11 +9,13 @@ import * as mongooseORM from 'mongoose';
 import { BaseConfig, EnvConfig, ServerConfiguration, ServerDBConfig } from './types/ServerConfiguration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 
+import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
 import { RequestHandler } from 'express';
-import { RouteEntity } from './routes/RouteTypes';
+import { Server as RestServer } from 'typescript-rest';
 import { Router } from 'express-serve-static-core';
-import { appRoutes } from './routes/index';
+import { join } from 'path';
 
+import swaggerUi = require('swagger-ui-express');
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
   urlencoded(options: OptionsUrlencoded): RequestHandler;
@@ -59,15 +63,22 @@ export class Server {
   public async startApp(): Promise<void> {
     try {
       const port = (this.baseConfig && this.baseConfig.port) || 8080;
-      this.addMiddlewares();
-      this.addRoutes();
-      await this.setUpDataBase();
+      await this.configureServer();
+      RestServer.loadServices(this.expressApp, 'routes/*', join(__dirname, '../'));
+      RestServer.swagger(this.expressApp, { filePath: join(__dirname, '../swagger.json') });
       this.expressApp.listen(port);
       console.log(`server available at http://localhost:${process.env.PORT || port}`);
     } catch (error) {
       this.serverHealthStatus = false;
       console.error(`error when starting the server with env ${process.env.ENV} with message ${error.message}`);
     }
+  }
+
+  private async configureServer() {
+    this.addMiddlewares();
+    this.addRoutes();
+    await this.setUpDataBase();
+    this.configureAuthenticator();
   }
 
   /**
@@ -77,7 +88,7 @@ export class Server {
     this.expressApp.use(this.bodyParser.json({}));
     this.expressApp.use(this.bodyParser.urlencoded({ extended: false }));
     this.expressApp.use(this.expressCors());
-    dotevnv.config(); // init the environementb
+    dotevnv.config(); // init the environement
   }
 
   /**
@@ -86,9 +97,13 @@ export class Server {
   private addRoutes() {
     const router = this.expressRouter();
     router.get('/health', this.healthCheker());
-    router.get('/routes', this.getAppRoutes());
     this.expressApp.use(router);
-    appRoutes.forEach((appRoute: RouteEntity) => this.expressApp.use(appRoute.router));
+    const data = require(join(__dirname, '../swagger.json'));
+    this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
+  }
+  private configureAuthenticator() {
+    const authenticator = new JWTAuthenticator();
+    RestServer.registerAuthenticator(authenticator);
   }
 
   public healthCheker(): (request: express.Request, response: express.Response) => void {
@@ -98,24 +113,6 @@ export class Server {
       } else {
         response.status(500).send('Initialization failed check the log files');
       }
-    };
-  }
-
-  /**
-   * displays all the available routes in the entires app
-   */
-  public getAppRoutes(): (request: express.Request, response: express.Response) => void {
-    return (request: express.Request, response: express.Response): void => {
-      const routes: any = appRoutes.reduce((acc, curr) => {
-        acc[curr.name] = {
-          ...curr.router.stack.reduce((accumulator, current) => {
-            accumulator[current.route.path] = Object.keys(current.route.methods)[0];
-            return accumulator;
-          }, {}),
-        };
-        return acc;
-      }, {} as any);
-      response.json(routes);
     };
   }
 
