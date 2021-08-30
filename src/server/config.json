@@ -5,7 +5,7 @@
             "port": 8080
         },
         "DB":{
-            "url": "mongodb://<username>:<password>@127.0.0.1:27017/<dbname>?retryWrites=true&w=majority",
+            "url": "mongodb://<username>:<password>@172.47.0.20:27017/<dbname>?retryWrites=true&w=majority",
             "dbUsername": "dev",
             "dbPassword": "password",
             "dbName": "mana"
