@@ -6,7 +6,7 @@ import { ExpressBodyParser, ExpressCors, ExpressRouter, Server } from '../server
 import { SinonStubbedInstance, createStubInstance, match, restore, spy, stub } from 'sinon';
 
 import { Router } from 'express-serve-static-core';
-import { ServerConfiguration } from 'src/server/types/ServerConfiguration';
+import { ServerConfiguration } from '../server/types/ServerConfiguration';
 import intern from 'intern';
 
 // const { describe, it } = intern.getPlugin('interface.bdd');

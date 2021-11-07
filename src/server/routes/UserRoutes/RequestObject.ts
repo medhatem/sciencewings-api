@@ -1,4 +1,20 @@
-export class UserRO {
+import { BaseRO } from '../BaseRoutes/RequestObject';
+
+export class UserGetRO extends BaseRO {
+  _id: string;
+  lastName: string;
+  firstName: string;
+  email: string;
+}
+
+export class UserUpdateRO extends BaseRO {
+  _id: string;
+  lastName: string;
+  firstName: string;
+  email: string;
+}
+
+export class UserRO extends BaseRO {
   firstName: string;
   lastName: string;
   email: string;
@@ -10,17 +26,25 @@ export class UserRO {
     zip: string;
   };
 }
-export class CredentialsRO {
+export class CredentialsRO extends BaseRO {
   email: string;
   password: string;
 }
 
-export class UserSignedInRO {
+export class UserSignedInRO extends BaseRO {
+  constructor(data?: any) {
+    super();
+    this.serialize(data);
+  }
   token: string;
   user: UserRO;
 }
 
-export class UserSignedUpRO {
+export class UserSignedUpRO extends BaseRO {
+  constructor(data?: any) {
+    super();
+    this.serialize(data);
+  }
   id: string;
   token: string;
 }

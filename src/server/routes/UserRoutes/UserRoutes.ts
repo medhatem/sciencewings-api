@@ -1,14 +1,18 @@
-import { container, provideSingleton } from '../../di';
+import { container, provideSingleton } from '@di/index';
 import { UserService } from '../../service/UserService';
 import { Path, QueryParam, GET, POST, Security, ContextRequest } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
 import * as express from 'express';
-import { CredentialsRO, UserRO, UserSignedInRO, UserSignedUpRO } from './RequestObject';
+import { CredentialsRO, UserGetRO, UserRO, UserSignedInRO, UserSignedUpRO, UserUpdateRO } from './RequestObject';
+import { BaseRoutes } from '@routes/BaseRoutes/BaseRoutes';
+import { User } from '@models/User';
 
 @provideSingleton()
 @Path('/api/v1/user')
-export class UserRoutes {
-  constructor(private userService: UserService = UserService.getInstance()) {}
+export class UserRoutes extends BaseRoutes<User> {
+  constructor(private userService: UserService) {
+    super(userService, UserGetRO, UserUpdateRO);
+  }
 
   static getInstance(): UserRoutes {
     return container.get(UserRoutes);
@@ -22,7 +26,7 @@ export class UserRoutes {
    */
   @Path('signup')
   @POST
-  @Response<UserSignedUpRO>(200, 'successful signup')
+  @Response<UserSignedUpRO>(201, 'successful signup')
   @Response<Error>(500, 'internal server srror')
   public async signup(body: UserRO): Promise<UserSignedUpRO> {
     return await this.userService.signup(body);

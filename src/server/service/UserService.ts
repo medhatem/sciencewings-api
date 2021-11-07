@@ -1,15 +1,15 @@
 import { CredentialsRO, UserRO, UserSignedInRO, UserSignedUpRO } from '../routes/UserRoutes/RequestObject';
-import { container, provideSingleton } from '../di';
+import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from './BaseService';
-import { IUser } from '../interface';
+import { User } from '@models/User';
 import { UserDao } from '../dao/UserDao';
 import { userCredentialsSchema } from '../validators/userCredentials';
 import { userValidationSchema } from '../validators/userValidator';
 import { validate } from '../decorators/bodyValidationDecorators/validate';
 
 @provideSingleton()
-export class UserService extends BaseService<IUser> {
+export class UserService extends BaseService<User> {
   constructor(public dao: UserDao) {
     super(dao);
   }
@@ -20,11 +20,13 @@ export class UserService extends BaseService<IUser> {
 
   @validate(userValidationSchema)
   public async signup(user: UserRO): Promise<UserSignedUpRO> {
-    return await this.dao.signup(user);
+    const userSignedUpResult = await this.dao.signup(user);
+    return new UserSignedUpRO(userSignedUpResult);
   }
 
   @validate(userCredentialsSchema)
   public async signin(credentials: CredentialsRO): Promise<UserSignedInRO> {
-    return await this.dao.signin(credentials);
+    const userSignedInResult = await this.dao.signin(credentials);
+    return new UserSignedInRO(userSignedInResult);
   }
 }

@@ -1,10 +1,10 @@
-import * as mongoose from 'mongoose';
+import { ReturnModelType, getModelForClass } from '@typegoose/typegoose';
 
-import { IBase } from '../interface';
-import { getModelForClass } from '@typegoose/typegoose';
+export declare type AnyParamConstructor<T> = new (...args: any) => T;
 
-export abstract class BaseModel<T extends IBase> {
-  public modelClass: mongoose.Model<T>;
+export abstract class BaseModel<T> {
+  public modelClass: ReturnModelType<AnyParamConstructor<T>, Record<string, any>>;
+
   constructor() {}
 
   static getInstance(): void {
@@ -14,7 +14,7 @@ export abstract class BaseModel<T extends IBase> {
   /**
    * creates the model of a certain name based off of a given schema
    */
-  public generateModel(name?: string): mongoose.Model<T> {
+  public generateModel(name?: string): T {
     return (this.modelClass = getModelForClass(this.constructor as any, {
       options: { customName: name },
       schemaOptions: { timestamps: true },

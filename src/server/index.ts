@@ -1,3 +1,5 @@
+import 'module-alias/register';
+
 import * as Config from './config.json';
 
 import { Server } from './Server';

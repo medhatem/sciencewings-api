@@ -12,10 +12,12 @@ import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
+import { RestServiceFactory } from './di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
 import { join } from 'path';
 
 import swaggerUi = require('swagger-ui-express');
+
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
   urlencoded(options: OptionsUrlencoded): RequestHandler;
@@ -64,8 +66,6 @@ export class Server {
     try {
       const port = (this.baseConfig && this.baseConfig.port) || 8080;
       await this.configureServer();
-      RestServer.loadServices(this.expressApp, 'routes/*', join(__dirname, '../'));
-      RestServer.swagger(this.expressApp, { filePath: join(__dirname, '../swagger.json') });
       this.expressApp.listen(port);
       console.log(`server available at http://localhost:${process.env.PORT || port}`);
     } catch (error) {
@@ -79,6 +79,7 @@ export class Server {
     this.addRoutes();
     await this.setUpDataBase();
     this.configureAuthenticator();
+    this.configureTypescriptRestRoutes();
   }
 
   /**
@@ -101,6 +102,17 @@ export class Server {
     const data = require(join(__dirname, '../swagger.json'));
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
   }
+  /**
+   * generates the routes declared with typescript-rest and add them
+   * to the main express application
+   * generates also their swagger documentation
+   */
+  private configureTypescriptRestRoutes() {
+    RestServer.registerServiceFactory(new RestServiceFactory());
+    RestServer.loadServices(this.expressApp, 'routes/*', join(__dirname, '../'));
+    RestServer.swagger(this.expressApp, { filePath: join(__dirname, '../swagger.json') });
+  }
+
   private configureAuthenticator() {
     const authenticator = new JWTAuthenticator();
     RestServer.registerAuthenticator(authenticator);

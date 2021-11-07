@@ -18,6 +18,16 @@
     "test": "intern config=src/server-unit/intern.json",
     
   },
+  "_moduleAliases": {
+    "@di": "dist/server/di",
+    "@types": "dist/server/types",
+    "@errors": "dist/server/errors",
+    "@interface": "dist/server/interface/*",
+    "@models": "dist/server/models",
+    "@routes": "dist/server/routes",
+    "@service": "dist/server/service",
+    "@dao": "dist/server/dao"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/abdesselamXpack94/manaServices_server.git"
@@ -38,9 +48,10 @@
     "inversify-binding-decorators": "latest",
     "joi": "latest",
     "jsonwebtoken": "latest",
+    "module-alias": "^2.2.2",
     "mongoose": "5.10.18",
-    "reflect-metadata": "latest",
     "passport-jwt": "^4.0.0",
+    "reflect-metadata": "latest",
     "swagger-ui-express": "^4.1.4",
     "typescript-rest-swagger": "^1.1.7"
   },

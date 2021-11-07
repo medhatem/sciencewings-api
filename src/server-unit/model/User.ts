@@ -1,4 +1,4 @@
-import { User } from '../../server/model/User';
+import { User } from '@models/User';
 import intern from 'intern';
 import { restore } from 'sinon';
 

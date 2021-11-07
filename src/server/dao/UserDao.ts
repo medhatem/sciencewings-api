@@ -1,16 +1,15 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
-import { CredentialsRO, UserRO, UserSignedInRO, UserSignedUpRO } from '../routes/UserRoutes/RequestObject';
-import { container, provideSingleton } from '../di';
+import { CredentialsRO, UserRO } from '@routes/UserRoutes/RequestObject';
+import { container, provideSingleton } from '@di/index';
 
 import { BaseDao } from './BaseDao';
-import { IUser } from '../interface';
-import { ServerError } from '../errors/ServerError';
-import { User } from '../model/User';
+import { ServerError } from '@errors/ServerError';
+import { User } from '@models/User';
 
 @provideSingleton()
-export class UserDao extends BaseDao<IUser> {
+export class UserDao extends BaseDao<User> {
   private constructor(public model: User) {
     super(model);
   }
@@ -28,9 +27,10 @@ export class UserDao extends BaseDao<IUser> {
    *
    * @param user represents the user to create
    */
-  public async signup(user: UserRO): Promise<UserSignedUpRO> {
+  public async signup(user: UserRO): Promise<{ token: string; id: string }> {
     // check that a user with the given email does not exist
     const existingUser = await this.model.modelClass.findOne({ email: user.email }).exec();
+
     if (existingUser) {
       throw new ServerError(`user with email ${user.email} already exists`);
     }
@@ -43,7 +43,7 @@ export class UserDao extends BaseDao<IUser> {
       },
       process.env.TOKEN_SECRET,
     );
-    const createdUser: IUser = await this.create(user as any);
+    const createdUser = await this.create(user as any);
 
     return {
       token,
@@ -58,9 +58,9 @@ export class UserDao extends BaseDao<IUser> {
    *
    * @param param0 the user credentials that corresponds to the email and password
    */
-  public async signin({ email, password }: CredentialsRO): Promise<UserSignedInRO> {
+  public async signin({ email, password }: CredentialsRO): Promise<{ token: string; user: User }> {
     // get the user by email
-    const user = (await this.model.modelClass.findOne({ email }).exec()) as IUser;
+    const user = await this.model.modelClass.findOne({ email }).exec();
 
     if (user) {
       // compare password

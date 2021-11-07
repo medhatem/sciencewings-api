@@ -2,8 +2,8 @@ import * as mongoose from 'mongoose';
 
 import { restore, spy } from 'sinon';
 
-import { BaseModel } from '../../server/model/BaseModel';
-import { IBase } from 'src/server/interface';
+import { BaseModel } from 'server/models/BaseModel';
+import { IBase } from '@interface/index';
 import intern from 'intern';
 
 const { Schema } = mongoose;

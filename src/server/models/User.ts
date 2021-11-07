@@ -1,15 +1,18 @@
-import { IAddress, IUser, IUserProfessionalMetadata } from '../interface';
-import { container, provideSingleton } from '../di';
+import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from './BaseModel';
 import { prop } from '@typegoose/typegoose';
 
+export enum ProfessionalJobs {
+  'BARBER' = 'barber',
+  'CAR_MECHANIC' = 'car_mechanic',
+}
 export class Professional {
   @prop({ required: true })
   isProfessional: boolean;
 
-  @prop()
-  job?: string;
+  @prop({ enum: ProfessionalJobs })
+  job?: ProfessionalJobs;
 }
 
 export class Address {
@@ -27,7 +30,7 @@ export class Address {
 }
 
 @provideSingleton()
-export class User extends BaseModel<IUser> {
+export class User extends BaseModel<User> {
   constructor() {
     super();
   }
@@ -46,11 +49,11 @@ export class User extends BaseModel<IUser> {
   @prop({ required: true })
   password: string;
   @prop({ type: () => Address, required: true, _id: false })
-  address: IAddress;
+  address: Address;
 
   @prop({
     type: () => Professional,
     _id: false,
   })
-  professional?: IUserProfessionalMetadata;
+  professional?: Professional;
 }

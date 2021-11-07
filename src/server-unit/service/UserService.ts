@@ -2,6 +2,7 @@ import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 
 import { IUser } from '../../server/interface/';
 import { UserDao } from '../../server/dao/UserDao';
+import { UserRO } from '../../server/routes/UserRoutes/RequestObject';
 import { UserService } from '../../server/service/UserService';
 import { ValidatonError } from '../../server/errors/ValidationError';
 import { container } from '../../server/di';
@@ -33,14 +34,14 @@ suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.
     assert.deepEqual(instance, userService);
   });
   test('should call create when body validation passes', async () => {
-    await userService.signup((user as any) as IUser);
-    assert.isTrue(userDaoStub.signup.calledOnceWithExactly((user as any) as IUser));
+    await userService.signup((user as any) as UserRO);
+    assert.isTrue(userDaoStub.signup.calledOnceWithExactly((user as any) as UserRO));
   });
   test('should throw a validation error when validation fails', async () => {
     const userClone = { ...user };
     delete userClone.email;
     try {
-      await userService.signup((userClone as any) as IUser);
+      await userService.signup((userClone as any) as UserRO);
       assert.fail('unexpected success!');
     } catch (error) {
       assert.isTrue(error instanceof ValidatonError);
