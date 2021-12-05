@@ -1,63 +1,113 @@
+# version: '3'
+
+# services:
+#   api:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     image: nodejs
+#     container_name: api
+#     restart: unless-stopped
+#     env_file: .env
+#     environment:
+#       - PORT=$PORT
+#       - DB_USERNAME=$DB_USERNAME
+#       - MONGODB_PASSWORD=MONGODB_PASSWORD
+#       - ENV=$ENV
+#       - DB_DEV_NAME=$DB_DEV_NAME
+#       - TOKEN_SECRET=$TOKEN_SECRET
+#     ports:
+#       - '8080:8080'
+#     volumes:
+#       - .:/home/node/app
+#       # - node_modules:/home/node/app/node_modules
+#     networks:
+#       - default
+#     command: >
+#       tail -f /dev/null
+#   mongo:
+#     image: mongo:3.2.12
+#     container_name: mongo
+#     restart: always
+#     environment:
+#       MONGO_INITDB_DATABASE: mana
+#       MONGO_INITDB_ROOT_USERNAME: root
+#       MONGO_INITDB_ROOT_PASSWORD: password
+#     volumes:
+#       - ./init.js:/docker-entrypoint-initdb.d/init.js:ro
+#     ports:
+#       - 27017-27019:27017-27019
+#     networks:
+#       default:
+#         ipv4_address: 172.47.0.20
+#     command: mongod --bind_ip 0.0.0.0
+
+#   # mongo-express:
+#   #   image: mongo-express
+#   #   restart: always
+#   #   ports:
+#   #     - 8081:8081
+#   #   environment:
+#   #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#   #     ME_CONFIG_MONGODB_ADMINPASSWORD: password
+#   #   networks:
+#   #     - default
+
+# networks:
+#   default:
+#     external: false
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 172.47.0.0/24
+
+# version: '3.8'
+# services:
+#   db:
+#     image: 'postgres:13'
+#     ports:
+#       - '5432:5432'
+#     volumes:
+#       - ./pgdata:/var/lib/postgresql/data
+#     environment:
+#       - POSTGRES_USER=userbuddy
+#       - POSTGRES_PASSWORD=keycloak123
+#       - POSTGRES_DB=keycloak
+
 version: '3'
 
+volumes:
+  postgres_data:
+    driver: local
+
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: nodejs
-    container_name: api
-    restart: unless-stopped
-    env_file: .env
+  postgres:
+    image: postgres
+    container_name: p_container
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
     environment:
-      - PORT=$PORT
-      - DB_USERNAME=$DB_USERNAME
-      - MONGODB_PASSWORD=MONGODB_PASSWORD
-      - ENV=$ENV
-      - DB_DEV_NAME=$DB_DEV_NAME
-      - TOKEN_SECRET=$TOKEN_SECRET
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: userbuddy
+      POSTGRES_PASSWORD: keycloak123
     ports:
-      - '8080:8080'
-    volumes:
-      - .:/home/node/app
-      # - node_modules:/home/node/app/node_modules
-    networks:
-      - default
-    command: >
-      tail -f /dev/null
-  mongo:
-    image: mongo:3.2.12
-    container_name: mongo
-    restart: always
+      - '5432:5432'
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
     environment:
-      MONGO_INITDB_DATABASE: mana
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - ./init.js:/docker-entrypoint-initdb.d/init.js:ro
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: userbuddy
+      DB_SCHEMA: public
+      DB_PASSWORD: keycloak123
+      KEYCLOAK_USER: master
+      KEYCLOAK_PASSWORD: admin
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
     ports:
-      - 27017-27019:27017-27019
-    networks:
-      default:
-        ipv4_address: 172.47.0.20
-    command: mongod --bind_ip 0.0.0.0
-
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: password
-  #   networks:
-  #     - default
-
-networks:
-  default:
-    external: false
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.47.0.0/24
+      - 8080:8080
+    depends_on:
+      - postgres
