@@ -1,14 +1,13 @@
 import { container, provideSingleton } from '@di/index';
 import { UserService } from '../../service/UserService';
-import { Path, QueryParam, GET, POST, Security, ContextRequest } from 'typescript-rest';
-import { Response } from 'typescript-rest-swagger';
 import * as express from 'express';
 import { CredentialsRO, UserGetRO, UserRO, UserSignedInRO, UserSignedUpRO, UserUpdateRO } from './RequestObject';
-import { BaseRoutes } from '@routes/BaseRoutes/BaseRoutes';
+import { BaseRoutes } from '../BaseRoutes/BaseRoutes';
 import { User } from '@models/User';
+import { Get, SuccessResponse, Response, Route, Post, Body, Query, Request } from 'tsoa';
 
 @provideSingleton()
-@Path('/api/v1/user')
+@Route('user')
 export class UserRoutes extends BaseRoutes<User> {
   constructor(private userService: UserService) {
     super(userService, UserGetRO, UserUpdateRO);
@@ -24,11 +23,10 @@ export class UserRoutes extends BaseRoutes<User> {
    * return the newly created user or an error
    *
    */
-  @Path('signup')
-  @POST
-  @Response<UserSignedUpRO>(201, 'successful signup')
-  @Response<Error>(500, 'internal server srror')
-  public async signup(body: UserRO): Promise<UserSignedUpRO> {
+  @Post('signup')
+  @SuccessResponse(201, 'successful signup')
+  @Response(500, 'internal server error')
+  public async signup(@Body() body: UserRO): Promise<UserSignedUpRO> {
     return await this.userService.signup(body);
   }
 
@@ -38,20 +36,15 @@ export class UserRoutes extends BaseRoutes<User> {
    * return an error response if the credentials are wrong
    *
    */
-  @Path('signin')
-  @POST
-  @Response<UserSignedInRO>(200, 'successul signin')
+  @Post('signin')
+  @SuccessResponse(200, 'successful signin')
   @Response<Error>(500, 'internal server error')
-  public async signin(credentials: CredentialsRO): Promise<UserSignedInRO> {
+  public async signin(@Body() credentials: CredentialsRO): Promise<UserSignedInRO> {
     return await this.userService.signin(credentials);
   }
 
-  @Path('newRoute')
-  @GET
-  @Response('success')
-  @Response('error')
-  @Security()
-  public async newRoute(@QueryParam('body') body: string, @ContextRequest req: express.Request) {
+  @Get('newRoute')
+  public async newRoute(@Query('body') body: string, @Request() req: express.Request) {
     return body;
   }
 }

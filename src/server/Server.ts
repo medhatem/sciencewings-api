@@ -4,15 +4,16 @@ import * as BodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
 import * as express from 'express';
+import * as methodOverride from 'method-override';
 import * as mongooseORM from 'mongoose';
 
 import { BaseConfig, EnvConfig, ServerConfiguration, ServerDBConfig } from './types/ServerConfiguration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 
 import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
+import { RegisterRoutes } from './tsoa-build/routes';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
-import { RestServiceFactory } from './di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
 import { join } from 'path';
 
@@ -99,7 +100,7 @@ export class Server {
     const router = this.expressRouter();
     router.get('/health', this.healthCheker());
     this.expressApp.use(router);
-    const data = require(join(__dirname, '../swagger.json'));
+    const data = require(join(__dirname, './tsoa-build/swagger.json'));
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
   }
   /**
@@ -108,9 +109,8 @@ export class Server {
    * generates also their swagger documentation
    */
   private configureTypescriptRestRoutes() {
-    RestServer.registerServiceFactory(new RestServiceFactory());
-    RestServer.loadServices(this.expressApp, 'routes/*', join(__dirname, '../'));
-    RestServer.swagger(this.expressApp, { filePath: join(__dirname, '../swagger.json') });
+    this.expressApp.use(methodOverride());
+    RegisterRoutes(this.expressApp);
   }
 
   private configureAuthenticator() {
