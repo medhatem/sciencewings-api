@@ -1,23 +1,13 @@
-import { ReturnModelType, getModelForClass } from '@typegoose/typegoose';
+import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export declare type AnyParamConstructor<T> = new (...args: any) => T;
-
-export abstract class BaseModel<T> {
-  public modelClass: ReturnModelType<AnyParamConstructor<T>, Record<string, any>>;
-
-  constructor() {}
-
+export class BaseModel<T = any> {
   static getInstance(): void {
     throw new Error('The base model class cannot be instanciated and needs to be overriden!');
   }
 
-  /**
-   * creates the model of a certain name based off of a given schema
-   */
-  public generateModel(name?: string): T {
-    return (this.modelClass = getModelForClass(this.constructor as any, {
-      options: { customName: name },
-      schemaOptions: { timestamps: true },
-    }));
-  }
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+  public created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
+  public updated_at: Date;
 }

@@ -11,7 +11,7 @@ container.initialize();
 // istanbul ignore next
 if (process.argv[1].includes('dist/server/index.js')) {
   (async () => {
-    const server = new Server(Config as ServerConfiguration);
+    const server = new Server((Config as any) as ServerConfiguration);
     await server.startApp();
   })();
 }

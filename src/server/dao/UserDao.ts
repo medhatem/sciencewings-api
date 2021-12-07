@@ -29,7 +29,7 @@ export class UserDao extends BaseDao<User> {
    */
   public async signup(user: UserRO): Promise<{ token: string; id: string }> {
     // check that a user with the given email does not exist
-    const existingUser = await this.model.modelClass.findOne({ email: user.email }).exec();
+    const existingUser = await this.repository.findOne({ where: { email: user.email } });
 
     if (existingUser) {
       throw new ServerError(`user with email ${user.email} already exists`);
@@ -60,7 +60,7 @@ export class UserDao extends BaseDao<User> {
    */
   public async signin({ email, password }: CredentialsRO): Promise<{ token: string; user: User }> {
     // get the user by email
-    const user = await this.model.modelClass.findOne({ email }).exec();
+    const user = await this.repository.findOne({ where: { email } });
 
     if (user) {
       // compare password

@@ -3,10 +3,11 @@ export type BaseConfig = {
 };
 
 export type ServerDBConfig = {
-  url: string;
+  host: string;
   dbUsername: string;
   dbPassword: string;
   dbName: string;
+  port: number;
 };
 
 export type EnvConfig = {

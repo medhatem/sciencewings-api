@@ -5,10 +5,11 @@
             "port": 8080
         },
         "DB":{
-            "url": "mongodb://<username>:<password>@127.0.0.1:27017/<dbname>?retryWrites=true&w=majority",
-            "dbUsername": "dev",
-            "dbPassword": "password",
-            "dbName": "mana"
+            "host":"127.0.0.1",
+            "dbUsername": "local-api",
+            "dbPassword": "1234",
+            "dbName": "local",
+            "port":5432
         }
     },
     "prod":{
@@ -16,10 +17,11 @@
             "port": 8080
         },
         "DB":{
-            "url": "mongodb+srv://<username>:<password>@manacluster.ifqmj.mongodb.net/<dbname>?retryWrites=true&w=majority",
+            "host":"127.0.0.1",
             "dbUsername": "admin",
             "dbPassword": "mana",
-            "dbName": "mana"
+            "dbName": "mana",
+            "port":5432
         }
 
     },

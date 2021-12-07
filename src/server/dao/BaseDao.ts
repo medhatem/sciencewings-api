@@ -1,33 +1,33 @@
-import * as mongoose from 'mongoose';
-
 import { BaseModel } from '@models/BaseModel';
-import { DocumentType } from '@typegoose/typegoose';
+import { Repository } from 'typeorm';
 import { ServerError } from '../errors/ServerError';
+import { connection } from '../db/index';
 import { provideSingleton } from '../di';
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
-  constructor(public model: T) {
-    model.generateModel();
+  public repository: Repository<T>;
+  constructor(model: T) {
+    this.repository = connection.getRepository<T>(model.constructor as new () => T);
   }
 
   static getInstance(): void {
     throw new ServerError('baseModel must be overriden');
   }
 
-  public async get(id: string): Promise<DocumentType<T>> {
-    return this.model.modelClass.findById(id).exec();
+  public async get(id: string): Promise<any> {
+    return this.repository.findOne({ where: { id } });
   }
 
-  public async getAll(): Promise<DocumentType<T>[]> {
-    return this.model.modelClass.find().exec();
+  public async getAll(): Promise<any> {
+    return this.repository.find();
   }
 
-  public async create(entry: T): Promise<DocumentType<T>> {
-    return this.model.modelClass.create(entry as any);
+  public async create(entry: T): Promise<any> {
+    return this.repository.save(entry as any);
   }
 
-  public async update(id: string, entry: any): Promise<DocumentType<T>> {
-    return this.model.modelClass.updateOne({ _id: mongoose.Types.ObjectId(id) } as any, entry);
+  public async update(id: string, entry: any): Promise<any> {
+    return this.repository.update(id, entry);
   }
 }

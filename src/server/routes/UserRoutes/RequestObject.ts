@@ -19,12 +19,12 @@ export class UserRO extends BaseRO {
   lastName: string;
   email: string;
   password: string;
-  address: {
-    appt: number;
-    city: string;
-    street: string;
-    zip: string;
-  };
+  // address: {
+  //   appt: number;
+  //   city: string;
+  //   street: string;
+  //   zip: string;
+  // };
 }
 export class CredentialsRO extends BaseRO {
   email: string;
