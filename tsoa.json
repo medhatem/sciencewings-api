@@ -3,7 +3,7 @@
     "noImplicitAdditionalProperties": "throw-on-extras",
     "controllerPathGlobs": ["src/**/routes/index.ts"],
     "spec": {
-      "outputDirectory": "src/server/tsoa-build",
+      "outputDirectory": "dist/server/tsoa-build",
       "specVersion": 3,
       "basePath": "/api/v1",
       "specMerging": "recursive"
@@ -11,8 +11,6 @@
     "routes": {
       "routesDir": "src/server/tsoa-build",
       "basePath": "/api/v1",
-      "iocModule": "src/server/di/index.ts",
-      "middlewareTemplate": "custom-template.ts"
-      
+      "iocModule": "src/server/di/index.ts"
     }
   }

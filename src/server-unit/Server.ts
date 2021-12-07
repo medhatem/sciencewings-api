@@ -29,7 +29,6 @@ suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.
         dbName: 'name',
         dbPassword: 'password',
         dbUsername: 'username',
-        url: 'mongodb+srv://<username>:<password>@manacluster.ifqmj.mongodb.net/<dbname>?retryWrites=true&w=majority',
       },
     },
   };
@@ -71,7 +70,6 @@ suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.
       (bodyParser as any) as ExpressBodyParser,
       (expressCors as any) as ExpressCors,
       (expressRouter as any) as ExpressRouter,
-      (mongoose as any) as typeof Mongoose,
     );
   });
   afterEach((): void => {

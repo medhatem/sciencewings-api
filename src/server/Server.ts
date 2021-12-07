@@ -5,7 +5,6 @@ import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
 import * as express from 'express';
 import * as methodOverride from 'method-override';
-import * as mongooseORM from 'mongoose';
 
 import { BaseConfig, EnvConfig, ServerConfiguration, ServerDBConfig } from './types/ServerConfiguration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
@@ -16,6 +15,7 @@ import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
 import { Router } from 'express-serve-static-core';
 import { join } from 'path';
+import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
 
@@ -38,7 +38,6 @@ export class Server {
   private bodyParser: ExpressBodyParser;
   private expressCors: ExpressCors;
   private expressRouter: ExpressRouter;
-  private mongoose: typeof mongooseORM;
   private serverHealthStatus = true;
   private envConfig: EnvConfig;
   private baseConfig: BaseConfig;
@@ -49,13 +48,11 @@ export class Server {
     bodyParser: ExpressBodyParser = BodyParser,
     expressCors: ExpressCors = cors,
     expressRouter: ExpressRouter = express.Router,
-    mongoose: typeof mongooseORM = mongooseORM,
   ) {
     this.expressApp = app;
     this.bodyParser = bodyParser;
     this.expressCors = expressCors;
     this.expressRouter = expressRouter;
-    this.mongoose = mongoose;
     this.envConfig = this.config[
       ((process.env.ENV as any) as keyof ServerConfiguration) || this.config.currentENV || 'dev'
     ] as EnvConfig;
@@ -129,16 +126,11 @@ export class Server {
   }
 
   /**
-   * create a connection to the mongodb database
+   * create a connection to the postgres database
    */
   private async setUpDataBase(): Promise<void> {
     try {
-      const dbUrl: string = this.dbConfig.url;
-      const url = dbUrl
-        .replace('<username>', this.dbConfig.dbUsername)
-        .replace('<password>', this.dbConfig.dbPassword)
-        .replace('<dbname>', this.dbConfig.dbName);
-      await this.mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+      startDB(this.dbConfig);
     } catch (error) {
       console.log('error connecting to database', error);
     }

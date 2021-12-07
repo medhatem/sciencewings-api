@@ -1,59 +1,37 @@
+import { Column, HasMany, Index, Table } from 'sequelize-typescript';
 import { container, provideSingleton } from '@di/index';
 
+import { Address } from './Address';
 import { BaseModel } from './BaseModel';
-import { prop } from '@typegoose/typegoose';
-
-export enum ProfessionalJobs {
-  'BARBER' = 'barber',
-  'CAR_MECHANIC' = 'car_mechanic',
-}
-export class Professional {
-  @prop({ required: true })
-  isProfessional: boolean;
-
-  @prop({ enum: ProfessionalJobs })
-  job?: ProfessionalJobs;
-}
-
-export class Address {
-  @prop({ required: true })
-  zip: string;
-
-  @prop({ required: true })
-  city: string;
-
-  @prop({ required: true })
-  street: string;
-
-  @prop()
-  appt?: string;
-}
 
 @provideSingleton()
+@Table({
+  timestamps: true,
+})
 export class User extends BaseModel<User> {
-  constructor() {
-    super();
-  }
+  // constructor() {
+  //   super();
+  // }
 
   static getInstance(): User {
     return container.get(User);
   }
 
-  @prop()
+  @Column
   firstName: string;
-  @prop()
+
+  @Column
   lastName: string;
 
-  @prop({ required: true, unique: true, index: true })
-  email: string;
-  @prop({ required: true })
-  password: string;
-  @prop({ type: () => Address, required: true, _id: false })
-  address: Address;
-
-  @prop({
-    type: () => Professional,
-    _id: false,
+  @Column({
+    unique: true,
   })
-  professional?: Professional;
+  @Index
+  email: string;
+
+  @Column
+  password: string;
+
+  @HasMany(() => Address)
+  addresses: Address[];
 }

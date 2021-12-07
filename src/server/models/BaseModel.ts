@@ -1,23 +1,12 @@
-import { ReturnModelType, getModelForClass } from '@typegoose/typegoose';
+import { Model, Table } from 'sequelize-typescript';
 
-export declare type AnyParamConstructor<T> = new (...args: any) => T;
-
-export abstract class BaseModel<T> {
-  public modelClass: ReturnModelType<AnyParamConstructor<T>, Record<string, any>>;
-
-  constructor() {}
+@Table
+export class BaseModel<T> extends Model<T> {
+  // constructor() {
+  //   super();
+  // }
 
   static getInstance(): void {
     throw new Error('The base model class cannot be instanciated and needs to be overriden!');
-  }
-
-  /**
-   * creates the model of a certain name based off of a given schema
-   */
-  public generateModel(name?: string): T {
-    return (this.modelClass = getModelForClass(this.constructor as any, {
-      options: { customName: name },
-      schemaOptions: { timestamps: true },
-    }));
   }
 }

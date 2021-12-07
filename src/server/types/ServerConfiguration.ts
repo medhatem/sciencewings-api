@@ -3,7 +3,6 @@ export type BaseConfig = {
 };
 
 export type ServerDBConfig = {
-  url: string;
   dbUsername: string;
   dbPassword: string;
   dbName: string;
