@@ -1,37 +1,38 @@
-import { Column, HasMany, Index, Table } from 'sequelize-typescript';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { container, provideSingleton } from '@di/index';
 
 import { Address } from './Address';
 import { BaseModel } from './BaseModel';
 
 @provideSingleton()
-@Table({
-  timestamps: true,
-})
+@Entity()
 export class User extends BaseModel<User> {
-  // constructor() {
-  //   super();
-  // }
+  constructor() {
+    super();
+  }
 
   static getInstance(): User {
     return container.get(User);
   }
+  @PrimaryGeneratedColumn()
+  @Index()
+  id: number;
 
-  @Column
+  @Column()
   firstName: string;
 
-  @Column
+  @Column()
   lastName: string;
 
   @Column({
     unique: true,
   })
-  @Index
+  @Index()
   email: string;
 
-  @Column
+  @Column()
   password: string;
 
-  @HasMany(() => Address)
+  @OneToMany(() => Address, (address) => address.userId)
   addresses: Address[];
 }

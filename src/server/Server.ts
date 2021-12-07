@@ -130,7 +130,7 @@ export class Server {
    */
   private async setUpDataBase(): Promise<void> {
     try {
-      startDB(this.dbConfig);
+      await startDB(this.dbConfig);
     } catch (error) {
       console.log('error connecting to database', error);
     }

@@ -1,24 +1,26 @@
-import { Column, ForeignKey, Table } from 'sequelize-typescript';
+import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BaseModel } from './BaseModel';
 import { User } from './User';
 
-@Table({
-  timestamps: true,
-})
+@Entity()
 export class Address extends BaseModel<Address> {
-  @Column
+  @PrimaryGeneratedColumn()
+  @Index()
+  id: number;
+
+  @Column()
   zip: string;
 
-  @Column
+  @Column()
   city: string;
 
-  @Column
+  @Column()
   street: string;
 
-  @Column
+  @Column()
   appt?: string;
 
-  @ForeignKey(() => User)
+  @ManyToOne(() => User, (user) => user.addresses)
   userId: number;
 }

@@ -1,14 +1,14 @@
 import { BaseModel } from '@models/BaseModel';
-import { Repository } from 'sequelize-typescript';
+import { Repository } from 'typeorm';
 import { ServerError } from '../errors/ServerError';
-import { database } from '../db/index';
+import { connection } from '../db/index';
 import { provideSingleton } from '../di';
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
-  public modelRepo: Repository<T>;
+  public repository: Repository<T>;
   constructor(model: T) {
-    this.modelRepo = database.getRepository(model.constructor as new () => T);
+    this.repository = connection.getRepository<T>(model.constructor as new () => T);
   }
 
   static getInstance(): void {
@@ -16,18 +16,18 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   public async get(id: string): Promise<any> {
-    return this.modelRepo.findOne({ where: { id } });
+    return this.repository.findOne({ where: { id } });
   }
 
   public async getAll(): Promise<any> {
-    return this.modelRepo.findAll();
+    return this.repository.find();
   }
 
   public async create(entry: T): Promise<any> {
-    return this.modelRepo.create(entry as any);
+    return this.repository.save(entry as any);
   }
 
   public async update(id: string, entry: any): Promise<any> {
-    return this.modelRepo.update(entry, { where: { id } });
+    return this.repository.update(id, entry);
   }
 }

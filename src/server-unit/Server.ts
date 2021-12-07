@@ -26,6 +26,8 @@ suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.
         port: 8080,
       },
       DB: {
+        host: '127.0.0.1',
+        port: 5432,
         dbName: 'name',
         dbPassword: 'password',
         dbUsername: 'username',

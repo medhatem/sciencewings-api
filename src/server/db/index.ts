@@ -1,28 +1,24 @@
-import { Column, Sequelize } from 'sequelize-typescript';
-import { Model, Table } from 'sequelize-typescript';
+import 'reflect-metadata';
+
+import { Connection, createConnection } from 'typeorm';
 
 import { ServerDBConfig } from '../types/ServerConfiguration';
 import { join } from 'path';
 
-export let database: Sequelize;
+export let connection: Connection;
 
-@Table
-class Test extends Model<Test> {
-  @Column
-  name: string;
-}
-
-export function startDB(config: ServerDBConfig) {
-  console.log('tatatat', join(__dirname, '..', '/models'));
-
-  database = new Sequelize({
-    database: config.dbName,
+export async function startDB(config: ServerDBConfig) {
+  connection = await createConnection({
+    type: 'postgres',
+    host: config.host,
+    port: config.port,
     username: config.dbUsername,
     password: config.dbPassword,
-    dialect: 'postgres',
-    repositoryMode: true,
-    models: [`${join(__dirname, '..', '/models')}`],
+    database: config.dbName,
+    entities: [`${join(__dirname, '..', '/models/*.js')}`],
+    synchronize: true,
+    logging: process.env.ENV === 'development',
   });
-  database.addModels([Test]);
-  Test.findAll();
+
+  return connection;
 }
