@@ -101,7 +101,7 @@ export class Server {
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
   }
   /**
-   * generates the routes declared with typescript-rest and add them
+   * generates the routes declared with tsoa and add them
    * to the main express application
    * generates also their swagger documentation
    */

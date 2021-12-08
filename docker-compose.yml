@@ -75,6 +75,55 @@
 #       - POSTGRES_PASSWORD=keycloak123
 #       - POSTGRES_DB=keycloak
 
+# version: '3'
+
+# volumes:
+#   postgres_data:
+#     driver: local
+
+# services:
+#   postgres-keycloak:
+#     image: postgres
+#     container_name: postgres_keycloak_container
+#     # volumes:
+#     #   - postgres_data:/var/lib/postgresql/data
+#     environment:
+#       POSTGRES_DB: keycloak
+#       POSTGRES_USER: userbuddy
+#       POSTGRES_PASSWORD: keycloak123
+#     ports:
+#       - '5432:5432'
+#   # postgres-api:
+#   #   image: postgres
+#   #   container_name: postgres_api_container
+#   #   # volumes:
+#   #   #   - postgres_data:/var/lib/postgresql/data
+#   #   environment:
+#   #     POSTGRES_DB: local
+#   #     POSTGRES_USER: local-api
+#   #     POSTGRES_PASSWORD: '1234'
+#   #   ports:
+#   #     - '5432:5432'
+#   keycloak:
+#     image: quay.io/keycloak/keycloak:latest
+#     container_name: keycloak
+#     environment:
+#       DB_VENDOR: POSTGRES
+#       DB_ADDR: postgres
+#       DB_DATABASE: keycloak
+#       DB_USER: userbuddy
+#       DB_SCHEMA: public
+#       # DB_PORT: 5433
+#       DB_PASSWORD: keycloak123
+#       KEYCLOAK_USER: master
+#       KEYCLOAK_PASSWORD: admin
+#       # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+#       #JDBC_PARAMS: "ssl=true"
+#     ports:
+#       - 8080:8080
+#     depends_on:
+#       - postgres-keycloak
+
 version: '3'
 
 volumes:
@@ -84,30 +133,40 @@ volumes:
 services:
   postgres:
     image: postgres
-    container_name: p_container
     # volumes:
     #   - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak
-      POSTGRES_USER: userbuddy
-      POSTGRES_PASSWORD: keycloak123
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
     ports:
       - '5432:5432'
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
       DB_DATABASE: keycloak
-      DB_USER: userbuddy
+      DB_USER: keycloak
       DB_SCHEMA: public
-      DB_PASSWORD: keycloak123
-      KEYCLOAK_USER: master
-      KEYCLOAK_PASSWORD: admin
+      DB_PORT: 5432,
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: Pa55w0rd
       # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
       #JDBC_PARAMS: "ssl=true"
     ports:
       - 8080:8080
     depends_on:
       - postgres
+  postgres-api:
+    image: postgres
+    container_name: postgres_api_container
+    # volumes:
+    #   - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: local
+      POSTGRES_USER: local-api
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - '5433:5432'

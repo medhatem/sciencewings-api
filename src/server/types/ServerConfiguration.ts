@@ -10,9 +10,19 @@ export type ServerDBConfig = {
   port: number;
 };
 
+export declare type GrantTypes = 'client_credentials' | 'password';
+
+export type KeycloakConfig = {
+  username: string;
+  password: string;
+  grantType: GrantTypes;
+  'client-id': string;
+};
+
 export type EnvConfig = {
   baseConfig?: BaseConfig;
   DB?: ServerDBConfig;
+  keycloak: KeycloakConfig;
 };
 
 export type ServerConfiguration = {

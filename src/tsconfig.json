@@ -24,6 +24,7 @@
             "@routes/*": ["server/routes/*"],
             "@service/*": ["server/service/*"],
             "@dao/*": ["server/dao/*"],
+            "@sdks/*": ["server/sdks/*"],
         },
     },
     "exclude": [

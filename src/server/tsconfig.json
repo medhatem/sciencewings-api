@@ -15,8 +15,7 @@
         // },
         "declaration": true,
         "removeComments": false,
-        "resolveJsonModule": true,
-        
+        "resolveJsonModule": true,  
     },
     "include": ["./**/*.ts", "./typings.d.ts"]
 }
