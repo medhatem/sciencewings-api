@@ -1,3 +1,4 @@
 /node_modules
 /dist
 /**/tsoa-build/*
+package-lock.json
