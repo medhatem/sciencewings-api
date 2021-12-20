@@ -27,10 +27,9 @@ export class UserDao extends BaseDao<User> {
    *
    * @param user represents the user to create
    */
-  public async signup(user: UserRO): Promise<{ token: string; id: string }> {
+  public async signup(user: UserRO): Promise<{ token: string; id: number }> {
     // check that a user with the given email does not exist
-    const existingUser = await this.repository.findOne({ where: { email: user.email } });
-
+    const existingUser = await this.repository.findOne({ email: user.email });
     if (existingUser) {
       throw new ServerError(`user with email ${user.email} already exists`);
     }
@@ -43,11 +42,10 @@ export class UserDao extends BaseDao<User> {
       },
       process.env.TOKEN_SECRET,
     );
-    const createdUser = await this.create(user as any);
-
+    const createdId = await this.create(user as any);
     return {
       token,
-      id: createdUser._id,
+      id: createdId,
     };
   }
 

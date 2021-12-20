@@ -1,26 +1,26 @@
-import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 
 import { BaseModel } from './BaseModel';
 import { User } from './User';
 
 @Entity()
 export class Address extends BaseModel<Address> {
-  @PrimaryGeneratedColumn()
+  @PrimaryKey()
   @Index()
-  id: number;
+  id!: number;
 
-  @Column()
+  @Property()
   zip: string;
 
-  @Column()
+  @Property()
   city: string;
 
-  @Column()
+  @Property()
   street: string;
 
-  @Column()
+  @Property()
   appt?: string;
 
-  @ManyToOne(() => User, (user) => user.addresses)
+  @ManyToOne({ entity: () => User })
   userId: number;
 }

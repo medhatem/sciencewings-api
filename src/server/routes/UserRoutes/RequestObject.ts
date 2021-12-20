@@ -45,6 +45,6 @@ export class UserSignedUpRO extends BaseRO {
     super();
     this.serialize(data);
   }
-  id: string;
+  id: number;
   token: string;
 }

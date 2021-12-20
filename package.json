@@ -18,7 +18,7 @@
     "stop-containers": "docker-compose down",
     "swagger-gen": "node node_modules/typescript-rest-swagger/dist/cli.js -c ./swaggerConfig.json",
     "tsoa-build": "tsoa spec-and-routes --basePath",
-    "seed-keycloak":"node ./dist/server/seeds/keycloak/index.js",
+    "seed-keycloak": "node ./dist/server/seeds/keycloak/index.js",
     "dev": "nodemon --ignore 'dist/**/swagger.json' --ignore 'dist/**/swagger.yaml' ./dist/server/index.js",
     "start": "node ./dist/server/index.js",
     "test": "intern config=src/server-unit/intern.json"
@@ -46,6 +46,8 @@
   "homepage": "https://github.com/abdesselamXpack94/manaServices_server#readme",
   "dependencies": {
     "@keycloak/keycloak-admin-client": "^15.0.2",
+    "@mikro-orm/core": "^4.5.9",
+    "@mikro-orm/postgresql": "^4.5.9",
     "@typegoose/typegoose": "^7.6.1",
     "bcrypt": "latest",
     "body-parser": "latest",
@@ -62,7 +64,6 @@
     "reflect-metadata": "^0.1.13",
     "swagger-ui-express": "^4.1.4",
     "tsoa": "^3.14.0",
-    "typeorm": "^0.2.41",
     "typescript-rest-swagger": "^1.1.7"
   },
   "devDependencies": {

@@ -1,13 +1,13 @@
-import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Property } from '@mikro-orm/core';
 
 export class BaseModel<T = any> {
   static getInstance(): void {
     throw new Error('The base model class cannot be instanciated and needs to be overriden!');
   }
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-  public created_at: Date;
+  @Property()
+  createdAt: Date = new Date();
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
-  public updated_at: Date;
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 }
