@@ -1,4 +1,4 @@
-import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Collection, Entity, Index, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
 import { Address } from './Address';
@@ -14,25 +14,25 @@ export class User extends BaseModel<User> {
   static getInstance(): User {
     return container.get(User);
   }
-  @PrimaryGeneratedColumn()
+  @PrimaryKey()
   @Index()
-  id: number;
+  id!: number;
 
-  @Column()
+  @Property({ name: 'firstname' })
   firstName: string;
 
-  @Column()
+  @Property({ name: 'lastname' })
   lastName: string;
 
-  @Column({
+  @Property({
     unique: true,
   })
   @Index()
   email: string;
 
-  @Column()
+  @Property()
   password: string;
 
   @OneToMany(() => Address, (address) => address.userId)
-  addresses: Address[];
+  addresses? = new Collection<Address>(this);
 }

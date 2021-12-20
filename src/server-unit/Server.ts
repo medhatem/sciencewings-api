@@ -32,6 +32,12 @@ suite(__filename.substring(__filename.indexOf('/server-unit') + '/server-unit/'.
         dbPassword: 'password',
         dbUsername: 'username',
       },
+      keycloak: {
+        'client-id': 'client-id',
+        grantType: 'password',
+        password: 'pass',
+        username: 'user',
+      },
     },
   };
   beforeEach((): void => {
