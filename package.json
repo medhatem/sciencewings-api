@@ -8,8 +8,8 @@
   "scripts": {
     "clean": "rm -rf node_modules && rm -rf package-lock.json",
     "init": "rm -rf dist/ && npm run clean && npm i && npm run build",
-    "build": "npm run tsoa-build ;tsc -p src/server && tsc -p src/client && tsc -p src/server-unit",
-    "watch": " concurrently --names 'server,client,server-unit' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-unit --watch'    ",
+    "build": "npm run tsoa-build ;tsc -p src/server && tsc -p src/client && tsc -p src/server-test",
+    "watch": " concurrently --names 'server,client,server-test' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-test --watch'    ",
     "mongo-start": "docker-compose -f mongodb.yml up -d",
     "mongo-stop": "docker-compose -f mongodb.yml down",
     "postgres-start": "docker-compose -f docker-images/postgres.yml up -d",
@@ -21,7 +21,7 @@
     "seed-keycloak": "node ./dist/server/seeds/keycloak/index.js",
     "dev": "nodemon --ignore 'dist/**/swagger.json' --ignore 'dist/**/swagger.yaml' ./dist/server/index.js",
     "start": "node ./dist/server/index.js",
-    "test": "intern config=src/server-unit/intern.json"
+    "test": "intern config=src/server-test/intern.json"
   },
   "_moduleAliases": {
     "@di": "dist/server/di",
@@ -32,7 +32,8 @@
     "@routes": "dist/server/routes",
     "@service": "dist/server/service",
     "@dao": "dist/server/dao",
-    "@sdks": "dist/server/sdks"
+    "@sdks": "dist/server/sdks",
+    "@modules": "dist/server/modules"
   },
   "repository": {
     "type": "git",

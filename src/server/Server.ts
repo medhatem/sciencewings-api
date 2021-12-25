@@ -54,10 +54,11 @@ export class Server {
     this.expressCors = expressCors;
     this.expressRouter = expressRouter;
     this.envConfig = this.config[
-      ((process.env.ENV as any) as keyof ServerConfiguration) || this.config.currentENV || 'dev'
+      (process.env.ENV as any as keyof ServerConfiguration) || this.config.currentENV || 'dev'
     ] as EnvConfig;
     this.baseConfig = this.envConfig.baseConfig;
     this.dbConfig = this.envConfig.DB;
+    console.log(this.dbConfig);
   }
 
   public async startApp(): Promise<void> {
