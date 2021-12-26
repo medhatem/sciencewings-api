@@ -1,6 +1,7 @@
 import { Entity, Index, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { BaseModel } from './BaseModel';
 import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from './BaseModel';
 
 @provideSingleton()
 @Entity()

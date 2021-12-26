@@ -10,7 +10,7 @@ import { BaseConfig, EnvConfig, ServerConfiguration, ServerDBConfig } from './ty
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 
 import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
-import { RegisterRoutes } from './tsoa-build/routes';
+// import { RegisterRoutes } from './tsoa-build/routes';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
 import { Router } from 'express-serve-static-core';
@@ -54,7 +54,7 @@ export class Server {
     this.expressCors = expressCors;
     this.expressRouter = expressRouter;
     this.envConfig = this.config[
-      (process.env.ENV as any as keyof ServerConfiguration) || this.config.currentENV || 'dev'
+      ((process.env.ENV as any) as keyof ServerConfiguration) || this.config.currentENV || 'dev'
     ] as EnvConfig;
     this.baseConfig = this.envConfig.baseConfig;
     this.dbConfig = this.envConfig.DB;
@@ -108,7 +108,7 @@ export class Server {
    */
   private configureTypescriptRestRoutes() {
     this.expressApp.use(methodOverride());
-    RegisterRoutes(this.expressApp);
+    // RegisterRoutes(this.expressApp);
   }
 
   private configureAuthenticator() {

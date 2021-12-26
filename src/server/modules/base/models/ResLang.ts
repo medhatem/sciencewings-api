@@ -2,11 +2,13 @@ import { Entity, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 // import { BaseModel } from './BaseModel';
 import { container, provideSingleton } from '@di/index';
 
+import { BaseModel } from './BaseModel';
+
 @provideSingleton()
 @Entity()
-export class ResLang {
+export class ResLang extends BaseModel<ResLang> {
   constructor() {
-    // super();
+    super();
   }
 
   static getInstance(): ResLang {
