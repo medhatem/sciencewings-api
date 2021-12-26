@@ -4,13 +4,13 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class HrDepartureReason extends BaseModel<HrDepartureReason> {
+export class DepartureReason extends BaseModel<DepartureReason> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrDepartureReason {
-    return container.get(HrDepartureReason);
+  static getInstance(): DepartureReason {
+    return container.get(DepartureReason);
   }
 
   @PrimaryKey()

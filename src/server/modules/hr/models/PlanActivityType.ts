@@ -5,13 +5,13 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class HrPlanActivityType extends BaseModel<HrPlanActivityType> {
+export class PlanActivityType extends BaseModel<PlanActivityType> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrPlanActivityType {
-    return container.get(HrPlanActivityType);
+  static getInstance(): PlanActivityType {
+    return container.get(PlanActivityType);
   }
   @PrimaryKey()
   id!: number;

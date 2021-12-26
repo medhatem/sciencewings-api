@@ -1,29 +1,29 @@
 import { Entity, Index, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { HrContract } from './HrContract';
-import { HrDepartment } from './HrDepartment';
-import { HrDepartureReason } from './HrDepartureReason';
-import { HrJob } from './HrJob';
-import { HrWorkLocation } from './HrWorkLocation';
+import { Contract } from './Contract';
+import { Department } from './Department';
+import { DepartureReason } from './DepartureReason';
+import { Job } from './Job';
+import { WorkLocation } from './WorkLocation';
 import { Organisation } from '../../organisations/models/Organisation';
 import { ResCountry } from '../../organisations/models/ResCountry';
 import { ResPartner } from '../../organisations/models/ResPartner';
 import { ResPartnerBank } from '../../organisations/models/ResPartnerBank';
 import { User } from '../../users/models/User';
-import { ResourceCalendar } from '../../ressources/models/ResourceCalendar';
-import { ResourceResource } from '../../ressources/models/ResourceResource';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
+import { ResourceResource } from '../../resources/models/ResourceResource';
 import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
 @Unique({ name: 'hr_employee_user_uniq', properties: ['organisation', 'user'] })
-export class HrEmployee extends BaseModel<HrEmployee> {
+export class Employee extends BaseModel<Employee> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrEmployee {
-    return container.get(HrEmployee);
+  static getInstance(): Employee {
+    return container.get(Employee);
   }
 
   @PrimaryKey()
@@ -56,11 +56,11 @@ export class HrEmployee extends BaseModel<HrEmployee> {
   @Property({ nullable: true })
   color?: number;
 
-  @ManyToOne({ entity: () => HrDepartment, onDelete: 'set null', nullable: true })
-  department?: HrDepartment;
+  @ManyToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
+  department?: Department;
 
-  @ManyToOne({ entity: () => HrJob, onDelete: 'set null', nullable: true })
-  job?: HrJob;
+  @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
+  job?: Job;
 
   @Property({ nullable: true })
   jobTitle?: string;
@@ -77,17 +77,17 @@ export class HrEmployee extends BaseModel<HrEmployee> {
   @Property({ nullable: true })
   workEmail?: string;
 
-  @ManyToOne({ entity: () => HrWorkLocation, onDelete: 'set null', nullable: true })
-  workLocation?: HrWorkLocation;
+  @ManyToOne({ entity: () => WorkLocation, onDelete: 'set null', nullable: true })
+  workLocation?: WorkLocation;
 
   @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
 
-  @ManyToOne({ entity: () => HrEmployee, onDelete: 'set null', nullable: true })
-  parent?: HrEmployee;
+  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
+  parent?: Employee;
 
-  @ManyToOne({ entity: () => HrEmployee, onDelete: 'set null', nullable: true })
-  coach?: HrEmployee;
+  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
+  coach?: Employee;
 
   @Property()
   employeeType!: string;
@@ -183,8 +183,8 @@ export class HrEmployee extends BaseModel<HrEmployee> {
   @Property({ nullable: true })
   pin?: string;
 
-  @ManyToOne({ entity: () => HrDepartureReason, nullable: true })
-  departureReason?: HrDepartureReason;
+  @ManyToOne({ entity: () => DepartureReason, nullable: true })
+  departureReason?: DepartureReason;
 
   @Property({ columnType: 'text', nullable: true })
   departureDescription?: string;
@@ -195,8 +195,8 @@ export class HrEmployee extends BaseModel<HrEmployee> {
   @Property({ nullable: true })
   vehicle?: string;
 
-  @ManyToOne({ entity: () => HrContract, onDelete: 'set null', nullable: true })
-  contract?: HrContract;
+  @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
+  contract?: Contract;
 
   @Property({ nullable: true })
   contractWarning?: boolean;

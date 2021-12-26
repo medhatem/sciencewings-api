@@ -1,18 +1,18 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { ResCountry } from '../../organisations/models/ResCountry';
-import { ResourceCalendar } from '../../ressources/models/ResourceCalendar';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class HrPayrollStructureType extends BaseModel<HrPayrollStructureType> {
+export class PayrollStructureType extends BaseModel<PayrollStructureType> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrPayrollStructureType {
-    return container.get(HrPayrollStructureType);
+  static getInstance(): PayrollStructureType {
+    return container.get(PayrollStructureType);
   }
 
   @PrimaryKey()

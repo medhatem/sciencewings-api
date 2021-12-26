@@ -1,5 +1,5 @@
 import { Entity, Index, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { HrDepartment } from './HrDepartment';
+import { Department } from './Department';
 import { Organisation } from '../../organisations/models/Organisation';
 import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
@@ -7,13 +7,13 @@ import { container, provideSingleton } from '@di/index';
 @provideSingleton()
 @Entity()
 @Unique({ name: 'hr_job_name_organisation_uniq', properties: ['name', 'department', 'organisation'] })
-export class HrJob extends BaseModel<HrJob> {
+export class Job extends BaseModel<Job> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrJob {
-    return container.get(HrJob);
+  static getInstance(): Job {
+    return container.get(Job);
   }
 
   @PrimaryKey()
@@ -48,8 +48,8 @@ export class HrJob extends BaseModel<HrJob> {
   @Property({ columnType: 'text', nullable: true })
   requirements?: string;
 
-  @OneToOne({ entity: () => HrDepartment, onDelete: 'set null', nullable: true })
-  department?: HrDepartment;
+  @OneToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
+  department?: Department;
 
   @OneToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
   organisation?: Organisation;

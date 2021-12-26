@@ -6,13 +6,13 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class HrWorkLocation extends BaseModel<HrWorkLocation> {
+export class WorkLocation extends BaseModel<WorkLocation> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrWorkLocation {
-    return container.get(HrWorkLocation);
+  static getInstance(): WorkLocation {
+    return container.get(WorkLocation);
   }
 
   @PrimaryKey()

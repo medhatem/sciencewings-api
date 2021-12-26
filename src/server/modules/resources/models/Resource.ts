@@ -7,13 +7,13 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class ResourceTest extends BaseModel<ResourceTest> {
+export class Resource extends BaseModel<Resource> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResourceTest {
-    return container.get(ResourceTest);
+  static getInstance(): Resource {
+    return container.get(Resource);
   }
 
   @PrimaryKey()

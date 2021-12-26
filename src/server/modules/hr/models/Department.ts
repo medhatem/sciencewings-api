@@ -1,18 +1,18 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { HrEmployee } from './HrEmployee';
+import { Employee } from './Employee';
 import { Organisation } from '../../organisations/models/Organisation';
 import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class HrDepartment extends BaseModel<HrDepartment> {
+export class Department extends BaseModel<Department> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrDepartment {
-    return container.get(HrDepartment);
+  static getInstance(): Department {
+    return container.get(Department);
   }
 
   @PrimaryKey()
@@ -40,15 +40,15 @@ export class HrDepartment extends BaseModel<HrDepartment> {
   organisation?: Organisation;
 
   @ManyToOne({
-    entity: () => HrDepartment,
+    entity: () => Department,
     onDelete: 'set null',
     nullable: true,
     index: 'hr_department_parent_id_index',
   })
-  parent?: HrDepartment;
+  parent?: Department;
 
-  @ManyToOne({ entity: () => HrEmployee, onDelete: 'set null', nullable: true })
-  manager?: HrEmployee;
+  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
+  manager?: Employee;
 
   @Property({ columnType: 'text', nullable: true })
   note?: string;

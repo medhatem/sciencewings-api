@@ -1,24 +1,24 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { HrContractType } from './HrContractType';
-import { HrDepartment } from './HrDepartment';
-import { HrEmployee } from './HrEmployee';
-import { HrJob } from './HrJob';
-import { HrPayrollStructureType } from './HrPayrollStructureType';
+import { ContractType } from './ContractType';
+import { Department } from './Department';
+import { Employee } from './Employee';
+import { Job } from './Job';
+import { PayrollStructureType } from './PayrollStructureType';
 import { Organisation } from '../../organisations/models/Organisation';
 import { User } from '../../users/models/User';
-import { ResourceCalendar } from '../../ressources/models/ResourceCalendar';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class HrContract extends BaseModel<HrContract> {
+export class Contract extends BaseModel<Contract> {
   constructor() {
     super();
   }
 
-  static getInstance(): HrContract {
-    return container.get(HrContract);
+  static getInstance(): Contract {
+    return container.get(Contract);
   }
 
   @PrimaryKey()
@@ -34,17 +34,17 @@ export class HrContract extends BaseModel<HrContract> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => HrPayrollStructureType, onDelete: 'set null', nullable: true })
-  structureType?: HrPayrollStructureType;
+  @ManyToOne({ entity: () => PayrollStructureType, onDelete: 'set null', nullable: true })
+  structureType?: PayrollStructureType;
 
-  @ManyToOne({ entity: () => HrEmployee, onDelete: 'set null', nullable: true })
-  employee?: HrEmployee;
+  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
+  employee?: Employee;
 
-  @ManyToOne({ entity: () => HrDepartment, onDelete: 'set null', nullable: true })
-  department?: HrDepartment;
+  @ManyToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
+  department?: Department;
 
-  @ManyToOne({ entity: () => HrJob, onDelete: 'set null', nullable: true })
-  job?: HrJob;
+  @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
+  job?: Job;
 
   @Index({ name: 'hr_contract_date_start_index' })
   @Property({ columnType: 'date' })
@@ -76,8 +76,8 @@ export class HrContract extends BaseModel<HrContract> {
   @ManyToOne({ entity: () => Organisation })
   organisation!: Organisation;
 
-  @ManyToOne({ entity: () => HrContractType, onDelete: 'set null', nullable: true })
-  contractType?: HrContractType;
+  @ManyToOne({ entity: () => ContractType, onDelete: 'set null', nullable: true })
+  contractType?: ContractType;
 
   @Property({ nullable: true })
   kanbanState?: string;
