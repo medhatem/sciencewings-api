@@ -6,7 +6,7 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'hr_job_name_company_uniq', properties: ['name', 'department', 'company'] })
+@Unique({ name: 'hr_job_name_organisation_uniq', properties: ['name', 'department', 'organisation'] })
 export class HrJob extends BaseModel<HrJob> {
   constructor() {
     super();
@@ -52,7 +52,7 @@ export class HrJob extends BaseModel<HrJob> {
   department?: HrDepartment;
 
   @OneToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
-  company?: Organisation;
+  organisation?: Organisation;
 
   @Property()
   state!: string;

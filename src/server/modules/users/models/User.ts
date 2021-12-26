@@ -17,18 +17,8 @@ export class User extends BaseModel<User> {
   @PrimaryKey()
   id!: number;
 
-  @Property({ nullable: true })
-  active?: boolean = true;
-
-  @Unique({ name: 'res_users_login_key' })
-  @Property()
-  login!: string;
-
-  @Property({ nullable: true })
-  password?: string;
-
   @ManyToOne({ entity: () => Organisation })
-  company!: Organisation;
+  organisation!: Organisation;
 
   @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })
   partner!: ResPartner;
@@ -42,15 +32,6 @@ export class User extends BaseModel<User> {
   @Property({ nullable: true })
   share?: boolean;
 
-  @Property({ nullable: true })
-  totpSecret?: string;
-
   @Property()
   notificationType!: string;
-
-  @Property({ nullable: true })
-  odoobotState?: string;
-
-  @Property({ nullable: true })
-  odoobotFailed?: boolean;
 }

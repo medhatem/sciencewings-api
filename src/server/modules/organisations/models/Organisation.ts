@@ -18,7 +18,7 @@ export class Organisation extends BaseModel<Organisation> {
   @PrimaryKey()
   id!: number;
 
-  @Unique({ name: 'res_company_name_uniq' })
+  @Unique({ name: 'res_organisation_name_uniq' })
   @Property()
   name!: string;
 
@@ -31,7 +31,12 @@ export class Organisation extends BaseModel<Organisation> {
   @Property({ nullable: true })
   sequence?: number;
 
-  @ManyToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true, index: 'res_company_parent_id_index' })
+  @ManyToOne({
+    entity: () => Organisation,
+    onDelete: 'set null',
+    nullable: true,
+    index: 'res_organisation_parent_id_index',
+  })
   parent?: Organisation;
 
   @Property({ columnType: 'text', nullable: true })
@@ -41,7 +46,7 @@ export class Organisation extends BaseModel<Organisation> {
   reportFooter?: string;
 
   @Property({ columnType: 'text', nullable: true })
-  companyDetails?: string;
+  organisationDetails?: string;
 
   @Property({ nullable: true })
   logoWeb?: Buffer;
@@ -56,7 +61,7 @@ export class Organisation extends BaseModel<Organisation> {
   mobile?: string;
 
   @Property({ nullable: true })
-  companyRegistry?: string;
+  organisationRegistry?: string;
 
   @Property({ nullable: true })
   paperformatId?: number;
@@ -65,7 +70,7 @@ export class Organisation extends BaseModel<Organisation> {
   externalReportLayoutId?: number;
 
   @Property({ nullable: true })
-  baseOnboardingCompanyState?: string;
+  baseOnboardingorganisationState?: string;
 
   @Property({ nullable: true })
   font?: string;

@@ -8,7 +8,7 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'res_partner_bank_unique_number', properties: ['sanitizedAccNumber', 'company'] })
+@Unique({ name: 'res_partner_bank_unique_number', properties: ['sanitizedAccNumber', 'organisation'] })
 export class ResPartnerBank extends BaseModel<ResPartnerBank> {
   constructor() {
     super();
@@ -46,5 +46,5 @@ export class ResPartnerBank extends BaseModel<ResPartnerBank> {
   currency?: ResCurrency;
 
   @OneToOne({ entity: () => Organisation, onDelete: 'cascade', nullable: true })
-  company?: Organisation;
+  organisation?: Organisation;
 }

@@ -74,7 +74,7 @@ export class HrContract extends BaseModel<HrContract> {
   state?: string;
 
   @ManyToOne({ entity: () => Organisation })
-  company!: Organisation;
+  organisation!: Organisation;
 
   @ManyToOne({ entity: () => HrContractType, onDelete: 'set null', nullable: true })
   contractType?: HrContractType;

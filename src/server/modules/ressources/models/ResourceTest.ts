@@ -26,9 +26,9 @@ export class ResourceTest extends BaseModel<ResourceTest> {
     entity: () => Organisation,
     onDelete: 'set null',
     nullable: true,
-    index: 'resource_test_company_id_index',
+    index: 'resource_test_organisation_id_index',
   })
-  company?: Organisation;
+  organisation?: Organisation;
 
   @ManyToOne({
     entity: () => ResourceCalendar,

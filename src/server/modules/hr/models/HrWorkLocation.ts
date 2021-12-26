@@ -25,7 +25,7 @@ export class HrWorkLocation extends BaseModel<HrWorkLocation> {
   name!: string;
 
   @ManyToOne({ entity: () => Organisation })
-  company!: Organisation;
+  organisation!: Organisation;
 
   @ManyToOne({ entity: () => ResPartner })
   address!: ResPartner;

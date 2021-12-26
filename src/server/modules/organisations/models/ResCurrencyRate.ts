@@ -6,7 +6,7 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'res_currency_rate_unique_name_per_day', properties: ['name', 'currency', 'company'] })
+@Unique({ name: 'res_currency_rate_unique_name_per_day', properties: ['name', 'currency', 'organisation'] })
 export class ResCurrencyRate extends BaseModel<ResCurrencyRate> {
   constructor() {
     super();
@@ -30,5 +30,5 @@ export class ResCurrencyRate extends BaseModel<ResCurrencyRate> {
   currency!: ResCurrency;
 
   @OneToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
-  company?: Organisation;
+  organisation?: Organisation;
 }

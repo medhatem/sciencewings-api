@@ -16,7 +16,7 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'hr_employee_user_uniq', properties: ['company', 'user'] })
+@Unique({ name: 'hr_employee_user_uniq', properties: ['organisation', 'user'] })
 export class HrEmployee extends BaseModel<HrEmployee> {
   constructor() {
     super();
@@ -32,8 +32,8 @@ export class HrEmployee extends BaseModel<HrEmployee> {
   @ManyToOne({ entity: () => ResourceResource, index: 'hr_employee_resource_id_index' })
   resource!: ResourceResource;
 
-  @OneToOne({ entity: () => Organisation, onDelete: 'set null', index: 'hr_employee_company_id_index' })
-  company!: Organisation;
+  @OneToOne({ entity: () => Organisation, onDelete: 'set null', index: 'hr_employee_organisation_id_index' })
+  organisation!: Organisation;
 
   @ManyToOne({
     entity: () => ResourceCalendar,

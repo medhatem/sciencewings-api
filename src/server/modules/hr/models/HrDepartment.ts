@@ -35,9 +35,9 @@ export class HrDepartment extends BaseModel<HrDepartment> {
     entity: () => Organisation,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_department_company_id_index',
+    index: 'hr_department_organisation_id_index',
   })
-  company?: Organisation;
+  organisation?: Organisation;
 
   @ManyToOne({
     entity: () => HrDepartment,

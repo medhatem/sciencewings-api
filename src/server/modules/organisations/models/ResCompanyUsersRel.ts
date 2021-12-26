@@ -5,8 +5,8 @@ import { provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-@Index({ name: 'res_company_users_rel_user_id_cid_idx', properties: ['cid', 'user'] })
-export class ResCompanyUsersRel {
+@Index({ name: 'res_organisation_users_rel_user_id_cid_idx', properties: ['cid', 'user'] })
+export class OrganisationUsersRel {
   @ManyToOne({ entity: () => Organisation, fieldName: 'cid', onDelete: 'cascade', primary: true })
   cid!: Organisation;
 

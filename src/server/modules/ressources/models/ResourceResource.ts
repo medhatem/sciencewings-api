@@ -26,7 +26,7 @@ export class ResourceResource extends BaseModel<ResourceResource> {
   active?: boolean;
 
   @ManyToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
-  company?: Organisation;
+  organisation?: Organisation;
 
   @Property()
   resourceType!: string;

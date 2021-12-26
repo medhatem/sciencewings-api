@@ -29,9 +29,9 @@ export class ResPartner extends BaseModel<ResPartner> {
     entity: () => Organisation,
     onDelete: 'set null',
     nullable: true,
-    index: 'res_partner_company_id_index',
+    index: 'res_partner_organisation_id_index',
   })
-  company?: Organisation;
+  organisation?: Organisation;
 
   @Index({ name: 'res_partner_display_name_index' })
   @Property({ nullable: true })
@@ -119,7 +119,7 @@ export class ResPartner extends BaseModel<ResPartner> {
   mobile?: string;
 
   @Property({ nullable: true })
-  isCompany?: boolean;
+  isorganisation?: boolean;
 
   @ManyToOne({ entity: () => ResPartnerIndustry, onDelete: 'set null', nullable: true })
   industry?: ResPartnerIndustry;
@@ -139,10 +139,10 @@ export class ResPartner extends BaseModel<ResPartner> {
   commercialPartner?: ResPartner;
 
   @Property({ nullable: true })
-  commercialCompanyName?: string;
+  commercialorganisationName?: string;
 
   @Property({ nullable: true })
-  companyName?: string;
+  organisationName?: string;
 
   @Index({ name: 'res_partner_message_main_attachment_id_index' })
   @Property({ nullable: true })
