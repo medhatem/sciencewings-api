@@ -4,15 +4,14 @@ import * as BodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
 import * as express from 'express';
-import * as methodOverride from 'method-override';
 
 import { BaseConfig, EnvConfig, ServerConfiguration, ServerDBConfig } from './types/ServerConfiguration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 
 import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
-// import { RegisterRoutes } from './tsoa-build/routes';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
+import { RestServiceFactory } from '@di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
 import { join } from 'path';
 import { startDB } from './db';
@@ -32,7 +31,6 @@ export type ExpressCors = (options?: cors.CorsOptions | cors.CorsOptionsDelegate
  *  the server runs an express app and handles multiple different routes
  *
  */
-
 export class Server {
   private expressApp: express.Application;
   private bodyParser: ExpressBodyParser;
@@ -58,7 +56,6 @@ export class Server {
     ] as EnvConfig;
     this.baseConfig = this.envConfig.baseConfig;
     this.dbConfig = this.envConfig.DB;
-    console.log(this.dbConfig);
   }
 
   public async startApp(): Promise<void> {
@@ -78,7 +75,7 @@ export class Server {
     this.addRoutes();
     await this.setUpDataBase();
     this.configureAuthenticator();
-    this.configureTypescriptRestRoutes();
+    this.configureServiceFactory();
   }
 
   /**
@@ -98,22 +95,24 @@ export class Server {
     const router = this.expressRouter();
     router.get('/health', this.healthCheker());
     this.expressApp.use(router);
-    const data = require(join(__dirname, './tsoa-build/swagger.json'));
+    const data = require(join(__dirname, './swagger.json'));
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
-  }
-  /**
-   * generates the routes declared with tsoa and add them
-   * to the main express application
-   * generates also their swagger documentation
-   */
-  private configureTypescriptRestRoutes() {
-    this.expressApp.use(methodOverride());
-    // RegisterRoutes(this.expressApp);
+    RestServer.buildServices(this.expressApp);
   }
 
   private configureAuthenticator() {
     const authenticator = new JWTAuthenticator();
     RestServer.registerAuthenticator(authenticator);
+  }
+
+  /**
+   * configure the IOC module for typescript-rest to
+   * define how the Routes will be initialized
+   * We use Inverfify to initialize the Routes
+   * and inverfify will take care of instanciating all the dependencies
+   */
+  private configureServiceFactory() {
+    RestServer.registerServiceFactory(new RestServiceFactory());
   }
 
   public healthCheker(): (request: express.Request, response: express.Response) => void {

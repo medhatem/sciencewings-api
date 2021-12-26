@@ -1,6 +1,6 @@
 {
     "swagger": {
-        "outputDirectory": "./dist",
+        "outputDirectory": "./dist/server",
         "entryFile": "./src/server/routes/index.ts"
     }
 }

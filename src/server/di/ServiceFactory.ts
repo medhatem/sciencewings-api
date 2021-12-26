@@ -11,6 +11,7 @@ import { container } from './index';
  */
 export class RestServiceFactory implements ServiceFactory {
   public create(serviceClass: Function, context: ServiceContext) {
+    console.log('should come here ----- ', serviceClass);
     return container.get(serviceClass);
   }
 

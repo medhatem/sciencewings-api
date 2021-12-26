@@ -1,13 +1,13 @@
 import { container, provideSingleton } from '@di/index';
 import { UserService } from '../services/UserService';
-import * as express from 'express';
 import { CredentialsRO, UserGetRO, UserRO, UserSignedInRO, UserSignedUpRO, UserUpdateRO } from './RequestObject';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { User } from '../models/User';
-import { Get, SuccessResponse, Response, Route, Post, Body, Query, Request } from 'tsoa';
+import { Path, POST, GET, QueryParam } from 'typescript-rest';
+import { Response } from 'typescript-rest-swagger';
 
 @provideSingleton()
-@Route('user')
+@Path('user')
 export class UserRoutes extends BaseRoutes<User> {
   constructor(private userService: UserService) {
     super(userService, UserGetRO, UserUpdateRO);
@@ -23,10 +23,11 @@ export class UserRoutes extends BaseRoutes<User> {
    * return the newly created user or an error
    *
    */
-  @Post('signup')
-  @SuccessResponse(201, 'successful signup')
+  @POST
+  @Path('/signup')
+  @Response(201, 'successful signup')
   @Response(500, 'internal server error')
-  public async signup(@Body() body: UserRO): Promise<UserSignedUpRO> {
+  public async signup(body: UserRO): Promise<UserSignedUpRO> {
     return await this.userService.signup(body);
   }
 
@@ -36,15 +37,17 @@ export class UserRoutes extends BaseRoutes<User> {
    * return an error response if the credentials are wrong
    *
    */
-  @Post('signin')
-  @SuccessResponse(200, 'successful signin')
+  @POST
+  @Path('signin')
+  @Response(200, 'successful signin')
   @Response<Error>(500, 'internal server error')
-  public async signin(@Body() credentials: CredentialsRO): Promise<UserSignedInRO> {
+  public async signin(credentials: CredentialsRO): Promise<UserSignedInRO> {
     return await this.userService.signin(credentials);
   }
 
-  @Get('newRoute')
-  public async newRoute(@Query('body') body: string, @Request() req: express.Request) {
+  @GET
+  @Path('newRoute')
+  public async newRoute(@QueryParam('body') body: string) {
     return body;
   }
 }

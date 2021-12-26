@@ -1,0 +1,295 @@
+{
+	"definitions": {
+		"UserSignedUpRO": {
+			"description": "",
+			"properties": {
+				"id": {
+					"type": "number",
+					"format": "double",
+					"description": ""
+				},
+				"token": {
+					"type": "string",
+					"description": ""
+				}
+			},
+			"type": "object",
+			"required": [
+				"id",
+				"token"
+			]
+		},
+		"UserRO": {
+			"description": "",
+			"properties": {
+				"firstName": {
+					"type": "string",
+					"description": ""
+				},
+				"lastName": {
+					"type": "string",
+					"description": ""
+				},
+				"email": {
+					"type": "string",
+					"description": ""
+				},
+				"password": {
+					"type": "string",
+					"description": ""
+				}
+			},
+			"type": "object",
+			"required": [
+				"firstName",
+				"lastName",
+				"email",
+				"password"
+			]
+		},
+		"UserSignedInRO": {
+			"description": "",
+			"properties": {
+				"token": {
+					"type": "string",
+					"description": ""
+				},
+				"user": {
+					"$ref": "#/definitions/UserRO"
+				}
+			},
+			"type": "object",
+			"required": [
+				"token",
+				"user"
+			]
+		},
+		"Error": {
+			"description": "",
+			"properties": {
+				"name": {
+					"type": "string",
+					"description": ""
+				},
+				"message": {
+					"type": "string",
+					"description": ""
+				},
+				"stack": {
+					"type": "string",
+					"description": ""
+				}
+			},
+			"type": "object",
+			"required": [
+				"name",
+				"message"
+			]
+		},
+		"CredentialsRO": {
+			"description": "",
+			"properties": {
+				"email": {
+					"type": "string",
+					"description": ""
+				},
+				"password": {
+					"type": "string",
+					"description": ""
+				}
+			},
+			"type": "object",
+			"required": [
+				"email",
+				"password"
+			]
+		},
+		"BaseRO": {
+			"description": "",
+			"properties": {},
+			"type": "object"
+		}
+	},
+	"info": {
+		"description": "Series of Restful micro-services with NodeJs+Express",
+		"license": {
+			"name": "ISC"
+		},
+		"title": "manaservices_server",
+		"version": "1.0.0"
+	},
+	"paths": {
+		"/user/signup": {
+			"post": {
+				"operationId": "UserRoutesSignup",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/UserSignedUpRO"
+						}
+					},
+					"201": {
+						"description": "successful signup"
+					},
+					"500": {
+						"description": "internal server error"
+					}
+				},
+				"description": "\nuse the user data given in the request body to create a new user entry\nreturn the newly created user or an error",
+				"consumes": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"description": "",
+						"in": "body",
+						"name": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/UserRO"
+						}
+					}
+				]
+			}
+		},
+		"/user/signin": {
+			"post": {
+				"operationId": "UserRoutesSignin",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "successful signin"
+					},
+					"500": {
+						"description": "internal server error",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				},
+				"description": "use credentials found in body to login a user into the application\nreturn a response with the logged in user as well as its jwt token\nreturn an error response if the credentials are wrong",
+				"consumes": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"description": "",
+						"in": "body",
+						"name": "credentials",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/CredentialsRO"
+						}
+					}
+				]
+			}
+		},
+		"/user/newRoute": {
+			"get": {
+				"operationId": "UserRoutesNewRoute",
+				"produces": [
+					"text/html"
+				],
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "",
+				"parameters": [
+					{
+						"description": "",
+						"in": "query",
+						"name": "body",
+						"required": true,
+						"type": "string"
+					}
+				]
+			}
+		},
+		"/user/{id}": {
+			"get": {
+				"operationId": "UserRoutesGetById",
+				"produces": [],
+				"responses": {
+					"200": {
+						"description": "success"
+					}
+				},
+				"description": "",
+				"parameters": [
+					{
+						"description": "",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"type": "string"
+					}
+				]
+			},
+			"put": {
+				"operationId": "UserRoutesUpdate",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/BaseRO"
+						}
+					},
+					"201": {
+						"description": "success"
+					}
+				},
+				"description": "",
+				"consumes": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"description": "",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"description": "",
+						"in": "body",
+						"name": "payload",
+						"required": true,
+						"schema": {
+							"type": "object"
+						}
+					}
+				]
+			}
+		},
+		"/user/getAll": {
+			"get": {
+				"operationId": "UserRoutesGetAll",
+				"produces": [],
+				"responses": {
+					"200": {
+						"description": "success"
+					},
+					"401": {
+						"description": "error"
+					}
+				},
+				"description": "",
+				"parameters": []
+			}
+		}
+	},
+	"swagger": "2.0",
+	"securityDefinitions": {}
+}

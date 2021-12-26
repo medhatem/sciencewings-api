@@ -26,7 +26,6 @@
             "@dao/*": ["server/dao/*"],
             "@sdks/*": ["server/sdks/*"],
             "@modules/*": ["server/modules/*"],
-            
         },
     },
     "exclude": [

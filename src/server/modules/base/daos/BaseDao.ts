@@ -9,6 +9,7 @@ export class BaseDao<T extends BaseModel<T>> {
   public repository: GetRepository<T, any>;
   constructor(public model: T) {
     this.repository = connection.em.getRepository<T>(model.constructor as new () => T);
+    console.log('repo is ----- ', this.repository);
   }
 
   static getInstance(): void {
