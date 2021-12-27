@@ -1,12 +1,10 @@
-import { CredentialsRO, UserRO, UserSignedInRO, UserSignedUpRO } from '../routes/RequestObject';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from '@modules/base/services/BaseService';
+import { Keycloak } from '@sdks/keycloak';
+import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
-import { userCredentialsSchema } from '../../../validators/userCredentials';
-import { userValidationSchema } from '../../../validators/userValidator';
-import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 
 @provideSingleton()
 export class UserService extends BaseService<User> {
@@ -18,15 +16,20 @@ export class UserService extends BaseService<User> {
     return container.get(UserService);
   }
 
-  @validate(userValidationSchema)
-  public async signup(user: UserRO): Promise<UserSignedUpRO> {
-    const userSignedUpResult = await this.dao.signup(user);
-    return new UserSignedUpRO(userSignedUpResult);
-  }
+  async registerUser(userInfo: KeycloakUserInfo): Promise<number> {
+    // get the userKeyCloakId
+    const users = await Keycloak.getInstance()
+      .getAdminClient()
+      .users.find({ email: userInfo.email, realm: 'sciencewings-web' });
 
-  @validate(userCredentialsSchema)
-  public async signin(credentials: CredentialsRO): Promise<UserSignedInRO> {
-    const userSignedInResult = await this.dao.signin(credentials);
-    return new UserSignedInRO(userSignedInResult);
+    if (!users || !users.length) {
+      throw new Error('No user found!');
+    }
+    const user = User.getInstance();
+    user.firstname = userInfo.given_name;
+    user.lastname = userInfo.family_name;
+    user.email = userInfo.email;
+    user.keycloakId = users[0].id;
+    return await this.dao.create(user);
   }
 }

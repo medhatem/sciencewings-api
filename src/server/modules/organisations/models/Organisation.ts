@@ -1,9 +1,11 @@
-import { Entity, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
 import { ResCurrency } from './ResCurrency';
 import { ResPartner } from './ResPartner';
-import { ResourceCalendar } from '../../ressources/models/ResourceCalendar';
-import { BaseModel } from '../../base/models/BaseModel';
-import { container, provideSingleton } from '@di/index';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
+import { User } from '@modules/users/models/User';
 
 @provideSingleton()
 @Entity()
@@ -107,4 +109,7 @@ export class Organisation extends BaseModel<Organisation> {
 
   @Property({ nullable: true })
   snailmailDuplex?: boolean;
+
+  @ManyToMany(() => User, 'organisations')
+  users = new Collection<User>(this);
 }

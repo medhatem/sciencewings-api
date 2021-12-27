@@ -5,10 +5,19 @@ import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
 import * as express from 'express';
 
-import { BaseConfig, EnvConfig, ServerConfiguration, ServerDBConfig } from './types/ServerConfiguration';
+import {
+  BaseConfig,
+  EnvConfig,
+  KeycloakConfig,
+  ServerConfiguration,
+  ServerDBConfig,
+} from './types/ServerConfiguration';
+import { JWTTOKEN, KEYCLOAK_TOKEN } from './authenticators/constants';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 
 import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
+import { KeyCloakToken } from './authenticators/KeyCloakToken';
+import { Keycloak } from '@sdks/keycloak';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
 import { RestServiceFactory } from '@di/ServiceFactory';
@@ -40,6 +49,7 @@ export class Server {
   private envConfig: EnvConfig;
   private baseConfig: BaseConfig;
   private dbConfig: ServerDBConfig;
+  private keycloakConfig: KeycloakConfig;
   constructor(
     private config: ServerConfiguration,
     app: express.Application = express(),
@@ -56,6 +66,7 @@ export class Server {
     ] as EnvConfig;
     this.baseConfig = this.envConfig.baseConfig;
     this.dbConfig = this.envConfig.DB;
+    this.keycloakConfig = this.envConfig.keycloak;
   }
 
   public async startApp(): Promise<void> {
@@ -66,16 +77,17 @@ export class Server {
       console.log(`server available at http://localhost:${process.env.PORT || port}`);
     } catch (error) {
       this.serverHealthStatus = false;
-      console.error(`error when starting the server with env ${process.env.ENV} with message ${error.message}`);
+      console.error(`error when starting the server with env ${process.env.ENV} with message ${error}`);
     }
   }
 
   private async configureServer() {
+    this.configureAuthenticator(); // this method has to be executed first before generating the middlewares
+    this.configureServiceFactory();
     this.addMiddlewares();
     this.addRoutes();
+    this.startKeycloakAdmin();
     await this.setUpDataBase();
-    this.configureAuthenticator();
-    this.configureServiceFactory();
   }
 
   /**
@@ -102,9 +114,14 @@ export class Server {
 
   private configureAuthenticator() {
     const authenticator = new JWTAuthenticator();
-    RestServer.registerAuthenticator(authenticator);
+    const keyCloakAuth = new KeyCloakToken();
+    RestServer.registerAuthenticator(authenticator, JWTTOKEN);
+    RestServer.registerAuthenticator(keyCloakAuth, KEYCLOAK_TOKEN);
   }
 
+  private startKeycloakAdmin() {
+    Keycloak.getInstance().init(this.keycloakConfig); // initialize the keyCloak admin instance
+  }
   /**
    * configure the IOC module for typescript-rest to
    * define how the Routes will be initialized

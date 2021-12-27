@@ -9,6 +9,7 @@ import { Path, GET, QueryParam } from 'typescript-rest';
 export class ContractRoutes extends BaseRoutes<Contract> {
   constructor(private ContractRoutes: ContractService) {
     super(ContractRoutes);
+    console.log(this.ContractRoutes);
   }
 
   static getInstance(): ContractRoutes {

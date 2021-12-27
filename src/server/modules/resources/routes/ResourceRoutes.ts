@@ -15,6 +15,7 @@ import {
 export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: ResourceService) {
     super(ResourceService);
+    console.log(this.ResourceService);
   }
 
   static getInstance(): ResourceRoutes {

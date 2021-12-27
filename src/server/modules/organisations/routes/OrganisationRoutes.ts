@@ -9,6 +9,7 @@ import { Path, GET, QueryParam } from 'typescript-rest';
 export class OrganisationRoutes extends BaseRoutes<Organisation> {
   constructor(private OrganisationService: OrganisationService) {
     super(OrganisationService);
+    console.log(this.OrganisationService);
   }
 
   static getInstance(): OrganisationRoutes {
