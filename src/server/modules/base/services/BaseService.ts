@@ -1,12 +1,13 @@
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { DocumentType } from '@typegoose/typegoose';
+import { Keycloak } from '@sdks/keycloak';
 import { ServerError } from '@errors/ServerError';
 import { provideSingleton } from '../../../di';
 
 @provideSingleton()
 export class BaseService<T extends BaseModel<T>> {
-  constructor(public dao: BaseDao<T>) {}
+  constructor(public dao: BaseDao<T>, public keycloak: Keycloak = Keycloak.getInstance()) {}
 
   static getInstance(): void {
     throw new ServerError('baseService must be overriden!');
@@ -20,7 +21,7 @@ export class BaseService<T extends BaseModel<T>> {
     return await this.dao.getAll();
   }
 
-  public async create(entry: T): Promise<any> {
+  public async create(entry: T): Promise<number> {
     return this.dao.create(entry);
   }
 

@@ -34,7 +34,8 @@ export class User extends BaseModel<User> {
   keycloakId: string;
 
   // @ManyToOne({ entity: () => Organisation })
-  @ManyToMany(() => Organisation, 'users', { owner: true })
+  // @ManyToMany(() => Organisation, 'users', { owner: true })
+  @ManyToMany({ entity: () => Organisation, pivotTable: 'user_to_organisation' })
   organisations = new Collection<Organisation>(this);
 
   // @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })

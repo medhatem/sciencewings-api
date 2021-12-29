@@ -1,10 +1,10 @@
-import { Collection, Entity, ManyToMany, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
-import { ResCurrency } from './ResCurrency';
-import { ResPartner } from './ResPartner';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
+// import { ResCurrency } from './ResCurrency';
+// import { ResPartner } from './ResPartner';
+// import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { User } from '@modules/users/models/User';
 
 @provideSingleton()
@@ -24,22 +24,26 @@ export class Organisation extends BaseModel<Organisation> {
   @Property()
   name!: string;
 
-  @ManyToOne({ entity: () => ResPartner })
-  partner!: ResPartner;
+  @Property()
+  @Unique()
+  keycloakGroupId: string;
 
-  @ManyToOne({ entity: () => ResCurrency })
-  currency!: ResCurrency;
+  // @ManyToOne({ entity: () => ResPartner })
+  // partner!: ResPartner;
+
+  // @ManyToOne({ entity: () => ResCurrency })
+  // currency!: ResCurrency;
 
   @Property({ nullable: true })
   sequence?: number;
 
-  @ManyToOne({
-    entity: () => Organisation,
-    onDelete: 'set null',
-    nullable: true,
-    index: 'res_organisation_parent_id_index',
-  })
-  parent?: Organisation;
+  // @ManyToOne({
+  //   entity: () => Organisation,
+  //   onDelete: 'set null',
+  //   nullable: true,
+  //   index: 'res_organisation_parent_id_index',
+  // })
+  // parent?: Organisation;
 
   @Property({ columnType: 'text', nullable: true })
   reportHeader?: string;
@@ -83,11 +87,11 @@ export class Organisation extends BaseModel<Organisation> {
   @Property({ nullable: true })
   secondaryColor?: string;
 
-  @Property()
-  layoutBackground!: string;
+  // @Property()
+  // layoutBackground!: string;
 
-  @ManyToOne({ entity: () => ResourceCalendar, nullable: true })
-  resourceCalendar?: ResourceCalendar;
+  // @ManyToOne({ entity: () => ResourceCalendar, nullable: true })
+  // resourceCalendar?: ResourceCalendar;
 
   @Property({ nullable: true })
   hrPresenceControlEmailAmount?: number;
@@ -110,6 +114,6 @@ export class Organisation extends BaseModel<Organisation> {
   @Property({ nullable: true })
   snailmailDuplex?: boolean;
 
-  @ManyToMany(() => User, 'organisations')
+  @ManyToMany({ entity: () => User, mappedBy: 'organisations', pivotTable: 'user_to_organisation' })
   users = new Collection<User>(this);
 }

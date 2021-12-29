@@ -1,12 +1,13 @@
+import { EntityRepository, GetRepository } from '@mikro-orm/core';
+
 import { BaseModel } from '@modules/base/models/BaseModel';
-import { GetRepository } from '@mikro-orm/core';
 import { ServerError } from '../../../errors/ServerError';
 import { connection } from '../../../db/index';
 import { provideSingleton } from '../../../di';
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
-  public repository: GetRepository<T, any>;
+  public repository: GetRepository<T, EntityRepository<T>>;
   constructor(public model: T) {
     this.repository = connection.em.getRepository<T>(model.constructor as new () => T);
   }
@@ -16,20 +17,29 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   public async get(id: string): Promise<any> {
-    return this.repository.findOne(id);
+    return (this.repository as any).findOne(id);
+  }
+
+  /**
+   * fetches using a given search criteria
+   *
+   * @param criteria the criteria to fetch with
+   */
+  async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
+    return await (this.repository as any).findOne(criteria);
   }
 
   public async getAll(): Promise<any> {
-    return this.repository.findAll();
+    return (this.repository as any).findAll();
   }
 
   public async create(entry: T): Promise<number> {
-    const user = this.repository.create(entry); //generate an entity from a payload
-    await this.repository.persistAndFlush(user);
-    return user.id;
+    const entity = (this.repository as any).create(entry); //generate an entity from a payload
+    await this.repository.persistAndFlush(entity);
+    return entity.id;
   }
 
   public async update(id: string, entry: any): Promise<any> {
-    return this.repository.nativeUpdate(id, entry);
+    return (this.repository.nativeUpdate as any)(id, entry);
   }
 }

@@ -30,6 +30,14 @@ export class BaseRoutes<T extends BaseModel<T>> {
     return buildMapper(dto);
   }
 
+  /**
+   *
+   * @param dto the dto to get the mapper for
+   */
+  getRequestMapper<EntityT, dtoT>(dto: Class<dtoT>): IMapper<dtoT, unknown> {
+    return buildMapper(dto);
+  }
+
   @GET
   @Path('/getById/:id')
   @Response(200, 'success')
