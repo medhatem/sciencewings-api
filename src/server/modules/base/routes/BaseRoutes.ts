@@ -5,6 +5,12 @@ import { provideSingleton } from '@di/index';
 
 import { Path, GET, PUT, PathParam } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
+import { BaseDTO } from '../dtos/BaseDTO';
+import { buildMapper, IMapper } from 'dto-mapper';
+
+export interface Class<T> extends Function {
+  new (): T;
+}
 
 @provideSingleton()
 export class BaseRoutes<T extends BaseModel<T>> {
@@ -14,6 +20,14 @@ export class BaseRoutes<T extends BaseModel<T>> {
   constructor(private service: BaseService<T>, getRO?: typeof BaseRO, updateRO?: typeof BaseRO) {
     this.getRO = getRO;
     this.UpdateRO = updateRO;
+  }
+
+  /**
+   *
+   * @param dto the dto to get the mapper for
+   */
+  getMapper<EntityT, dtoT extends BaseDTO>(dto: Class<dtoT>): IMapper<dtoT, unknown> {
+    return buildMapper(dto);
   }
 
   @GET

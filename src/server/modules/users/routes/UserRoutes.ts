@@ -8,6 +8,7 @@ import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
+import { RegisterUserFromTokenDTO } from '../dtos/RegisterUserFromTokenDTO';
 
 @provideSingleton()
 @Path('user')
@@ -32,20 +33,15 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @POST
   @Path('registerUserFromToken')
-  @Response(201, 'User Registred Successfully')
+  @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
   @Security([], KEYCLOAK_TOKEN)
-  public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<{ [key: string]: any }> {
+  public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
+    const mapper = this.getMapper(RegisterUserFromTokenDTO);
     try {
       const userId = await this.userService.registerUser(request.keycloakUser);
-      return {
-        body: {
-          userId,
-        },
-      };
+      return mapper.serialize({ body: { statusCode: 201, userId } });
     } catch (error) {
-      return {
-        error: 'Internal Server Error',
-      };
+      return mapper.serialize({ statusCode: 500, errorMessage: 'Internal Server Error' });
     }
   }
 }

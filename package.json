@@ -52,6 +52,7 @@
     "bcrypt": "latest",
     "body-parser": "latest",
     "cors": "latest",
+    "dto-mapper": "^0.2.3",
     "express": "latest",
     "inversify": "latest",
     "inversify-binding-decorators": "latest",

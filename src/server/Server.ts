@@ -109,6 +109,7 @@ export class Server {
     this.expressApp.use(router);
     const data = require(join(__dirname, './swagger.json'));
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
+    this.expressApp.use('/swagger', express.static(__dirname));
     RestServer.buildServices(this.expressApp);
   }
 
