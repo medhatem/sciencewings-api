@@ -1,12 +1,13 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { container, provideSingleton } from '@di/index';
+
 import { BaseModel } from '../../base/models/BaseModel';
-import { Organisation } from './Organisation';
+import { Organization } from './Organization';
 import { ResCountry } from '../../organisations/models/ResCountry';
 import { ResCountryState } from '../../organisations/models/ResCountryState';
 import { ResPartnerIndustry } from '../../organisations/models/ResPartnerIndustry';
 import { ResPartnerTitle } from '../../organisations/models/ResPartnerTitle';
 import { User } from '../../users/models/User';
-import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
@@ -26,12 +27,12 @@ export class ResPartner extends BaseModel<ResPartner> {
   name?: string;
 
   @ManyToOne({
-    entity: () => Organisation,
+    entity: () => Organization,
     onDelete: 'set null',
     nullable: true,
     index: 'res_partner_organisation_id_index',
   })
-  organisation?: Organisation;
+  organisation?: Organization;
 
   @Index({ name: 'res_partner_display_name_index' })
   @Property({ nullable: true })

@@ -1,18 +1,19 @@
 import { Entity, Index, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
 import { Contract } from './Contract';
 import { Department } from './Department';
 import { DepartureReason } from './DepartureReason';
 import { Job } from './Job';
-import { WorkLocation } from './WorkLocation';
-import { Organisation } from '../../organisations/models/Organisation';
+import { Organization } from '../../organisations/models/Organization';
 import { ResCountry } from '../../organisations/models/ResCountry';
 import { ResPartner } from '../../organisations/models/ResPartner';
 import { ResPartnerBank } from '../../organisations/models/ResPartnerBank';
-import { User } from '../../users/models/User';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { ResourceResource } from '../../resources/models/ResourceResource';
-import { BaseModel } from '../../base/models/BaseModel';
-import { container, provideSingleton } from '@di/index';
+import { User } from '../../users/models/User';
+import { WorkLocation } from './WorkLocation';
 
 @provideSingleton()
 @Entity()
@@ -32,8 +33,8 @@ export class Employee extends BaseModel<Employee> {
   @ManyToOne({ entity: () => ResourceResource, index: 'hr_employee_resource_id_index' })
   resource!: ResourceResource;
 
-  @OneToOne({ entity: () => Organisation, onDelete: 'set null', index: 'hr_employee_organisation_id_index' })
-  organisation!: Organisation;
+  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_employee_organisation_id_index' })
+  organisation!: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,

@@ -1,8 +1,9 @@
 import { Entity, Index, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { BaseModel } from '../../base/models/BaseModel';
-import { Organisation } from './Organisation';
-import { ResCurrency } from '../../organisations/models/ResCurrency';
 import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
+import { Organization } from './Organization';
+import { ResCurrency } from '../../organisations/models/ResCurrency';
 
 @provideSingleton()
 @Entity()
@@ -29,6 +30,6 @@ export class ResCurrencyRate extends BaseModel<ResCurrencyRate> {
   @OneToOne({ entity: () => ResCurrency, onDelete: 'cascade' })
   currency!: ResCurrency;
 
-  @OneToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
-  organisation?: Organisation;
+  @OneToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
+  organisation?: Organization;
 }

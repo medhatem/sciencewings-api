@@ -1,10 +1,11 @@
 import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
+import { Organization } from './Organization';
 import { ResBank } from './ResBank';
-import { Organisation } from './Organisation';
 import { ResCurrency } from './ResCurrency';
 import { ResPartner } from './ResPartner';
-import { BaseModel } from '../../base/models/BaseModel';
-import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
@@ -45,6 +46,6 @@ export class ResPartnerBank extends BaseModel<ResPartnerBank> {
   @ManyToOne({ entity: () => ResCurrency, onDelete: 'set null', nullable: true })
   currency?: ResCurrency;
 
-  @OneToOne({ entity: () => Organisation, onDelete: 'cascade', nullable: true })
-  organisation?: Organisation;
+  @OneToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
+  organisation?: Organization;
 }

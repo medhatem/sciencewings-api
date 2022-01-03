@@ -41,7 +41,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @GET
   @Path('/getById/:id')
   @Response(200, 'success')
-  public async getById(@PathParam('id') id: string): Promise<any> {
+  public async getById(@PathParam('id') id: number): Promise<any> {
     const result = await (await this.service.get(id)).toObject();
     return new this.getRO().serialize(result);
   }
@@ -60,7 +60,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @PUT
   @Path('/:id')
   @Response(201, 'success')
-  public async update(@PathParam('id') id: string, payload: any): Promise<BaseRO> {
+  public async update(@PathParam('id') id: number, payload: any): Promise<BaseRO> {
     await this.service.update(id, payload);
     const updatedPayload = await this.service.get(id);
     return new this.UpdateRO().serialize(await updatedPayload.toObject());

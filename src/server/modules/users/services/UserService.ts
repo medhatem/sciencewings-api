@@ -30,4 +30,13 @@ export class UserService extends BaseService<User> {
     user.keycloakId = users[0].id;
     return await this.dao.create(user);
   }
+
+  /**
+   * fetches a user based on some search criteria
+   *
+   * @param criteria the search criteria
+   */
+  async getUserByCriteria(criteria: { [key: string]: any }) {
+    return await this.dao.getByCriteria(criteria);
+  }
 }

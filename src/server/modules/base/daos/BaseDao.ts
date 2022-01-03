@@ -1,4 +1,4 @@
-import { EntityRepository, GetRepository } from '@mikro-orm/core';
+import { EntityRepository, GetRepository, IWrappedEntity } from '@mikro-orm/core';
 
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { ServerError } from '../../../errors/ServerError';
@@ -8,6 +8,7 @@ import { provideSingleton } from '../../../di';
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
   public repository: GetRepository<T, EntityRepository<T>>;
+  public instance: IWrappedEntity<T, never, any>;
   constructor(public model: T) {
     this.repository = connection.em.getRepository<T>(model.constructor as new () => T);
   }
@@ -16,7 +17,7 @@ export class BaseDao<T extends BaseModel<T>> {
     throw new ServerError('baseModel must be overriden');
   }
 
-  public async get(id: string): Promise<any> {
+  public async get(id: number): Promise<T> {
     return (this.repository as any).findOne(id);
   }
 
@@ -39,7 +40,7 @@ export class BaseDao<T extends BaseModel<T>> {
     return entity.id;
   }
 
-  public async update(id: string, entry: any): Promise<any> {
+  public async update(id: number, entry: any): Promise<any> {
     return (this.repository.nativeUpdate as any)(id, entry);
   }
 }

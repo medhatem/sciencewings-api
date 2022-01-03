@@ -1,15 +1,14 @@
-// import { CredentialsRO, UserRO, UserSignedInRO, UserSignedUpRO } from '../routes/RequestObject';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from '@modules/base/services/BaseService';
-import { CreateOrganisationRO } from '../RO/CreateOrganisationRO';
-import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { Organisation } from '@modules/organisations/models/Organisation';
+import { CreateOrganizationRO } from '../routes/RequestObject';
 import { OrganisationDao } from '../daos/OrganisationDao';
+import { Organization } from '@modules/organisations/models/Organization';
 import { UserDao } from '@modules/users/daos/UserDao';
+import { wrap } from '@mikro-orm/core';
 
 @provideSingleton()
-export class OrganisationService extends BaseService<Organisation> {
+export class OrganisationService extends BaseService<Organization> {
   constructor(public dao: OrganisationDao, public userDao: UserDao) {
     super(dao);
   }
@@ -27,49 +26,28 @@ export class OrganisationService extends BaseService<Organisation> {
    *
    * @param payload
    */
-  public async createOrganisation(payload: CreateOrganisationRO, keycloakUser: KeycloakUserInfo): Promise<number> {
+  public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<number> {
     try {
-      const user = await this.userDao.getByCriteria({ email: keycloakUser.email });
-      // create the group in keycloak
-      const group = await this.keycloak
-        .getAdminClient()
-        .groups.create({ name: payload.name, realm: 'sciencewings-web' });
-
-      // create role {group}.admin for the newly created group
-      const createdRole = await this.keycloak
-        .getAdminClient()
-        .roles.create({ name: `${payload.name}.admin`, realm: 'sciencewings-web' });
-
-      // fetch the newly created role by name
-      const role = await this.keycloak
-        .getAdminClient()
-        .roles.findOneByName({ name: createdRole.roleName, realm: 'sciencewings-web' });
-
-      // add the created role to the group
-      await this.keycloak.getAdminClient().groups.addRealmRoleMappings({
-        id: group.id,
-        roles: [{ name: role.name, id: role.id }],
-        realm: 'sciencewings-web',
-      });
-
-      // add the user to the group
-      await this.keycloak
-        .getAdminClient()
-        .users.addToGroup({ groupId: group.id, realm: 'sciencewings-web', id: user.keycloakId });
-
-      const organisation = this.dao.model;
+      const user = await this.userDao.get(userId);
+      const organisation: { [key: string]: any } = {};
       organisation.name = payload.name;
-      organisation.keycloakGroupId = group.id;
-      organisation.users.init();
-      organisation.users.add(user);
+      if (payload.parentId) {
+        const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
+        if (!existingOrg) {
+          throw new Error('Organization parent does not exist');
+        }
+        organisation.parentId = organisation;
+      }
+      wrap(this.dao.model).assign(organisation, true);
+      await user.organisations.init();
+      user.organisations.add();
 
-      return await this.create(organisation);
+      return await this.create(this.dao.model);
 
       //get the group's id and save everything in db
     } catch (error) {
       // remove keycloak created role and group
       // since the organisation creation in the db failed
-      console.log('error is --- ', error);
       return 0;
     }
   }

@@ -22,6 +22,7 @@ import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
 import { RestServiceFactory } from '@di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
+import { container } from './di';
 import { join } from 'path';
 import { startDB } from './db';
 
@@ -82,12 +83,12 @@ export class Server {
   }
 
   private async configureServer() {
+    await this.setUpDataBase(); // start the database first since configureAuthenticator method needs the connection stream
     this.configureAuthenticator(); // this method has to be executed first before generating the middlewares
     this.configureServiceFactory();
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
-    await this.setUpDataBase();
   }
 
   /**
@@ -115,7 +116,7 @@ export class Server {
 
   private configureAuthenticator() {
     const authenticator = new JWTAuthenticator();
-    const keyCloakAuth = new KeyCloakToken();
+    const keyCloakAuth = container.get(KeyCloakToken);
     RestServer.registerAuthenticator(authenticator, JWTTOKEN);
     RestServer.registerAuthenticator(keyCloakAuth, KEYCLOAK_TOKEN);
   }

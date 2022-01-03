@@ -1,8 +1,9 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Employee } from './Employee';
-import { Organisation } from '../../organisations/models/Organisation';
-import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
+import { Employee } from './Employee';
+import { Organization } from '../../organisations/models/Organization';
 
 @provideSingleton()
 @Entity()
@@ -32,12 +33,12 @@ export class Department extends BaseModel<Department> {
   active?: boolean;
 
   @ManyToOne({
-    entity: () => Organisation,
+    entity: () => Organization,
     onDelete: 'set null',
     nullable: true,
     index: 'hr_department_organisation_id_index',
   })
-  organisation?: Organisation;
+  organisation?: Organization;
 
   @ManyToOne({
     entity: () => Department,

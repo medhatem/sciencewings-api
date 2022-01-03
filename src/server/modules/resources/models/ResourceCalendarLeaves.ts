@@ -1,9 +1,10 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { container, provideSingleton } from '@di/index';
+
 import { BaseModel } from '../../base/models/BaseModel';
-import { Organisation } from '../../organisations/models/Organisation';
+import { Organization } from '../../organisations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
 import { ResourceResource } from './ResourceResource';
-import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
@@ -22,8 +23,8 @@ export class ResourceCalendarLeaves extends BaseModel<ResourceCalendarLeaves> {
   @Property({ nullable: true })
   name?: string;
 
-  @ManyToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
-  organisation?: Organisation;
+  @ManyToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
+  organisation?: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,

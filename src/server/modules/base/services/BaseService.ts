@@ -13,8 +13,8 @@ export class BaseService<T extends BaseModel<T>> {
     throw new ServerError('baseService must be overriden!');
   }
 
-  public async get(id: string): Promise<DocumentType<T>> {
-    return await this.dao.get(id);
+  public async get(id: number): Promise<DocumentType<T>> {
+    return (await this.dao.get(id)) as any;
   }
 
   public async getAll(): Promise<DocumentType<T>[]> {
@@ -25,7 +25,7 @@ export class BaseService<T extends BaseModel<T>> {
     return this.dao.create(entry);
   }
 
-  public async update(id: string, entry: T): Promise<DocumentType<T>> {
+  public async update(id: number, entry: T): Promise<DocumentType<T>> {
     return this.dao.update(id, entry);
   }
 }

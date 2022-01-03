@@ -1,8 +1,9 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { BaseModel } from '../../base/models/BaseModel';
-import { Organisation } from '../../organisations/models/Organisation';
-import { ResPartner } from '../../organisations/models/ResPartner';
 import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
+import { Organization } from '../../organisations/models/Organization';
+import { ResPartner } from '../../organisations/models/ResPartner';
 
 @provideSingleton()
 @Entity()
@@ -24,8 +25,8 @@ export class WorkLocation extends BaseModel<WorkLocation> {
   @Property()
   name!: string;
 
-  @ManyToOne({ entity: () => Organisation })
-  organisation!: Organisation;
+  @ManyToOne({ entity: () => Organization })
+  organisation!: Organization;
 
   @ManyToOne({ entity: () => ResPartner })
   address!: ResPartner;

@@ -1,8 +1,9 @@
 import { Entity, Index, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { Department } from './Department';
-import { Organisation } from '../../organisations/models/Organisation';
-import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
+import { Department } from './Department';
+import { Organization } from '../../organisations/models/Organization';
 
 @provideSingleton()
 @Entity()
@@ -51,8 +52,8 @@ export class Job extends BaseModel<Job> {
   @OneToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
   department?: Department;
 
-  @OneToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
-  organisation?: Organisation;
+  @OneToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
+  organisation?: Organization;
 
   @Property()
   state!: string;

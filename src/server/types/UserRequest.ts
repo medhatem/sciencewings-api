@@ -11,4 +11,4 @@ export type KeycloakUserInfo = {
   email: string;
 };
 
-export type UserRequest = express.Request & { keycloakUser?: KeycloakUserInfo; user?: any };
+export type UserRequest = express.Request & { keycloakUser?: KeycloakUserInfo; userId?: number };

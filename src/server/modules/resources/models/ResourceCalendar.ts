@@ -1,7 +1,8 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { BaseModel } from '../../base/models/BaseModel';
-import { Organisation } from '../../organisations/models/Organisation';
 import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
+import { Organization } from '../../organisations/models/Organization';
 
 @provideSingleton()
 @Entity()
@@ -23,8 +24,8 @@ export class ResourceCalendar extends BaseModel<ResourceCalendar> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => Organisation, onDelete: 'set null', nullable: true })
-  organisation?: Organisation;
+  @ManyToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
+  organisation?: Organization;
 
   @Property({ columnType: 'float8', nullable: true })
   hoursPerDay?: number;

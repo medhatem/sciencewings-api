@@ -15,7 +15,6 @@ import { RegisterUserFromTokenDTO } from '../dtos/RegisterUserFromTokenDTO';
 export class UserRoutes extends BaseRoutes<User> {
   constructor(private userService: UserService) {
     super(userService, UserGetRO, UserUpdateRO);
-    console.log(this.userService);
   }
 
   static getInstance(): UserRoutes {

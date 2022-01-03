@@ -2,7 +2,7 @@ import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
-import { Organisation } from './Organisation';
+import { Organization } from './Organization';
 
 @provideSingleton()
 @Entity()
@@ -18,8 +18,8 @@ export class ResConfigSettings extends BaseModel<ResConfigSettings> {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne({ entity: () => Organisation, onDelete: 'cascade' })
-  organisation!: Organisation;
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
+  organisation!: Organization;
 
   @Property({ nullable: true })
   userDefaultRights?: boolean;

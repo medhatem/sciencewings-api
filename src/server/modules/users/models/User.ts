@@ -1,8 +1,8 @@
-import { Collection, Entity, Index, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, Index, ManyToMany, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
-import { Organisation } from '../../organisations/models/Organisation';
+import { Organization } from '../../organisations/models/Organization';
 
 // import { ResPartner } from '../../organisations/models/ResPartner';
 
@@ -16,9 +16,6 @@ export class User extends BaseModel<User> {
   static getInstance(): User {
     return container.get(User);
   }
-  @PrimaryKey()
-  id!: number;
-
   @Property()
   firstname: string;
 
@@ -35,8 +32,8 @@ export class User extends BaseModel<User> {
 
   // @ManyToOne({ entity: () => Organisation })
   // @ManyToMany(() => Organisation, 'users', { owner: true })
-  @ManyToMany({ entity: () => Organisation, pivotTable: 'user_to_organisation' })
-  organisations = new Collection<Organisation>(this);
+  @ManyToMany(() => Organization, (organisation) => organisation.users)
+  organisations = new Collection<Organization>(this);
 
   // @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })
   // partner!: ResPartner;

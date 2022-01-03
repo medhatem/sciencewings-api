@@ -1,14 +1,15 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { container, provideSingleton } from '@di/index';
+
+import { BaseModel } from '../../base/models/BaseModel';
 import { ContractType } from './ContractType';
 import { Department } from './Department';
 import { Employee } from './Employee';
 import { Job } from './Job';
+import { Organization } from '../../organisations/models/Organization';
 import { PayrollStructureType } from './PayrollStructureType';
-import { Organisation } from '../../organisations/models/Organisation';
-import { User } from '../../users/models/User';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { BaseModel } from '../../base/models/BaseModel';
-import { container, provideSingleton } from '@di/index';
+import { User } from '../../users/models/User';
 
 @provideSingleton()
 @Entity()
@@ -73,8 +74,8 @@ export class Contract extends BaseModel<Contract> {
   @Property({ nullable: true })
   state?: string;
 
-  @ManyToOne({ entity: () => Organisation })
-  organisation!: Organisation;
+  @ManyToOne({ entity: () => Organization })
+  organisation!: Organization;
 
   @ManyToOne({ entity: () => ContractType, onDelete: 'set null', nullable: true })
   contractType?: ContractType;
