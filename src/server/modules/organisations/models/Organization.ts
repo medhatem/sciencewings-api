@@ -1,10 +1,10 @@
-import { Collection, Entity, ManyToMany, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@di/index';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { container, provide } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { User } from '@modules/users/models/User';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Organization extends BaseModel<Organization> {
   constructor() {
@@ -21,6 +21,18 @@ export class Organization extends BaseModel<Organization> {
   @ManyToMany({ entity: () => User })
   users = new Collection<User>(this);
 
-  @Property({ nullable: true })
-  parentId: number;
+  // @Property({ nullable: true })
+  // parentId: number;
+
+  @ManyToOne({
+    entity: () => Organization,
+    nullable: true,
+  })
+  public parent?: Organization;
+
+  @OneToMany({
+    entity: () => Organization,
+    mappedBy: 'parent',
+  })
+  public children? = new Collection<Organization>(this);
 }

@@ -1,6 +1,7 @@
+import { AssignOptions, wrap } from '@mikro-orm/core';
+
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@modules/base/models/BaseModel';
-import { DocumentType } from '@typegoose/typegoose';
 import { Keycloak } from '@sdks/keycloak';
 import { ServerError } from '@errors/ServerError';
 import { provideSingleton } from '../../../di';
@@ -13,19 +14,32 @@ export class BaseService<T extends BaseModel<T>> {
     throw new ServerError('baseService must be overriden!');
   }
 
-  public async get(id: number): Promise<DocumentType<T>> {
-    return (await this.dao.get(id)) as any;
+  public async get(id: number): Promise<T> {
+    return await this.dao.get(id);
   }
 
-  public async getAll(): Promise<DocumentType<T>[]> {
+  public async getAll(): Promise<T[]> {
     return await this.dao.getAll();
   }
 
-  public async create(entry: T): Promise<number> {
+  public async create(entry: T): Promise<T> {
     return this.dao.create(entry);
   }
 
-  public async update(id: number, entry: T): Promise<DocumentType<T>> {
-    return this.dao.update(id, entry);
+  public async update(entry: T): Promise<T> {
+    const entity = this.wrapEntity(this.dao.model, entry);
+    return this.dao.update(entity);
+  }
+
+  /**
+   * serialize a json object into an mikro-orm entity/model
+   *
+   * @param entity the entity/model to serialize on an return
+   * @param payload the data to serialize
+   * @param options for assign options
+   *
+   */
+  public wrapEntity(entity: T, payload: { [key: string]: any }, options: boolean | AssignOptions = true): T {
+    return wrap(entity).assign(payload, options);
   }
 }

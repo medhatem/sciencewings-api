@@ -1,4 +1,4 @@
-import { BaseBodyDTO, BaseDTO } from '@modules/base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@modules/base/dtos/BaseDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()
@@ -8,7 +8,7 @@ export class RegisterUserFromTokenBodyDTO extends BaseBodyDTO {
 }
 
 @dto()
-export class CreatedOrganizationDTO extends BaseDTO {
+export class CreatedOrganizationDTO extends BaseRequestDTO {
   @include()
   body?: RegisterUserFromTokenBodyDTO = new RegisterUserFromTokenBodyDTO();
 }

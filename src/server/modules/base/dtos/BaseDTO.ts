@@ -16,10 +16,20 @@ export class BaseErrorDTO {
 }
 
 @dto()
-export class BaseDTO {
+export class BaseRequestDTO {
   @include()
   public body?: BaseBodyDTO;
 
   @include()
   public error?: BaseErrorDTO;
+}
+
+@dto()
+export class BaseDTO {
+  @include()
+  id: number;
+  @include()
+  createdAt: Date;
+  @include()
+  updatedAt: Date;
 }

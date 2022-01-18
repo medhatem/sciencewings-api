@@ -28,7 +28,8 @@ export class UserService extends BaseService<User> {
     user.lastname = userInfo.family_name;
     user.email = userInfo.email;
     user.keycloakId = users[0].id;
-    return await this.dao.create(user);
+    const createdUser = await this.dao.create(user);
+    return createdUser.id;
   }
 
   /**

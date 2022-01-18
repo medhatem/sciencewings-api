@@ -1,11 +1,10 @@
 import { BaseService } from '@modules/base/services/BaseService';
-import { BaseRO } from './RequestObject';
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { provideSingleton } from '@di/index';
 
 import { Path, GET, PUT, PathParam } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
-import { BaseDTO } from '../dtos/BaseDTO';
+import { BaseDTO, BaseRequestDTO } from '../dtos/BaseDTO';
 import { buildMapper, IMapper } from 'dto-mapper';
 
 export interface Class<T> extends Function {
@@ -13,13 +12,18 @@ export interface Class<T> extends Function {
 }
 
 @provideSingleton()
-export class BaseRoutes<T extends BaseModel<T>> {
-  public getRO: typeof BaseRO;
-  public UpdateRO: typeof BaseRO;
+export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
+  private getDTOMapper: IMapper<Y, unknown>;
+  constructor(private service: BaseService<T>, private baseGetDTO: Class<Y>) {
+    this.getDTOMapper = this.getMapper(this.baseGetDTO);
+  }
 
-  constructor(private service: BaseService<T>, getRO?: typeof BaseRO, updateRO?: typeof BaseRO) {
-    this.getRO = getRO;
-    this.UpdateRO = updateRO;
+  /**
+   *
+   * @param dto the dto to get the mapper for
+   */
+  getMapperFromRequest<EntityT, dtoT extends BaseRequestDTO>(dto: Class<dtoT>): IMapper<dtoT, unknown> {
+    return buildMapper(dto);
   }
 
   /**
@@ -41,9 +45,9 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @GET
   @Path('/getById/:id')
   @Response(200, 'success')
-  public async getById(@PathParam('id') id: number): Promise<any> {
-    const result = await (await this.service.get(id)).toObject();
-    return new this.getRO().serialize(result);
+  public async getById(@PathParam('id') id: number): Promise<BaseDTO> {
+    const result = await this.service.get(id);
+    return this.getDTOMapper.serialize(result);
   }
 
   @GET
@@ -52,7 +56,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @Response(401, 'error')
   public async getAll(): Promise<any> {
     const result = await this.service.getAll();
-    return Promise.all(result.map(async (r) => new this.getRO().serialize(await r.toObject())));
+    return result.map((r) => this.getDTOMapper.serialize(r));
   }
 
   //   public create(body: CreateBodyRO) {}
@@ -60,10 +64,10 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @PUT
   @Path('/:id')
   @Response(201, 'success')
-  public async update(@PathParam('id') id: number, payload: any): Promise<BaseRO> {
-    await this.service.update(id, payload);
-    const updatedPayload = await this.service.get(id);
-    return new this.UpdateRO().serialize(await updatedPayload.toObject());
+  public async update(@PathParam('id') id: number, payload: any): Promise<any> {
+    // await this.service.update(payload);
+    // const updatedPayload = await this.service.get(id);
+    // return new this.UpdateRO().serialize(await updatedPayload);
   }
 
   //   public delete(id: string) {}

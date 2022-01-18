@@ -5,7 +5,6 @@ import { CreateOrganizationRO } from '../routes/RequestObject';
 import { OrganisationDao } from '../daos/OrganisationDao';
 import { Organization } from '@modules/organisations/models/Organization';
 import { UserDao } from '@modules/users/daos/UserDao';
-import { wrap } from '@mikro-orm/core';
 
 @provideSingleton()
 export class OrganisationService extends BaseService<Organization> {
@@ -28,27 +27,28 @@ export class OrganisationService extends BaseService<Organization> {
    */
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<number> {
     try {
+      const existingOrg = await this.dao.getByCriteria({ name: payload.name });
+      if (existingOrg) {
+        throw new Error(`Organization ${payload.name} already exists.`);
+      }
       const user = await this.userDao.get(userId);
-      const organisation: { [key: string]: any } = {};
-      organisation.name = payload.name;
+
+      const organization = this.wrapEntity(this.dao.model, { name: payload.name });
+      await user.organisations.init();
+      user.organisations.add(organization);
+      const createdOrg = await this.create(this.dao.model);
       if (payload.parentId) {
         const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
         if (!existingOrg) {
           throw new Error('Organization parent does not exist');
         }
-        organisation.parentId = organisation;
+        createdOrg.parent = existingOrg;
+        await this.update(createdOrg);
       }
-      wrap(this.dao.model).assign(organisation, true);
-      await user.organisations.init();
-      user.organisations.add();
 
-      return await this.create(this.dao.model);
-
-      //get the group's id and save everything in db
+      return createdOrg.id;
     } catch (error) {
-      // remove keycloak created role and group
-      // since the organisation creation in the db failed
-      return 0;
+      throw error;
     }
   }
 }

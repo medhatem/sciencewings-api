@@ -1,5 +1,4 @@
 import { POST, Path, Security, ContextRequest } from 'typescript-rest';
-import { UserGetRO, UserUpdateRO } from './RequestObject';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
@@ -9,12 +8,13 @@ import { User } from '../models/User';
 import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
 import { RegisterUserFromTokenDTO } from '../dtos/RegisterUserFromTokenDTO';
+import { UserDTO } from '../dtos/UserDTO';
 
 @provideSingleton()
 @Path('user')
-export class UserRoutes extends BaseRoutes<User> {
+export class UserRoutes extends BaseRoutes<User, UserDTO> {
   constructor(private userService: UserService) {
-    super(userService, UserGetRO, UserUpdateRO);
+    super(userService, UserDTO);
   }
 
   static getInstance(): UserRoutes {
