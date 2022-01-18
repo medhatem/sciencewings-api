@@ -43,4 +43,11 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
       return mapper.serialize({ statusCode: 500, errorMessage: 'Internal Server Error' });
     }
   }
+
+  @POST
+  @Path('inviteUserToOrganization')
+  @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
+  public async inviteUserToOrganization(payload: { [key: string]: any }) {
+    await this.userService.inviteUserByEmail(payload.email);
+  }
 }

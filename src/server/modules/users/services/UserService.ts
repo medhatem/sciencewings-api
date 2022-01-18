@@ -40,4 +40,38 @@ export class UserService extends BaseService<User> {
   async getUserByCriteria(criteria: { [key: string]: any }) {
     return await this.dao.getByCriteria(criteria);
   }
+
+  async inviteUserByEmail(email: string): Promise<number> {
+    const existingUser = await this.keycloak.getAdminClient().users.find({ email, realm: 'sciencewings-web' });
+
+    if (existingUser) {
+      throw new Error('The user already exists.');
+    }
+
+    const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
+      email,
+      firstName: '',
+      lastName: '',
+      realm: 'sciencewings-web',
+    });
+
+    //save created keycloak user in the database
+    const user = this.dao.model;
+    user.firstname = '';
+    user.lastname = '';
+    user.email = email;
+    user.keycloakId = createdKeyCloakUser.id;
+    const savedUser = await this.dao.create(user);
+
+    await this.keycloak.getAdminClient().users.resetPassword({
+      id: createdKeyCloakUser.id!,
+      credential: {
+        temporary: false,
+        type: 'password',
+        value: 'test',
+      },
+    });
+
+    return savedUser.id;
+  }
 }
