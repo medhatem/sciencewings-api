@@ -31,6 +31,10 @@ export class BaseService<T extends BaseModel<T>> {
     return this.dao.update(entity);
   }
 
+  async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
+    return await this.getByCriteria(criteria);
+  }
+
   /**
    * serialize a json object into an mikro-orm entity/model
    *

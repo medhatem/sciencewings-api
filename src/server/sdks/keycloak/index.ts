@@ -2,8 +2,9 @@ import { container, provideSingleton } from '@di/index';
 
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 import { KeycloakConfig } from '../../types/ServerConfiguration';
+import { requiredAction } from '@keycloak/keycloak-admin-client';
 
-export { KcAdminClient };
+export { KcAdminClient, requiredAction };
 
 @provideSingleton()
 export class Keycloak {

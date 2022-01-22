@@ -32,7 +32,8 @@
     "@service": "dist/server/service",
     "@dao": "dist/server/dao",
     "@sdks": "dist/server/sdks",
-    "@modules": "dist/server/modules"
+    "@modules": "dist/server/modules",
+    "@utils": "dist/server/utils"
   },
   "repository": {
     "type": "git",
@@ -48,6 +49,7 @@
     "@keycloak/keycloak-admin-client": "^15.0.2",
     "@mikro-orm/core": "^4.5.9",
     "@mikro-orm/postgresql": "^4.5.9",
+    "@sendgrid/mail": "^7.6.0",
     "@typegoose/typegoose": "^7.6.1",
     "bcrypt": "latest",
     "body-parser": "latest",

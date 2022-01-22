@@ -9,6 +9,7 @@ import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
 import { RegisterUserFromTokenDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
+import { UserInviteToOrgRO } from './RequstObjects';
 
 @provideSingleton()
 @Path('user')
@@ -47,7 +48,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @POST
   @Path('inviteUserToOrganization')
   @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
-  public async inviteUserToOrganization(payload: { [key: string]: any }) {
-    await this.userService.inviteUserByEmail(payload.email);
+  public async inviteUserToOrganization(payload: UserInviteToOrgRO) {
+    await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
   }
 }
