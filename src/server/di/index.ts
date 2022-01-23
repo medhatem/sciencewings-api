@@ -1,9 +1,10 @@
 import 'reflect-metadata';
 
-import { decorate, injectable, interfaces } from 'inversify';
+import { injectable, interfaces } from 'inversify';
 
 import { Container } from './Container';
-import { Controller } from 'tsoa';
+
+// import { Controller } from 'tsoa';
 
 export { Container } from './Container';
 export { injectable, inject, unmanaged } from 'inversify';
@@ -11,7 +12,7 @@ export { injectable, inject, unmanaged } from 'inversify';
 export const container = new Container();
 export const iocContainer = container;
 
-decorate(injectable(), Controller); //
+// decorate(injectable(), Controller); //
 
 /**
  * class level decorator to flag a class being a sigleton in the DI container

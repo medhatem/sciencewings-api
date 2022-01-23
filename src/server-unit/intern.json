@@ -1,7 +1,0 @@
-{
-    "debug":false,
-    "bail":false,
-    "grep":".*",
-    "coverage":["./dist/server/**/*.js"],
-    "suites": "./dist/server-unit/**/*.js"
-}

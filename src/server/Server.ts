@@ -4,16 +4,25 @@ import * as BodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
 import * as express from 'express';
-import * as methodOverride from 'method-override';
 
-import { BaseConfig, EnvConfig, ServerConfiguration, ServerDBConfig } from './types/ServerConfiguration';
+import {
+  BaseConfig,
+  EnvConfig,
+  KeycloakConfig,
+  ServerConfiguration,
+  ServerDBConfig,
+} from './types/ServerConfiguration';
+import { JWTTOKEN, KEYCLOAK_TOKEN } from './authenticators/constants';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 
 import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
-import { RegisterRoutes } from './tsoa-build/routes';
+import { KeyCloakToken } from './authenticators/KeyCloakToken';
+import { Keycloak } from '@sdks/keycloak';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
+import { RestServiceFactory } from '@di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
+import { container } from './di';
 import { join } from 'path';
 import { startDB } from './db';
 
@@ -32,7 +41,6 @@ export type ExpressCors = (options?: cors.CorsOptions | cors.CorsOptionsDelegate
  *  the server runs an express app and handles multiple different routes
  *
  */
-
 export class Server {
   private expressApp: express.Application;
   private bodyParser: ExpressBodyParser;
@@ -42,6 +50,7 @@ export class Server {
   private envConfig: EnvConfig;
   private baseConfig: BaseConfig;
   private dbConfig: ServerDBConfig;
+  private keycloakConfig: KeycloakConfig;
   constructor(
     private config: ServerConfiguration,
     app: express.Application = express(),
@@ -58,6 +67,7 @@ export class Server {
     ] as EnvConfig;
     this.baseConfig = this.envConfig.baseConfig;
     this.dbConfig = this.envConfig.DB;
+    this.keycloakConfig = this.envConfig.keycloak;
   }
 
   public async startApp(): Promise<void> {
@@ -68,16 +78,17 @@ export class Server {
       console.log(`server available at http://localhost:${process.env.PORT || port}`);
     } catch (error) {
       this.serverHealthStatus = false;
-      console.error(`error when starting the server with env ${process.env.ENV} with message ${error.message}`);
+      console.error(`error when starting the server with env ${process.env.ENV} with message ${error}`);
     }
   }
 
   private async configureServer() {
+    await this.setUpDataBase(); // start the database first since configureAuthenticator method needs the connection stream
+    this.configureAuthenticator(); // this method has to be executed first before generating the middlewares
+    this.configureServiceFactory();
     this.addMiddlewares();
     this.addRoutes();
-    await this.setUpDataBase();
-    this.configureAuthenticator();
-    this.configureTypescriptRestRoutes();
+    this.startKeycloakAdmin();
   }
 
   /**
@@ -97,22 +108,30 @@ export class Server {
     const router = this.expressRouter();
     router.get('/health', this.healthCheker());
     this.expressApp.use(router);
-    const data = require(join(__dirname, './tsoa-build/swagger.json'));
+    const data = require(join(__dirname, './swagger.json'));
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
-  }
-  /**
-   * generates the routes declared with tsoa and add them
-   * to the main express application
-   * generates also their swagger documentation
-   */
-  private configureTypescriptRestRoutes() {
-    this.expressApp.use(methodOverride());
-    RegisterRoutes(this.expressApp);
+    this.expressApp.use('/swagger', express.static(__dirname));
+    RestServer.buildServices(this.expressApp);
   }
 
   private configureAuthenticator() {
     const authenticator = new JWTAuthenticator();
-    RestServer.registerAuthenticator(authenticator);
+    const keyCloakAuth = container.get(KeyCloakToken);
+    RestServer.registerAuthenticator(authenticator, JWTTOKEN);
+    RestServer.registerAuthenticator(keyCloakAuth, KEYCLOAK_TOKEN);
+  }
+
+  private startKeycloakAdmin() {
+    Keycloak.getInstance().init(this.keycloakConfig); // initialize the keyCloak admin instance
+  }
+  /**
+   * configure the IOC module for typescript-rest to
+   * define how the Routes will be initialized
+   * We use Inverfify to initialize the Routes
+   * and inverfify will take care of instanciating all the dependencies
+   */
+  private configureServiceFactory() {
+    RestServer.registerServiceFactory(new RestServiceFactory());
   }
 
   public healthCheker(): (request: express.Request, response: express.Response) => void {

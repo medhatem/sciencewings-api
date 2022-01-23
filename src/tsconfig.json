@@ -25,6 +25,8 @@
             "@service/*": ["server/service/*"],
             "@dao/*": ["server/dao/*"],
             "@sdks/*": ["server/sdks/*"],
+            "@modules/*": ["server/modules/*"],
+            "@utils/*": ["server/utils/*"],
         },
     },
     "exclude": [

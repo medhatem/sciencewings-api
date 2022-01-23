@@ -1,6 +1,19 @@
 {
     "swagger": {
-        "outputDirectory": "./dist",
-        "entryFile": "./src/server/routes/index.ts"
+        "basePath":"/api/v1",
+        "outputDirectory": "./dist/server",
+        "entryFile": "./src/server/routes/index.ts",
+        "securityDefinitions": {
+            "api_key": {
+                "type": "apiKey",
+                "name": "access_token",
+                "in": "query"
+            },
+            "keycloak_token": {
+                "type": "apiKey",
+                "name": "access_token",
+                "in": "query"
+            }
+        }
     }
 }

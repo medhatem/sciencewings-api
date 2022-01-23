@@ -1,3 +1,4 @@
-// export { RouteEntity } from './RouteTypes';
-export { UserRoutes } from './UserRoutes/UserRoutes';
-export { BaseRoutes } from './BaseRoutes/BaseRoutes';
+export { RouteEntity } from './RouteTypes';
+export { UserRoutes } from '../modules/users/routes/UserRoutes';
+export { BaseRoutes } from '../modules/base/routes/BaseRoutes';
+export { OrganizationRoutes } from '../modules/organisations/routes/OrganisationRoutes';
