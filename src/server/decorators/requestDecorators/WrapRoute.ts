@@ -18,7 +18,7 @@ export function WrapRoute<T extends BaseRequestDTO>(
         const result = await originalFunction.apply(this, args);
         return mapper.serialize({ body: { ...result } });
       } catch (error) {
-        return mapper.serialize({ error: { statusCode: 500, errorMessage: 'Internal Server Error' } });
+        return mapper.serialize({ error: { statusCode: 500, errorMessage: error.message } });
       }
     };
     return descriptor;
