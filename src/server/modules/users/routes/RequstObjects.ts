@@ -8,3 +8,15 @@ export class UserInviteToOrgRO {
   @include()
   email: string;
 }
+
+@dto()
+export class ResetPasswordRO {
+  @include()
+  email: number;
+
+  @include()
+  password: string;
+
+  @include()
+  passwordConfirmation: string;
+}

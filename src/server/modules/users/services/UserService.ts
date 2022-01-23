@@ -6,6 +6,7 @@ import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { OrganisationService } from '@modules/organisations/services/OrganisationService';
+import { ResetPasswordRO } from '../routes/RequstObjects';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
 
@@ -93,5 +94,31 @@ export class UserService extends BaseService<User> {
     this.emailService.sendEmail(emailMessage);
 
     return savedUser.id;
+  }
+
+  /**
+   * reset a user password
+   *
+   * @param payload
+   */
+  async resetPassword(payload: ResetPasswordRO): Promise<void> {
+    if (payload.password !== payload.passwordConfirmation) {
+      throw new Error(`Passwords don't match`);
+    }
+    const user = await this.dao.getByCriteria({ email: payload.email });
+
+    if (!user) {
+      throw new Error(`user with email: ${payload.email} does not exist.`);
+    }
+
+    await this.keycloak.getAdminClient().users.resetPassword({
+      realm: 'sciencewings-web',
+      id: user.keycloakId,
+      credential: {
+        temporary: false,
+        type: 'password',
+        value: payload.password,
+      },
+    });
   }
 }
