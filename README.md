@@ -30,12 +30,9 @@
 
 ## Getting started
 
-- to get started make sure to fork the repository first
-
 ```
-git clone `your fork link`
-cd api
 npm run init
+npm run watch
 ```
 
 - Start the containers `npm run start-containers`.
