@@ -22,7 +22,7 @@ definitions:
         script:
           - docker-compose build
     - step:
-        name: &deploy
+        name: &deploy-app
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           - docker-compose -f devops/staging/docker-compose.yml build
@@ -39,13 +39,13 @@ pipelines:
       - step: *install
       - step: *build
       - step:
-          <<: *deploy
+          <<: *deploy-app
           name: Deploy to staging
           deployment: Staging
     master:
       - step: *install
       - step: *build
       - step:
-          <<: *deploy
+          <<: *deploy-app
           name: Deploy to Prod
           deployment: Production
