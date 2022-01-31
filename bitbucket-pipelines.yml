@@ -26,6 +26,7 @@ pipelines:
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           - docker-compose -f devops/staging/docker-compose.yml build
+          - echo $HEROKU_APP_NAME
           - docker tag staging_api registry.heroku.com/$HEROKU_APP_NAME/web
           - docker push registry.heroku.com/$HEROKU_APP_NAME/web
           - heroku container:release web -a $HEROKU_APP_NAME
