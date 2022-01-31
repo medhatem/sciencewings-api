@@ -8,25 +8,47 @@ image: atlassian/default-image:3
 options:
   docker: true
 
-pipelines:
-  default:
+definitions:
+  steps:
     - step:
-        name: install
+        name: &install
         script:
           - apt-get update && apt-get install -y --no-install-recommends git  curl libmcrypt-dev openssl mysql-client libmagickwand-dev
           - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           - chmod +x /usr/local/bin/docker-compose
           - docker-compose --version
     - step:
-        name: Build
+        name: &Build
         script:
           - docker-compose build
     - step:
-        name: deploy
+        name: &deploy
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           - docker-compose -f devops/staging/docker-compose.yml build
-          - echo $HEROKU_APP_NAME
           - docker tag staging_api registry.heroku.com/$HEROKU_APP_NAME/web
-          - docker push registry.heroku.com/$HEROKU_APP_NAME/web
-          - heroku container:release web -a $HEROKU_APP_NAME
+          - docker push registry.heroku.com/sciencewings-api-staging/web
+          - heroku container:release web -a sciencewings-api-staging
+
+
+pipelines:
+  default:
+    - step: *install
+    - step: *build
+  branches:
+    dev:
+      - step: *install
+      - step: *build
+     - step:
+          <<: *deploy
+          trigger: manual
+          name: Deploy to staging
+          deployment: Staging
+    master:
+      - step: *install
+      - step: *build
+      - step:
+          <<: *deploy
+          trigger: manual
+          name: Deploy to Prod
+          deployment: Production
