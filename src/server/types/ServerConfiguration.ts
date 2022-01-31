@@ -17,7 +17,7 @@ export type KeycloakConfig = {
   username: string;
   password: string;
   grantType: GrantTypes;
-  'client-id': string;
+  clientId: string;
   baseUrl: string;
   realmName?: string;
 };

@@ -31,7 +31,7 @@ export class Keycloak {
       username: getConfig('keycloak.username'),
       password: getConfig('keycloak.password'),
       grantType: getConfig('keycloak.grantType'),
-      clientId: getConfig('keycloak.client-id'),
+      clientId: getConfig('keycloak.clientId'),
       //   totp: '123456', // optional Time-based One-time Password if OTP is required in authentication flow
     });
   }
