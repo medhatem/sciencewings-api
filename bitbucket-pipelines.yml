@@ -22,12 +22,12 @@ definitions:
         script:
           - docker-compose build
     - step: &deploy
-        name: deploy
+        name: deploy to dev
         trigger: manual
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           - docker-compose -f devops/staging/docker-compose.yml build
-          - docker tag staging_api registry.heroku.com/$HEROKU_APP_NAME/web
+          - docker tag staging_api registry.heroku.com/sciencewings-api-staging/web
           - docker push registry.heroku.com/sciencewings-api-staging/web
           - heroku container:release web -a sciencewings-api-staging
 
