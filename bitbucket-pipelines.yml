@@ -18,7 +18,7 @@ definitions:
           - chmod +x /usr/local/bin/docker-compose
           - docker-compose --version
     - step:
-        name: &Build
+        name: &build
         script:
           - docker-compose build
     - step:
