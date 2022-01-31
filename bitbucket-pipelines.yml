@@ -29,8 +29,8 @@ definitions:
 
 pipelines:
   default:
-    - <<: *install
-    - <<: *build
+    - step: *install
+    - step: *build
   branches:
     dev:
       - step: *install
