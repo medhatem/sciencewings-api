@@ -4,7 +4,7 @@ services:
   api:
     build:
       context: ../../
-      dockerfile: devops/staging/api.dockerfile
+      dockerfile: devops/staging/Dockerfile
     environment:
       PORT: 3000
       ENV: staging
