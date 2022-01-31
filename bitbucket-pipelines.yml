@@ -23,6 +23,7 @@ definitions:
           - docker-compose build
     - step: &deploy
         name: deploy
+        trigger: manual
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           - docker-compose -f devops/staging/docker-compose.yml build
@@ -34,7 +35,7 @@ pipelines:
   default:
     - step: *install
     - step: *build
-    <<: *deploy
+    - step: *deploy
   branches:
     dev:
       - step: *install
