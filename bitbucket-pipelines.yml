@@ -22,6 +22,7 @@ definitions:
         script:
           - docker-compose build
     - step:
+        trigger: manual
         name: &deploy
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
@@ -29,7 +30,6 @@ definitions:
           - docker tag staging_api registry.heroku.com/$HEROKU_APP_NAME/web
           - docker push registry.heroku.com/sciencewings-api-staging/web
           - heroku container:release web -a sciencewings-api-staging
-
 
 pipelines:
   default:
@@ -39,7 +39,7 @@ pipelines:
     dev:
       - step: *install
       - step: *build
-     - step:
+      - step:
           <<: *deploy
           trigger: manual
           name: Deploy to staging
