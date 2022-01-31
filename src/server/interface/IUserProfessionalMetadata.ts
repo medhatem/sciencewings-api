@@ -1,6 +1,4 @@
-import * as mongoose from 'mongoose';
-
-export interface IUserProfessionalMetadata extends mongoose.Document {
+export interface IUserProfessionalMetadata {
   isProfessional: boolean;
   job: string;
 }

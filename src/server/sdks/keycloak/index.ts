@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@di/index';
 
 import KcAdminClient from '@keycloak/keycloak-admin-client';
-import { KeycloakConfig } from '../../types/ServerConfiguration';
+import { getConfig } from '../../configuration/Configuration';
 import { requiredAction } from '@keycloak/keycloak-admin-client';
 
 export { KcAdminClient, requiredAction };
@@ -9,8 +9,12 @@ export { KcAdminClient, requiredAction };
 @provideSingleton()
 export class Keycloak {
   private kcAdminClient: KcAdminClient;
+
   constructor() {
-    this.kcAdminClient = new KcAdminClient();
+    this.kcAdminClient = new KcAdminClient({
+      baseUrl: getConfig('keycloak.baseUrl'),
+      realmName: getConfig('keycloak.realmName'),
+    });
   }
 
   static getInstance(): Keycloak {
@@ -21,13 +25,13 @@ export class Keycloak {
     return this.kcAdminClient;
   }
 
-  async init(config: KeycloakConfig) {
+  async init() {
     // Authorize with username / password
     await this.kcAdminClient.auth({
-      username: config.username,
-      password: config.password,
-      grantType: config.grantType,
-      clientId: config['client-id'],
+      username: getConfig('keycloak.username'),
+      password: getConfig('keycloak.password'),
+      grantType: getConfig('keycloak.grantType'),
+      clientId: getConfig('keycloak.client-id'),
       //   totp: '123456', // optional Time-based One-time Password if OTP is required in authentication flow
     });
   }
