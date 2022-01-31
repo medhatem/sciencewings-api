@@ -34,9 +34,7 @@ pipelines:
   default:
     - step: *install
     - step: *build
-    - step:
-      trigger: manual
-      <<: *deploy
+    <<: *deploy
   branches:
     dev:
       - step: *install
