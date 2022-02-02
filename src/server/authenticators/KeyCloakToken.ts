@@ -21,7 +21,7 @@ export class KeyCloakToken implements ServiceAuthenticator {
       }
     };
   }
-  getRoles(req: express.Request): any[] {
+  getRoles(): any[] {
     return [];
   }
   initialize(router: express.Router): void {
