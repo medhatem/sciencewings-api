@@ -55,7 +55,7 @@ export class Logger {
     return new Logger(classNameId);
   }
 
-  private static getFormat(classNameId: String): Format {
+  private static getFormat(classNameId: string): Format {
     function logLevel(level: string, parts: string[]): string[] {
       switch (level) {
         case LogLevel.ERROR:
@@ -119,11 +119,7 @@ export class Logger {
   public setup(classNameId: string, configMode: string, logLevel: string, injectedFormat: any = format): WinstonLogger {
     this.logger = createLogger({
       exitOnError: false, // do not exit on handled exceptions
-      format: injectedFormat.combine(
-        injectedFormat.timestamp(),
-        injectedFormat.splat(),
-        configMode === 'dev' || 'staging' || 'production' ? Logger.getFormat(classNameId) : {},
-      ),
+      format: injectedFormat.combine(injectedFormat.timestamp(), injectedFormat.splat(), Logger.getFormat(classNameId)),
       transports: [
         new transports.Console({
           handleExceptions: true,
