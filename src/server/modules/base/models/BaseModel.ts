@@ -4,6 +4,7 @@ import { provideSingleton } from '@di/index';
 
 @provideSingleton()
 export class BaseModel<T = any> {
+  constructor() {}
   static getInstance(): void {
     throw new Error('The base model class cannot be instanciated and needs to be overriden!');
   }
