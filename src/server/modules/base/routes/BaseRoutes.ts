@@ -65,6 +65,7 @@ export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
   @Path('/:id')
   @Response(201, 'success')
   public async update(@PathParam('id') id: number, payload: any): Promise<any> {
+    console.log(id, payload);
     // await this.service.update(payload);
     // const updatedPayload = await this.service.get(id);
     // return new this.UpdateRO().serialize(await updatedPayload);

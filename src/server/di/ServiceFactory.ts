@@ -1,5 +1,4 @@
-import { ServiceContext, ServiceFactory } from 'typescript-rest';
-
+import { ServiceFactory } from 'typescript-rest';
 import { container } from './index';
 
 /**
@@ -10,11 +9,11 @@ import { container } from './index';
  * the serviceClass itself needs to be handled by inversify
  */
 export class RestServiceFactory implements ServiceFactory {
-  public create(serviceClass: Function, context: ServiceContext) {
+  public create(serviceClass: any) {
     return container.get(serviceClass);
   }
 
-  public getTargetClass(serviceClass: Function): FunctionConstructor {
+  public getTargetClass(serviceClass: any): FunctionConstructor {
     return serviceClass as any;
   }
 }
