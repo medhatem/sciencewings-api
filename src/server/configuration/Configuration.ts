@@ -100,6 +100,7 @@ export function getConfig(key: string) {
   const config = Configuration.getInstance().getConfiguration();
   const keys = key.split('.');
   return keys.reduce((prev, curr): any => {
+    if (prev === undefined) return undefined;
     return prev[curr as keyof typeof config];
   }, config);
 }
