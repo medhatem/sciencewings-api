@@ -15,7 +15,27 @@
             "username":"admin",
             "password":"Pa55w0rd",
             "grantType":"password",
-            "client-id":"admin-cli"
+            "client-id":"admin-cli",
+            "baseUrl":"http://localhost:8080"
+        }
+    },
+    "staging":{
+        "baseConfig":{
+            "port": 3000
+        },
+        "DB":{
+            "host":"api-dev.ctxnpdpnlwqz.ca-central-1.rds.amazonaws.com",
+            "dbUsername": "postgres",
+            "dbPassword": "Qv3eLFNm3i90",
+            "dbName": "sciencewings_api_dev",
+            "port":5432
+        },
+        "keycloak":{
+            "username":"admin",
+            "password":"sciencewings-keycloak",
+            "grantType":"password",
+            "client-id":"admin-cli",
+            "baseUrl":"https://sciencewings-keycloak.herokuapp.com"
         }
     },
     "prod":{
@@ -33,9 +53,10 @@
             "username":"admin",
             "password":"Pa55w0rd",
             "grantType":"password",
-            "client-id":"admin-cli"
+            "client-id":"admin-cli",
+            "baseUrl":"https://sciencewings-keycloak.herokuapp.com"
         }
 
-    },
-    "staging":{}
+    }
+  
 }
