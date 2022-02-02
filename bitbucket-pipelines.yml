@@ -17,10 +17,11 @@ definitions:
           - npm run clean
           - npm install
         artifacts: # defining the artifacts to be passed to each future step.
-          - node_modules
+          - node_modules/**
     - step: &build
         name: build
         script:
+          - ls
           - npm run build
     - step: &lint
         name: lint
