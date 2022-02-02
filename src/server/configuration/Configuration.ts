@@ -4,7 +4,6 @@ import { container, provideSingleton } from '@di/index';
 @provideSingleton()
 export class Configuration {
   private config: ServerConfiguration;
-  constructor() {}
 
   static getInstance(): Configuration {
     return container.get(Configuration);

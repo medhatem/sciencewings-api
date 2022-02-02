@@ -14,7 +14,7 @@ export function validate<T extends IBase | object>(
   schema: Joi.ObjectSchema<T>,
 ): (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => any {
   return (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>): any => {
-    const originalFunction: Function = descriptor.value;
+    const originalFunction: any = descriptor.value;
     descriptor.value = async function (...args: any[]) {
       const bodyToValidate = !!args.length && args[0];
       try {

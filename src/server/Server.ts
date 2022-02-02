@@ -6,11 +6,10 @@ import * as dotevnv from 'dotenv';
 import * as express from 'express';
 
 import { Configuration, getConfig } from './configuration/Configuration';
-import { JWTTOKEN, KEYCLOAK_TOKEN } from './authenticators/constants';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 import { container, provideSingleton } from './di';
 
-import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
+import { KEYCLOAK_TOKEN } from './authenticators/constants';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { Keycloak } from '@sdks/keycloak';
 import { RequestHandler } from 'express';
@@ -69,7 +68,8 @@ export class Server {
   }
 
   private async configureServer() {
-    await this.setUpDataBase(); // start the database first since configureAuthenticator method needs the connection stream
+    // start the database first since configureAuthenticator method needs the connection stream
+    await this.setUpDataBase();
     this.configureAuthenticator(); // this method has to be executed first before generating the middlewares
     this.configureServiceFactory();
     this.addMiddlewares();
@@ -101,9 +101,7 @@ export class Server {
   }
 
   private configureAuthenticator() {
-    const authenticator = new JWTAuthenticator();
     const keyCloakAuth = container.get(KeyCloakToken);
-    RestServer.registerAuthenticator(authenticator, JWTTOKEN);
     RestServer.registerAuthenticator(keyCloakAuth, KEYCLOAK_TOKEN);
   }
 

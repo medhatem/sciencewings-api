@@ -2,7 +2,7 @@ import { BaseModel } from '@modules/base/models/BaseModel';
 import intern from 'intern';
 import { restore } from 'sinon';
 
-const { suite, test, beforeEach, afterEach } = intern.getPlugin('interface.tdd');
+const { suite, test, afterEach } = intern.getPlugin('interface.tdd');
 const { assert /*expect*/ } = intern.getPlugin('chai');
 
 // class TestModel extends BaseModel {
@@ -12,7 +12,6 @@ const { assert /*expect*/ } = intern.getPlugin('chai');
 // }
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
-  beforeEach((): void => {});
   afterEach((): void => {
     restore();
   });
