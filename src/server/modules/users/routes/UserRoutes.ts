@@ -47,7 +47,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
 
   @POST
   @Path('inviteUserToOrganization')
-  @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
+  @Response<RegisterUserFromTokenDTO>(201, 'User Invited Successfully')
   public async inviteUserToOrganization(payload: UserInviteToOrgRO) {
     await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
   }

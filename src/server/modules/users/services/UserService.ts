@@ -8,7 +8,7 @@ import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { OrganisationService } from '@modules/organisations/services/OrganisationService';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
-
+import generateEmail from './generateEmail';
 @provideSingleton()
 export class UserService extends BaseService<User> {
   constructor(
@@ -50,6 +50,8 @@ export class UserService extends BaseService<User> {
   }
 
   async inviteUserByEmail(email: string, orgId: number): Promise<number> {
+    console.log({ email, orgId });
+
     const existingUser = await this.keycloak.getAdminClient().users.find({ email, realm: 'sciencewings-web' });
     if (existingUser.length > 0) {
       throw new Error('The user already exists.');
@@ -86,8 +88,8 @@ export class UserService extends BaseService<User> {
       from: this.emailService.from,
       to: email,
       text: 'Sciencewings - reset password',
-      html: '<html><body>Reset password</body></html>',
-      subject: ' reset password',
+      html: generateEmail(existingOrg.name), //'<html><body>Reset password</body></html>',
+      subject: 'Sciencewings - reset password',
     };
 
     this.emailService.sendEmail(emailMessage);

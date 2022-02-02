@@ -25,11 +25,11 @@ export class Configuration {
     this.config = {
       currentENV: (process.env.ENV as 'dev' | 'prod' | 'staging') || 'dev',
       dev: {
-        baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
+        baseConfig: { port: (process.env.PORT as any as number) || 3000 },
         DB: {
           host: '127.0.0.1',
-          dbUsername: 'local-api',
-          dbPassword: '1234',
+          dbUsername: 'localapi',
+          dbPassword: 'localapi',
           dbName: 'local',
           port: 5433,
         },
@@ -43,7 +43,7 @@ export class Configuration {
         },
       },
       staging: {
-        baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
+        baseConfig: { port: (process.env.PORT as any as number) || 3000 },
         DB: {
           host: 'api-dev.ctxnpdpnlwqz.ca-central-1.rds.amazonaws.com',
           dbUsername: 'postgres',
@@ -61,7 +61,7 @@ export class Configuration {
         },
       },
       prod: {
-        baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
+        baseConfig: { port: (process.env.PORT as any as number) || 3000 },
         DB: {
           host: '127.0.0.1',
           dbUsername: 'admin',

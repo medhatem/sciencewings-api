@@ -5,7 +5,7 @@ import { MailService } from '@sendgrid/mail';
 
 @provideSingleton()
 export class Email extends MailService {
-  public from = 'anahnah@sciencewings.com';
+  public from = process.env.SENDGRID_FROM;
 
   constructor() {
     super();
@@ -22,6 +22,8 @@ export class Email extends MailService {
   }
 
   async sendEmail(message: EmailMessage): Promise<void> {
+    console.log({ message });
+
     await this.send(message);
   }
 }
