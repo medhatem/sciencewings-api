@@ -13,11 +13,25 @@ definitions:
     - step: &install
         name: install
         script:
+          - npm -v
+          - npm run clean
+          - npm install
+    - step: &build
+        name: build
+        script:
+          - npm run build
+    - step: &lint
+        name: lint
+        script:
+          - npm run lint-and-fix
+    - step: &installForDeployment
+        name: install dependencies for deployment
+        script:
           - apt-get update && apt-get install -y --no-install-recommends git  curl libmcrypt-dev openssl mysql-client libmagickwand-dev
           - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           - chmod +x /usr/local/bin/docker-compose
           - docker-compose --version
-    - step: &build
+    - step: &buildForDeployment
         name: build
         script:
           - docker-compose build
@@ -36,27 +50,35 @@ pipelines:
   default:
     - step: *install
     - step: *build
-    - step: *deploy
+    - step: *lint
   branches:
     dev:
-      - step: *install
-      - step: *build
+      - step: *installForDeployment
+      - step: *buildForDeployment
       - step: *deploy
     master:
-      - step: *install
-      - step: *build
+      - step: *installForDeployment
+      - step: *buildForDeployment
       - step: *deploy
     feature/*:
       - step: *install
       - step: *build
+      - step: *lint
     release/*:
       - step: *install
       - step: *build
+      - step: *lint
+      - step: *installForDeployment
+      - step: *buildForDeployment
       - step: *deploy
     hotfix/*:
       - step: *install
       - step: *build
+      - step: *lint
+      - step: *installForDeployment
+      - step: *buildForDeployment
       - step: *deploy
     bugfix/*:
       - step: *install
       - step: *build
+      - step: *lint
