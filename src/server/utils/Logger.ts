@@ -3,6 +3,7 @@ import * as colors from 'colors';
 import { Format, TransformableInfo } from 'logform';
 import { Logger as WinstonLogger, createLogger, format, transports } from 'winston';
 
+import { Json } from '../types/types';
 import { getConfig } from '../configuration/Configuration';
 import { provideSingleton } from '@di/index';
 
@@ -87,7 +88,7 @@ export class Logger {
     }
 
     function logMessageAndExtras(
-      message: string | Error | { [key: string]: any },
+      message: string | Error | Json,
       meta: { [key: string]: any },
       parts: string[],
     ): string[] {
@@ -146,19 +147,19 @@ export class Logger {
     this.logger.debug(message);
   }
 
-  warn(message: string | { [key: string]: any }): void {
+  warn(message: string | Json): void {
     if (typeof message === 'object') {
       this.logger.error(message);
     }
     this.logger.warn(colors.yellow(message as string));
   }
-  info(message: string | { [key: string]: any }): void {
+  info(message: string | Json): void {
     if (typeof message === 'object') {
       this.logger.error(message);
     }
     this.logger.info(colors.cyan(message as string));
   }
-  error(message: string | { [key: string]: any }): void {
+  error(message: string | Json): void {
     if (typeof message === 'object') {
       this.logger.error(message);
     }
