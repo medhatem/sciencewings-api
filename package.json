@@ -68,7 +68,8 @@
     "swagger-ui-express": "^4.1.4",
     "ts-node": "^10.4.0",
     "typescript-rest": "^3.0.4",
-    "typescript-rest-swagger": "^1.1.7"
+    "typescript-rest-swagger": "^1.1.7",
+    "winston": "^3.5.1"
   },
   "devDependencies": {
     "@types/bcrypt": "latest",
@@ -83,6 +84,7 @@
     "@types/sinon": "latest",
     "@types/swagger-jsdoc": "^6.0.0",
     "@types/swagger-ui-express": "^4.1.2",
+    "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "concurrently": "latest",
