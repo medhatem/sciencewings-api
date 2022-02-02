@@ -46,3 +46,17 @@ pipelines:
       - step: *install
       - step: *build
       - step: *deploy
+    feature/*:
+      - step: *install
+      - step: *build
+    release/*:
+      - step: *install
+      - step: *build
+      - step: *deploy
+    hotfix/*:
+      - step: *install
+      - step: *build
+      - step: *deploy
+    bugfix/*:
+      - step: *install
+      - step: *build
