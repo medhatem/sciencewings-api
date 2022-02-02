@@ -16,6 +16,8 @@ definitions:
           - npm -v
           - npm run clean
           - npm install
+        artifacts: # defining the artifacts to be passed to each future step.
+          - node_modules
     - step: &build
         name: build
         script:
