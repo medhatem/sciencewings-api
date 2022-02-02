@@ -36,7 +36,6 @@ export class UserExctractionAndValidation {
     const user = await this.userService.getUserByCriteria({ email: result.email });
     let userId = user ? user.id : null;
     if (!user) {
-      console.log({ userExctractionAndValidation: result });
       const createdUserId = await this.userService.registerUser(result);
       userId = createdUserId;
     }

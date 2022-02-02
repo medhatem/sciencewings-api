@@ -50,8 +50,6 @@ export class UserService extends BaseService<User> {
   }
 
   async inviteUserByEmail(email: string, orgId: number): Promise<number> {
-    console.log({ email, orgId });
-
     const existingUser = await this.keycloak.getAdminClient().users.find({ email, realm: 'sciencewings-web' });
     if (existingUser.length > 0) {
       throw new Error('The user already exists.');
