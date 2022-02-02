@@ -53,7 +53,7 @@ export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
   @GET
   @Path('/getAll')
   @Response(200, 'success')
-  // @Response(401, 'error')
+  @Response(401, 'error')
   public async getAll(): Promise<any> {
     const result = await this.service.getAll();
     return result.map((r) => this.getDTOMapper.serialize(r));
