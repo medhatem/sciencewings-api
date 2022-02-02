@@ -86,11 +86,17 @@ export class Logger {
       return parts;
     }
 
-    function logMessageAndExtras(message: string | Error, meta: { [key: string]: any }, parts: string[]): string[] {
+    function logMessageAndExtras(
+      message: string | Error | { [key: string]: any },
+      meta: { [key: string]: any },
+      parts: string[],
+    ): string[] {
       // Process message
       if (message instanceof Error) {
         parts.push('Error reported! Corresponding stack trace:');
         logError(message, parts);
+      } else if (typeof message === 'object') {
+        parts.push(JSON.stringify(message));
       } else {
         parts.push(`${message}`);
       }
@@ -107,7 +113,6 @@ export class Logger {
 
       return parts;
     }
-
     return format.printf(({ timestamp, level, message, requestId, ...meta }: TransformableInfo): string => {
       const parts: string[] = new Array(20);
       logLevel(level, parts);
@@ -141,13 +146,22 @@ export class Logger {
     this.logger.debug(message);
   }
 
-  warn(message: string): void {
-    this.logger.warn(colors.yellow(message));
+  warn(message: string | { [key: string]: any }): void {
+    if (typeof message === 'object') {
+      this.logger.error(message);
+    }
+    this.logger.warn(colors.yellow(message as string));
   }
-  info(message: string): void {
-    this.logger.info(colors.cyan(message));
+  info(message: string | { [key: string]: any }): void {
+    if (typeof message === 'object') {
+      this.logger.error(message);
+    }
+    this.logger.info(colors.cyan(message as string));
   }
-  error(message: string): void {
-    this.logger.error(colors.red(message));
+  error(message: string | { [key: string]: any }): void {
+    if (typeof message === 'object') {
+      this.logger.error(message);
+    }
+    this.logger.error(colors.red(message as string));
   }
 }
