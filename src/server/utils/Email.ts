@@ -1,16 +1,18 @@
 import { container, provideSingleton } from '@di/index';
+import { Configuration } from '../configuration/Configuration';
 
 import { EmailMessage } from '../types/types';
 import { MailService } from '@sendgrid/mail';
 
 @provideSingleton()
 export class Email extends MailService {
-  public from = process.env.SENDGRID_FROM;
+  private emailConfig = Configuration.getInstance().getConfiguration().email;
+  public from = this.emailConfig.from;
 
   constructor() {
     super();
     // TODO: should use the config instead
-    this.setApiKey(process.env.SENDGRID_API_KEY);
+    this.setApiKey(this.emailConfig.key);
   }
 
   static getInstance(): Email {
@@ -22,8 +24,6 @@ export class Email extends MailService {
   }
 
   async sendEmail(message: EmailMessage): Promise<void> {
-    console.log({ message });
-
     await this.send(message);
   }
 }

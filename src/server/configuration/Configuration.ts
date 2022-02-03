@@ -41,6 +41,10 @@ export class Configuration {
           realmName: 'master',
           baseUrl: 'http://localhost:8080/auth',
         },
+        email: {
+          from: '',
+          key: '',
+        },
       },
       staging: {
         baseConfig: { port: (process.env.PORT as any as number) || 3000 },
@@ -59,6 +63,10 @@ export class Configuration {
           realmName: 'master',
           baseUrl: 'https://sciencewings-keycloak.herokuapp.com/auth',
         },
+        email: {
+          from: '',
+          key: '',
+        },
       },
       prod: {
         baseConfig: { port: (process.env.PORT as any as number) || 3000 },
@@ -75,6 +83,10 @@ export class Configuration {
           grantType: 'password',
           clientId: 'admin-cli',
           baseUrl: 'https://sciencewings-keycloak.herokuapp.com',
+        },
+        email: {
+          from: '',
+          key: '',
         },
       },
     };

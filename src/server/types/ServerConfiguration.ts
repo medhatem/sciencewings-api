@@ -22,10 +22,16 @@ export type KeycloakConfig = {
   realmName?: string;
 };
 
+export type EmailConfig = {
+  from: string;
+  key: string;
+};
+
 export type EnvConfig = {
   baseConfig?: BaseConfig;
   DB?: ServerDBConfig;
   keycloak: KeycloakConfig;
+  email: EmailConfig;
 };
 
 export type ServerConfiguration = {

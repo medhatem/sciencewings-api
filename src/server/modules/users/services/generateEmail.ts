@@ -97,9 +97,9 @@ background-color: #e7e7e7;color: #000000">
     <div style="border-collapse: collapse;display: table;width: 100%;background-color: transparent;">
 <div class="u-col u-col-100" style="max-width: 320px;min-width: 500px;display: table-cell;vertical-align: top;">
   <div style="width: 100% !important;">
-  <!--[if (!mso)&(!IE)]><!--><div style="padding: 0px;border-top: 0px solid transparent;
+<div style="padding: 0px;border-top: 0px solid transparent;
   border-left: 0px solid transparent;border-right: 0px solid transparent;
-  border-bottom: 0px solid transparent;"><!--<![endif]-->
+  border-bottom: 0px solid transparent;">
   
 <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" 
 cellspacing="0" width="100%" border="0">

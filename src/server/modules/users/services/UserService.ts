@@ -86,7 +86,7 @@ export class UserService extends BaseService<User> {
       from: this.emailService.from,
       to: email,
       text: 'Sciencewings - reset password',
-      html: generateEmail(existingOrg.name), //'<html><body>Reset password</body></html>',
+      html: generateEmail(existingOrg.name),
       subject: 'Sciencewings - reset password',
     };
 
