@@ -1,18 +1,16 @@
 import { container, provideSingleton } from '@di/index';
-import { Configuration } from '../configuration/Configuration';
+import { getConfig } from '../configuration/Configuration';
 
 import { EmailMessage } from '../types/types';
 import { MailService } from '@sendgrid/mail';
 
 @provideSingleton()
 export class Email extends MailService {
-  private emailConfig = Configuration.getInstance().getConfiguration().email;
-  public from = this.emailConfig.from;
+  public from = getConfig('email.from');
 
   constructor() {
     super();
-    // TODO: should use the config instead
-    this.setApiKey(this.emailConfig.key);
+    this.setApiKey(getConfig('email.key'));
   }
 
   static getInstance(): Email {
