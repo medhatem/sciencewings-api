@@ -10,7 +10,7 @@ import { UserRequest } from '../../../types/UserRequest';
 import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
 import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
-import { WrapRoute } from '../../../decorators/requestDecorators/WrapRoute';
+import { Result } from '@utils/Result';
 
 @provideSingleton()
 @Path('users')
@@ -36,10 +36,18 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('registerUserFromToken')
   @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
   @Security([], KEYCLOAK_TOKEN)
-  @WrapRoute(RegisterUserFromTokenDTO)
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
-    const userId = await this.userService.registerUser(request.keycloakUser);
-    return ({ statusCode: 201, userId } as any) as RegisterUserFromTokenDTO;
+    const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
+
+    if (result.isFailure) {
+      return new RegisterUserFromTokenDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new RegisterUserFromTokenDTO().serialize({
+      body: { statusCode: 201, userId: result.getValue() },
+    });
   }
 
   /**
@@ -52,10 +60,18 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('inviteUserToOrganization')
   @Response<InviteUserDTO>(201, 'User Registred Successfully')
   @Security([], KEYCLOAK_TOKEN)
-  @WrapRoute(InviteUserDTO)
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
-    const userId = await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
-    return ({ userId, statusCode: 201 } as any) as InviteUserDTO;
+    const result = await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
+
+    if (result.isFailure) {
+      return new InviteUserDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new InviteUserDTO().serialize({
+      body: { statusCode: 201, userId: result.getValue() },
+    });
   }
 
   /**
@@ -67,9 +83,17 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('resetPassword')
   @Response<ResetPasswordDTO>(201, 'Password reset successfully')
   @Security([], KEYCLOAK_TOKEN)
-  @WrapRoute(ResetPasswordDTO)
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
-    await this.userService.resetPassword(payload);
-    return ({ message: 'Password reset successful' } as any) as ResetPasswordDTO;
+    const result = await this.userService.resetPassword(payload);
+
+    if (result.isFailure) {
+      return new ResetPasswordDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new ResetPasswordDTO().serialize({
+      body: { statusCode: 200, message: result.getValue() },
+    });
   }
 }

@@ -4,6 +4,7 @@ import { BaseService } from '@modules/base/services/BaseService';
 import { CreateOrganizationRO } from '../routes/RequestObject';
 import { OrganisationDao } from '../daos/OrganisationDao';
 import { Organization } from '@modules/organisations/models/Organization';
+import { Result } from '@utils/Result';
 import { UserDao } from '@modules/users/daos/UserDao';
 
 @provideSingleton()
@@ -25,11 +26,11 @@ export class OrganisationService extends BaseService<Organization> {
    *
    * @param payload
    */
-  public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<number> {
+  public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     try {
       const existingOrg = await this.dao.getByCriteria({ name: payload.name });
       if (existingOrg) {
-        throw new Error(`Organization ${payload.name} already exists.`);
+        return Result.fail<number>(`Organization ${payload.name} already exists.`);
       }
       const user = await this.userDao.get(userId);
 
@@ -40,15 +41,15 @@ export class OrganisationService extends BaseService<Organization> {
       if (payload.parentId) {
         const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
         if (!existingOrg) {
-          throw new Error('Organization parent does not exist');
+          return Result.fail<number>('Organization parent does not exist');
         }
         createdOrg.parent = existingOrg;
         await this.update(createdOrg);
       }
 
-      return createdOrg.id;
+      return Result.ok<number>(createdOrg.id);
     } catch (error) {
-      throw error;
+      return Result.fail<number>(error);
     }
   }
 }

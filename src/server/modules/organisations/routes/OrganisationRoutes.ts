@@ -27,12 +27,12 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
   ): Promise<CreatedOrganizationDTO> {
-    const mapper = this.getMapperFromRequest(CreatedOrganizationDTO);
-    try {
-      const created = await this.OrganisationService.createOrganization(payload, request.userId);
-      return mapper.serialize<CreatedOrganizationDTO>({ body: { createdOrgId: created, statusCode: 201 } });
-    } catch (error) {
-      return mapper.serialize<CreatedOrganizationDTO>({ error: { statusCode: 500, errorMessage: error.message } });
+    const result = await this.OrganisationService.createOrganization(payload, request.userId);
+
+    if (result.isFailure) {
+      return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.getValue() } });
     }
+
+    return new CreatedOrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
   }
 }
