@@ -1,11 +1,12 @@
+// import * as Mongoose from 'mongoose';
 // import * as cors from 'cors';
 // import * as express from 'express';
 
 // import { ExpressBodyParser, ExpressCors, ExpressRouter, Server } from '../server/Server';
 // import { SinonStubbedInstance, createStubInstance, match, restore, spy, stub } from 'sinon';
 
+// import { Configuration } from '../server/configuration/Configuration';
 // import { Router } from 'express-serve-static-core';
-// import { ServerConfiguration } from '../server/types/ServerConfiguration';
 // import intern from 'intern';
 
 // // const { describe, it } = intern.getPlugin('interface.bdd');
@@ -18,7 +19,7 @@
 //   let expressRouter: ExpressRouter;
 //   let mongoose: SinonStubbedInstance<Mongoose.Mongoose>;
 //   let server: Server;
-//   const config: ServerConfiguration = {
+//   const config: Configuration = {
 //     currentENV: 'dev',
 //     dev: {
 //       baseConfig: {
@@ -36,6 +37,7 @@
 //         grantType: 'password',
 //         password: 'pass',
 //         username: 'user',
+//         baseUrl: '',
 //       },
 //     },
 //   };
@@ -73,10 +75,10 @@
 
 //     server = new Server(
 //       config,
-//       expressApp as any as express.Application,
-//       bodyParser as any as ExpressBodyParser,
-//       expressCors as any as ExpressCors,
-//       expressRouter as any as ExpressRouter,
+//       (expressApp as any) as express.Application,
+//       (bodyParser as any) as ExpressBodyParser,
+//       (expressCors as any) as ExpressCors,
+//       (expressRouter as any) as ExpressRouter,
 //     );
 //   });
 //   afterEach((): void => {

@@ -5,7 +5,7 @@ import { MailService } from '@sendgrid/mail';
 
 @provideSingleton()
 export class Email extends MailService {
-  public from: string = 'anahnah@sciencewings.com';
+  public from = 'anahnah@sciencewings.com';
 
   constructor() {
     super();

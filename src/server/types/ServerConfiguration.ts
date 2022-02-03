@@ -11,12 +11,15 @@ export type ServerDBConfig = {
 };
 
 export declare type GrantTypes = 'client_credentials' | 'password';
+export declare type env = 'dev' | 'prod' | 'staging';
 
 export type KeycloakConfig = {
   username: string;
   password: string;
   grantType: GrantTypes;
-  'client-id': string;
+  clientId: string;
+  baseUrl: string;
+  realmName?: string;
 };
 
 export type EnvConfig = {
@@ -26,7 +29,7 @@ export type EnvConfig = {
 };
 
 export type ServerConfiguration = {
-  currentENV: 'dev' | 'prod' | 'staging';
+  currentENV: env;
   dev?: EnvConfig;
   prod?: EnvConfig;
   staging?: EnvConfig;
