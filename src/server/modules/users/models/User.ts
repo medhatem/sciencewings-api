@@ -32,7 +32,7 @@ export class User extends BaseModel<User> {
 
   // @ManyToOne({ entity: () => Organisation })
   // @ManyToMany(() => Organisation, 'users', { owner: true })
-  @ManyToMany(() => Organization, (organisation) => organisation.users)
+  @ManyToMany(() => Organization, (organisation) => organisation.memebers)
   organisations = new Collection<Organization>(this);
 
   // @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })

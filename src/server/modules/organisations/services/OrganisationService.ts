@@ -1,3 +1,6 @@
+import { OrganisationContactDao } from './../daos/OrganizationContactDao';
+import { OrganisationSocialDao } from './../daos/OrganizationSocialDao';
+import { OrganisationLabelDao } from './../daos/OrganizationLabelDao';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from '@modules/base/services/BaseService';
@@ -8,7 +11,13 @@ import { UserDao } from '@modules/users/daos/UserDao';
 
 @provideSingleton()
 export class OrganisationService extends BaseService<Organization> {
-  constructor(public dao: OrganisationDao, public userDao: UserDao) {
+  constructor(
+    public dao: OrganisationDao,
+    public userDao: UserDao,
+    public labelDAO: OrganisationLabelDao,
+    public socialDAO: OrganisationSocialDao,
+    public contactDAO: OrganisationContactDao,
+  ) {
     super(dao);
   }
 
@@ -32,7 +41,12 @@ export class OrganisationService extends BaseService<Organization> {
     }
     const user = await this.userDao.get(userId);
 
-    const organization = this.wrapEntity(this.dao.model, { name: payload.name });
+    const organization = this.wrapEntity(this.dao.model, {
+      name: payload.name,
+      email: payload.email,
+      phone: payload.phone,
+      type: payload.type,
+    });
     await user.organisations.init();
     user.organisations.add(organization);
     const createdOrg = await this.create(this.dao.model);
@@ -44,6 +58,54 @@ export class OrganisationService extends BaseService<Organization> {
       createdOrg.parent = existingOrg;
       await this.update(createdOrg);
     }
+
+    payload.labels.map((el: string) => {
+      this.labelDAO.create({
+        id: null,
+        toJSON: null,
+        name: el,
+        organisation: createdOrg,
+      });
+    });
+
+    payload.social.map((el: any) => {
+      this.socialDAO.create({
+        id: null,
+        toJSON: null,
+        type: el.type,
+        link: el.link,
+        organisation: createdOrg,
+      });
+    });
+
+    payload.contacts.map((el: any) => {
+      this.contactDAO.create({
+        id: null,
+        toJSON: null,
+        type: 'contact',
+        value: el,
+        organisation: createdOrg,
+      });
+    });
+
+    payload.adminContacts.map((el: any) => {
+      this.contactDAO.create({
+        id: null,
+        toJSON: null,
+        type: 'admin_contact',
+        value: el,
+        organisation: createdOrg,
+      });
+    });
+
+    await Promise.all(
+      payload.memebers.map(async (el: number) => {
+        const user = await this.userDao.get(userId);
+        if (user) createdOrg.memebers.add(user);
+      }),
+    );
+
+    await this.update(createdOrg);
 
     return createdOrg.id;
   }
