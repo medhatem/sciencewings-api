@@ -1,8 +1,4 @@
-import { OrganizationSocial } from './../models/OraganizationSocial';
-import { OrganizationContact } from './../models/OrganizationContact';
-import { OrganizationLabel } from '@modules/organisations/models/OrganizationLabel';
 import { dto, include } from 'dto-mapper';
-import { User } from '@modules/users/models/User';
 
 @dto()
 export class CreateOrganizationRO {
