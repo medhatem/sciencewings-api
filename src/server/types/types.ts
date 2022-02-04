@@ -5,3 +5,5 @@ export type EmailMessage = {
   text: string;
   html: string;
 };
+
+export type Json = { [key: string]: any };
