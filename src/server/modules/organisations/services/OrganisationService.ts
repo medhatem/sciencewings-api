@@ -100,7 +100,7 @@ export class OrganisationService extends BaseService<Organization> {
 
     await Promise.all(
       payload.memebers.map(async (el: number) => {
-        const user = await this.userDao.get(userId);
+        const user = await this.userDao.get(el);
         if (user) createdOrg.memebers.add(user);
       }),
     );
