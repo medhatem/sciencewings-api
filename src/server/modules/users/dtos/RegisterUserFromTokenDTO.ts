@@ -1,24 +1,44 @@
-import { BaseBodyDTO, BaseDTO, BaseErrorDTO } from '../../base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()
-export class RegisterUserFromTokenBodyDTO extends BaseBodyDTO {
+export class UserIdDTO extends BaseBodyDTO {
   @include()
   userId: number;
 }
 
 @dto()
-export class RegisterUserFromTokenErrorDTO extends BaseErrorDTO {}
+export class ResetDTO extends BaseBodyDTO {
+  @include()
+  message: string;
+}
 
 @dto()
-export class RegisterUserFromTokenDTO extends BaseDTO {
-  constructor() {
-    super();
-  }
+export class ErrorDTO extends BaseErrorDTO {}
+
+@dto()
+export class RegisterUserFromTokenDTO extends BaseRequestDTO {
+  @include()
+  body?: UserIdDTO = new UserIdDTO();
 
   @include()
-  body?: RegisterUserFromTokenBodyDTO = new RegisterUserFromTokenBodyDTO();
+  error?: BaseErrorDTO = new ErrorDTO();
+}
+
+@dto()
+export class InviteUserDTO extends BaseRequestDTO {
+  @include()
+  body?: UserIdDTO = new UserIdDTO();
 
   @include()
-  error?: BaseErrorDTO = new RegisterUserFromTokenErrorDTO();
+  error?: BaseErrorDTO = new ErrorDTO();
+}
+
+@dto()
+export class ResetPasswordDTO extends BaseRequestDTO {
+  @include()
+  body?: ResetDTO = new ResetDTO();
+
+  @include()
+  error?: BaseErrorDTO = new ErrorDTO();
 }

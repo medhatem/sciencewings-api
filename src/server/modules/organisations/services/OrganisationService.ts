@@ -8,12 +8,14 @@ import { CreateOrganizationRO } from '../routes/RequestObject';
 import { OrganisationDao } from '../daos/OrganisationDao';
 import { Organization } from '@modules/organisations/models/Organization';
 import { UserService } from '@modules/users/services/UserService';
+import { Result } from '@utils/Result';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
 
 @provideSingleton()
 export class OrganisationService extends BaseService<Organization> {
   constructor(
     public dao: OrganisationDao,
-    // public userDao: UserDao,
     public userService: UserService,
     public labelDAO: OrganisationLabelDao,
     public socialDAO: OrganisationSocialDao,
@@ -35,10 +37,12 @@ export class OrganisationService extends BaseService<Organization> {
    *
    * @param payload
    */
-  public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<number> {
+  @log()
+  @safeGuard()
+  public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
-      throw new Error(`Organization ${payload.name} already exists.`);
+      return Result.fail<number>(`Organization ${payload.name} already exists.`);
     }
 
     const user = await this.userService.get(userId);
@@ -67,7 +71,7 @@ export class OrganisationService extends BaseService<Organization> {
     if (payload.parentId) {
       const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
       if (!existingOrg) {
-        throw new Error('Organization parent does not exist');
+        return Result.fail<number>('Organization parent does not exist');
       }
       createdOrg.parent = existingOrg;
       await this.update(createdOrg);
@@ -100,7 +104,6 @@ export class OrganisationService extends BaseService<Organization> {
     );
 
     await this.update(createdOrg);
-
-    return createdOrg.id;
+    return Result.ok<number>(createdOrg.id);
   }
 }
