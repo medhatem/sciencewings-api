@@ -12,6 +12,7 @@ import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
 
 @provideSingleton()
 export class UserService extends BaseService<User> {
@@ -29,6 +30,7 @@ export class UserService extends BaseService<User> {
   }
 
   @log()
+  @safeGuard()
   async registerUser(userInfo: KeycloakUserInfo): Promise<Result<number>> {
     // get the userKeyCloakId
     const users = await this.keycloak.getAdminClient().users.find({ email: userInfo.email, realm: 'sciencewings-web' });
@@ -57,11 +59,13 @@ export class UserService extends BaseService<User> {
    * @param criteria the search criteria
    */
   @log()
+  @safeGuard()
   async getUserByCriteria(criteria: { [key: string]: any }) {
     return await this.dao.getByCriteria(criteria);
   }
 
   @log()
+  @safeGuard()
   async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
     const existingUser = await this.keycloak
       .getAdminClient()
@@ -80,7 +84,7 @@ export class UserService extends BaseService<User> {
       email,
       firstName: '',
       lastName: '',
-      realm: 'sciencewings-web',
+      realm: getConfig('keycloak.clientValidation.realmName'),
     });
 
     //save created keycloak user in the database
@@ -116,6 +120,7 @@ export class UserService extends BaseService<User> {
    * @param payload
    */
   @log()
+  @safeGuard()
   async resetPassword(payload: ResetPasswordRO): Promise<Result<string>> {
     if (payload.password !== payload.passwordConfirmation) {
       return Result.fail<string>("Passwords don't match");
@@ -127,7 +132,7 @@ export class UserService extends BaseService<User> {
     }
 
     await this.keycloak.getAdminClient().users.resetPassword({
-      realm: 'sciencewings-web',
+      realm: getConfig('keycloak.clientValidation.realmName'),
       id: user.keycloakId,
       credential: {
         temporary: false,

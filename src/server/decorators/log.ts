@@ -3,8 +3,20 @@ import { LogLevel, LogOptions, Logger } from '@utils/Logger';
 import { getConfig } from '../configuration/Configuration';
 
 /**
- * Method decorator that logs when we use each method
- * along with the method name as well as its parameters
+ * Method decorator that logs information about the decorated method
+ * such as method name, method class and parameters it was called with
+ *
+ * the options parameter allows to customize the logging
+ * example:
+ * options:{
+ *   message?: string;
+ *   level: LogLevel;
+ *   displayLogs?: boolean; // set to true by default
+ * }
+ *
+ * if message is provided that given message is displayed instead of the default
+ * if level is provided then display logs accordingly
+ * if displayLogs is set to false then do not display logs for the current decorated method
  *
  *
  *

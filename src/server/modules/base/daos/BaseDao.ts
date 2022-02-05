@@ -31,7 +31,7 @@ export class BaseDao<T extends BaseModel<T>> {
    */
   @log()
   async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
-    return await (this.repository as any).findOne(criteria);
+    return (this.repository as any).findOne(criteria);
   }
 
   @log()
