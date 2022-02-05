@@ -2,10 +2,17 @@ import * as colors from 'colors';
 
 import { Format, TransformableInfo } from 'logform';
 import { Logger as WinstonLogger, createLogger, format, transports } from 'winston';
+import { container, provideSingleton } from '@di/index';
 
 import { Json } from '../types/types';
+import { LocalStorage } from './LocalStorage';
 import { getConfig } from '../configuration/Configuration';
-import { provideSingleton } from '@di/index';
+
+export type LogOptions = {
+  message?: string;
+  level: LogLevel;
+  displayLogs?: boolean;
+};
 
 export enum LogLevel {
   ERROR = 'error',
@@ -44,102 +51,133 @@ export const COLORS = {
   BgWhite: '\x1b[47m',
   BgYellow: '\x1b[43m',
 };
-
 @provideSingleton()
 export class Logger {
   private logger: WinstonLogger;
-  constructor(classNameId: string) {
-    this.setup(classNameId, getConfig('currentENV'), LogLevel.DEBUG);
+  constructor(public store: LocalStorage) {}
+
+  static getInstance(): Logger {
+    const logger = container.get(Logger);
+    if (!logger.logger) {
+      logger.setup(getConfig('logger.loglevel') || LogLevel.DEBUG);
+    }
+    return logger;
   }
 
-  static getInstance(classNameId: string): Logger {
-    return new Logger(classNameId);
-  }
-
-  private static getFormat(classNameId: string): Format {
-    function logLevel(level: string, parts: string[]): string[] {
-      switch (level) {
-        case LogLevel.ERROR:
-          parts.push(COLORS.FgRed);
-          break;
-        case LogLevel.WARNING:
-          parts.push(COLORS.FgMagenta);
-          break;
-        case LogLevel.INFO:
-          parts.push(COLORS.FgGreen);
-          break;
-        case LogLevel.VERBOSE:
-          parts.push(COLORS.FgYellow);
-          break;
-        case LogLevel.DEBUG:
-          parts.push(COLORS.FgWhite);
-          break;
-        default:
-          parts.push(COLORS.FgCyan);
-      }
-      parts.push(`${level.padStart('warning'.length)}${COLORS.Reset} - [${classNameId}] `);
-
-      return parts;
-    }
-
-    function logError(error: Error, parts: string[]): string[] {
-      parts.push(`\n${COLORS.BgRed}${error.stack}${COLORS.Reset}`);
-      return parts;
-    }
-
-    function logMessageAndExtras(
-      message: string | Error | Json,
-      meta: { [key: string]: any },
-      parts: string[],
-    ): string[] {
-      // Process message
-      if (message instanceof Error) {
-        parts.push('Error reported! Corresponding stack trace:');
-        logError(message, parts);
-      } else if (typeof message === 'object') {
-        parts.push(JSON.stringify(message));
-      } else {
-        parts.push(`${message}`);
-      }
-
-      // PRocess extras
-      for (const key of Object.keys(meta)) {
-        const data = meta[key];
-        if (data instanceof Error) {
-          logError(data, parts);
-        } else {
-          parts.push(`; extra[${key}]: ${JSON.stringify(data)}`);
-        }
-      }
-
-      return parts;
-    }
+  private getFormat(): Format {
     return format.printf(({ timestamp, level, message, requestId, ...meta }: TransformableInfo): string => {
       const parts: string[] = new Array(20);
-      logLevel(level, parts);
-      logMessageAndExtras(message, meta, parts);
-      return parts.join('');
+      this.logLevel(level, parts);
+      this.logMessageAndExtras(message, meta, parts);
+      return `[${timestamp}] - ${parts.join('')} `;
     });
   }
 
-  public setup(classNameId: string, configMode: string, logLevel: string, injectedFormat: any = format): WinstonLogger {
+  logError(error: Error, parts: string[]): string[] {
+    parts.push(`\n${COLORS.BgRed}${error.stack}${COLORS.Reset}`);
+    return parts;
+  }
+
+  logLevel(level: string, parts: string[]): string[] {
+    switch (level) {
+      case LogLevel.ERROR:
+        parts.push(COLORS.FgRed);
+        break;
+      case LogLevel.WARNING:
+        parts.push(COLORS.FgMagenta);
+        break;
+      case LogLevel.INFO:
+        parts.push(COLORS.FgGreen);
+        break;
+      case LogLevel.VERBOSE:
+        parts.push(COLORS.FgYellow);
+        break;
+      case LogLevel.DEBUG:
+        parts.push(COLORS.FgWhite);
+        break;
+      default:
+        parts.push(COLORS.FgCyan);
+    }
+    parts.push(`${level}${COLORS.Reset} `);
+
+    return parts;
+  }
+
+  logMessageAndExtras(message: string | Error | Json, meta: { [key: string]: any }, parts: string[]): string[] {
+    // Process message
+    if (message instanceof Error) {
+      parts.push('Error reported! Corresponding stack trace:');
+      this.logError(message, parts);
+    } else if (typeof message === 'object') {
+      parts.push(JSON.stringify(message));
+    } else {
+      parts.push(`${message}`);
+    }
+    const metadataWithStoreId: { [key: string]: any } = {
+      ...meta,
+      ...(this.store && this.store.getStore() ? { uniqueId: this.store.getStore().id } : {}),
+    };
+
+    // PRocess extras
+    for (const key of Object.keys(metadataWithStoreId)) {
+      const data = metadataWithStoreId[key];
+      if (data instanceof Error) {
+        this.logError(data, parts);
+      } else {
+        parts.push(` extra[${key}]: ${JSON.stringify(data)}`);
+      }
+    }
+
+    return parts;
+  }
+
+  public setup(logLevel: string, injectedFormat: any = format): WinstonLogger {
     this.logger = createLogger({
       exitOnError: false, // do not exit on handled exceptions
-      format: injectedFormat.combine(injectedFormat.timestamp(), injectedFormat.splat(), Logger.getFormat(classNameId)),
+      format: injectedFormat.combine(injectedFormat.timestamp(), injectedFormat.splat(), this.getFormat()),
       transports: [
         new transports.Console({
           handleExceptions: true,
           level: logLevel || 'debug',
+          silent: getConfig('logger.displayNoLogs') || false,
         }),
       ],
     });
+
     return this.logger;
   }
 
+  logWithLevel(message: string, level: LogLevel) {
+    switch (level) {
+      case LogLevel.ERROR:
+        this.error(message);
+        break;
+      case LogLevel.WARNING:
+        this.warn(message);
+        break;
+      case LogLevel.INFO:
+        this.info(message);
+        break;
+      case LogLevel.VERBOSE:
+        this.verbose(message);
+        break;
+      case LogLevel.DEBUG:
+        this.log(message);
+        break;
+      default:
+    }
+  }
+
   log(message: string): void {
+    if (getConfig('logger.displayManualLogs') === false) {
+      return;
+    }
     this.logger.debug(message);
   }
   logOverwrite(message: string): void {
+    if (getConfig('logger.displayManualLogs') === false) {
+      return;
+    }
     // clearLine and cursorTo won't work in child processes
     process.stdout.clearLine && process.stdout.clearLine(-1);
     process.stdout.cursorTo && process.stdout.cursorTo(0);
@@ -147,22 +185,28 @@ export class Logger {
     this.logger.debug(message);
   }
 
-  warn(message: string | Json): void {
-    if (typeof message === 'object') {
-      this.logger.error(message);
+  warn(message: string, ...meta: any[]): void {
+    if (getConfig('logger.displayManualLogs') === false) {
+      return;
     }
-    this.logger.warn(colors.yellow(message as string));
+    this.logger.warn(colors.yellow(message as string), ...meta);
   }
-  info(message: string | Json): void {
-    if (typeof message === 'object') {
-      this.logger.error(message);
+  info(message: string, ...meta: any[]): void {
+    if (getConfig('logger.displayManualLogs') === false) {
+      return;
     }
-    this.logger.info(colors.cyan(message as string));
+    this.logger.info(colors.cyan(message as string), ...meta);
   }
-  error(message: string | Json): void {
-    if (typeof message === 'object') {
-      this.logger.error(message);
+  error(message: string, ...meta: any[]): void {
+    if (getConfig('logger.displayManualLogs') === false) {
+      return;
     }
-    this.logger.error(colors.red(message as string));
+    this.logger.error(colors.red(message as string), ...meta);
+  }
+  verbose(message: string, ...meta: any[]): void {
+    if (getConfig('logger.displayManualLogs') === false) {
+      return;
+    }
+    this.logger.verbose(colors.red(message as string), ...meta);
   }
 }
