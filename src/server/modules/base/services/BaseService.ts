@@ -3,12 +3,17 @@ import { AssignOptions, wrap } from '@mikro-orm/core';
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { Keycloak } from '@sdks/keycloak';
+import { Logger } from '../../../utils/Logger';
+import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { ServerError } from '@errors/ServerError';
 import { provideSingleton } from '../../../di';
 
 @provideSingleton()
 export class BaseService<T extends BaseModel<T>> {
-  constructor(public dao: BaseDao<T>, public keycloak: Keycloak = Keycloak.getInstance()) {}
+  public logger: Logger;
+  constructor(public dao: BaseDao<T>, public keycloak: Keycloak = Keycloak.getInstance()) {
+    this.logger = Logger.getInstance();
+  }
 
   static getInstance(): void {
     throw new ServerError('baseService must be overriden!');
@@ -31,6 +36,7 @@ export class BaseService<T extends BaseModel<T>> {
     return this.dao.update(entity);
   }
 
+  @LoggerStorage()
   async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
     return await this.getByCriteria(criteria);
   }

@@ -1,8 +1,11 @@
+import { Logger } from './Logger';
+
 export class Result<T> {
   public isSuccess: boolean;
   public isFailure: boolean;
   public error: string;
   private _value: T;
+  public logger: Logger;
 
   private constructor(isSuccess: boolean, error?: string, value?: T) {
     if (isSuccess && error) {
@@ -12,6 +15,10 @@ export class Result<T> {
     if (!isSuccess && !error) {
       throw new Error(`InvalidOperation: A failing result 
           needs to contain an error message`);
+    }
+    if (!isSuccess && error) {
+      //log the error
+      Logger.getInstance().error(error);
     }
 
     this.isSuccess = isSuccess;
@@ -35,7 +42,7 @@ export class Result<T> {
   }
 
   public static fail<U>(error: string): Result<U> {
-    return new Result<U>(false, error);
+    return new Result<U>(false, error, null);
   }
 
   public static combine(results: Result<any>[]): Result<any> {

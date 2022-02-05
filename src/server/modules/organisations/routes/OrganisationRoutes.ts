@@ -8,6 +8,7 @@ import { CreateOrganizationRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { CreatedOrganizationDTO } from '../dtos/createdOrganizationDTO';
 import { OrganizationDTO } from '../dtos/OrganizationDTO';
+import { LoggerStorage } from '../../../decorators/loggerStorage';
 
 @provideSingleton()
 @Path('organisation')
@@ -23,6 +24,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
   @POST
   @Path('createOrganisation')
   @Security('', KEYCLOAK_TOKEN)
+  @LoggerStorage()
   public async createOrganisation(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
@@ -30,7 +32,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
     const result = await this.OrganisationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
-      return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.getValue() } });
+      return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
     return new CreatedOrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });

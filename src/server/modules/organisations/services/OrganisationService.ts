@@ -6,6 +6,7 @@ import { OrganisationDao } from '../daos/OrganisationDao';
 import { Organization } from '@modules/organisations/models/Organization';
 import { Result } from '@utils/Result';
 import { UserDao } from '@modules/users/daos/UserDao';
+import { log } from '../../../decorators/log';
 
 @provideSingleton()
 export class OrganisationService extends BaseService<Organization> {
@@ -26,6 +27,7 @@ export class OrganisationService extends BaseService<Organization> {
    *
    * @param payload
    */
+  @log()
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     try {
       const existingOrg = await this.dao.getByCriteria({ name: payload.name });

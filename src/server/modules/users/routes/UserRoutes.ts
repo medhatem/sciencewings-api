@@ -11,6 +11,7 @@ import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dt
 import { UserDTO } from '../dtos/UserDTO';
 import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
 import { Result } from '@utils/Result';
+import { LoggerStorage } from '../../../decorators/loggerStorage';
 
 @provideSingleton()
 @Path('users')
@@ -36,6 +37,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('registerUserFromToken')
   @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
   @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
     const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
 
@@ -60,6 +62,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('inviteUserToOrganization')
   @Response<InviteUserDTO>(201, 'User Registred Successfully')
   @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
     const result = await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
 
@@ -83,6 +86,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('resetPassword')
   @Response<ResetPasswordDTO>(201, 'Password reset successfully')
   @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
     const result = await this.userService.resetPassword(payload);
 

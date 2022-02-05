@@ -6,12 +6,15 @@ import { Path, GET, PUT, PathParam } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
 import { BaseDTO, BaseRequestDTO } from '../dtos/BaseDTO';
 import { buildMapper, Class, IMapper } from 'dto-mapper';
+import { Logger } from '@utils/Logger';
 
 @provideSingleton()
 export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
   private getDTOMapper: IMapper<Y, unknown>;
+  public logger: Logger;
   constructor(private service: BaseService<T>, private baseGetDTO: Class<Y>) {
     this.getDTOMapper = this.getMapper(this.baseGetDTO);
+    this.logger = Logger.getInstance();
   }
 
   /**
