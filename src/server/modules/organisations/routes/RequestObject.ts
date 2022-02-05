@@ -18,16 +18,16 @@ export class CreateOrganizationRO {
   labels: string[];
 
   @include()
-  memebers: number[];
+  members: number[];
 
   @include()
-  contacts: { type: string; value: number }[];
+  contact: number;
 
   @include()
   social: { type: string; link: number }[];
 
   @include()
-  adminContacts: { type: string; value: number }[];
+  adminContact: number;
 
   @include()
   parentId?: string;

@@ -41,11 +41,23 @@ export class OrganisationService extends BaseService<Organization> {
     }
     const user = await this.userDao.get(userId);
 
+    const direction = await this.userDao.get(payload.contact);
+    if (direction) {
+      throw new Error(`User with id: ${payload.contact} dose not exists.`);
+    }
+
+    const adminContact = await this.userDao.get(payload.adminContact);
+    if (adminContact) {
+      throw new Error(`User with id: ${payload.adminContact} dose not exists.`);
+    }
+
     const organization = this.wrapEntity(this.dao.model, {
       name: payload.name,
       email: payload.email,
       phone: payload.phone,
       type: payload.type,
+      direction: direction,
+      adminContact: adminContact,
     });
     await user.organisations.init();
     user.organisations.add(organization);
@@ -78,30 +90,10 @@ export class OrganisationService extends BaseService<Organization> {
       });
     });
 
-    payload.contacts.map((el: any) => {
-      this.contactDAO.create({
-        id: null,
-        toJSON: null,
-        type: 'contact',
-        value: el,
-        organisation: createdOrg,
-      });
-    });
-
-    payload.adminContacts.map((el: any) => {
-      this.contactDAO.create({
-        id: null,
-        toJSON: null,
-        type: 'admin_contact',
-        value: el,
-        organisation: createdOrg,
-      });
-    });
-
     await Promise.all(
-      payload.memebers.map(async (el: number) => {
+      payload.members.map(async (el: number) => {
         const user = await this.userDao.get(el);
-        if (user) createdOrg.memebers.add(user);
+        if (user) createdOrg.members.add(user);
       }),
     );
 

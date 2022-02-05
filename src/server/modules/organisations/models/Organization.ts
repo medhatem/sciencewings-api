@@ -1,5 +1,5 @@
-import { OrganizationContact } from './OrganizationContact';
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
+// import { OrganizationContact } from './OrganizationContact';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { User } from '@modules/users/models/User';
@@ -38,13 +38,13 @@ export class Organization extends BaseModel<Organization> {
   public labels? = new Collection<OrganizationLabel>(this);
 
   @ManyToMany({ entity: () => User })
-  memebers? = new Collection<User>(this);
+  members? = new Collection<User>(this);
 
-  @OneToMany({
-    entity: () => OrganizationSocial,
-    mappedBy: (entity) => entity.organisation,
-  })
-  public contacts? = new Collection<OrganizationContact>(this);
+  // @OneToMany({
+  //   entity: () => OrganizationContact,
+  //   mappedBy: (entity) => entity.organisation,
+  // })
+  // public contacts? = new Collection<OrganizationContact>(this);
 
   @OneToMany({
     entity: () => OrganizationSocial,
@@ -52,11 +52,15 @@ export class Organization extends BaseModel<Organization> {
   })
   public social? = new Collection<OrganizationSocial>(this);
 
-  // @OneToMany({
-  //   entity: () => OrganizationContact,
-  //   mappedBy: (entity) => entity.organisation,
-  // })
-  // public adminContacts? = new Collection<OrganizationContact>(this);
+  @OneToOne({
+    entity: () => User,
+  })
+  public direction!: User;
+
+  @OneToOne({
+    entity: () => User,
+  })
+  public admin_contact!: User;
 
   @ManyToOne({
     entity: () => Organization,

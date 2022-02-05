@@ -77,8 +77,8 @@ export class UserService extends BaseService<User> {
     const savedUser = await this.dao.create(user);
 
     // add the invited user to the organization
-    await existingOrg.memebers.init();
-    existingOrg.memebers.add(savedUser);
+    await existingOrg.members.init();
+    existingOrg.members.add(savedUser);
 
     await this.dao.update(savedUser);
 
