@@ -7,13 +7,14 @@ import { BaseService } from '@modules/base/services/BaseService';
 import { CreateOrganizationRO } from '../routes/RequestObject';
 import { OrganisationDao } from '../daos/OrganisationDao';
 import { Organization } from '@modules/organisations/models/Organization';
-import { UserDao } from '@modules/users/daos/UserDao';
+import { UserService } from '@modules/users/services/UserService';
 
 @provideSingleton()
 export class OrganisationService extends BaseService<Organization> {
   constructor(
     public dao: OrganisationDao,
-    public userDao: UserDao,
+    // public userDao: UserDao,
+    public userService: UserService,
     public labelDAO: OrganisationLabelDao,
     public socialDAO: OrganisationSocialDao,
     public contactDAO: OrganisationContactDao,
@@ -39,14 +40,15 @@ export class OrganisationService extends BaseService<Organization> {
     if (existingOrg) {
       throw new Error(`Organization ${payload.name} already exists.`);
     }
-    const user = await this.userDao.get(userId);
 
-    const direction = await this.userDao.get(payload.contact);
+    const user = await this.userService.get(userId);
+
+    const direction = await this.userService.get(payload.contact);
     if (direction) {
       throw new Error(`User with id: ${payload.contact} dose not exists.`);
     }
 
-    const adminContact = await this.userDao.get(payload.adminContact);
+    const adminContact = await this.userService.get(payload.adminContact);
     if (adminContact) {
       throw new Error(`User with id: ${payload.adminContact} dose not exists.`);
     }
@@ -92,7 +94,7 @@ export class OrganisationService extends BaseService<Organization> {
 
     await Promise.all(
       payload.members.map(async (el: number) => {
-        const user = await this.userDao.get(el);
+        const user = await this.userService.get(el);
         if (user) createdOrg.members.add(user);
       }),
     );
