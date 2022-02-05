@@ -1,0 +1,5831 @@
+{
+  "namespaces": [
+    "public"
+  ],
+  "name": "public",
+  "tables": [
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "plan",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "plan_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "color": {
+          "name": "color",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "employee_category",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "hr_employee_category_name_uniq",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "employee_category_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "departure_reason",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "departure_reason_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "contract_type",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "contract_type_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "shortcut": {
+          "name": "shortcut",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_partner_title",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "res_partner_title_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_partner_industry",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "res_partner_industry_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "color": {
+          "name": "color",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "parent_path": {
+          "name": "parent_path",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_partner_category",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "parent_id"
+          ],
+          "composite": false,
+          "keyName": "res_partner_category_parent_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "parent_path"
+          ],
+          "composite": false,
+          "keyName": "res_partner_category_parent_path_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "res_partner_category_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_partner_category_parent_id_foreign": {
+          "constraintName": "res_partner_category_parent_id_foreign",
+          "columnNames": [
+            "parent_id"
+          ],
+          "localTableName": "public.res_partner_category",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner_category",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "symbol": {
+          "name": "symbol",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "rounding": {
+          "name": "rounding",
+          "type": "numeric",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "decimal_places": {
+          "name": "decimal_places",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "position": {
+          "name": "position",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "currency_unit_label": {
+          "name": "currency_unit_label",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "currency_subunit_label": {
+          "name": "currency_subunit_label",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_currency",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "res_currency_unique_name",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_currency_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "res_country_group",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "res_country_group_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 2
+        },
+        "address_format": {
+          "name": "address_format",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "address_view_id": {
+          "name": "address_view_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "phone_code": {
+          "name": "phone_code",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name_position": {
+          "name": "name_position",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "vat_label": {
+          "name": "vat_label",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "state_required": {
+          "name": "state_required",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "zip_required": {
+          "name": "zip_required",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_country",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "res_country_name_uniq",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "code"
+          ],
+          "composite": false,
+          "keyName": "res_country_code_uniq",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_country_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_country_currency_id_foreign": {
+          "constraintName": "res_country_currency_id_foreign",
+          "columnNames": [
+            "currency_id"
+          ],
+          "localTableName": "public.res_country",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_currency",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "country_id": {
+          "name": "country_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "res_country_state",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "country_id"
+          ],
+          "composite": false,
+          "keyName": "res_country_state_country_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_country_state_name_code_uniq",
+          "columnNames": [
+            "country_id",
+            "code"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_country_state_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_country_state_country_id_foreign": {
+          "constraintName": "res_country_state_country_id_foreign",
+          "columnNames": [
+            "country_id"
+          ],
+          "localTableName": "public.res_country_state",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "street": {
+          "name": "street",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "street2": {
+          "name": "street2",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "zip": {
+          "name": "zip",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "state": {
+          "name": "state",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "country": {
+          "name": "country",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "bic": {
+          "name": "bic",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_bank",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "bic"
+          ],
+          "composite": false,
+          "keyName": "res_bank_bic_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "res_bank_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_bank_state_foreign": {
+          "constraintName": "res_bank_state_foreign",
+          "columnNames": [
+            "state"
+          ],
+          "localTableName": "public.res_bank",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country_state",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_bank_country_foreign": {
+          "constraintName": "res_bank_country_foreign",
+          "columnNames": [
+            "country"
+          ],
+          "localTableName": "public.res_bank",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "color": {
+          "name": "color",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "share": {
+          "name": "share",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_groups",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "category_id"
+          ],
+          "composite": false,
+          "keyName": "res_groups_category_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "res_groups_name_uniq",
+          "columnNames": [
+            "name",
+            "category_id"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_groups_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "gid": {
+          "name": "gid",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "hid": {
+          "name": "hid",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "res_groups_implied_rel",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "res_groups_implied_rel_hid_gid_idx",
+          "columnNames": [
+            "gid",
+            "hid"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "res_groups_implied_rel_pkey",
+          "columnNames": [
+            "gid",
+            "hid"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_groups_implied_rel_gid_foreign": {
+          "constraintName": "res_groups_implied_rel_gid_foreign",
+          "columnNames": [
+            "gid"
+          ],
+          "localTableName": "public.res_groups_implied_rel",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_groups",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "res_groups_implied_rel_hid_foreign": {
+          "constraintName": "res_groups_implied_rel_hid_foreign",
+          "columnNames": [
+            "hid"
+          ],
+          "localTableName": "public.res_groups_implied_rel",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_groups",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "uid": {
+          "name": "uid",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "gid": {
+          "name": "gid",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "res_groups_report_rel",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "res_groups_report_rel_gid_uid_idx",
+          "columnNames": [
+            "uid",
+            "gid"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "res_groups_report_rel_pkey",
+          "columnNames": [
+            "uid",
+            "gid"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_groups_report_rel_gid_foreign": {
+          "constraintName": "res_groups_report_rel_gid_foreign",
+          "columnNames": [
+            "gid"
+          ],
+          "localTableName": "public.res_groups_report_rel",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_groups",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "firstname": {
+          "name": "firstname",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "lastname": {
+          "name": "lastname",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "keycloak_id": {
+          "name": "keycloak_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "signature": {
+          "name": "signature",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "action_id": {
+          "name": "action_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "share": {
+          "name": "share",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "user",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "email"
+          ],
+          "composite": false,
+          "keyName": "user_email_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "keycloak_id"
+          ],
+          "composite": false,
+          "keyName": "user_keycloak_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "user_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "gid": {
+          "name": "gid",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "uid": {
+          "name": "uid",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "res_groups_users_rel",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "res_groups_users_rel_uid_gid_idx",
+          "columnNames": [
+            "gid",
+            "uid"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "res_groups_users_rel_pkey",
+          "columnNames": [
+            "gid",
+            "uid"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_groups_users_rel_gid_foreign": {
+          "constraintName": "res_groups_users_rel_gid_foreign",
+          "columnNames": [
+            "gid"
+          ],
+          "localTableName": "public.res_groups_users_rel",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_groups",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "res_groups_users_rel_uid_foreign": {
+          "constraintName": "res_groups_users_rel_uid_foreign",
+          "columnNames": [
+            "uid"
+          ],
+          "localTableName": "public.res_groups_users_rel",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "direction_id": {
+          "name": "direction_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "admin_contact_id": {
+          "name": "admin_contact_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "organization",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "res_organisation_name_uniq",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "email"
+          ],
+          "composite": false,
+          "keyName": "organization_email_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "phone"
+          ],
+          "composite": false,
+          "keyName": "organization_phone_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "direction_id"
+          ],
+          "composite": false,
+          "keyName": "organization_direction_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "admin_contact_id"
+          ],
+          "composite": false,
+          "keyName": "organization_admin_contact_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "organization_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "organization_direction_id_foreign": {
+          "constraintName": "organization_direction_id_foreign",
+          "columnNames": [
+            "direction_id"
+          ],
+          "localTableName": "public.organization",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "updateRule": "cascade"
+        },
+        "organization_admin_contact_id_foreign": {
+          "constraintName": "organization_admin_contact_id_foreign",
+          "columnNames": [
+            "admin_contact_id"
+          ],
+          "localTableName": "public.organization",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "updateRule": "cascade"
+        },
+        "organization_parent_id_foreign": {
+          "constraintName": "organization_parent_id_foreign",
+          "columnNames": [
+            "parent_id"
+          ],
+          "localTableName": "public.organization",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "hours_per_day": {
+          "name": "hours_per_day",
+          "type": "float8",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "tz": {
+          "name": "tz",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "two_weeks_calendar": {
+          "name": "two_weeks_calendar",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "resource_calendar",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "resource_calendar_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "resource_calendar_organisation_id_foreign": {
+          "constraintName": "resource_calendar_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.resource_calendar",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "default_resource_calendar_id": {
+          "name": "default_resource_calendar_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "country_id": {
+          "name": "country_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "payroll_structure_type",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "payroll_structure_type_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "payroll_structure_type_default_resource_calendar_id_foreign": {
+          "constraintName": "payroll_structure_type_default_resource_calendar_id_foreign",
+          "columnNames": [
+            "default_resource_calendar_id"
+          ],
+          "localTableName": "public.payroll_structure_type",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_calendar",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "payroll_structure_type_country_id_foreign": {
+          "constraintName": "payroll_structure_type_country_id_foreign",
+          "columnNames": [
+            "country_id"
+          ],
+          "localTableName": "public.payroll_structure_type",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "resource_type": {
+          "name": "resource_type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "time_efficiency": {
+          "name": "time_efficiency",
+          "type": "float8",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "calendar_id": {
+          "name": "calendar_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "tz": {
+          "name": "tz",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "resource_resource",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "resource_resource_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "resource_resource_organisation_id_foreign": {
+          "constraintName": "resource_resource_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.resource_resource",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "resource_resource_user_id_foreign": {
+          "constraintName": "resource_resource_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.resource_resource",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "resource_resource_calendar_id_foreign": {
+          "constraintName": "resource_resource_calendar_id_foreign",
+          "columnNames": [
+            "calendar_id"
+          ],
+          "localTableName": "public.resource_resource",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_calendar",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "resource_id": {
+          "name": "resource_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "resource_calendar_id": {
+          "name": "resource_calendar_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "resource",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "resource_id"
+          ],
+          "composite": false,
+          "keyName": "resource_test_resource_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "resource_test_organization_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "resource_calendar_id"
+          ],
+          "composite": false,
+          "keyName": "resource_test_resource_calendar_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "resource_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "resource_resource_id_foreign": {
+          "constraintName": "resource_resource_id_foreign",
+          "columnNames": [
+            "resource_id"
+          ],
+          "localTableName": "public.resource",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_resource",
+          "updateRule": "cascade"
+        },
+        "resource_organisation_id_foreign": {
+          "constraintName": "resource_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.resource",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "resource_resource_calendar_id_foreign": {
+          "constraintName": "resource_resource_calendar_id_foreign",
+          "columnNames": [
+            "resource_calendar_id"
+          ],
+          "localTableName": "public.resource",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_calendar",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "dayofweek": {
+          "name": "dayofweek",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "date_from": {
+          "name": "date_from",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "date_to": {
+          "name": "date_to",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "hour_from": {
+          "name": "hour_from",
+          "type": "float8",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "hour_to": {
+          "name": "hour_to",
+          "type": "float8",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "calendar_id": {
+          "name": "calendar_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "day_period": {
+          "name": "day_period",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "resource_id": {
+          "name": "resource_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "week_type": {
+          "name": "week_type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "display_type": {
+          "name": "display_type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "resource_calendar_attendance",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "dayofweek"
+          ],
+          "composite": false,
+          "keyName": "resource_calendar_attendance_dayofweek_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "hour_from"
+          ],
+          "composite": false,
+          "keyName": "resource_calendar_attendance_hour_from_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "resource_calendar_attendance_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "resource_calendar_attendance_calendar_id_foreign": {
+          "constraintName": "resource_calendar_attendance_calendar_id_foreign",
+          "columnNames": [
+            "calendar_id"
+          ],
+          "localTableName": "public.resource_calendar_attendance",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_calendar",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "resource_calendar_attendance_resource_id_foreign": {
+          "constraintName": "resource_calendar_attendance_resource_id_foreign",
+          "columnNames": [
+            "resource_id"
+          ],
+          "localTableName": "public.resource_calendar_attendance",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_resource",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "calendar_id": {
+          "name": "calendar_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "date_from": {
+          "name": "date_from",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6
+        },
+        "date_to": {
+          "name": "date_to",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6
+        },
+        "resource_id": {
+          "name": "resource_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "time_type": {
+          "name": "time_type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "resource_calendar_leaves",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "calendar_id"
+          ],
+          "composite": false,
+          "keyName": "resource_calendar_leaves_calendar_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "resource_id"
+          ],
+          "composite": false,
+          "keyName": "resource_calendar_leaves_resource_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "resource_calendar_leaves_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "resource_calendar_leaves_organisation_id_foreign": {
+          "constraintName": "resource_calendar_leaves_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.resource_calendar_leaves",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "resource_calendar_leaves_calendar_id_foreign": {
+          "constraintName": "resource_calendar_leaves_calendar_id_foreign",
+          "columnNames": [
+            "calendar_id"
+          ],
+          "localTableName": "public.resource_calendar_leaves",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_calendar",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "resource_calendar_leaves_resource_id_foreign": {
+          "constraintName": "resource_calendar_leaves_resource_id_foreign",
+          "columnNames": [
+            "resource_id"
+          ],
+          "localTableName": "public.resource_calendar_leaves",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_resource",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "user_default_rights": {
+          "name": "user_default_rights",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "external_email_server_default": {
+          "name": "external_email_server_default",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "module_google_calendar": {
+          "name": "module_google_calendar",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "module_microsoft_calendar": {
+          "name": "module_microsoft_calendar",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "module_account_interorganisation_rules": {
+          "name": "module_account_interorganisation_rules",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "module_hr_presence": {
+          "name": "module_hr_presence",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "module_hr_skills": {
+          "name": "module_hr_skills",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "hr_presence_control_login": {
+          "name": "hr_presence_control_login",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "hr_presence_control_email": {
+          "name": "hr_presence_control_email",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "hr_presence_control_ip": {
+          "name": "hr_presence_control_ip",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "module_hr_attendance": {
+          "name": "module_hr_attendance",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "hr_employee_self_edit": {
+          "name": "hr_employee_self_edit",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_config_settings",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "res_config_settings_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_config_settings_organisation_id_foreign": {
+          "constraintName": "res_config_settings_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.res_config_settings",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "rate": {
+          "name": "rate",
+          "type": "numeric",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_currency_rate",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "res_currency_rate_name_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "currency_id"
+          ],
+          "composite": false,
+          "keyName": "res_currency_rate_currency_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "res_currency_rate_organisation_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_currency_rate_unique_name_per_day",
+          "columnNames": [
+            "name",
+            "currency_id",
+            "organisation_id"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_currency_rate_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_currency_rate_currency_id_foreign": {
+          "constraintName": "res_currency_rate_currency_id_foreign",
+          "columnNames": [
+            "currency_id"
+          ],
+          "localTableName": "public.res_currency_rate",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_currency",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "res_currency_rate_organisation_id_foreign": {
+          "constraintName": "res_currency_rate_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.res_currency_rate",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "organization_label",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "organization_label_name_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "organization_label_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "organization_label_organisation_id_foreign": {
+          "constraintName": "organization_label_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.organization_label",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "value": {
+          "name": "value",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "organization_contact",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "organization_contact_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "organization_contact_organisation_id_foreign": {
+          "constraintName": "organization_contact_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.organization_contact",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "link": {
+          "name": "link",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "organization_social",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "organization_social_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "organization_social_organisation_id_foreign": {
+          "constraintName": "organization_social_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.organization_social",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "title": {
+          "name": "title",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "ref": {
+          "name": "ref",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "lang": {
+          "name": "lang",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "tz": {
+          "name": "tz",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "vat": {
+          "name": "vat",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "website": {
+          "name": "website",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "credit_limit": {
+          "name": "credit_limit",
+          "type": "float8",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "employee": {
+          "name": "employee",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "function": {
+          "name": "function",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "street": {
+          "name": "street",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "street2": {
+          "name": "street2",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "zip": {
+          "name": "zip",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "state_id": {
+          "name": "state_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "country_id": {
+          "name": "country_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "partner_latitude": {
+          "name": "partner_latitude",
+          "type": "numeric",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "partner_longitude": {
+          "name": "partner_longitude",
+          "type": "numeric",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "mobile": {
+          "name": "mobile",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "isorganisation": {
+          "name": "isorganisation",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "industry_id": {
+          "name": "industry_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "color": {
+          "name": "color",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "partner_share": {
+          "name": "partner_share",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "commercial_partner_id": {
+          "name": "commercial_partner_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "commercialorganisation_name": {
+          "name": "commercialorganisation_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_name": {
+          "name": "organisation_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "message_main_attachment_id": {
+          "name": "message_main_attachment_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "email_normalized": {
+          "name": "email_normalized",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "message_bounce": {
+          "name": "message_bounce",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "signup_token": {
+          "name": "signup_token",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "signup_type": {
+          "name": "signup_type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "signup_expiration": {
+          "name": "signup_expiration",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "partner_gid": {
+          "name": "partner_gid",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "additional_info": {
+          "name": "additional_info",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "phone_sanitized": {
+          "name": "phone_sanitized",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_partner",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "res_partner_name_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "res_partner_organisation_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "display_name"
+          ],
+          "composite": false,
+          "keyName": "res_partner_display_name_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "date"
+          ],
+          "composite": false,
+          "keyName": "res_partner_date_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "parent_id"
+          ],
+          "composite": false,
+          "keyName": "res_partner_parent_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "ref"
+          ],
+          "composite": false,
+          "keyName": "res_partner_ref_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "vat"
+          ],
+          "composite": false,
+          "keyName": "res_partner_vat_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "commercial_partner_id"
+          ],
+          "composite": false,
+          "keyName": "res_partner_commercial_partner_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "message_main_attachment_id"
+          ],
+          "composite": false,
+          "keyName": "res_partner_message_main_attachment_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "res_partner_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_partner_organisation_id_foreign": {
+          "constraintName": "res_partner_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_title_foreign": {
+          "constraintName": "res_partner_title_foreign",
+          "columnNames": [
+            "title"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner_title",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_parent_id_foreign": {
+          "constraintName": "res_partner_parent_id_foreign",
+          "columnNames": [
+            "parent_id"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_user_id_foreign": {
+          "constraintName": "res_partner_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_state_id_foreign": {
+          "constraintName": "res_partner_state_id_foreign",
+          "columnNames": [
+            "state_id"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country_state",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_country_id_foreign": {
+          "constraintName": "res_partner_country_id_foreign",
+          "columnNames": [
+            "country_id"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_industry_id_foreign": {
+          "constraintName": "res_partner_industry_id_foreign",
+          "columnNames": [
+            "industry_id"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner_industry",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_commercial_partner_id_foreign": {
+          "constraintName": "res_partner_commercial_partner_id_foreign",
+          "columnNames": [
+            "commercial_partner_id"
+          ],
+          "localTableName": "public.res_partner",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "acc_number": {
+          "name": "acc_number",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "sanitized_acc_number": {
+          "name": "sanitized_acc_number",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "acc_holder_name": {
+          "name": "acc_holder_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "partner_id": {
+          "name": "partner_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "bank_id": {
+          "name": "bank_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "res_partner_bank",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "partner_id"
+          ],
+          "composite": false,
+          "keyName": "res_partner_bank_partner_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "res_partner_bank_organisation_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_partner_bank_unique_number",
+          "columnNames": [
+            "sanitized_acc_number",
+            "organisation_id"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "res_partner_bank_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "res_partner_bank_partner_id_foreign": {
+          "constraintName": "res_partner_bank_partner_id_foreign",
+          "columnNames": [
+            "partner_id"
+          ],
+          "localTableName": "public.res_partner_bank",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "res_partner_bank_bank_id_foreign": {
+          "constraintName": "res_partner_bank_bank_id_foreign",
+          "columnNames": [
+            "bank_id"
+          ],
+          "localTableName": "public.res_partner_bank",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_bank",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_bank_currency_id_foreign": {
+          "constraintName": "res_partner_bank_currency_id_foreign",
+          "columnNames": [
+            "currency_id"
+          ],
+          "localTableName": "public.res_partner_bank",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_currency",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "res_partner_bank_organisation_id_foreign": {
+          "constraintName": "res_partner_bank_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.res_partner_bank",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "address_id": {
+          "name": "address_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "location_number": {
+          "name": "location_number",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "work_location",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "work_location_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "work_location_organisation_id_foreign": {
+          "constraintName": "work_location_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.work_location",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "updateRule": "cascade"
+        },
+        "work_location_address_id_foreign": {
+          "constraintName": "work_location_address_id_foreign",
+          "columnNames": [
+            "address_id"
+          ],
+          "localTableName": "public.work_location",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "resource_id": {
+          "name": "resource_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "resource_calendar_id": {
+          "name": "resource_calendar_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "message_main_attachment_id": {
+          "name": "message_main_attachment_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "color": {
+          "name": "color",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "job_id": {
+          "name": "job_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "job_title": {
+          "name": "job_title",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "address_id": {
+          "name": "address_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "work_phone": {
+          "name": "work_phone",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "mobile_phone": {
+          "name": "mobile_phone",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "work_email": {
+          "name": "work_email",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "work_location_id": {
+          "name": "work_location_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "coach_id": {
+          "name": "coach_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "employee_type": {
+          "name": "employee_type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "address_home_id": {
+          "name": "address_home_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "country_id": {
+          "name": "country_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "gender": {
+          "name": "gender",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "marital": {
+          "name": "marital",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "spouse_complete_name": {
+          "name": "spouse_complete_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "spouse_birthdate": {
+          "name": "spouse_birthdate",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "children": {
+          "name": "children",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "place_of_birth": {
+          "name": "place_of_birth",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "country_of_birth": {
+          "name": "country_of_birth",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "birthday": {
+          "name": "birthday",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "ssnid": {
+          "name": "ssnid",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "sinid": {
+          "name": "sinid",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "identification_id": {
+          "name": "identification_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "passport_id": {
+          "name": "passport_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "bank_account_id": {
+          "name": "bank_account_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "permit_no": {
+          "name": "permit_no",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "visa_no": {
+          "name": "visa_no",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "visa_expire": {
+          "name": "visa_expire",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "work_permit_expiration_date": {
+          "name": "work_permit_expiration_date",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "work_permit_scheduled_activity": {
+          "name": "work_permit_scheduled_activity",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "additional_note": {
+          "name": "additional_note",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "certificate": {
+          "name": "certificate",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "study_field": {
+          "name": "study_field",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "study_school": {
+          "name": "study_school",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "emergency_contact": {
+          "name": "emergency_contact",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "emergency_phone": {
+          "name": "emergency_phone",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "km_home_work": {
+          "name": "km_home_work",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "barcode": {
+          "name": "barcode",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "pin": {
+          "name": "pin",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "departure_reason_id": {
+          "name": "departure_reason_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "departure_description": {
+          "name": "departure_description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "departure_date": {
+          "name": "departure_date",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "vehicle": {
+          "name": "vehicle",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "contract_id": {
+          "name": "contract_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "contract_warning": {
+          "name": "contract_warning",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "first_contract_date": {
+          "name": "first_contract_date",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "employee",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "resource_id"
+          ],
+          "composite": false,
+          "keyName": "hr_employee_resource_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "hr_employee_organisation_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "employee_organisation_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "resource_calendar_id"
+          ],
+          "composite": false,
+          "keyName": "hr_employee_resource_calendar_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "message_main_attachment_id"
+          ],
+          "composite": false,
+          "keyName": "hr_employee_message_main_attachment_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "user_id"
+          ],
+          "composite": false,
+          "keyName": "employee_user_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "barcode"
+          ],
+          "composite": false,
+          "keyName": "hr_employee_barcode_uniq",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "hr_employee_user_uniq",
+          "columnNames": [
+            "organisation_id",
+            "user_id"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "employee_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "employee_resource_id_foreign": {
+          "constraintName": "employee_resource_id_foreign",
+          "columnNames": [
+            "resource_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_resource",
+          "updateRule": "cascade"
+        },
+        "employee_organisation_id_foreign": {
+          "constraintName": "employee_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_resource_calendar_id_foreign": {
+          "constraintName": "employee_resource_calendar_id_foreign",
+          "columnNames": [
+            "resource_calendar_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_calendar",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_department_id_foreign": {
+          "constraintName": "employee_department_id_foreign",
+          "columnNames": [
+            "department_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.department",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_job_id_foreign": {
+          "constraintName": "employee_job_id_foreign",
+          "columnNames": [
+            "job_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.job",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_address_id_foreign": {
+          "constraintName": "employee_address_id_foreign",
+          "columnNames": [
+            "address_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_work_location_id_foreign": {
+          "constraintName": "employee_work_location_id_foreign",
+          "columnNames": [
+            "work_location_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.work_location",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_user_id_foreign": {
+          "constraintName": "employee_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_parent_id_foreign": {
+          "constraintName": "employee_parent_id_foreign",
+          "columnNames": [
+            "parent_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.employee",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_coach_id_foreign": {
+          "constraintName": "employee_coach_id_foreign",
+          "columnNames": [
+            "coach_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.employee",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_address_home_id_foreign": {
+          "constraintName": "employee_address_home_id_foreign",
+          "columnNames": [
+            "address_home_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_country_id_foreign": {
+          "constraintName": "employee_country_id_foreign",
+          "columnNames": [
+            "country_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_country_of_birth_foreign": {
+          "constraintName": "employee_country_of_birth_foreign",
+          "columnNames": [
+            "country_of_birth"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_country",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_bank_account_id_foreign": {
+          "constraintName": "employee_bank_account_id_foreign",
+          "columnNames": [
+            "bank_account_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.res_partner_bank",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_departure_reason_id_foreign": {
+          "constraintName": "employee_departure_reason_id_foreign",
+          "columnNames": [
+            "departure_reason_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.departure_reason",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "employee_contract_id_foreign": {
+          "constraintName": "employee_contract_id_foreign",
+          "columnNames": [
+            "contract_id"
+          ],
+          "localTableName": "public.employee",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.contract",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "message_main_attachment_id": {
+          "name": "message_main_attachment_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "complete_name": {
+          "name": "complete_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "manager_id": {
+          "name": "manager_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "color": {
+          "name": "color",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "department",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "message_main_attachment_id"
+          ],
+          "composite": false,
+          "keyName": "hr_department_message_main_attachment_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "hr_department_organisation_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "parent_id"
+          ],
+          "composite": false,
+          "keyName": "hr_department_parent_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "department_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "department_organisation_id_foreign": {
+          "constraintName": "department_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.department",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "department_parent_id_foreign": {
+          "constraintName": "department_parent_id_foreign",
+          "columnNames": [
+            "parent_id"
+          ],
+          "localTableName": "public.department",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.department",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "department_manager_id_foreign": {
+          "constraintName": "department_manager_id_foreign",
+          "columnNames": [
+            "manager_id"
+          ],
+          "localTableName": "public.department",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.employee",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "message_main_attachment_id": {
+          "name": "message_main_attachment_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "expected_employees": {
+          "name": "expected_employees",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "no_of_employee": {
+          "name": "no_of_employee",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "no_of_recruitment": {
+          "name": "no_of_recruitment",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "no_of_hired_employee": {
+          "name": "no_of_hired_employee",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "requirements": {
+          "name": "requirements",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "job",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "message_main_attachment_id"
+          ],
+          "composite": false,
+          "keyName": "hr_job_message_main_attachment_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "hr_job_name_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "department_id"
+          ],
+          "composite": false,
+          "keyName": "job_department_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "organisation_id"
+          ],
+          "composite": false,
+          "keyName": "job_organisation_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "hr_job_name_organisation_uniq",
+          "columnNames": [
+            "name",
+            "department_id",
+            "organisation_id"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "job_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "job_department_id_foreign": {
+          "constraintName": "job_department_id_foreign",
+          "columnNames": [
+            "department_id"
+          ],
+          "localTableName": "public.job",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.department",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "job_organisation_id_foreign": {
+          "constraintName": "job_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.job",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "message_main_attachment_id": {
+          "name": "message_main_attachment_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "structure_type_id": {
+          "name": "structure_type_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "employee_id": {
+          "name": "employee_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "department_id": {
+          "name": "department_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "job_id": {
+          "name": "job_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "date_start": {
+          "name": "date_start",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "date_end": {
+          "name": "date_end",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "trial_date_end": {
+          "name": "trial_date_end",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "resource_calendar_id": {
+          "name": "resource_calendar_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "wage": {
+          "name": "wage",
+          "type": "numeric",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "contract_type_id": {
+          "name": "contract_type_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "kanban_state": {
+          "name": "kanban_state",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "hr_responsible_id": {
+          "name": "hr_responsible_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "contract",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "message_main_attachment_id"
+          ],
+          "composite": false,
+          "keyName": "hr_contract_message_main_attachment_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "date_start"
+          ],
+          "composite": false,
+          "keyName": "hr_contract_date_start_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "resource_calendar_id"
+          ],
+          "composite": false,
+          "keyName": "hr_contract_resource_calendar_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "contract_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "contract_structure_type_id_foreign": {
+          "constraintName": "contract_structure_type_id_foreign",
+          "columnNames": [
+            "structure_type_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.payroll_structure_type",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "contract_employee_id_foreign": {
+          "constraintName": "contract_employee_id_foreign",
+          "columnNames": [
+            "employee_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.employee",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "contract_department_id_foreign": {
+          "constraintName": "contract_department_id_foreign",
+          "columnNames": [
+            "department_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.department",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "contract_job_id_foreign": {
+          "constraintName": "contract_job_id_foreign",
+          "columnNames": [
+            "job_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.job",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "contract_resource_calendar_id_foreign": {
+          "constraintName": "contract_resource_calendar_id_foreign",
+          "columnNames": [
+            "resource_calendar_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.resource_calendar",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "contract_organisation_id_foreign": {
+          "constraintName": "contract_organisation_id_foreign",
+          "columnNames": [
+            "organisation_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "updateRule": "cascade"
+        },
+        "contract_contract_type_id_foreign": {
+          "constraintName": "contract_contract_type_id_foreign",
+          "columnNames": [
+            "contract_type_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.contract_type",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "contract_hr_responsible_id_foreign": {
+          "constraintName": "contract_hr_responsible_id_foreign",
+          "columnNames": [
+            "hr_responsible_id"
+          ],
+          "localTableName": "public.contract",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "departure_reason_id": {
+          "name": "departure_reason_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "departure_description": {
+          "name": "departure_description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "departure_date": {
+          "name": "departure_date",
+          "type": "date",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "employee_id": {
+          "name": "employee_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "archive_private_address": {
+          "name": "archive_private_address",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "set_date_end": {
+          "name": "set_date_end",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "departure_wizard",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "departure_wizard_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "departure_wizard_departure_reason_id_foreign": {
+          "constraintName": "departure_wizard_departure_reason_id_foreign",
+          "columnNames": [
+            "departure_reason_id"
+          ],
+          "localTableName": "public.departure_wizard",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.departure_reason",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "departure_wizard_employee_id_foreign": {
+          "constraintName": "departure_wizard_employee_id_foreign",
+          "columnNames": [
+            "employee_id"
+          ],
+          "localTableName": "public.departure_wizard",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.employee",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "plan_id": {
+          "name": "plan_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "employee_id": {
+          "name": "employee_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "plan_wizard",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "plan_wizard_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "plan_wizard_plan_id_foreign": {
+          "constraintName": "plan_wizard_plan_id_foreign",
+          "columnNames": [
+            "plan_id"
+          ],
+          "localTableName": "public.plan_wizard",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.plan",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "plan_wizard_employee_id_foreign": {
+          "constraintName": "plan_wizard_employee_id_foreign",
+          "columnNames": [
+            "employee_id"
+          ],
+          "localTableName": "public.plan_wizard",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.employee",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6
+        },
+        "activity_type_id": {
+          "name": "activity_type_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "responsible_id": {
+          "name": "responsible_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true
+        }
+      },
+      "name": "plan_activity_type",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "plan_activity_type_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "plan_activity_type_responsible_id_foreign": {
+          "constraintName": "plan_activity_type_responsible_id_foreign",
+          "columnNames": [
+            "responsible_id"
+          ],
+          "localTableName": "public.plan_activity_type",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "organization_id": {
+          "name": "organization_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false
+        }
+      },
+      "name": "organization_members",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "organization_members_pkey",
+          "columnNames": [
+            "organization_id",
+            "user_id"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "foreignKeys": {
+        "organization_members_organization_id_foreign": {
+          "constraintName": "organization_members_organization_id_foreign",
+          "columnNames": [
+            "organization_id"
+          ],
+          "localTableName": "public.organization_members",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "organization_members_user_id_foreign": {
+          "constraintName": "organization_members_user_id_foreign",
+          "columnNames": [
+            "user_id"
+          ],
+          "localTableName": "public.organization_members",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.user",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    }
+  ]
+}
