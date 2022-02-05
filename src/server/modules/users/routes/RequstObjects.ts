@@ -1,4 +1,3 @@
-import { DateType } from '@mikro-orm/core';
 import { dto, include } from 'dto-mapper';
 
 @dto()
@@ -11,7 +10,7 @@ export class UserInviteToOrgRO {
 }
 
 @dto()
-export class UserDetails {
+export class UserDetailsRO {
   @include()
   email: string;
 
