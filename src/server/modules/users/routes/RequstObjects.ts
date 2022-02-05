@@ -29,3 +29,13 @@ export class UserDetailsRO {
   @include()
   share?: boolean;
 }
+export class ResetPasswordRO {
+  @include()
+  email: number;
+
+  @include()
+  password: string;
+
+  @include()
+  passwordConfirmation: string;
+}
