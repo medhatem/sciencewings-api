@@ -21,6 +21,15 @@ export class UserDetailsRO {
   lastname: string;
 
   @include()
+  adress: string;
+
+  @include()
+  phone: string;
+
+  @include()
+  dateofbirth: Date;
+
+  @include()
   signature?: string;
 
   @include()

@@ -6,7 +6,7 @@ import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { OrganisationService } from '@modules/organisations/services/OrganisationService';
-import { ResetPasswordRO } from '../routes/RequstObjects';
+import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
@@ -27,6 +27,34 @@ export class UserService extends BaseService<User> {
 
   static getInstance(): UserService {
     return container.get(UserService);
+  }
+
+  @log()
+  @safeGuard()
+  async updateUserDetails(payload: UserDetailsRO, userId: number): Promise<Result<number>> {
+    const userDetail = this.wrapEntity(this.dao.model, payload);
+    const user = await this.dao.get(userId);
+
+    if (!user) {
+      return Result.fail<number>(`User with id ${userId} dose not existe`);
+    }
+
+    user['firstname'] = userDetail.firstname;
+    user['lastname'] = userDetail.lastname;
+    user['email'] = userDetail.email;
+    user['adress'] = userDetail.adress;
+    user['phone'] = userDetail.phone;
+    user['dateofbirth'] = userDetail.dateofbirth;
+    user['share'] = userDetail.share;
+    user['signature'] = userDetail.signature;
+
+    try {
+      await this.dao.update(user);
+    } catch (error) {
+      return Result.fail<number>(error);
+    }
+
+    return Result.ok<number>(userId);
   }
 
   @log()

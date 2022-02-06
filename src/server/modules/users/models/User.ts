@@ -1,4 +1,4 @@
-import { Collection, Entity, Index, ManyToMany, Property, Unique } from '@mikro-orm/core';
+import { Collection, DateType, Entity, Index, ManyToMany, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
@@ -25,6 +25,15 @@ export class User extends BaseModel<User> {
   @Property()
   @Unique()
   email: string;
+
+  @Property()
+  adress: string;
+
+  @Property()
+  phone: string;
+
+  @Property({ type: DateType })
+  dateofbirth = new Date();
 
   @Property()
   @Index()
