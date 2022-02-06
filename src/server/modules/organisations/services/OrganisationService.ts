@@ -1,3 +1,5 @@
+import { Collection } from '@mikro-orm/core';
+import { User } from '@modules/users/models/User';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from '@modules/base/services/BaseService';
@@ -51,5 +53,18 @@ export class OrganisationService extends BaseService<Organization> {
     }
 
     return Result.ok<number>(createdOrg.id);
+  }
+
+  @log()
+  @safeGuard()
+  public async getUsers(orgId: number) {
+    const existingOrg = await this.dao.getByCriteria({ id: orgId });
+
+    if (!existingOrg) {
+      return Result.fail<number>(`Organization with id ${orgId} dose not exists.`);
+    }
+
+    const members: Collection<User> = await existingOrg.users.init();
+    return Result.ok<Collection<User>>(members);
   }
 }
