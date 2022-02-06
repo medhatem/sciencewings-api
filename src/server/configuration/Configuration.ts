@@ -1,6 +1,8 @@
 import { EnvConfig, ServerConfiguration, env } from '../types/ServerConfiguration';
 import { container, provideSingleton } from '@di/index';
 
+import { LogLevel } from '@utils/Logger';
+
 @provideSingleton()
 export class Configuration {
   private config: ServerConfiguration;
@@ -40,6 +42,20 @@ export class Configuration {
           clientId: 'admin-cli',
           realmName: 'master',
           baseUrl: 'http://localhost:8080/auth',
+          clientValidation: {
+            realmName: 'sciencewings-web',
+          },
+        },
+        logger: {
+          logLevel: LogLevel.INFO,
+          displayAutoLogs: true,
+          displayManualLogs: true,
+          displayNoLogs: false,
+        },
+        email: {
+          from: 'anahnah@sciencewings.com',
+          sendGridApiKey:
+            process.env.SENDGRID_API_KEY || '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',
         },
         email: {
           from: '',
@@ -62,6 +78,19 @@ export class Configuration {
           clientId: 'admin-cli',
           realmName: 'master',
           baseUrl: 'https://sciencewings-keycloak.herokuapp.com/auth',
+          clientValidation: {
+            realmName: 'sciencewings-web',
+          },
+        },
+        logger: {
+          logLevel: LogLevel.INFO,
+          displayAutoLogs: true,
+          displayManualLogs: true,
+          displayNoLogs: false,
+        },
+        email: {
+          from: '',
+          sendGridApiKey: process.env.SENDGRID_API_KEY,
         },
         email: {
           from: '',
@@ -83,6 +112,19 @@ export class Configuration {
           grantType: 'password',
           clientId: 'admin-cli',
           baseUrl: 'https://sciencewings-keycloak.herokuapp.com',
+          clientValidation: {
+            realmName: 'sciencewings-web',
+          },
+        },
+        logger: {
+          logLevel: LogLevel.INFO,
+          displayAutoLogs: true,
+          displayManualLogs: true,
+          displayNoLogs: false,
+        },
+        email: {
+          from: '',
+          sendGridApiKey: process.env.SENDGRID_API_KEY,
         },
         email: {
           from: '',

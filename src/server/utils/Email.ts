@@ -1,6 +1,5 @@
 import { container, provideSingleton } from '@di/index';
 import { getConfig } from '../configuration/Configuration';
-
 import { EmailMessage } from '../types/types';
 import { MailService } from '@sendgrid/mail';
 
@@ -10,7 +9,8 @@ export class Email extends MailService {
 
   constructor() {
     super();
-    this.setApiKey(getConfig('email.key'));
+    // TODO: should use the config instead
+    this.setApiKey(getConfig('email.sendGridApiKey'));
   }
 
   static getInstance(): Email {

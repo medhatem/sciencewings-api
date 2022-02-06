@@ -6,9 +6,15 @@ import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { OrganisationService } from '@modules/organisations/services/OrganisationService';
+import { ResetPasswordRO } from '../routes/RequstObjects';
+import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
 import generateEmail from './generateEmail';
+import { getConfig } from '../../../configuration/Configuration';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
+
 @provideSingleton()
 export class UserService extends BaseService<User> {
   constructor(
@@ -24,20 +30,28 @@ export class UserService extends BaseService<User> {
     return container.get(UserService);
   }
 
-  async registerUser(userInfo: KeycloakUserInfo): Promise<number> {
+  @log()
+  @safeGuard()
+  async registerUser(userInfo: KeycloakUserInfo): Promise<Result<number>> {
     // get the userKeyCloakId
     const users = await this.keycloak.getAdminClient().users.find({ email: userInfo.email, realm: 'sciencewings-web' });
 
     if (!users || !users.length) {
-      throw new Error('No user found!');
+      return Result.fail<number>('No user found');
     }
     const user = this.dao.model;
     user.firstname = userInfo.given_name;
     user.lastname = userInfo.family_name;
     user.email = userInfo.email;
     user.keycloakId = users[0].id;
-    const createdUser = await this.dao.create(user);
-    return createdUser.id;
+    let createdUser: { [key: string]: any } = { id: null };
+    try {
+      createdUser = await this.dao.create(user);
+    } catch (error) {
+      return Result.fail<number>(error);
+    }
+
+    return Result.ok<number>(createdUser.id);
   }
 
   /**
@@ -45,27 +59,33 @@ export class UserService extends BaseService<User> {
    *
    * @param criteria the search criteria
    */
+  @log()
+  @safeGuard()
   async getUserByCriteria(criteria: { [key: string]: any }) {
     return await this.dao.getByCriteria(criteria);
   }
 
-  async inviteUserByEmail(email: string, orgId: number): Promise<number> {
-    const existingUser = await this.keycloak.getAdminClient().users.find({ email, realm: 'sciencewings-web' });
+  @log()
+  @safeGuard()
+  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
+    const existingUser = await this.keycloak
+      .getAdminClient()
+      .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     if (existingUser.length > 0) {
-      throw new Error('The user already exists.');
+      return Result.fail<number>('The user already exists.');
     }
 
     const existingOrg = await this.organizationService.get(orgId);
 
     if (!existingOrg) {
-      throw new Error('The organization to add the user to does not exist.');
+      return Result.fail<number>('The organization to add the user to does not exist.');
     }
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
       email,
       firstName: '',
       lastName: '',
-      realm: 'sciencewings-web',
+      realm: getConfig('keycloak.clientValidation.realmName'),
     });
 
     //save created keycloak user in the database
@@ -92,6 +112,36 @@ export class UserService extends BaseService<User> {
 
     this.emailService.sendEmail(emailMessage);
 
-    return savedUser.id;
+    return Result.ok<number>(savedUser.id);
+  }
+
+  /**
+   * reset a user password
+   *
+   * @param payload
+   */
+  @log()
+  @safeGuard()
+  async resetPassword(payload: ResetPasswordRO): Promise<Result<string>> {
+    if (payload.password !== payload.passwordConfirmation) {
+      return Result.fail<string>("Passwords don't match");
+    }
+    const user = await this.dao.getByCriteria({ email: payload.email });
+
+    if (!user) {
+      return Result.fail<string>(`user with email: ${payload.email} does not exist.`);
+    }
+
+    await this.keycloak.getAdminClient().users.resetPassword({
+      realm: getConfig('keycloak.clientValidation.realmName'),
+      id: user.keycloakId,
+      credential: {
+        temporary: false,
+        type: 'password',
+        value: payload.password,
+      },
+    });
+
+    return Result.ok<string>('Password reset successful');
   }
 }

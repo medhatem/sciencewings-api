@@ -7,12 +7,14 @@ import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
-import { RegisterUserFromTokenDTO } from '../dtos/RegisterUserFromTokenDTO';
+import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
-import { UserInviteToOrgRO } from './RequstObjects';
+import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
+import { Result } from '@utils/Result';
+import { LoggerStorage } from '../../../decorators/loggerStorage';
 
 @provideSingleton()
-@Path('user')
+@Path('users')
 export class UserRoutes extends BaseRoutes<User, UserDTO> {
   constructor(private userService: UserService) {
     super(userService, UserDTO);
@@ -35,20 +37,67 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('registerUserFromToken')
   @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
   @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
-    const mapper = this.getMapper(RegisterUserFromTokenDTO);
-    try {
-      const userId = await this.userService.registerUser(request.keycloakUser);
-      return mapper.serialize({ body: { statusCode: 201, userId } });
-    } catch (error) {
-      return mapper.serialize({ statusCode: 500, errorMessage: 'Internal Server Error' });
+    const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
+
+    if (result.isFailure) {
+      return new RegisterUserFromTokenDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
     }
+
+    return new RegisterUserFromTokenDTO().serialize({
+      body: { statusCode: 201, userId: result.getValue() },
+    });
   }
 
+  /**
+   * invite a user to an organization
+   * creates the newly invited user in keycloak
+   *
+   * @param payload
+   */
   @POST
   @Path('inviteUserToOrganization')
-  @Response<RegisterUserFromTokenDTO>(201, 'User Invited Successfully')
-  public async inviteUserToOrganization(payload: UserInviteToOrgRO) {
-    await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
+  @Response<InviteUserDTO>(201, 'User Registred Successfully')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
+    const result = await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
+
+    if (result.isFailure) {
+      return new InviteUserDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new InviteUserDTO().serialize({
+      body: { statusCode: 201, userId: result.getValue() },
+    });
+  }
+
+  /**
+   *  Method that resets a user password in keycloak
+   *
+   * @param payload
+   */
+  @POST
+  @Path('resetPassword')
+  @Response<ResetPasswordDTO>(201, 'Password reset successfully')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
+    const result = await this.userService.resetPassword(payload);
+
+    if (result.isFailure) {
+      return new ResetPasswordDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new ResetPasswordDTO().serialize({
+      body: { statusCode: 200, message: result.getValue() },
+    });
   }
 }

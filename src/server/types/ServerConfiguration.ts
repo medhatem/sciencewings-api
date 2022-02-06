@@ -20,18 +20,29 @@ export type KeycloakConfig = {
   clientId: string;
   baseUrl: string;
   realmName?: string;
+  clientValidation?: {
+    realmName: string;
+  };
+};
+
+export type LoggerConfig = {
+  logLevel: string;
+  displayAutoLogs?: boolean;
+  displayManualLogs?: boolean;
+  displayNoLogs?: boolean;
 };
 
 export type EmailConfig = {
   from: string;
-  key: string;
+  sendGridApiKey: string;
 };
 
 export type EnvConfig = {
   baseConfig?: BaseConfig;
   DB?: ServerDBConfig;
   keycloak: KeycloakConfig;
-  email: EmailConfig;
+  logger?: LoggerConfig;
+  email?: EmailConfig;
 };
 
 export type ServerConfiguration = {
