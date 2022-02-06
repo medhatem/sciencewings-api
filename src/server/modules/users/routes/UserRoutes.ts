@@ -103,7 +103,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   }
 
   @POST
-  @Path('createUser')
+  @Path('updateUserDetail')
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async createOrganisation(
