@@ -57,10 +57,6 @@ export class Configuration {
           sendGridApiKey:
             process.env.SENDGRID_API_KEY || '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',
         },
-        email: {
-          from: '',
-          key: '',
-        },
       },
       staging: {
         baseConfig: { port: (process.env.PORT as any as number) || 3000 },
@@ -92,10 +88,6 @@ export class Configuration {
           from: '',
           sendGridApiKey: process.env.SENDGRID_API_KEY,
         },
-        email: {
-          from: '',
-          key: '',
-        },
       },
       prod: {
         baseConfig: { port: (process.env.PORT as any as number) || 3000 },
@@ -125,10 +117,6 @@ export class Configuration {
         email: {
           from: '',
           sendGridApiKey: process.env.SENDGRID_API_KEY,
-        },
-        email: {
-          from: '',
-          key: '',
         },
       },
     };
