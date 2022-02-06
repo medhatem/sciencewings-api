@@ -5,24 +5,17 @@ import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
 import * as express from 'express';
 
-import {
-  BaseConfig,
-  EnvConfig,
-  KeycloakConfig,
-  ServerConfiguration,
-  ServerDBConfig,
-} from './types/ServerConfiguration';
-import { JWTTOKEN, KEYCLOAK_TOKEN } from './authenticators/constants';
+import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
+import { container, provideSingleton } from './di';
 
-import { JWTAuthenticator } from './authenticators/JWTAuthenticator';
+import { KEYCLOAK_TOKEN } from './authenticators/constants';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { Keycloak } from '@sdks/keycloak';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
 import { RestServiceFactory } from '@di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
-import { container } from './di';
 import { join } from 'path';
 import { startDB } from './db';
 
@@ -41,18 +34,15 @@ export type ExpressCors = (options?: cors.CorsOptions | cors.CorsOptionsDelegate
  *  the server runs an express app and handles multiple different routes
  *
  */
+@provideSingleton()
 export class Server {
   private expressApp: express.Application;
   private bodyParser: ExpressBodyParser;
   private expressCors: ExpressCors;
   private expressRouter: ExpressRouter;
   private serverHealthStatus = true;
-  private envConfig: EnvConfig;
-  private baseConfig: BaseConfig;
-  private dbConfig: ServerDBConfig;
-  private keycloakConfig: KeycloakConfig;
   constructor(
-    private config: ServerConfiguration,
+    config: Configuration,
     app: express.Application = express(),
     bodyParser: ExpressBodyParser = BodyParser,
     expressCors: ExpressCors = cors,
@@ -62,20 +52,15 @@ export class Server {
     this.bodyParser = bodyParser;
     this.expressCors = expressCors;
     this.expressRouter = expressRouter;
-    this.envConfig = this.config[
-      ((process.env.ENV as any) as keyof ServerConfiguration) || this.config.currentENV || 'dev'
-    ] as EnvConfig;
-    this.baseConfig = this.envConfig.baseConfig;
-    this.dbConfig = this.envConfig.DB;
-    this.keycloakConfig = this.envConfig.keycloak;
+    config.init(); // initialize server configuration
   }
 
   public async startApp(): Promise<void> {
     try {
-      const port = (this.baseConfig && this.baseConfig.port) || 8080;
+      const port = getConfig('baseConfig.port');
       await this.configureServer();
       this.expressApp.listen(port);
-      console.log(`server available at http://localhost:${process.env.PORT || port}`);
+      console.log(`server available at http://localhost:${port}`);
     } catch (error) {
       this.serverHealthStatus = false;
       console.error(`error when starting the server with env ${process.env.ENV} with message ${error}`);
@@ -83,7 +68,8 @@ export class Server {
   }
 
   private async configureServer() {
-    await this.setUpDataBase(); // start the database first since configureAuthenticator method needs the connection stream
+    // start the database first since configureAuthenticator method needs the connection stream
+    await this.setUpDataBase();
     this.configureAuthenticator(); // this method has to be executed first before generating the middlewares
     this.configureServiceFactory();
     this.addMiddlewares();
@@ -115,14 +101,12 @@ export class Server {
   }
 
   private configureAuthenticator() {
-    const authenticator = new JWTAuthenticator();
     const keyCloakAuth = container.get(KeyCloakToken);
-    RestServer.registerAuthenticator(authenticator, JWTTOKEN);
     RestServer.registerAuthenticator(keyCloakAuth, KEYCLOAK_TOKEN);
   }
 
   private startKeycloakAdmin() {
-    Keycloak.getInstance().init(this.keycloakConfig); // initialize the keyCloak admin instance
+    Keycloak.getInstance().init(); // initialize the keyCloak admin instance
   }
   /**
    * configure the IOC module for typescript-rest to
@@ -149,18 +133,9 @@ export class Server {
    */
   private async setUpDataBase(): Promise<void> {
     try {
-      await startDB(this.dbConfig);
+      await startDB(getConfig('DB'));
     } catch (error) {
       console.log('error connecting to database', error);
     }
-  }
-
-  // istanbul ignore next
-  public getConfig(): ServerConfiguration {
-    return this.config;
-  }
-  // istanbul ignore next
-  public setConfig(config: ServerConfiguration) {
-    this.config = config;
   }
 }

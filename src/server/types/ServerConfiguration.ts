@@ -11,22 +11,42 @@ export type ServerDBConfig = {
 };
 
 export declare type GrantTypes = 'client_credentials' | 'password';
+export declare type env = 'dev' | 'prod' | 'staging';
 
 export type KeycloakConfig = {
   username: string;
   password: string;
   grantType: GrantTypes;
-  'client-id': string;
+  clientId: string;
+  baseUrl: string;
+  realmName?: string;
+  clientValidation?: {
+    realmName: string;
+  };
+};
+
+export type LoggerConfig = {
+  logLevel: string;
+  displayAutoLogs?: boolean;
+  displayManualLogs?: boolean;
+  displayNoLogs?: boolean;
+};
+
+export type EmailConfig = {
+  from: string;
+  sendGridApiKey: string;
 };
 
 export type EnvConfig = {
   baseConfig?: BaseConfig;
   DB?: ServerDBConfig;
   keycloak: KeycloakConfig;
+  logger?: LoggerConfig;
+  email?: EmailConfig;
 };
 
 export type ServerConfiguration = {
-  currentENV: 'dev' | 'prod' | 'staging';
+  currentENV: env;
   dev?: EnvConfig;
   prod?: EnvConfig;
   staging?: EnvConfig;

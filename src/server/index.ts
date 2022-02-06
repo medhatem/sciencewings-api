@@ -1,16 +1,15 @@
 import 'module-alias/register';
 
-import * as Config from './config.json';
-
+import { Configuration } from './configuration/Configuration';
 import { Server } from './Server';
-import { ServerConfiguration } from './types/ServerConfiguration';
 import { container } from './di';
 
 container.initialize();
+
 // istanbul ignore next
 if (process.argv[1].includes('dist/server/index.js')) {
   (async () => {
-    const server = new Server((Config as any) as ServerConfiguration);
+    const server = new Server(container.get(Configuration));
     await server.startApp();
   })();
 }

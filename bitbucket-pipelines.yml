@@ -1,0 +1,87 @@
+# This is a sample build configuration for Python.
+# Check our guides at https://confluence.atlassian.com/x/x4UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: atlassian/default-image:3
+
+options:
+  docker: true
+
+definitions:
+  steps:
+    - step: &install
+        name: install
+        script:
+          - npm -v
+          - npm run clean
+          - npm install
+        artifacts: # defining the artifacts to be passed to each future step.
+          - node_modules/**
+    - step: &build
+        name: build
+        script:
+          - ls
+          - npm run build
+    - step: &lint
+        name: lint
+        script:
+          - npm run lint-and-fix
+    - step: &installForDeployment
+        name: install dependencies for deployment
+        script:
+          - apt-get update && apt-get install -y --no-install-recommends git  curl libmcrypt-dev openssl mysql-client libmagickwand-dev
+          - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          - chmod +x /usr/local/bin/docker-compose
+          - docker-compose --version
+    - step: &buildForDeployment
+        name: build
+        script:
+          - docker-compose build
+    - step: &deploy
+        name: deploy to dev
+        trigger: manual
+        script:
+          - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+          - docker-compose -f devops/staging/docker-compose.yml build
+          - heroku container:login
+          - docker tag staging_api registry.heroku.com/sciencewings-api-staging/web
+          - docker push registry.heroku.com/sciencewings-api-staging/web
+          - heroku container:release web -a sciencewings-api-staging
+
+pipelines:
+  default:
+    - step: *install
+    - step: *build
+    - step: *lint
+  branches:
+    dev:
+      - step: *installForDeployment
+      - step: *buildForDeployment
+      - step: *deploy
+    master:
+      - step: *installForDeployment
+      - step: *buildForDeployment
+      - step: *deploy
+    feature/*:
+      - step: *install
+      - step: *build
+      - step: *lint
+    release/*:
+      - step: *install
+      - step: *build
+      - step: *lint
+      - step: *installForDeployment
+      - step: *buildForDeployment
+      - step: *deploy
+    hotfix/*:
+      - step: *install
+      - step: *build
+      - step: *lint
+      - step: *installForDeployment
+      - step: *buildForDeployment
+      - step: *deploy
+    bugfix/*:
+      - step: *install
+      - step: *build
+      - step: *lint

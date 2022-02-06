@@ -5,17 +5,16 @@ import { provideSingleton } from '@di/index';
 import { Path, GET, PUT, PathParam } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
 import { BaseDTO, BaseRequestDTO } from '../dtos/BaseDTO';
-import { buildMapper, IMapper } from 'dto-mapper';
-
-export interface Class<T> extends Function {
-  new (): T;
-}
+import { buildMapper, Class, IMapper } from 'dto-mapper';
+import { Logger } from '@utils/Logger';
 
 @provideSingleton()
 export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
   private getDTOMapper: IMapper<Y, unknown>;
+  public logger: Logger;
   constructor(private service: BaseService<T>, private baseGetDTO: Class<Y>) {
     this.getDTOMapper = this.getMapper(this.baseGetDTO);
+    this.logger = Logger.getInstance();
   }
 
   /**
@@ -65,6 +64,7 @@ export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
   @Path('/:id')
   @Response(201, 'success')
   public async update(@PathParam('id') id: number, payload: any): Promise<any> {
+    console.log(id, payload);
     // await this.service.update(payload);
     // const updatedPayload = await this.service.get(id);
     // return new this.UpdateRO().serialize(await updatedPayload);

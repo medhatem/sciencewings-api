@@ -1,4 +1,4 @@
-import { dto, include } from 'dto-mapper';
+import { Class, IMapper, buildMapper, dto, include } from 'dto-mapper';
 
 @dto()
 export class BaseBodyDTO {
@@ -17,6 +17,14 @@ export class BaseErrorDTO {
 
 @dto()
 export class BaseRequestDTO {
+  getMapper<T extends BaseRequestDTO>(): IMapper<T, unknown> {
+    return buildMapper<unknown, T>((this.constructor as any) as Class<T>);
+  }
+
+  serialize(payload: { [key: string]: any }): this {
+    return this.getMapper<this>().serialize<this>(payload as any);
+  }
+
   @include()
   public body?: BaseBodyDTO;
 

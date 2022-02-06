@@ -1,6 +1,4 @@
-import * as mongoose from 'mongoose';
-
-export interface IBase extends mongoose.Document {
-  createdAt: Number;
-  updatedAt: Number;
+export interface IBase {
+  createdAt: number;
+  updatedAt: number;
 }

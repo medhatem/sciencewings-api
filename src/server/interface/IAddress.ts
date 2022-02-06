@@ -1,6 +1,4 @@
-import * as mongoose from 'mongoose';
-
-export interface IAddress extends mongoose.Document {
+export interface IAddress {
   appt: number;
   city: string;
   street: string;

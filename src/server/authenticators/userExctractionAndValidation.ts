@@ -3,6 +3,7 @@ import { Unauthorized } from '@errors/Unauthorized';
 import { UserRequest } from '../types/UserRequest';
 import { UserService } from '@modules/users/services/UserService';
 import fetch from 'node-fetch';
+import { getConfig } from '../configuration/Configuration';
 import { provideSingleton } from '../di';
 
 @provideSingleton()
@@ -22,23 +23,30 @@ export class UserExctractionAndValidation {
     }
 
     const token = req.headers[ACCESS_TOKEN_HEADER] as string;
-    const res = await fetch('http://localhost:8080/auth/realms/sciencewings-web/protocol/openid-connect/userinfo', {
-      method: 'get',
-      headers: {
-        Authorization: `Bearer ${token}`,
+
+    const res = await fetch(
+      `${getConfig('keycloak.baseUrl')}/realms/${getConfig(
+        'keycloak.clientValidation.realmName',
+      )}/protocol/openid-connect/userinfo`,
+      {
+        method: 'get',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
     const result = await res.json();
     if (result.error) {
       throw new Unauthorized();
     }
-
     const user = await this.userService.getUserByCriteria({ email: result.email });
     let userId = user ? user.id : null;
     if (!user) {
-      console.log(result);
-      const createdUserId = await this.userService.registerUser(result);
-      userId = createdUserId;
+      const registerUserResult = await this.userService.registerUser(result);
+      if (registerUserResult.isFailure) {
+        throw new Error('Unexpected Error!');
+      }
+      userId = registerUserResult.getValue();
     }
     req.keycloakUser = result;
     req.userId = userId;
