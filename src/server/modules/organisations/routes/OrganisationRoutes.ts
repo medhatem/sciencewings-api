@@ -39,11 +39,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
   }
 
   @GET
-  @Path('getUsers/:id')
+  @Path('getMembers/:id')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async getUsers(@PathParam('id') payload: number) {
-    const result = await this.OrganisationService.getUsers(payload);
+    const result = await this.OrganisationService.getMembers(payload);
 
     if (result.isFailure) {
       return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });

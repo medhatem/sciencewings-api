@@ -57,11 +57,11 @@ export class OrganisationService extends BaseService<Organization> {
 
   @log()
   @safeGuard()
-  public async getUsers(orgId: number) {
-    const existingOrg = await this.dao.getByCriteria({ id: orgId });
+  public async getMembers(orgId: number) {
+    const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>(`Organization with id ${orgId} dose not exists.`);
+      return Result.fail<number>(`Organization with id ${orgId} does not exist.`);
     }
 
     const members: Collection<User> = await existingOrg.users.init();
