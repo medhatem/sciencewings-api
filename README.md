@@ -30,16 +30,14 @@
 
 ## Getting started
 
-to get started make sure to fork the repository first
-
 ```
-git clone `your fork link`
-git remote add upstream git@github.com:org-Mana/manaServices_server.git
 npm run init
 npm run watch
-
 ```
 
-to run the server
+- Start the containers `npm run start-containers`.
+- If succesfull open a new terminal.
+- Run the server `npm run dev`.
 
-`npm run dev`
+- checkout server health: `http://localhost:3000/health`.
+- checkout the swagger docs: `http://localhost:3000/api/docs/`.

@@ -19,7 +19,4 @@ export class EmployeeCategory extends BaseModel<EmployeeCategory> {
   @Unique({ name: 'hr_employee_category_name_uniq' })
   @Property()
   name!: string;
-
-  @Property({ nullable: true })
-  color?: number;
 }

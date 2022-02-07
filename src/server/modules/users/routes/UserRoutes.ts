@@ -1,6 +1,5 @@
-import { POST, Path, Security, ContextRequest } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
@@ -102,11 +101,11 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
     });
   }
 
-  @POST
+  @PUT
   @Path('updateUserDetail')
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
-  public async createOrganisation(
+  public async updateUserDetails(
     payload: UserDetailsRO,
     @ContextRequest request: UserRequest,
   ): Promise<CreatedUserDTO> {
@@ -116,6 +115,6 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
       return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+    return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
   }
 }

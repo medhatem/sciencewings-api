@@ -11,7 +11,7 @@ import { CreateResourceRO } from './RequestObject';
 import { CreateResourceDTO } from '../dtos/CreatedResourceDTO';
 
 @provideSingleton()
-@Path('organisation')
+@Path('organization')
 export class ResourceRoutes extends BaseRoutes<Resource, ResourceDTO> {
   constructor(private ResourceService: ResourceService) {
     super(ResourceService, ResourceDTO);

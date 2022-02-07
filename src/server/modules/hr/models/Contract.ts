@@ -6,7 +6,7 @@ import { ContractType } from './ContractType';
 import { Department } from './Department';
 import { Employee } from './Employee';
 import { Job } from './Job';
-import { Organization } from '../../organisations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 import { PayrollStructureType } from './PayrollStructureType';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { User } from '../../users/models/User';
@@ -75,7 +75,7 @@ export class Contract extends BaseModel<Contract> {
   state?: string;
 
   @ManyToOne({ entity: () => Organization })
-  organisation!: Organization;
+  organization!: Organization;
 
   @ManyToOne({ entity: () => ContractType, onDelete: 'set null', nullable: true })
   contractType?: ContractType;

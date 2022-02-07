@@ -19,9 +19,6 @@ export class ResPartnerCategory extends BaseModel<ResPartnerCategory> {
   @Property()
   name!: string;
 
-  @Property({ nullable: true })
-  color?: number;
-
   @ManyToOne({
     entity: () => ResPartnerCategory,
     onDelete: 'cascade',
