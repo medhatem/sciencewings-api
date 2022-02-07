@@ -43,7 +43,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async getUsers(@PathParam('id') payload: number) {
-    const result = await this.OrganisationService.getMembers(payload);
+    const result = await this.OrganizationService.getMembers(payload);
 
     if (result.isFailure) {
       return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
