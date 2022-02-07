@@ -100,12 +100,5 @@
     "sinon": "latest",
     "tsconfig-paths": "^3.12.0",
     "typescript": "latest"
-  },
-  "mikro-orm": {
-    "useTsNode": true,
-    "configPaths": [
-      "./mikro-orm.config.ts",
-      "./dist/mikro-orm.config.js"
-    ]
   }
 }

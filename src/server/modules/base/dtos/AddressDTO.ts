@@ -22,5 +22,5 @@ export class AddressOrganizationRO {
   street: string;
 
   @include()
-  appartement: string;
+  appartement: number;
 }
