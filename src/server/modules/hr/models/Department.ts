@@ -36,9 +36,9 @@ export class Department extends BaseModel<Department> {
     entity: () => Organization,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_department_organisation_id_index',
+    index: 'hr_department_organization_id_index',
   })
-  organisation?: Organization;
+  organization?: Organization;
 
   @ManyToOne({
     entity: () => Department,

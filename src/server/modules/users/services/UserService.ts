@@ -5,7 +5,7 @@ import { Email } from '@utils/Email';
 import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { OrganisationService } from '@modules/organizations/services/organizationservice';
+import { OrganizationService } from '@modules/organizations/services/OrganizationService';
 import { ResetPasswordRO } from '../routes/RequstObjects';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
@@ -18,7 +18,7 @@ import { safeGuard } from '../../../decorators/safeGuard';
 export class UserService extends BaseService<User> {
   constructor(
     public dao: UserDao,
-    public organizationService: OrganisationService,
+    public organizationService: OrganizationService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
   ) {

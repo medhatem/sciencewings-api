@@ -25,7 +25,7 @@ export class ResourceCalendar extends BaseModel<ResourceCalendar> {
   active?: boolean;
 
   @ManyToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
-  organisation?: Organization;
+  organization?: Organization;
 
   @Property({ columnType: 'float8', nullable: true })
   hoursPerDay?: number;

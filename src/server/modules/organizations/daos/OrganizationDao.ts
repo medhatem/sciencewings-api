@@ -4,12 +4,12 @@ import { BaseDao } from '../../base/daos/BaseDao';
 import { Organization } from '@modules/organizations/models/Organization';
 
 @provideSingleton()
-export class OrganisationDao extends BaseDao<Organization> {
+export class OrganizationDao extends BaseDao<Organization> {
   private constructor(public model: Organization) {
     super(model);
   }
 
-  static getInstance(): OrganisationDao {
-    return container.get(OrganisationDao);
+  static getInstance(): OrganizationDao {
+    return container.get(OrganizationDao);
   }
 }

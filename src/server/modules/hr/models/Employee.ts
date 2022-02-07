@@ -17,7 +17,7 @@ import { WorkLocation } from './WorkLocation';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'hr_employee_user_uniq', properties: ['organisation', 'user'] })
+@Unique({ name: 'hr_employee_user_uniq', properties: ['organization', 'user'] })
 export class Employee extends BaseModel<Employee> {
   constructor() {
     super();
@@ -33,8 +33,8 @@ export class Employee extends BaseModel<Employee> {
   @ManyToOne({ entity: () => Resource, index: 'hr_employee_resource_id_index' })
   resource!: Resource;
 
-  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_employee_organisation_id_index' })
-  organisation!: Organization;
+  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_employee_organization_id_index' })
+  organization!: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
