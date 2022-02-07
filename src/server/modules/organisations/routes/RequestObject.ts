@@ -1,3 +1,5 @@
+import { AddressOrganizationRO } from './../../base/dtos/AddressDTO';
+
 import { dto, include } from 'dto-mapper';
 
 @dto()
@@ -15,13 +17,16 @@ export class CreateOrganizationRO {
   type: string;
 
   @include()
+  address: AddressOrganizationRO[];
+
+  @include()
   labels: string[];
 
   @include()
   members: number[];
 
   @include()
-  contact: number;
+  direction: number;
 
   @include()
   social: { type: string; link: number }[];
@@ -31,4 +36,13 @@ export class CreateOrganizationRO {
 
   @include()
   parentId?: string;
+}
+
+@dto()
+export class UserInviteToOrgRO {
+  @include()
+  organizationId: number;
+
+  @include()
+  email: string;
 }

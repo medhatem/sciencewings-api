@@ -1,3 +1,5 @@
+import { UserInviteToOrgRO } from '@modules/organisations/routes/RequestObject';
+import { InviteUserDTO } from '../dtos/InviteUserDTO';
 import { container, provideSingleton } from '@di/index';
 import { OrganisationService } from '../services/OrganisationService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
@@ -9,6 +11,7 @@ import { UserRequest } from '../../../types/UserRequest';
 import { CreatedOrganizationDTO } from '../dtos/createdOrganizationDTO';
 import { OrganizationDTO } from '../dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { Response } from 'typescript-rest-swagger';
 
 @provideSingleton()
 @Path('organisation')
@@ -36,5 +39,30 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
     }
 
     return new CreatedOrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
+   * invite a user to an organization
+   * creates the newly invited user in keycloak
+   *
+   * @param payload
+   */
+  @POST
+  @Path('inviteUserToOrganization')
+  @Response<InviteUserDTO>(201, 'User Registred Successfully')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
+    const result = await this.OrganisationService.inviteUserByEmail(payload.email, payload.organizationId);
+
+    if (result.isFailure) {
+      return new InviteUserDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new InviteUserDTO().serialize({
+      body: { statusCode: 201, userId: result.getValue() },
+    });
   }
 }

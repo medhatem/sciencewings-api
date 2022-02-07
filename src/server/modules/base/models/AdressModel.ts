@@ -1,38 +1,20 @@
-import { PrimaryKey, Property, wrap, Entity } from '@mikro-orm/core';
+import { Organization } from '@modules/organisations/models/Organization';
+import { BaseModel } from '@modules/base/models/BaseModel';
+import { Property, Entity, ManyToOne } from '@mikro-orm/core';
 
-import { provideSingleton } from '@di/index';
+import { provideSingleton, container } from '@di/index';
 
-// id, street, province, country, code, type
-
-// interface CoordType {
-//   lat: number;
-//   long: number;
-// }
-
-interface OrganizationAdressType {
-  billing: string;
-  shipping: string;
+export enum AddressType {
+  USER = 'USER',
+  ORGANIZATION = 'ORGANIZATION',
 }
-
-interface UserAdressType {
-  shipping: string;
-}
-
-interface ResourceAdressType {
-  location: string;
-}
-
-type AdressType = OrganizationAdressType | UserAdressType | ResourceAdressType;
 
 @provideSingleton()
 @Entity()
-export class Adress {
+export class Address extends BaseModel<Address> {
   static getInstance(): void {
-    throw new Error('The base model class cannot be instanciated and needs to be overriden!');
+    container.get(Address);
   }
-
-  @PrimaryKey()
-  id!: number;
 
   @Property()
   country: string;
@@ -44,21 +26,21 @@ export class Adress {
   code: string;
 
   @Property()
-  type: AdressType;
+  type: AddressType;
 
-  /**
-   *
-   * @param strict
-   * @param strip
-   * @param args
-   */
-  toJSON(strict = true, strip = [''], ...args: any[]): { [p: string]: any } {
-    const o = wrap(this, true).toObject(...args); // do not forget to pass rest params here
+  @Property()
+  city: string;
 
-    if (strict) {
-      strip.forEach((k) => delete o[k]);
-    }
+  @Property()
+  street: string;
 
-    return o;
-  }
+  @Property()
+  appartement: string;
+
+  @ManyToOne({
+    entity: () => Organization,
+    onDelete: 'cascade',
+    nullable: true,
+  })
+  organisation: Organization;
 }

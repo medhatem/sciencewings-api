@@ -1,3 +1,6 @@
+import { AddressOrganizationRO } from './../../base/dtos/AddressDTO';
+import { Email } from '@utils/Email';
+import { User } from '@modules/users/models/User';
 import { OrganisationContactDao } from './../daos/OrganizationContactDao';
 import { OrganisationSocialDao } from './../daos/OrganizationSocialDao';
 import { OrganisationLabelDao } from './../daos/OrganizationLabelDao';
@@ -11,7 +14,9 @@ import { UserService } from '@modules/users/services/UserService';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-
+import { EmailMessage } from '../../../types/types';
+import { getConfig } from './../../../configuration/Configuration';
+import { AddressDao } from '@modules/base/daos/AddressDAO';
 @provideSingleton()
 export class OrganisationService extends BaseService<Organization> {
   constructor(
@@ -20,6 +25,8 @@ export class OrganisationService extends BaseService<Organization> {
     public labelDAO: OrganisationLabelDao,
     public socialDAO: OrganisationSocialDao,
     public contactDAO: OrganisationContactDao,
+    public addressDAO: AddressDao,
+    public emailService = Email.getInstance(),
   ) {
     super(dao);
   }
@@ -28,15 +35,15 @@ export class OrganisationService extends BaseService<Organization> {
     return container.get(OrganisationService);
   }
 
-  /**
-   * create a new organisation
-   * An organisation in keycloak is represented with a group
-   * So we need to create the group first and get its id
-   * Then we create the final organisation in the database by including the keycloak
-   * group id
-   *
-   * @param payload
-   */
+  // /**
+  //  * create a new organisation
+  //  * An organisation in keycloak is represented with a group
+  //  * So we need to create the group first and get its id
+  //  * Then we create the final organisation in the database by including the keycloak
+  //  * group id
+  //  *
+  //  * @param payload
+  //  */
   @log()
   @safeGuard()
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
@@ -47,14 +54,20 @@ export class OrganisationService extends BaseService<Organization> {
 
     const user = await this.userService.get(userId);
 
-    const direction = await this.userService.get(payload.contact);
-    if (direction) {
-      throw new Error(`User with id: ${payload.contact} dose not exists.`);
+    let adminContact;
+    if (payload.adminContact) {
+      adminContact = await this.userService.get(payload.adminContact);
+      if (!adminContact) {
+        throw new Error(`User with id: ${payload.adminContact} dose not exists.`);
+      }
     }
 
-    const adminContact = await this.userService.get(payload.adminContact);
-    if (adminContact) {
-      throw new Error(`User with id: ${payload.adminContact} dose not exists.`);
+    let direction;
+    if (payload.direction) {
+      direction = await this.userService.get(payload.direction);
+      if (!direction) {
+        throw new Error(`User with id: ${payload.direction} dose not exists.`);
+      }
     }
 
     const organization = this.wrapEntity(this.dao.model, {
@@ -62,9 +75,10 @@ export class OrganisationService extends BaseService<Organization> {
       email: payload.email,
       phone: payload.phone,
       type: payload.type,
-      direction: direction,
-      adminContact: adminContact,
     });
+    organization.direction = direction;
+    organization.admin_contact = adminContact;
+
     await user.organisations.init();
     user.organisations.add(organization);
     const createdOrg = await this.create(this.dao.model);
@@ -77,24 +91,45 @@ export class OrganisationService extends BaseService<Organization> {
       await this.update(createdOrg);
     }
 
-    payload.labels.map((el: string) => {
-      this.labelDAO.create({
-        id: null,
-        toJSON: null,
-        name: el,
-        organisation: createdOrg,
-      });
-    });
+    await Promise.all(
+      payload.labels.map(async (el: string) => {
+        await this.labelDAO.create({
+          id: null,
+          toJSON: null,
+          name: el,
+          organisation: createdOrg,
+        });
+      }),
+    );
 
-    payload.social.map((el: any) => {
-      this.socialDAO.create({
-        id: null,
-        toJSON: null,
-        type: el.type,
-        link: el.link,
-        organisation: createdOrg,
-      });
-    });
+    await Promise.all(
+      payload.social.map(async (el: any) => {
+        await this.socialDAO.create({
+          id: null,
+          toJSON: null,
+          type: el.type,
+          link: el.link,
+          organisation: createdOrg,
+        });
+      }),
+    );
+
+    await Promise.all(
+      payload.address.map(async (el: any) => {
+        await this.addressDAO.create({
+          id: null,
+          toJSON: null,
+          country: el.country,
+          province: el.province,
+          code: el.code,
+          type: el.type,
+          street: el.street,
+          appartement: el.appartement,
+          city: el.city,
+          organisation: createdOrg,
+        });
+      }),
+    );
 
     await Promise.all(
       payload.members.map(async (el: number) => {
@@ -105,5 +140,56 @@ export class OrganisationService extends BaseService<Organization> {
 
     await this.update(createdOrg);
     return Result.ok<number>(createdOrg.id);
+  }
+
+  @log()
+  @safeGuard()
+  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
+    const existingUser = await this.keycloak
+      .getAdminClient()
+      .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
+    if (existingUser.length > 0) {
+      return Result.fail<number>('The user already exists.');
+    }
+
+    const existingOrg = await this.dao.get(orgId);
+
+    if (!existingOrg) {
+      return Result.fail<number>('The organization to add the user to does not exist.');
+    }
+
+    const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
+      email,
+      firstName: '',
+      lastName: '',
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+
+    //save created keycloak user in the database
+    const user = new User();
+    user.firstname = '';
+    user.lastname = '';
+    user.email = email;
+    user.keycloakId = createdKeyCloakUser.id;
+
+    const savedUser = await this.userService.create(user);
+
+    // add the invited user to the organization
+    await existingOrg.members.init();
+    existingOrg.members.add(savedUser);
+
+    await this.userService.update(savedUser);
+
+    const emailMessage: EmailMessage = {
+      from: this.emailService.from,
+      to: email,
+      text: 'Sciencewings - reset password',
+      html: '<html><body>Reset password</body></html>',
+      subject: ' reset password',
+    };
+
+    this.emailService.sendEmail(emailMessage);
+
+    return Result.ok<number>(savedUser.id);
   }
 }

@@ -1,3 +1,4 @@
+import { Address } from './../../base/models/AdressModel';
 // import { OrganizationContact } from './OrganizationContact';
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@di/index';
@@ -30,6 +31,12 @@ export class Organization extends BaseModel<Organization> {
 
   @Property()
   type!: string;
+
+  @OneToMany({
+    entity: () => Address,
+    mappedBy: (entity) => entity.organisation,
+  })
+  public address = new Collection<Address>(this);
 
   @OneToMany({
     entity: () => OrganizationLabel,
