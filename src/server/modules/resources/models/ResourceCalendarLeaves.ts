@@ -24,7 +24,7 @@ export class ResourceCalendarLeaves extends BaseModel<ResourceCalendarLeaves> {
   name?: string;
 
   @ManyToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
-  organisation?: Organization;
+  organization?: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,

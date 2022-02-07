@@ -19,7 +19,7 @@ export class ResConfigSettings extends BaseModel<ResConfigSettings> {
   id!: number;
 
   @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
-  organisation!: Organization;
+  organization!: Organization;
 
   @Property({ nullable: true })
   userDefaultRights?: boolean;

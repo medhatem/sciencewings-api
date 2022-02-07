@@ -3,10 +3,10 @@ import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from './Organization';
-import { ResCountry } from '../../organisations/models/ResCountry';
-import { ResCountryState } from '../../organisations/models/ResCountryState';
-import { ResPartnerIndustry } from '../../organisations/models/ResPartnerIndustry';
-import { ResPartnerTitle } from '../../organisations/models/ResPartnerTitle';
+import { ResCountry } from './ResCountry';
+import { ResCountryState } from './ResCountryState';
+import { ResPartnerIndustry } from './ResPartnerIndustry';
+import { ResPartnerTitle } from './ResPartnerTitle';
 import { User } from '../../users/models/User';
 
 @provideSingleton()
@@ -32,7 +32,7 @@ export class ResPartner extends BaseModel<ResPartner> {
     nullable: true,
     index: 'res_partner_organisation_id_index',
   })
-  organisation?: Organization;
+  organization?: Organization;
 
   @Index({ name: 'res_partner_display_name_index' })
   @Property({ nullable: true })

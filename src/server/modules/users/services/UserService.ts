@@ -2,7 +2,7 @@ import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { OrganisationService } from '@modules/organisations/services/OrganisationService';
+import { OrganisationService } from '@modules/organisations/services/OrganizationService';
 import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
@@ -38,7 +38,7 @@ export class UserService extends BaseService<User> {
     const userDetail = this.wrapEntity(this.dao.model, payload);
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
-      return Result.fail<number>(`User with id ${userId} dose not existe`);
+      return Result.fail<number>(`User with id ${userId} does not existe`);
     }
 
     const user: User = {

@@ -42,5 +42,5 @@ export class Address extends BaseModel<Address> {
     onDelete: 'cascade',
     nullable: true,
   })
-  organisation: Organization;
+  organization: Organization;
 }

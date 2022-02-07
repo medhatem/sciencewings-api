@@ -1,4 +1,4 @@
-import { Address } from './../../base/models/AdressModel';
+import { Address } from '../../base/models/AdressModel';
 // import { OrganizationContact } from './OrganizationContact';
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@di/index';
@@ -28,18 +28,19 @@ export class Organization extends BaseModel<Organization> {
   @Unique()
   phone!: string;
 
+  // e.i: Public, Service, Institut
   @Property()
   type!: string;
 
   @OneToMany({
     entity: () => Address,
-    mappedBy: (entity) => entity.organisation,
+    mappedBy: (entity) => entity.organization,
   })
   public address = new Collection<Address>(this);
 
   @OneToMany({
     entity: () => OrganizationLabel,
-    mappedBy: (entity) => entity.organisation,
+    mappedBy: (entity) => entity.organization,
   })
   public labels? = new Collection<OrganizationLabel>(this);
 
@@ -48,7 +49,7 @@ export class Organization extends BaseModel<Organization> {
 
   // @OneToMany({
   //   entity: () => OrganizationContact,
-  //   mappedBy: (entity) => entity.organisation,
+  //   mappedBy: (entity) => entity.organization,
   // })
   // public contacts? = new Collection<OrganizationContact>(this);
 

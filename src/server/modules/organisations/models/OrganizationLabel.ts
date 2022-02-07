@@ -23,5 +23,5 @@ export class OrganizationLabel extends BaseModel<OrganizationLabel> {
     onDelete: 'cascade',
     nullable: true,
   })
-  organisation: Organization;
+  organization: Organization;
 }

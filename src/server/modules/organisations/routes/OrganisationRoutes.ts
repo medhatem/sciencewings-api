@@ -1,7 +1,7 @@
 import { UserInviteToOrgRO } from '@modules/organisations/routes/RequestObject';
 import { InviteUserDTO } from '../dtos/InviteUserDTO';
 import { container, provideSingleton } from '@di/index';
-import { OrganisationService } from '../services/OrganisationService';
+import { OrganisationService } from '../services/OrganizationService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Organization } from '../models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
@@ -14,7 +14,7 @@ import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 
 @provideSingleton()
-@Path('organisation')
+@Path('organization')
 export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO> {
   constructor(private OrganisationService: OrganisationService) {
     super(OrganisationService, OrganizationDTO);

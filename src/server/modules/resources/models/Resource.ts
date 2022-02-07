@@ -29,7 +29,7 @@ export class Resource extends BaseModel<Resource> {
     nullable: true,
     index: 'resource_test_organization_id_index',
   })
-  organisation?: Organization;
+  organization?: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,

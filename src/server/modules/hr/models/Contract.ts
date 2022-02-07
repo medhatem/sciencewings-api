@@ -75,7 +75,7 @@ export class Contract extends BaseModel<Contract> {
   state?: string;
 
   @ManyToOne({ entity: () => Organization })
-  organisation!: Organization;
+  organization!: Organization;
 
   @ManyToOne({ entity: () => ContractType, onDelete: 'set null', nullable: true })
   contractType?: ContractType;

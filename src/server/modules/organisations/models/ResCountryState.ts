@@ -1,6 +1,6 @@
 import { Entity, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { BaseModel } from '../../base/models/BaseModel';
-import { ResCountry } from '../../organisations/models/ResCountry';
+import { ResCountry } from './ResCountry';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()

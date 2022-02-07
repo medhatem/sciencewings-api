@@ -1,4 +1,4 @@
-import { AddressOrganizationRO } from './../../base/dtos/AddressDTO';
+import { AddressOrganizationRO } from '../../base/dtos/AddressDTO';
 
 import { dto, include } from 'dto-mapper';
 

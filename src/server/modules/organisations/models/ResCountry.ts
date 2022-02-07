@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { BaseModel } from '../../base/models/BaseModel';
-import { ResCurrency } from '../../organisations/models/ResCurrency';
+import { ResCurrency } from './ResCurrency';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()

@@ -1,28 +1,27 @@
 import { Collection } from '@mikro-orm/core';
 import { Email } from '@utils/Email';
 import { User } from '@modules/users/models/User';
-import { OrganisationContactDao } from './../daos/OrganizationContactDao';
-import { OrganisationLabelDao } from './../daos/OrganizationLabelDao';
+import { OrganisationLabelDao } from '../daos/OrganizationLabelDao';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { CreateOrganizationRO } from '../routes/RequestObject';
-import { OrganisationDao } from '../daos/OrganisationDao';
+import { OrganisationDao } from '../daos/OrganizationDao';
 import { Organization } from '@modules/organisations/models/Organization';
 import { UserService } from '@modules/users/services/UserService';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { EmailMessage } from '../../../types/types';
-import { getConfig } from './../../../configuration/Configuration';
-import { AddressDao } from '@modules/base/daos/AddressDAO';
+import { getConfig } from '../../../configuration/Configuration';
+import { AddressService } from '@modules/base/services/AddressService';
+import { OrganisationLabelService } from './OrganizationLabelService';
 @provideSingleton()
 export class OrganisationService extends BaseService<Organization> {
   constructor(
     public dao: OrganisationDao,
     public userService: UserService,
-    public labelDAO: OrganisationLabelDao,
-    public contactDAO: OrganisationContactDao,
-    public addressDAO: AddressDao,
+    public addressService: AddressService,
+    public labelservice: OrganisationLabelService,
     public emailService = Email.getInstance(),
   ) {
     super(dao);
@@ -33,10 +32,10 @@ export class OrganisationService extends BaseService<Organization> {
   }
 
   // /**
-  //  * create a new organisation
-  //  * An organisation in keycloak is represented with a group
+  //  * create a new organization
+  //  * An organization in keycloak is represented with a group
   //  * So we need to create the group first and get its id
-  //  * Then we create the final organisation in the database by including the keycloak
+  //  * Then we create the final organization in the database by including the keycloak
   //  * group id
   //  *
   //  * @param payload
@@ -46,7 +45,7 @@ export class OrganisationService extends BaseService<Organization> {
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
-      return Result.fail<number>(`Organization ${payload.name} already exists.`);
+      return Result.fail<number>(`Organization ${payload.name} already exist.`);
     }
 
     const user = await this.userService.get(userId);
@@ -55,7 +54,7 @@ export class OrganisationService extends BaseService<Organization> {
     if (payload.adminContact) {
       adminContact = await this.userService.get(payload.adminContact);
       if (!adminContact) {
-        throw new Error(`User with id: ${payload.adminContact} dose not exists.`);
+        throw new Error(`User with id: ${payload.adminContact} does not exist.`);
       }
     }
 
@@ -63,7 +62,7 @@ export class OrganisationService extends BaseService<Organization> {
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
       if (!direction) {
-        throw new Error(`User with id: ${payload.direction} dose not exists.`);
+        throw new Error(`User with id: ${payload.direction} does not exist.`);
       }
     }
 
@@ -96,18 +95,18 @@ export class OrganisationService extends BaseService<Organization> {
 
     await Promise.all(
       payload.labels.map(async (el: string) => {
-        await this.labelDAO.create({
+        await this.labelservice.createLabel({
           id: null,
           toJSON: null,
           name: el,
-          organisation: createdOrg,
+          organization: createdOrg,
         });
       }),
     );
 
     await Promise.all(
       payload.address.map(async (el: any) => {
-        await this.addressDAO.create({
+        await this.addressService.createAddress({
           id: null,
           toJSON: null,
           country: el.country,
@@ -117,7 +116,7 @@ export class OrganisationService extends BaseService<Organization> {
           street: el.street,
           appartement: el.appartement,
           city: el.city,
-          organisation: createdOrg,
+          organization: createdOrg,
         });
       }),
     );
@@ -140,7 +139,7 @@ export class OrganisationService extends BaseService<Organization> {
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exists.');
+      return Result.fail<number>('The user already exist.');
     }
 
     const existingOrg = await this.dao.get(orgId);

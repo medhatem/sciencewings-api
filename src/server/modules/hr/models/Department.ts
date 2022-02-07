@@ -38,7 +38,7 @@ export class Department extends BaseModel<Department> {
     nullable: true,
     index: 'hr_department_organisation_id_index',
   })
-  organisation?: Organization;
+  organization?: Organization;
 
   @ManyToOne({
     entity: () => Department,
