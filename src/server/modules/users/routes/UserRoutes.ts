@@ -1,6 +1,5 @@
-import { POST, Path, Security, ContextRequest } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
@@ -9,9 +8,10 @@ import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
 import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
-import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
+import { ResetPasswordRO, UserDetailsRO, UserInviteToOrgRO } from './RequstObjects';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
 
 @provideSingleton()
 @Path('users')
@@ -99,5 +99,22 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
     return new ResetPasswordDTO().serialize({
       body: { statusCode: 200, message: result.getValue() },
     });
+  }
+
+  @PUT
+  @Path('updateUserDetail')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async updateUserDetails(
+    payload: UserDetailsRO,
+    @ContextRequest request: UserRequest,
+  ): Promise<CreatedUserDTO> {
+    const result = await this.userService.updateUserDetails(payload, request.userId);
+
+    if (result.isFailure) {
+      return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
   }
 }
