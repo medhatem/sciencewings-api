@@ -29,7 +29,17 @@ export class CreateOrganizationRO {
   direction: number;
 
   @include()
-  social: { type: string; link: number }[];
+  social_facebook?: string;
+  @include()
+  social_twitter?: string;
+  @include()
+  social_github?: string;
+  @include()
+  social_linkedin?: string;
+  @include()
+  social_youtube?: string;
+  @include()
+  social_instagram?: string;
 
   @include()
   adminContact: number;

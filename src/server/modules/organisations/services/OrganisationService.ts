@@ -1,10 +1,10 @@
+import { Collection } from '@mikro-orm/core';
 import { Email } from '@utils/Email';
 import { User } from '@modules/users/models/User';
 import { OrganisationContactDao } from './../daos/OrganizationContactDao';
 import { OrganisationSocialDao } from './../daos/OrganizationSocialDao';
 import { OrganisationLabelDao } from './../daos/OrganizationLabelDao';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseService } from '@modules/base/services/BaseService';
 import { CreateOrganizationRO } from '../routes/RequestObject';
 import { OrganisationDao } from '../daos/OrganisationDao';
@@ -74,6 +74,12 @@ export class OrganisationService extends BaseService<Organization> {
       email: payload.email,
       phone: payload.phone,
       type: payload.type,
+      social_facebook: payload.social_facebook,
+      social_instagram: payload.social_instagram,
+      social_youtube: payload.social_youtube,
+      social_github: payload.social_github,
+      social_twitter: payload.social_twitter,
+      social_linkedin: payload.social_linkedin,
     });
     organization.direction = direction;
     organization.admin_contact = adminContact;
@@ -96,18 +102,6 @@ export class OrganisationService extends BaseService<Organization> {
           id: null,
           toJSON: null,
           name: el,
-          organisation: createdOrg,
-        });
-      }),
-    );
-
-    await Promise.all(
-      payload.social.map(async (el: any) => {
-        await this.socialDAO.create({
-          id: null,
-          toJSON: null,
-          type: el.type,
-          link: el.link,
           organisation: createdOrg,
         });
       }),
@@ -190,5 +184,16 @@ export class OrganisationService extends BaseService<Organization> {
     this.emailService.sendEmail(emailMessage);
 
     return Result.ok<number>(savedUser.id);
+  }
+
+  public async getMembers(orgId: number) {
+    const existingOrg = await this.dao.get(orgId);
+
+    if (!existingOrg) {
+      return Result.fail<number>(`Organization with id ${orgId} does not exist.`);
+    }
+
+    const members: Collection<User> = await existingOrg.members.init();
+    return Result.ok<Collection<User>>(members);
   }
 }

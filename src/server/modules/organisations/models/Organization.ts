@@ -5,7 +5,6 @@ import { container, provide } from '@di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { User } from '@modules/users/models/User';
 import { OrganizationLabel } from '@modules/organisations/models/OrganizationLabel';
-import { OrganizationSocial } from './OraganizationSocial';
 
 @provide()
 @Entity()
@@ -53,11 +52,18 @@ export class Organization extends BaseModel<Organization> {
   // })
   // public contacts? = new Collection<OrganizationContact>(this);
 
-  @OneToMany({
-    entity: () => OrganizationSocial,
-    mappedBy: (entity) => entity.organisation,
-  })
-  public social? = new Collection<OrganizationSocial>(this);
+  @Property({ nullable: true })
+  social_facebook?: string;
+  @Property({ nullable: true })
+  social_twitter?: string;
+  @Property({ nullable: true })
+  social_github?: string;
+  @Property({ nullable: true })
+  social_linkedin?: string;
+  @Property({ nullable: true })
+  social_youtube?: string;
+  @Property({ nullable: true })
+  social_instagram?: string;
 
   @OneToOne({
     entity: () => User,
