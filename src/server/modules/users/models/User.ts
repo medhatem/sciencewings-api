@@ -3,9 +3,9 @@ import { Collection, DateType, Entity, Index, ManyToMany, Property, Unique, OneT
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
-import { Organization } from '../../organisations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 
-// import { ResPartner } from '../../organisations/models/ResPartner';
+// import { ResPartner } from '../../organizations/models/ResPartner';
 
 @provideSingleton()
 @Entity()
@@ -46,8 +46,8 @@ export class User extends BaseModel<User> {
 
   // @ManyToOne({ entity: () => Organisation })
   // @ManyToMany(() => Organisation, 'users', { owner: true })
-  @ManyToMany(() => Organization, (organisation) => organisation.users)
-  organisations = new Collection<Organization>(this);
+  @ManyToMany(() => Organization, (organization) => organization.users)
+  organizations = new Collection<Organization>(this);
 
   // @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })
   // partner!: ResPartner;

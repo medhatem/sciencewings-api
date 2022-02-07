@@ -1,7 +1,7 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { BaseModel } from '../../base/models/BaseModel';
 import { ResourceCalendar } from './ResourceCalendar';
-import { ResourceResource } from './ResourceResource';
+import { Resource } from './Resource';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
@@ -44,8 +44,8 @@ export class ResourceCalendarAttendance extends BaseModel<ResourceCalendarAttend
   @Property()
   dayPeriod!: string;
 
-  @ManyToOne({ entity: () => ResourceResource, onDelete: 'set null', nullable: true })
-  resource?: ResourceResource;
+  @ManyToOne({ entity: () => Resource, onDelete: 'set null', nullable: true })
+  resource?: Resource;
 
   @Property({ nullable: true })
   weekType?: string;

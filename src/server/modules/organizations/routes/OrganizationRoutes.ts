@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@di/index';
-import { OrganisationService } from '../services/OrganisationService';
+import { OrganizationService } from '../services/OrganizationService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Organization } from '../models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
@@ -11,10 +11,10 @@ import { OrganizationDTO } from '../dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 
 @provideSingleton()
-@Path('organisation')
+@Path('organization')
 export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO> {
-  constructor(private OrganisationService: OrganisationService) {
-    super(OrganisationService, OrganizationDTO);
+  constructor(private OrganizationService: OrganizationService) {
+    super(OrganizationService, OrganizationDTO);
   }
 
   static getInstance(): OrganizationRoutes {
@@ -22,14 +22,14 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
   }
 
   @POST
-  @Path('createOrganisation')
+  @Path('createOrganization')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
-  public async createOrganisation(
+  public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
   ): Promise<CreatedOrganizationDTO> {
-    const result = await this.OrganisationService.createOrganization(payload, request.userId);
+    const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
       return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
@@ -43,7 +43,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async getUsers(@PathParam('id') payload: number) {
-    const result = await this.OrganisationService.getMembers(payload);
+    const result = await this.OrganizationService.getMembers(payload);
 
     if (result.isFailure) {
       return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });

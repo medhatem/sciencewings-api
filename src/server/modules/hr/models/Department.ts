@@ -3,7 +3,7 @@ import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Employee } from './Employee';
-import { Organization } from '../../organisations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 
 @provideSingleton()
 @Entity()
@@ -36,9 +36,9 @@ export class Department extends BaseModel<Department> {
     entity: () => Organization,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_department_organisation_id_index',
+    index: 'hr_department_organization_id_index',
   })
-  organisation?: Organization;
+  organization?: Organization;
 
   @ManyToOne({
     entity: () => Department,
@@ -53,7 +53,4 @@ export class Department extends BaseModel<Department> {
 
   @Property({ columnType: 'text', nullable: true })
   note?: string;
-
-  @Property({ nullable: true })
-  color?: number;
 }

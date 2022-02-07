@@ -9,7 +9,7 @@ import { ResPartner } from './ResPartner';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'res_partner_bank_unique_number', properties: ['sanitizedAccNumber', 'organisation'] })
+@Unique({ name: 'res_partner_bank_unique_number', properties: ['sanitizedAccNumber', 'organization'] })
 export class ResPartnerBank extends BaseModel<ResPartnerBank> {
   constructor() {
     super();
@@ -47,5 +47,5 @@ export class ResPartnerBank extends BaseModel<ResPartnerBank> {
   currency?: ResCurrency;
 
   @OneToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
-  organisation?: Organization;
+  organization?: Organization;
 }

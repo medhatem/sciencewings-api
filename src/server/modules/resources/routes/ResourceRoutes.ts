@@ -6,7 +6,7 @@ import { Path, GET, QueryParam } from 'typescript-rest';
 import { ResourceDTO } from '../dtos/ResourceDTO';
 
 @provideSingleton()
-@Path('organisation')
+@Path('organization')
 export class ResourceRoutes extends BaseRoutes<Resource, ResourceDTO> {
   constructor(private ResourceService: ResourceService) {
     super(ResourceService, ResourceDTO);
