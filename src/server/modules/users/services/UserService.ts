@@ -11,6 +11,7 @@ import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
+import generateEmail from './generateEmail';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
@@ -143,8 +144,8 @@ export class UserService extends BaseService<User> {
       from: this.emailService.from,
       to: email,
       text: 'Sciencewings - reset password',
-      html: '<html><body>Reset password</body></html>',
-      subject: ' reset password',
+      html: generateEmail(existingOrg.name),
+      subject: 'Sciencewings - reset password',
     };
 
     this.emailService.sendEmail(emailMessage);
