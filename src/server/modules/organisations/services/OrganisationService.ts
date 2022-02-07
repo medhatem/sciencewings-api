@@ -1,4 +1,3 @@
-import { AddressOrganizationRO } from './../../base/dtos/AddressDTO';
 import { Email } from '@utils/Email';
 import { User } from '@modules/users/models/User';
 import { OrganisationContactDao } from './../daos/OrganizationContactDao';
