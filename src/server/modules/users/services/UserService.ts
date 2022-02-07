@@ -1,23 +1,25 @@
 import { container, provideSingleton } from '@di/index';
-
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
 import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { OrganizationService } from '@modules/organizations/services/OrganizationService';
-import { ResetPasswordRO } from '../routes/RequstObjects';
+import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
+import generateEmail from './generateEmail';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
+import { PhoneService } from './PhoneService';
 
 @provideSingleton()
 export class UserService extends BaseService<User> {
   constructor(
     public dao: UserDao,
+    public phoneSerice: PhoneService,
     public organizationService: OrganizationService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
@@ -27,6 +29,36 @@ export class UserService extends BaseService<User> {
 
   static getInstance(): UserService {
     return container.get(UserService);
+  }
+
+  @log()
+  @safeGuard()
+  async updateUserDetails(payload: UserDetailsRO, userId: number): Promise<Result<number>> {
+    const { phones } = payload;
+    delete payload.phones;
+
+    const userDetail = this.wrapEntity(this.dao.model, payload);
+    const authedUser = await this.dao.get(userId);
+    if (!authedUser) {
+      return Result.fail<number>(`User with id ${userId} dose not existe`);
+    }
+
+    const user: User = {
+      toJSON: null,
+      ...authedUser,
+      ...userDetail,
+    };
+
+    await Promise.all(
+      phones.map(async (p: any) => {
+        p['user'] = user;
+        await this.phoneSerice.create(p);
+      }),
+    );
+
+    await this.dao.update(user);
+
+    return Result.ok<number>(userId);
   }
 
   @log()
@@ -105,8 +137,8 @@ export class UserService extends BaseService<User> {
       from: this.emailService.from,
       to: email,
       text: 'Sciencewings - reset password',
-      html: '<html><body>Reset password</body></html>',
-      subject: ' reset password',
+      html: generateEmail(existingOrg.name),
+      subject: 'Sciencewings - reset password',
     };
 
     this.emailService.sendEmail(emailMessage);
