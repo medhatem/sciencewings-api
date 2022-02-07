@@ -106,7 +106,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
   @Path('updateUserDetail')
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
-  public async createOrganisation(
+  public async updateUserDetails(
     payload: UserDetailsRO,
     @ContextRequest request: UserRequest,
   ): Promise<CreatedUserDTO> {

@@ -1,3 +1,4 @@
+import { UserPhoneDao } from './../daos/UserPhoneDAO';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from '@modules/base/services/BaseService';
@@ -18,6 +19,7 @@ import { safeGuard } from '../../../decorators/safeGuard';
 export class UserService extends BaseService<User> {
   constructor(
     public dao: UserDao,
+    public phondeDAO: UserPhoneDao,
     public organizationService: OrganisationService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
@@ -32,9 +34,11 @@ export class UserService extends BaseService<User> {
   @log()
   @safeGuard()
   async updateUserDetails(payload: UserDetailsRO, userId: number): Promise<Result<number>> {
+    const { phones } = payload;
+    delete payload.phones;
+
     const userDetail = this.wrapEntity(this.dao.model, payload);
     const user = await this.dao.get(userId);
-
     if (!user) {
       return Result.fail<number>(`User with id ${userId} dose not existe`);
     }
@@ -42,11 +46,17 @@ export class UserService extends BaseService<User> {
     user['firstname'] = userDetail.firstname;
     user['lastname'] = userDetail.lastname;
     user['email'] = userDetail.email;
-    user['adress'] = userDetail.adress;
-    user['phone'] = userDetail.phone;
+    user['address'] = userDetail.address;
     user['dateofbirth'] = userDetail.dateofbirth;
     user['share'] = userDetail.share;
     user['signature'] = userDetail.signature;
+
+    await Promise.all(
+      phones.map(async (p) => {
+        p['user'] = user;
+        await this.phondeDAO.create(p);
+      }),
+    );
 
     try {
       await this.dao.update(user);
