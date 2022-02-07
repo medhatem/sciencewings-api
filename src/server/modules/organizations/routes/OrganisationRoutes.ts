@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@di/index';
-import { OrganisationService } from '../services/organizationservice';
+import { OrganisationService } from '../services/OrganisationService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Organization } from '../models/Organization';
 import { Path, POST, Security, ContextRequest } from 'typescript-rest';
