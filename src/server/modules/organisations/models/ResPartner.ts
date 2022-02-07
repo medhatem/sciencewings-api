@@ -126,9 +126,6 @@ export class ResPartner extends BaseModel<ResPartner> {
   industry?: ResPartnerIndustry;
 
   @Property({ nullable: true })
-  color?: number;
-
-  @Property({ nullable: true })
   partnerShare?: boolean;
 
   @ManyToOne({

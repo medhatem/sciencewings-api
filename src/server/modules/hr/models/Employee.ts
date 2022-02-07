@@ -11,7 +11,7 @@ import { ResCountry } from '../../organisations/models/ResCountry';
 import { ResPartner } from '../../organisations/models/ResPartner';
 import { ResPartnerBank } from '../../organisations/models/ResPartnerBank';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { ResourceResource } from '../../resources/models/ResourceResource';
+import { Resource } from '../../resources/models/Resource';
 import { User } from '../../users/models/User';
 import { WorkLocation } from './WorkLocation';
 
@@ -30,8 +30,8 @@ export class Employee extends BaseModel<Employee> {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne({ entity: () => ResourceResource, index: 'hr_employee_resource_id_index' })
-  resource!: ResourceResource;
+  @ManyToOne({ entity: () => Resource, index: 'hr_employee_resource_id_index' })
+  resource!: Resource;
 
   @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_employee_organisation_id_index' })
   organisation!: Organization;
@@ -53,9 +53,6 @@ export class Employee extends BaseModel<Employee> {
 
   @Property({ nullable: true })
   active?: boolean;
-
-  @Property({ nullable: true })
-  color?: number;
 
   @ManyToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
   department?: Department;

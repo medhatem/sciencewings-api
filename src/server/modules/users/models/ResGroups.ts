@@ -28,8 +28,5 @@ export class ResGroups extends BaseModel<ResGroups> {
   categoryId?: number;
 
   @Property({ nullable: true })
-  color?: number;
-
-  @Property({ nullable: true })
   share?: boolean;
 }

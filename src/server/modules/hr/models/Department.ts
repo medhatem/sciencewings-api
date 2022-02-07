@@ -53,7 +53,4 @@ export class Department extends BaseModel<Department> {
 
   @Property({ columnType: 'text', nullable: true })
   note?: string;
-
-  @Property({ nullable: true })
-  color?: number;
 }
