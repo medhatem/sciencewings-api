@@ -2,7 +2,6 @@ import { Collection } from '@mikro-orm/core';
 import { Email } from '@utils/Email';
 import { User } from '@modules/users/models/User';
 import { OrganisationContactDao } from './../daos/OrganizationContactDao';
-import { OrganisationSocialDao } from './../daos/OrganizationSocialDao';
 import { OrganisationLabelDao } from './../daos/OrganizationLabelDao';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
@@ -22,7 +21,6 @@ export class OrganisationService extends BaseService<Organization> {
     public dao: OrganisationDao,
     public userService: UserService,
     public labelDAO: OrganisationLabelDao,
-    public socialDAO: OrganisationSocialDao,
     public contactDAO: OrganisationContactDao,
     public addressDAO: AddressDao,
     public emailService = Email.getInstance(),
