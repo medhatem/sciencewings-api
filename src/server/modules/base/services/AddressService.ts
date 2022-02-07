@@ -1,8 +1,8 @@
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Result } from '@utils/Result';
-import { log } from 'server/decorators/log';
-import { safeGuard } from 'server/decorators/safeGuard';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
 import { AddressDao } from '../daos/AddressDAO';
 import { Address } from '../models/AdressModel';
 

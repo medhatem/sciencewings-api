@@ -1,50 +1,51 @@
+import { AddressService } from '@modules/base/services/AddressService';
+import { OrganisationLabelService } from './../../organisations/services/OrganizationLabelService';
+import { getConfig } from '../../../configuration/Configuration';
 import { Collection } from '@mikro-orm/core';
-import { Email } from '@utils/Email';
 import { User } from '@modules/users/models/User';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
-import { OrganisationDao } from '../daos/OrganizationDao';
-import { UserService } from '@modules/users/services/UserService';
+import { CreateOrganizationRO } from '../routes/RequestObject';
+import { OrganizationDao } from '../daos/OrganizationDao';
+import { Organization } from '@modules/organizations/models/Organization';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
+import { UserService } from '@modules/users/services/UserService';
 import { EmailMessage } from '../../../types/types';
-import { getConfig } from '../../../configuration/Configuration';
-import { AddressService } from '@modules/base/services/AddressService';
-import { OrganisationLabelService } from './OrganizationLabelService';
-import { Organization } from '@modules/organizations/models/Organization';
-import { CreateOrganizationRO } from '@modules/organizations/routes/RequestObject';
+import { Email } from '@utils/Email';
+
 @provideSingleton()
-export class OrganisationService extends BaseService<Organization> {
+export class OrganizationService extends BaseService<Organization> {
   constructor(
-    public dao: OrganisationDao,
+    public dao: OrganizationDao,
     public userService: UserService,
-    public addressService: AddressService,
-    public labelservice: OrganisationLabelService,
+    public labelService: OrganisationLabelService,
+    public adressService: AddressService,
     public emailService = Email.getInstance(),
   ) {
     super(dao);
   }
 
-  static getInstance(): OrganisationService {
-    return container.get(OrganisationService);
+  static getInstance(): OrganizationService {
+    return container.get(OrganizationService);
   }
 
-  // /**
-  //  * create a new organization
-  //  * An organization in keycloak is represented with a group
-  //  * So we need to create the group first and get its id
-  //  * Then we create the final organization in the database by including the keycloak
-  //  * group id
-  //  *
-  //  * @param payload
-  //  */
+  /**
+   * create a new organization
+   * An organization in keycloak is represented with a group
+   * So we need to create the group first and get its id
+   * Then we create the final organization in the database by including the keycloak
+   * group id
+   *
+   * @param payload
+   */
   @log()
-  @safeGuard()
+  // @safeGuard()
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
-      return Result.fail<number>(`Organization ${payload.name} already exist.`);
+      return Result.fail<number>(`Organization ${payload.name} already exists.`);
     }
 
     const user = await this.userService.get(userId);
@@ -53,7 +54,7 @@ export class OrganisationService extends BaseService<Organization> {
     if (payload.adminContact) {
       adminContact = await this.userService.get(payload.adminContact);
       if (!adminContact) {
-        throw new Error(`User with id: ${payload.adminContact} does not exist.`);
+        throw new Error(`User with id: ${payload.adminContact} dose not exists.`);
       }
     }
 
@@ -61,7 +62,7 @@ export class OrganisationService extends BaseService<Organization> {
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
       if (!direction) {
-        throw new Error(`User with id: ${payload.direction} does not exist.`);
+        throw new Error(`User with id: ${payload.direction} dose not exists.`);
       }
     }
 
@@ -94,7 +95,7 @@ export class OrganisationService extends BaseService<Organization> {
 
     await Promise.all(
       payload.labels.map(async (el: string) => {
-        await this.labelservice.createLabel({
+        await this.labelService.createLabel({
           id: null,
           toJSON: null,
           name: el,
@@ -105,7 +106,7 @@ export class OrganisationService extends BaseService<Organization> {
 
     await Promise.all(
       payload.address.map(async (el: any) => {
-        await this.addressService.createAddress({
+        await this.adressService.createAddress({
           id: null,
           toJSON: null,
           country: el.country,
@@ -138,7 +139,7 @@ export class OrganisationService extends BaseService<Organization> {
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exist.');
+      return Result.fail<number>('The user already exists.');
     }
 
     const existingOrg = await this.dao.get(orgId);
@@ -182,6 +183,8 @@ export class OrganisationService extends BaseService<Organization> {
     return Result.ok<number>(savedUser.id);
   }
 
+  @log()
+  @safeGuard()
   public async getMembers(orgId: number) {
     const existingOrg = await this.dao.get(orgId);
 

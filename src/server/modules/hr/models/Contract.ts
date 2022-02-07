@@ -6,7 +6,7 @@ import { ContractType } from './ContractType';
 import { Department } from './Department';
 import { Employee } from './Employee';
 import { Job } from './Job';
-import { Organization } from '../../organisations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 import { PayrollStructureType } from './PayrollStructureType';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { User } from '../../users/models/User';

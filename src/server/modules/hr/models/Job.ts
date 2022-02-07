@@ -3,11 +3,11 @@ import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Department } from './Department';
-import { Organization } from '../../organisations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'hr_job_name_organisation_uniq', properties: ['name', 'department', 'organization'] })
+@Unique({ name: 'hr_job_name_organization_uniq', properties: ['name', 'department', 'organization'] })
 export class Job extends BaseModel<Job> {
   constructor() {
     super();

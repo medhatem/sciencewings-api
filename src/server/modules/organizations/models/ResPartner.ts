@@ -3,10 +3,10 @@ import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from './Organization';
-import { ResCountry } from './ResCountry';
-import { ResCountryState } from './ResCountryState';
-import { ResPartnerIndustry } from './ResPartnerIndustry';
-import { ResPartnerTitle } from './ResPartnerTitle';
+import { ResCountry } from '../../organizations/models/ResCountry';
+import { ResCountryState } from '../../organizations/models/ResCountryState';
+import { ResPartnerIndustry } from '../../organizations/models/ResPartnerIndustry';
+import { ResPartnerTitle } from '../../organizations/models/ResPartnerTitle';
 import { User } from '../../users/models/User';
 
 @provideSingleton()
@@ -30,7 +30,7 @@ export class ResPartner extends BaseModel<ResPartner> {
     entity: () => Organization,
     onDelete: 'set null',
     nullable: true,
-    index: 'res_partner_organisation_id_index',
+    index: 'res_partner_organization_id_index',
   })
   organization?: Organization;
 
@@ -120,13 +120,10 @@ export class ResPartner extends BaseModel<ResPartner> {
   mobile?: string;
 
   @Property({ nullable: true })
-  isorganisation?: boolean;
+  isorganization?: boolean;
 
   @ManyToOne({ entity: () => ResPartnerIndustry, onDelete: 'set null', nullable: true })
   industry?: ResPartnerIndustry;
-
-  @Property({ nullable: true })
-  color?: number;
 
   @Property({ nullable: true })
   partnerShare?: boolean;
@@ -140,10 +137,10 @@ export class ResPartner extends BaseModel<ResPartner> {
   commercialPartner?: ResPartner;
 
   @Property({ nullable: true })
-  commercialorganisationName?: string;
+  commercialorganizationName?: string;
 
   @Property({ nullable: true })
-  organisationName?: string;
+  organizationName?: string;
 
   @Index({ name: 'res_partner_message_main_attachment_id_index' })
   @Property({ nullable: true })

@@ -1,4 +1,4 @@
-import { Organization } from '@modules/organisations/models/Organization';
+import { Organization } from '@modules/organizations/models/Organization';
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { Property, Entity, ManyToOne } from '@mikro-orm/core';
 

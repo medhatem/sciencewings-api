@@ -34,7 +34,7 @@ export class ResConfigSettings extends BaseModel<ResConfigSettings> {
   moduleMicrosoftCalendar?: boolean;
 
   @Property({ nullable: true })
-  moduleAccountInterorganisationRules?: boolean;
+  moduleAccountInterorganizationRules?: boolean;
 
   @Property({ nullable: true })
   moduleHrPresence?: boolean;

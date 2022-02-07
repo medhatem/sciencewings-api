@@ -16,7 +16,7 @@ export class Organization extends BaseModel<Organization> {
   static getInstance(): Organization {
     return container.get(Organization);
   }
-  @Unique({ name: 'res_organisation_name_uniq' })
+  @Unique({ name: 'res_organization_name_uniq' })
   @Property()
   name!: string;
 
