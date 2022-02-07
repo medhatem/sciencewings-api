@@ -1,6 +1,5 @@
 import { UserPhoneDao } from './../daos/UserPhoneDAO';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
 import { EmailMessage } from '../../../types/types';
@@ -59,11 +58,7 @@ export class UserService extends BaseService<User> {
       }),
     );
 
-    try {
-      await this.dao.update(user);
-    } catch (error) {
-      return Result.fail<number>(error);
-    }
+    await this.dao.update(user);
 
     return Result.ok<number>(userId);
   }

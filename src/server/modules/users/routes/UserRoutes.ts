@@ -1,6 +1,5 @@
-import { POST, Path, Security, ContextRequest } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
@@ -102,7 +101,7 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
     });
   }
 
-  @POST
+  @PUT
   @Path('updateUserDetail')
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
