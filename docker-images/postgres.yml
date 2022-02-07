@@ -12,7 +12,7 @@ services:
     #   - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: local
-      POSTGRES_USER: local-api
-      POSTGRES_PASSWORD: '1234'
+      POSTGRES_USER: localapi
+      POSTGRES_PASSWORD: 'localapi'
     ports:
       - '5432:5432'
