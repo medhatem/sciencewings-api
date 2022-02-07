@@ -14,6 +14,8 @@ import { safeGuard } from '../../../decorators/safeGuard';
 import { UserService } from '@modules/users/services/UserService';
 import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
+import { validate } from '../../../decorators/bodyValidationDecorators/validate';
+import createSchema from '../schemas/createOrganizationSchema'
 
 @provideSingleton()
 export class OrganizationService extends BaseService<Organization> {
@@ -41,7 +43,8 @@ export class OrganizationService extends BaseService<Organization> {
    * @param payload
    */
   @log()
-  // @safeGuard()
+  @safeGuard()
+  @validate(createSchema)
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
