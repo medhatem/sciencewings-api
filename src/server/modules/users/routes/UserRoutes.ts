@@ -115,6 +115,6 @@ export class UserRoutes extends BaseRoutes<User, UserDTO> {
       return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+    return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
   }
 }
