@@ -3,10 +3,10 @@ import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from './Organization';
-import { ResCountry } from '../../organisations/models/ResCountry';
-import { ResCountryState } from '../../organisations/models/ResCountryState';
-import { ResPartnerIndustry } from '../../organisations/models/ResPartnerIndustry';
-import { ResPartnerTitle } from '../../organisations/models/ResPartnerTitle';
+import { ResCountry } from '../../organizations/models/ResCountry';
+import { ResCountryState } from '../../organizations/models/ResCountryState';
+import { ResPartnerIndustry } from '../../organizations/models/ResPartnerIndustry';
+import { ResPartnerTitle } from '../../organizations/models/ResPartnerTitle';
 import { User } from '../../users/models/User';
 
 @provideSingleton()

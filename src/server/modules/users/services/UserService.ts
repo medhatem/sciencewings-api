@@ -5,7 +5,7 @@ import { Email } from '@utils/Email';
 import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { OrganisationService } from '@modules/organisations/services/OrganisationService';
+import { OrganisationService } from '@modules/organizations/services/organizationservice';
 import { ResetPasswordRO } from '../routes/RequstObjects';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';

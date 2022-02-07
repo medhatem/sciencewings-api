@@ -3,7 +3,7 @@ import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Employee } from './Employee';
-import { Organization } from '../../organisations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 
 @provideSingleton()
 @Entity()

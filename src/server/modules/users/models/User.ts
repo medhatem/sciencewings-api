@@ -2,9 +2,9 @@ import { Collection, Entity, Index, ManyToMany, Property, Unique } from '@mikro-
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
-import { Organization } from '../../organisations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 
-// import { ResPartner } from '../../organisations/models/ResPartner';
+// import { ResPartner } from '../../organizations/models/ResPartner';
 
 @provideSingleton()
 @Entity()

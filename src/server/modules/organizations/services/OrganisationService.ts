@@ -3,7 +3,7 @@ import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { CreateOrganizationRO } from '../routes/RequestObject';
 import { OrganisationDao } from '../daos/OrganisationDao';
-import { Organization } from '@modules/organisations/models/Organization';
+import { Organization } from '@modules/organizations/models/Organization';
 import { Result } from '@utils/Result';
 import { UserDao } from '@modules/users/daos/UserDao';
 import { log } from '../../../decorators/log';
