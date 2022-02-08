@@ -9,12 +9,13 @@ import { UserRequest } from '../../../types/UserRequest';
 import { CreatedOrganizationDTO } from '../dtos/createdOrganizationDTO';
 import { OrganizationDTO } from '../dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { UpdateOrganizationDTO } from '../dtos/UpdateOrganizationDTO';
 
 @provideSingleton()
 @Path('organization')
-export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO> {
+export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO, UpdateOrganizationDTO> {
   constructor(private OrganizationService: OrganizationService) {
-    super(OrganizationService, OrganizationDTO);
+    super(OrganizationService, OrganizationDTO, UpdateOrganizationDTO);
   }
 
   static getInstance(): OrganizationRoutes {
