@@ -7,6 +7,7 @@ import { Logger } from '../../../utils/Logger';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { ServerError } from '@errors/ServerError';
 import { provideSingleton } from '../../../di';
+import { Result } from '@utils/Result';
 
 @provideSingleton()
 export class BaseService<T extends BaseModel<T>> {
@@ -23,17 +24,29 @@ export class BaseService<T extends BaseModel<T>> {
     return await this.dao.get(id);
   }
 
-  public async getAll(): Promise<T[]> {
-    return await this.dao.getAll();
+  public async getAll(): Promise<Result<T>> {
+    try {
+      return Result.ok<any>(await this.dao.getAll());
+    } catch (error) {
+      return Result.fail<any>(error);
+    }
   }
 
-  public async create(entry: T): Promise<T> {
-    return this.dao.create(entry);
+  public async create(entry: T): Promise<Result<T>> {
+    try {
+      return Result.ok<any>(this.dao.create(entry));
+    } catch (error) {
+      return Result.fail<any>(error);
+    }
   }
 
-  public async update(entry: T): Promise<T> {
-    const entity = this.wrapEntity(this.dao.model, entry);
-    return this.dao.update(entity);
+  public async update(entry: T): Promise<Result<any>> {
+    try {
+      const entity = this.wrapEntity(this.dao.model, entry);
+      return Result.ok<any>(this.dao.update(entity));
+    } catch (error) {
+      return Result.fail<any>(error);
+    }
   }
 
   @LoggerStorage()

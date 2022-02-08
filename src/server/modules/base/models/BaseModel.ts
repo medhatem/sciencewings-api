@@ -8,7 +8,7 @@ export class BaseModel<T = any> {
     throw new Error('The base model class cannot be instanciated and needs to be overriden!');
   }
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property({ columnType: 'timestamp', length: 6, nullable: true, onUpdate: () => new Date() })
   createdAt?: Date = new Date();
@@ -22,7 +22,7 @@ export class BaseModel<T = any> {
    * @param strip
    * @param args
    */
-  toJSON(strict = true, strip = ['id', 'email'], ...args: any[]): { [p: string]: any } {
+  toJSON?(strict = true, strip = ['id', 'email'], ...args: any[]): { [p: string]: any } {
     const o = wrap(this, true).toObject(...args); // do not forget to pass rest params here
 
     if (strict) {
