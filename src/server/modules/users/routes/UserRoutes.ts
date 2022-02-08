@@ -9,15 +9,16 @@ import { UserRequest } from '../../../types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
 import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
+import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
 
 @provideSingleton()
 @Path('users')
-export class UserRoutes extends BaseRoutes<User, UserDTO> {
+export class UserRoutes extends BaseRoutes<User> {
   constructor(private userService: UserService) {
-    super(userService, UserDTO);
+    super(userService, UserDTO, UpdateUserDTO);
   }
 
   static getInstance(): UserRoutes {

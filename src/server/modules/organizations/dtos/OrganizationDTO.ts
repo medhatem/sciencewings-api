@@ -1,12 +1,23 @@
 import { dto, include } from 'dto-mapper';
 
-import { BaseDTO } from '@modules/base/dtos/BaseDTO';
-
+import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '@modules/base/dtos/BaseDTO';
 @dto()
-export class OrganizationDTO extends BaseDTO {
+class BaseBodyGetDTO extends BaseBodyDTO {
+  @include()
+  id: number;
+
   @include()
   name: string;
 
   @include()
   parent: any;
+}
+
+@dto()
+export class OrganizationDTO extends BaseRequestDTO {
+  @include()
+  public body?: BaseBodyGetDTO;
+
+  @include()
+  public error?: BaseErrorDTO;
 }

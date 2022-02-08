@@ -1,15 +1,15 @@
+import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { PhoneService } from './PhoneService';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { PhoneService } from './PhoneService';
 import { Email } from '@utils/Email';
 
 @provideSingleton()
@@ -40,15 +40,13 @@ export class UserService extends BaseService<User> {
     }
 
     const user: User = {
-      toJSON: null,
       ...authedUser,
       ...userDetail,
     };
 
     await Promise.all(
       phones.map(async (p: any) => {
-        p['user'] = user;
-        await this.phoneSerice.create(p);
+        await this.phoneSerice.createPhone(p);
       }),
     );
 

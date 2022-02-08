@@ -11,12 +11,13 @@ import { OrganizationDTO } from '../dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { InviteUserDTO } from '@modules/organizations/dtos/InviteUserDTO';
+import { UpdateOrganizationDTO } from '../dtos/UpdateOrganizationDTO';
 
 @provideSingleton()
 @Path('organization')
-export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO> {
+export class OrganizationRoutes extends BaseRoutes<Organization> {
   constructor(private OrganizationService: OrganizationService) {
-    super(OrganizationService, OrganizationDTO);
+    super(OrganizationService, OrganizationDTO, UpdateOrganizationDTO);
   }
 
   static getInstance(): OrganizationRoutes {

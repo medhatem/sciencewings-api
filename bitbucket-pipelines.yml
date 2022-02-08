@@ -27,6 +27,10 @@ definitions:
         name: lint
         script:
           - npm run lint-and-fix
+    - step: &generateSwagger
+        name: generate swagger
+        script:
+          - npm run swagger-gen
     - step: &installForDeployment
         name: install dependencies for deployment
         script:
@@ -54,12 +58,20 @@ pipelines:
     - step: *install
     - step: *build
     - step: *lint
+    - step: *generateSwagger
   branches:
     dev:
+      - step: *install
+      - step: *build
+      - step: *lint
+      - step: *generateSwagger
       - step: *installForDeployment
       - step: *buildForDeployment
       - step: *deploy
     master:
+      - step: *install
+      - step: *build
+      - step: *lint
       - step: *installForDeployment
       - step: *buildForDeployment
       - step: *deploy
@@ -67,10 +79,12 @@ pipelines:
       - step: *install
       - step: *build
       - step: *lint
+      - step: *generateSwagger
     release/*:
       - step: *install
       - step: *build
       - step: *lint
+      - step: *generateSwagger
       - step: *installForDeployment
       - step: *buildForDeployment
       - step: *deploy
@@ -78,6 +92,7 @@ pipelines:
       - step: *install
       - step: *build
       - step: *lint
+      - step: *generateSwagger
       - step: *installForDeployment
       - step: *buildForDeployment
       - step: *deploy
@@ -85,3 +100,4 @@ pipelines:
       - step: *install
       - step: *build
       - step: *lint
+      - step: *generateSwagger

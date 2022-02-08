@@ -4,12 +4,13 @@ import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Resource } from '../models/Resource';
 import { Path, GET, QueryParam } from 'typescript-rest';
 import { ResourceDTO } from '../dtos/ResourceDTO';
+import { UpdateResourceDTO } from '../dtos/UpdateResourceDTO';
 
 @provideSingleton()
 @Path('organization')
-export class ResourceRoutes extends BaseRoutes<Resource, ResourceDTO> {
+export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: ResourceService) {
-    super(ResourceService, ResourceDTO);
+    super(ResourceService, ResourceDTO, UpdateResourceDTO);
     console.log(this.ResourceService);
   }
 

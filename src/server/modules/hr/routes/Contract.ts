@@ -4,12 +4,13 @@ import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Contract } from '../models/Contract';
 import { Path, GET, QueryParam } from 'typescript-rest';
 import { ContractDTO } from '../dtos/ContractDTO';
+import { UpdateContractDTO } from '../dtos/UpdateContractDTO';
 
 @provideSingleton()
 @Path('employee')
-export class ContractRoutes extends BaseRoutes<Contract, ContractDTO> {
+export class ContractRoutes extends BaseRoutes<Contract> {
   constructor(private ContractRoutes: ContractService) {
-    super(ContractRoutes, ContractDTO);
+    super(ContractRoutes, ContractDTO, UpdateContractDTO);
     console.log(this.ContractRoutes);
   }
 

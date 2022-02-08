@@ -44,6 +44,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     if (payload.parentId) {
       const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
+
       if (!existingOrg) {
         return Result.fail<number>('Organization parent does not exist');
       }
