@@ -106,7 +106,7 @@ export class UserService extends BaseService<User> {
     const user = await this.dao.getByCriteria({ email: payload.email });
 
     if (!user) {
-      return Result.fail<string>(`user with email: ${payload.email} does not exist.`);
+      return Result.fail<string>(`user with email: ${payload.email} does not exists.`);
     }
 
     await this.keycloak.getAdminClient().users.resetPassword({

@@ -33,15 +33,6 @@ export class OrganizationService extends BaseService<Organization> {
     return container.get(OrganizationService);
   }
 
-  /**
-   * create a new organization
-   * An organization in keycloak is represented with a group
-   * So we need to create the group first and get its id
-   * Then we create the final organization in the database by including the keycloak
-   * group id
-   *
-   * @param payload
-   */
   @log()
   @safeGuard()
   @validate(createSchema)
@@ -51,13 +42,20 @@ export class OrganizationService extends BaseService<Organization> {
       return Result.fail<number>(`Organization ${payload.name} already exists.`);
     }
 
+    if (payload.parentId) {
+      const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
+      if (!existingOrg) {
+        return Result.fail<number>('Organization parent does not exist');
+      }
+    }
+
     const user = await this.userService.get(userId);
 
     let adminContact;
     if (payload.adminContact) {
       adminContact = await this.userService.get(payload.adminContact);
       if (!adminContact) {
-        throw new Error(`User with id: ${payload.adminContact} dose not exists.`);
+        return Result.fail<number>(`User with id: ${payload.adminContact} does not exists.`);
       }
     }
 
@@ -65,7 +63,7 @@ export class OrganizationService extends BaseService<Organization> {
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
       if (!direction) {
-        throw new Error(`User with id: ${payload.direction} dose not exists.`);
+        return Result.fail<number>(`User with id: ${payload.direction} does not exists.`);
       }
     }
 
@@ -86,43 +84,47 @@ export class OrganizationService extends BaseService<Organization> {
 
     await user.organizations.init();
     user.organizations.add(organization);
-    const createdOrg = await this.create(this.dao.model);
-    if (payload.parentId) {
-      const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
-      if (!existingOrg) {
-        return Result.fail<number>('Organization parent does not exist');
-      }
-      createdOrg.parent = existingOrg;
-      await this.update(createdOrg);
-    }
+    const createdOrg = await this.create(organization);
 
-    await Promise.all(
-      payload.labels.map(async (el: string) => {
-        await this.labelService.createLabel({
-          id: null,
-          toJSON: null,
-          name: el,
-          organization: createdOrg,
-        });
-      }),
-    );
+    createdOrg.parent = existingOrg;
+    await this.update(createdOrg);
 
-    await Promise.all(
-      payload.address.map(async (el: any) => {
-        await this.adressService.createAddress({
-          id: null,
-          toJSON: null,
-          country: el.country,
-          province: el.province,
-          code: el.code,
-          type: el.type,
-          street: el.street,
-          appartement: el.appartement,
-          city: el.city,
-          organization: createdOrg,
-        });
-      }),
-    );
+    // await Promise.all(
+    payload.labels.map(async (el: string) => {
+      this.dao.repository.persist({
+        id: null,
+        toJSON: null,
+        name: el,
+        organization: createdOrg,
+      });
+      // await this.labelService.createLabel({
+      //   id: null,
+      //   toJSON: null,
+      //   name: el,
+      //   organization: createdOrg,
+      // });
+    }),
+      // );
+
+      this.dao.repository.flush();
+
+    // await Promise.all(
+    //   payload.address.map(async (el: any) => {
+    //     await this.adressService.createAddress({
+    //       id: null,
+    //       toJSON: null,
+    //       country: el.country,
+    //       province: el.province,
+    //       code: el.code,
+    //       type: el.type,
+    //       street: el.street,
+    //       appartement: el.appartement,
+    //       city: el.city,
+    //       organization: createdOrg,
+    //     });
+    //   }),
+    // );
+    this.adressService.createBulkAddress(payload.address);
 
     await Promise.all(
       payload.members.map(async (el: number) => {
@@ -148,7 +150,7 @@ export class OrganizationService extends BaseService<Organization> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>('The organization to add the user to does not exist.');
+      return Result.fail<number>('The organization to add the user to does not exists.');
     }
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
@@ -192,7 +194,7 @@ export class OrganizationService extends BaseService<Organization> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>(`Organization with id ${orgId} does not exist.`);
+      return Result.fail<number>(`Organization with id ${orgId} does not exists.`);
     }
 
     const members: Collection<User> = await existingOrg.members.init();

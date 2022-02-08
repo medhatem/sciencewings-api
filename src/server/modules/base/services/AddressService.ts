@@ -22,4 +22,14 @@ export class AddressService extends BaseService<Address> {
     const phone = await this.dao.create(payload);
     return Result.ok<number>(phone.id);
   }
+
+  @log()
+  @safeGuard()
+  async createBulkAddress(payload: Address[]): Promise<Result<number>> {
+    payload.map((el: Address) => {
+      this.dao.repository.persist(el);
+    });
+    this.dao.repository.flush();
+    return Result.ok<number>(200);
+  }
 }
