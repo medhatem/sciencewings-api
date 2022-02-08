@@ -55,7 +55,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
     const result = await this.service.get(id);
     if (!result) {
       return this.getDTOMapper.serialize({
-        body: { statusCode: 500, message: result.error },
+        error: { statusCode: 500, message: result.error },
       });
     }
     return this.getDTOMapper.serialize({
@@ -72,7 +72,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
     const result = await this.service.getAll();
     if (!result) {
       return this.getDTOMapper.serialize({
-        body: { statusCode: 500, message: result.error },
+        error: { statusCode: 500, message: result.error },
       });
     }
     // return result.map((r) => this.getDTOMapper.serialize(r));
@@ -123,7 +123,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
     const result = await this.service.remove(id);
     if (!result) {
       return new BaseRequestDTO().serialize({
-        body: { statusCode: 500, error: result.error },
+        error: { statusCode: 500, error: result.error },
       });
     } else {
       return new BaseRequestDTO().serialize({

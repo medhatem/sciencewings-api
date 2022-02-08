@@ -8,6 +8,8 @@ import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { ServerError } from '@errors/ServerError';
 import { provideSingleton } from '../../../di';
 import { Result } from '@utils/Result';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
 
 @provideSingleton()
 export class BaseService<T extends BaseModel<T>> {
@@ -20,35 +22,33 @@ export class BaseService<T extends BaseModel<T>> {
     throw new ServerError('baseService must be overriden!');
   }
 
+  @log()
+  @safeGuard()
   public async get(id: number): Promise<any> {
     return await this.dao.get(id);
   }
 
-  public async getAll(): Promise<Result<any>> {
-    try {
-      return Result.ok<any>(await this.dao.getAll());
-    } catch (error) {
-      return Result.fail<any>(error);
-    }
+  @log()
+  @safeGuard()
+  public async getAll(): Promise<Result<any[]>> {
+    return Result.ok<any>(await this.dao.getAll());
   }
 
+  @log()
+  @safeGuard()
   public async create(entry: T): Promise<Result<any>> {
-    try {
-      return Result.ok<any>(this.dao.create(entry));
-    } catch (error) {
-      return Result.fail<any>(error);
-    }
+    return Result.ok<any>(this.dao.create(entry));
   }
 
+  @log()
+  @safeGuard()
   public async update(entry: T): Promise<Result<any>> {
-    try {
-      const entity = this.wrapEntity(this.dao.model, entry);
-      return Result.ok<any>(this.dao.update(entity));
-    } catch (error) {
-      return Result.fail<any>(error);
-    }
+    const entity = this.wrapEntity(this.dao.model, entry);
+    return Result.ok<any>(this.dao.update(entity));
   }
 
+  @log()
+  @safeGuard()
   public async remove(id: number): Promise<Result<number>> {
     const entity = this.wrapEntity(this.dao.model, { id });
     return Result.ok<any>(await this.dao.remove(entity));
