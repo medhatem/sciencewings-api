@@ -30,7 +30,7 @@ export class ResourceCalendar extends BaseModel<ResourceCalendar> {
   hoursPerDay?: number;
 
   @Property()
-  tz!: string;
+  timezone!: string;
 
   @Property({ nullable: true })
   twoWeeksCalendar?: boolean;

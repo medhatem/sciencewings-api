@@ -15,7 +15,7 @@ export class CreateResourceCalendarRO {
   hoursPerDay?: number;
 
   @include()
-  tz!: string;
+  timezone!: string;
 
   @include()
   twoWeeksCalendar?: boolean;
@@ -42,7 +42,7 @@ export class CreateResourceRO {
   timeEfficiency!: number;
 
   @include()
-  tz!: string;
+  timezone!: string;
 
   @include()
   calendar!: CreateResourceCalendarRO;

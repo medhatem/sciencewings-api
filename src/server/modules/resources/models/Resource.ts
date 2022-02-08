@@ -42,5 +42,5 @@ export class Resource extends BaseModel<Resource> {
   calendar!: ResourceCalendar;
 
   @Property()
-  tz!: string;
+  timezone!: string;
 }

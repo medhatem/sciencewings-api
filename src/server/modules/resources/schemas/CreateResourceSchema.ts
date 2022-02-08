@@ -5,7 +5,7 @@ const ResourceCalendarSchema = Joi.object({
   active: Joi.boolean(),
   organization: Joi.number(),
   hoursPerDay: Joi.number(),
-  tz: Joi.string().required(),
+  timezone: Joi.string().required(),
   twoWeeksCalendar: Joi.boolean(),
 });
 
@@ -16,6 +16,6 @@ export default Joi.object({
   resourceType: Joi.string().required(),
   user: Joi.number(),
   timeEfficiency: Joi.number().required(),
-  tz: Joi.string(),
+  timezone: Joi.string(),
   calendar: ResourceCalendarSchema.required(),
 });
