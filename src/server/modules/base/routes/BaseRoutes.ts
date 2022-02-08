@@ -89,7 +89,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
     let currentEntity = await this.service.get(id);
     if (!currentEntity) {
       return this.updateDTOMapper.serialize({
-        body: { statusCode: 404, message: `Entity with id ${id} does not exist` },
+        error: { statusCode: 404, message: `Entity with id ${id} does not exist` },
       });
     }
 
@@ -101,7 +101,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
     const result = await this.service.update(currentEntity.getValue());
     if (!result) {
       return this.updateDTOMapper.serialize({
-        body: { statusCode: 500, message: result.error },
+        error: { statusCode: 500, message: result.error },
       });
     }
     return this.updateDTOMapper.serialize({
@@ -117,7 +117,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
     const currentEntity = await this.service.get(id);
     if (!currentEntity) {
       return new BaseRequestDTO().serialize({
-        body: { statusCode: 404, userId: `Entity with id ${id} does not existe` },
+        error: { statusCode: 404, userId: `Entity with id ${id} does not existe` },
       });
     }
     const result = await this.service.remove(id);
