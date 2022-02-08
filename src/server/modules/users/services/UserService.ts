@@ -1,11 +1,14 @@
+import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
 import { EmailMessage } from '../../../types/types';
+import { IUserService } from '../interfaces/IUserService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { OrganizationService } from '@modules/organizations/services/OrganizationService';
-import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { PhoneService } from './PhoneService';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
@@ -13,9 +16,8 @@ import generateEmail from './generateEmail';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { PhoneService } from './PhoneService';
 
-@provideSingleton()
+@provideSingleton(IUserService)
 export class UserService extends BaseService<User> {
   constructor(
     public dao: UserDao,
@@ -92,8 +94,9 @@ export class UserService extends BaseService<User> {
    */
   @log()
   @safeGuard()
-  async getUserByCriteria(criteria: { [key: string]: any }) {
-    return await this.dao.getByCriteria(criteria);
+  async getUserByCriteria(criteria: { [key: string]: any }): Promise<Result<User>> {
+    const user = await this.dao.getByCriteria(criteria);
+    return Result.ok<User>(user);
   }
 
   @log()
