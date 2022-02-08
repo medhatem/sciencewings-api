@@ -49,12 +49,9 @@ export class BaseService<T extends BaseModel<T>> {
     }
   }
 
-  public async remove(id: number): Promise<Result<any>> {
-    try {
-      return Result.ok<any>(this.dao.repository.remove(id));
-    } catch (error) {
-      return Result.fail<any>(error);
-    }
+  public async remove(id: number): Promise<Result<number>> {
+    const entity = this.wrapEntity(this.dao.model, { id });
+    return Result.ok<any>(await this.dao.remove(entity));
   }
 
   @LoggerStorage()
