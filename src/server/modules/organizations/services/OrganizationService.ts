@@ -1,5 +1,5 @@
 import { AddressService } from '@modules/base/services/AddressService';
-import { OrganisationLabelService } from './../../organisations/services/OrganizationLabelService';
+import { OrganisationLabelService } from './OrganisationLabelService';
 import { getConfig } from '../../../configuration/Configuration';
 import { Collection } from '@mikro-orm/core';
 import { User } from '@modules/users/models/User';
@@ -15,7 +15,7 @@ import { UserService } from '@modules/users/services/UserService';
 import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
-import createSchema from '../schemas/createOrganizationSchema'
+import createSchema from '../schemas/createOrganizationSchema';
 
 @provideSingleton()
 export class OrganizationService extends BaseService<Organization> {

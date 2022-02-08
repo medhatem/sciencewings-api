@@ -4,7 +4,7 @@ import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Propert
 import { container, provide } from '@di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { User } from '@modules/users/models/User';
-import { OrganizationLabel } from '@modules/organisations/models/OrganizationLabel';
+import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
 
 @provide()
 @Entity()

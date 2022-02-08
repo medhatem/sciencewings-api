@@ -1,4 +1,4 @@
-import { OrganizationLabel } from '@modules/organisations/models/OrganizationLabel';
+import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseDao } from '../../base/daos/BaseDao';
