@@ -16,6 +16,7 @@ import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import createSchema from '../schemas/createOrganizationSchema';
+import { PhoneService } from '@modules/base/services/PhoneService';
 
 @provideSingleton()
 export class OrganizationService extends BaseService<Organization> {
@@ -24,6 +25,7 @@ export class OrganizationService extends BaseService<Organization> {
     public userService: UserService,
     public labelService: OrganisationLabelService,
     public adressService: AddressService,
+    public phoneService: PhoneService,
     public emailService = Email.getInstance(),
   ) {
     super(dao);
@@ -43,9 +45,8 @@ export class OrganizationService extends BaseService<Organization> {
     }
 
     if (payload.parentId) {
-      const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
-
-      if (!existingOrg) {
+      const org = await this.dao.getByCriteria({ id: payload.parentId });
+      if (!org) {
         return Result.fail<number>('Organization parent does not exist');
       }
     }
@@ -71,7 +72,6 @@ export class OrganizationService extends BaseService<Organization> {
     const organization = this.wrapEntity(this.dao.model, {
       name: payload.name,
       email: payload.email,
-      phone: payload.phone,
       type: payload.type,
       social_facebook: payload.social_facebook,
       social_instagram: payload.social_instagram,
@@ -85,54 +85,37 @@ export class OrganizationService extends BaseService<Organization> {
 
     await user.organizations.init();
     user.organizations.add(organization);
-    const createdOrg = await this.create(organization);
+    const _createdOrg = await this.create(organization);
+
+    if (_createdOrg.isFailure) {
+      return Result.fail<number>(_createdOrg.error);
+    }
+
+    const createdOrg = await _createdOrg.getValue();
 
     createdOrg.parent = existingOrg;
     await this.update(createdOrg);
 
-    // await Promise.all(
-    payload.labels.map(async (el: string) => {
-      this.dao.repository.persist({
-        id: null,
-        toJSON: null,
-        name: el,
-        organization: createdOrg,
-      });
-      // await this.labelService.createLabel({
-      //   id: null,
-      //   toJSON: null,
-      //   name: el,
-      //   organization: createdOrg,
-      // });
-    }),
-      // );
+    if (payload.address.length) this.adressService.createBulkAddress(payload.address);
 
-      this.dao.repository.flush();
+    if (payload.phones.length) this.phoneService.createBulkPhone(payload.phones, 'Organization', createdOrg);
 
-    // await Promise.all(
-    //   payload.address.map(async (el: any) => {
-    //     await this.adressService.createAddress({
-    //       id: null,
-    //       toJSON: null,
-    //       country: el.country,
-    //       province: el.province,
-    //       code: el.code,
-    //       type: el.type,
-    //       street: el.street,
-    //       appartement: el.appartement,
-    //       city: el.city,
-    //       organization: createdOrg,
-    //     });
-    //   }),
-    // );
-    this.adressService.createBulkAddress(payload.address);
+    if (payload.labels.length) this.labelService.createBulkLabel(payload.labels, createdOrg);
 
+    let flagError = false;
     await Promise.all(
       payload.members.map(async (el: number) => {
         const user = await this.userService.get(el);
+        if (!user) {
+          flagError = true;
+        }
         if (user) createdOrg.members.add(user);
       }),
     );
+
+    if (flagError) {
+      return Result.fail<number>(`User in members does not exists.`);
+    }
 
     await this.update(createdOrg);
     return Result.ok<number>(createdOrg.id);
@@ -170,11 +153,15 @@ export class OrganizationService extends BaseService<Organization> {
 
     const savedUser = await this.userService.create(user);
 
+    if (savedUser.isFailure) {
+      return Result.fail<number>(savedUser.error);
+    }
+
     // add the invited user to the organization
     await existingOrg.members.init();
-    existingOrg.members.add(savedUser);
+    existingOrg.members.add(savedUser.getValue());
 
-    await this.userService.update(savedUser);
+    await this.userService.update(savedUser.getValue());
 
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
@@ -186,7 +173,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     this.emailService.sendEmail(emailMessage);
 
-    return Result.ok<number>(savedUser.id);
+    return Result.ok<number>(savedUser.getValue().id);
   }
 
   @log()

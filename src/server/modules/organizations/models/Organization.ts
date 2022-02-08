@@ -5,6 +5,7 @@ import { container, provide } from '@di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { User } from '@modules/users/models/User';
 import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
+import { Phone } from '@modules/base/models/Phone';
 
 @provide()
 @Entity()
@@ -24,9 +25,11 @@ export class Organization extends BaseModel<Organization> {
   @Unique()
   email!: string;
 
-  @Property()
-  @Unique()
-  phone!: string;
+  @OneToMany({
+    entity: () => Phone,
+    mappedBy: (entity) => entity.organization,
+  })
+  phone!: Phone;
 
   // e.i: Public, Service, Institut
   @Property()

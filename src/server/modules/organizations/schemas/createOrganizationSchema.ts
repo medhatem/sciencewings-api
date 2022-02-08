@@ -3,7 +3,7 @@ import Joi = require('joi');
 export default Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
-  phone: Joi.array(),
+  phones: Joi.array(),
   labels: Joi.array(),
   type: Joi.string(),
   social_facebook: Joi.string(),
@@ -14,6 +14,7 @@ export default Joi.object({
   social_linkedin: Joi.string(),
   members: Joi.array(),
   social: Joi.array(),
+  address: Joi.array(),
   direction: Joi.number().required(),
   adminContact: Joi.number().required(),
 });

@@ -1,3 +1,4 @@
+import { PhoneRO } from '@modules/base/dtos/PhoneDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()
@@ -7,21 +8,6 @@ export class UserInviteToOrgRO {
 
   @include()
   email: string;
-}
-
-@dto()
-export class UserPhoneRO {
-  @include()
-  label: string;
-
-  @include()
-  code: string;
-
-  @include()
-  number: string;
-
-  @include()
-  userId: string;
 }
 
 @dto()
@@ -39,7 +25,7 @@ export class UserDetailsRO {
   address: string;
 
   @include()
-  phones: UserPhoneRO[];
+  phones: PhoneRO[];
 
   @include()
   dateofbirth: Date;

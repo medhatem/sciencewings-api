@@ -4,6 +4,7 @@ import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { AddressDao } from '../daos/AddressDAO';
+import { AddressOrganizationRO } from '../dtos/AddressDTO';
 import { Address } from '../models/AdressModel';
 
 @provideSingleton()
@@ -25,11 +26,12 @@ export class AddressService extends BaseService<Address> {
 
   @log()
   @safeGuard()
-  async createBulkAddress(payload: Address[]): Promise<Result<number>> {
-    payload.map((el: Address) => {
-      this.dao.repository.persist(el);
+  async createBulkAddress(payload: AddressOrganizationRO[]): Promise<Result<number>> {
+    payload.map((el: AddressOrganizationRO) => {
+      const address = this.wrapEntity(this.dao.model, el);
+      this.dao.repository.persist(address);
     });
-    this.dao.repository.flush();
+
     return Result.ok<number>(200);
   }
 }
