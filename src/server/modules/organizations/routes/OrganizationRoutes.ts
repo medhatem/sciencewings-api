@@ -13,7 +13,7 @@ import { UpdateOrganizationDTO } from '../dtos/UpdateOrganizationDTO';
 
 @provideSingleton()
 @Path('organization')
-export class OrganizationRoutes extends BaseRoutes<Organization, OrganizationDTO, UpdateOrganizationDTO> {
+export class OrganizationRoutes extends BaseRoutes<Organization> {
   constructor(private OrganizationService: OrganizationService) {
     super(OrganizationService, OrganizationDTO, UpdateOrganizationDTO);
   }
