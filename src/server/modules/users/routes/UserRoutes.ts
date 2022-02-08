@@ -8,6 +8,7 @@ import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
 import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
+import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
 import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
@@ -16,9 +17,9 @@ import { UserDetailsRO } from './RequstObjects';
 
 @provideSingleton()
 @Path('users')
-export class UserRoutes extends BaseRoutes<User, UserDTO> {
+export class UserRoutes extends BaseRoutes<User> {
   constructor(private userService: UserService) {
-    super(userService, UserDTO);
+    super(userService, UserDTO, UpdateUserDTO);
   }
 
   static getInstance(): UserRoutes {

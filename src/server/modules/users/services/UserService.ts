@@ -45,7 +45,6 @@ export class UserService extends BaseService<User> {
     }
 
     const user: User = {
-      toJSON: null,
       ...authedUser,
       ...userDetail,
     };

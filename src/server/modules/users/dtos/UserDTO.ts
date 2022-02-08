@@ -1,9 +1,10 @@
 import { dto, include } from 'dto-mapper';
-
-import { BaseDTO } from '../../base/dtos/BaseDTO';
-
+import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '@modules/base/dtos/BaseDTO';
 @dto()
-export class UserDTO extends BaseDTO {
+class BaseBodyGetDTO extends BaseBodyDTO {
+  @include()
+  id: number;
+
   @include()
   firstname: string;
 
@@ -15,4 +16,13 @@ export class UserDTO extends BaseDTO {
 
   @include()
   keycloakId: string;
+}
+
+@dto()
+export class UserDTO extends BaseRequestDTO {
+  @include()
+  public body?: BaseBodyGetDTO;
+
+  @include()
+  public error?: BaseErrorDTO;
 }
