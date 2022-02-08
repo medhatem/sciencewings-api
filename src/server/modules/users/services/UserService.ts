@@ -1,11 +1,13 @@
+import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
 import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { OrganizationService } from '@modules/organizations/services/OrganizationService';
-import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { PhoneService } from './PhoneService';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
@@ -13,7 +15,6 @@ import generateEmail from './generateEmail';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { PhoneService } from './PhoneService';
 
 @provideSingleton()
 export class UserService extends BaseService<User> {
@@ -51,8 +52,7 @@ export class UserService extends BaseService<User> {
 
     await Promise.all(
       phones.map(async (p: any) => {
-        p['user'] = user;
-        await this.phoneSerice.create(p);
+        await this.phoneSerice.createPhone(p);
       }),
     );
 

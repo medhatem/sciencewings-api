@@ -1,11 +1,9 @@
-import { UserPhone } from './UserPhone';
-import { Collection, DateType, Entity, Index, ManyToMany, Property, Unique, OneToMany } from '@mikro-orm/core';
+import { Collection, DateType, Entity, Index, ManyToMany, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from '../../organizations/models/Organization';
-
-// import { ResPartner } from '../../organizations/models/ResPartner';
+import { UserPhone } from './UserPhone';
 
 @provideSingleton()
 @Entity()
