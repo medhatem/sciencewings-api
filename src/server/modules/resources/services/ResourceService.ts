@@ -11,6 +11,7 @@ import { CreateResourceRO } from '../routes/RequestObject';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
+import { ResourceCalendar } from '../models/ResourceCalendar';
 
 @provideSingleton()
 export class ResourceService extends BaseService<Resource> {
@@ -53,11 +54,11 @@ export class ResourceService extends BaseService<Resource> {
     }
 
     const createResourceCalendar = await this.resourceCalendarService.createResourceCalendar(calendar);
-    const calendarEntity = createResourceCalendar.getValue();
-    if (typeof calendarEntity === 'string') {
-      return Result.fail<number>(calendarEntity);
+
+    if (createResourceCalendar.isFailure) {
+      return Result.fail<number>(createResourceCalendar.error);
     }
-    resource.calendar = calendarEntity;
+    resource.calendar = createResourceCalendar.getValue() as ResourceCalendar;
     const createdResource = await this.create(resource);
     return Result.ok<number>(createdResource.id);
   }

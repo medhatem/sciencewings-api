@@ -31,7 +31,7 @@ export class ResourceCalendarService extends BaseService<ResourceCalendar> {
     if (payload.organization) {
       const org = await this.organisationService.get(payload.organization);
       if (!org) {
-        return Result.ok<string>(`Organization with id ${payload.organization} does not exist.`);
+        return Result.fail<string>(`Organization with id ${payload.organization} does not exist.`);
       }
       resourceCalendar.organization = org;
     }

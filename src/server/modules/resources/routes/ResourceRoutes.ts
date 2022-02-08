@@ -21,8 +21,14 @@ export class ResourceRoutes extends BaseRoutes<Resource, ResourceDTO> {
     return container.get(ResourceRoutes);
   }
 
+  /**
+   * Registers a new resource in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data
+   */
   @POST
-  @Path('createResource')
+  @Path('create')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async createOrganisation(payload: CreateResourceRO): Promise<CreateResourceDTO> {
