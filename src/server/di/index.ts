@@ -3,16 +3,15 @@ import 'reflect-metadata';
 import { injectable, interfaces } from 'inversify';
 
 import { Container } from './Container';
-
-// import { Controller } from 'tsoa';
+import getDecorators from 'inversify-inject-decorators';
 
 export { Container } from './Container';
 export { injectable, inject, unmanaged } from 'inversify';
 
 export const container = new Container();
-export const iocContainer = container;
 
-// decorate(injectable(), Controller); //
+const { lazyInject } = getDecorators(container);
+export { lazyInject };
 
 /**
  * class level decorator to flag a class being a sigleton in the DI container
@@ -41,4 +40,15 @@ export function provide(identifier?: interfaces.ServiceIdentifier<any>): (target
     container.bind(identifier || target).to(target);
     return injectable()(target);
   };
+}
+
+/**
+ * lazily inject an identifier using inversify
+ * this helps with circular dependencies
+ * where it only injects when the property is used
+ *
+ * @param identifier the target that needs to be ingested
+ */
+export function ingest(identifier: interfaces.ServiceIdentifier<any>) {
+  return lazyInject(identifier);
 }

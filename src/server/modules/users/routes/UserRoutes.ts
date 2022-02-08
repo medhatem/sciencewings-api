@@ -8,10 +8,11 @@ import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
 import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
-import { ResetPasswordRO, UserDetailsRO, UserInviteToOrgRO } from './RequstObjects';
+import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
+import { UserDetailsRO } from './RequstObjects';
 
 @provideSingleton()
 @Path('users')
