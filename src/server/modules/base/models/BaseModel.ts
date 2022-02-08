@@ -1,4 +1,4 @@
-import { PrimaryKey, Property, wrap } from '@mikro-orm/core';
+import { PrimaryKey, Property } from '@mikro-orm/core';
 
 import { provideSingleton } from '@di/index';
 
