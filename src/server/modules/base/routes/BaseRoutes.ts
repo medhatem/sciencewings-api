@@ -1,19 +1,25 @@
 import { BaseService } from '@modules/base/services/BaseService';
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { provideSingleton } from '@di/index';
-
-import { Path, GET, PUT, PathParam } from 'typescript-rest';
+import { Path, GET, PUT, PathParam, DELETE, Security } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
 import { BaseDTO, BaseRequestDTO } from '../dtos/BaseDTO';
 import { buildMapper, Class, IMapper } from 'dto-mapper';
 import { Logger } from '@utils/Logger';
+import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 
 @provideSingleton()
-export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
-  private getDTOMapper: IMapper<Y, unknown>;
+export class BaseRoutes<T extends BaseModel<T>> {
+  private getDTOMapper: IMapper<BaseRequestDTO, unknown>;
+  private updateDTOMapper: IMapper<BaseRequestDTO, unknown>;
   public logger: Logger;
-  constructor(private service: BaseService<T>, private baseGetDTO: Class<Y>) {
-    this.getDTOMapper = this.getMapper(this.baseGetDTO);
+  constructor(
+    private service: BaseService<T>,
+    private baseGetDTO: Class<BaseRequestDTO>,
+    private baseUpdateDTO: Class<BaseRequestDTO>,
+  ) {
+    this.getDTOMapper = this.getMapperFromRequest(this.baseGetDTO);
+    this.updateDTOMapper = this.getMapperFromRequest(this.baseUpdateDTO);
     this.logger = Logger.getInstance();
   }
 
@@ -43,32 +49,86 @@ export class BaseRoutes<T extends BaseModel<T>, Y extends BaseDTO> {
 
   @GET
   @Path('/getById/:id')
+  @Security([], KEYCLOAK_TOKEN)
   @Response(200, 'success')
-  public async getById(@PathParam('id') id: number): Promise<BaseDTO> {
+  public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
     const result = await this.service.get(id);
-    return this.getDTOMapper.serialize(result);
+    if (!result) {
+      return this.getDTOMapper.serialize({
+        body: { statusCode: 500, message: result.error },
+      });
+    }
+    return this.getDTOMapper.serialize({
+      body: { statusCode: 204, ...result.getValue() },
+    });
   }
 
   @GET
   @Path('/getAll')
+  @Security([], KEYCLOAK_TOKEN)
   @Response(200, 'success')
   @Response(401, 'error')
   public async getAll(): Promise<any> {
     const result = await this.service.getAll();
-    return result.map((r) => this.getDTOMapper.serialize(r));
+    if (!result) {
+      return this.getDTOMapper.serialize({
+        body: { statusCode: 500, message: result.error },
+      });
+    }
+    // return result.map((r) => this.getDTOMapper.serialize(r));
+    return this.getDTOMapper.serialize({
+      body: { statusCode: 204, enities: result.getValue() },
+    });
   }
-
-  //   public create(body: CreateBodyRO) {}
 
   @PUT
   @Path('/:id')
-  @Response(201, 'success')
+  @Security([], KEYCLOAK_TOKEN)
+  @Response(204, 'success')
   public async update(@PathParam('id') id: number, payload: any): Promise<any> {
-    console.log(id, payload);
-    // await this.service.update(payload);
-    // const updatedPayload = await this.service.get(id);
-    // return new this.UpdateRO().serialize(await updatedPayload);
+    let currentEntity = await this.service.get(id);
+    if (!currentEntity) {
+      return this.updateDTOMapper.serialize({
+        body: { statusCode: 404, message: `Entity with id ${id} does not exist` },
+      });
+    }
+
+    currentEntity = {
+      ...currentEntity,
+      ...payload,
+    };
+
+    const result = await this.service.update(currentEntity.getValue());
+    if (!result) {
+      return this.updateDTOMapper.serialize({
+        body: { statusCode: 500, message: result.error },
+      });
+    }
+    return this.updateDTOMapper.serialize({
+      body: { statusCode: 204, entityId: result.getValue() },
+    });
   }
 
-  //   public delete(id: string) {}
+  @DELETE
+  @Path('/:id')
+  @Security([], KEYCLOAK_TOKEN)
+  @Response(201, 'success')
+  public async remove(@PathParam('id') id: number): Promise<any> {
+    const currentEntity = await this.service.get(id);
+    if (!currentEntity) {
+      return new BaseRequestDTO().serialize({
+        body: { statusCode: 404, userId: `Entity with id ${id} does not existe` },
+      });
+    }
+    const result = await this.service.remove(id);
+    if (!result) {
+      return new BaseRequestDTO().serialize({
+        body: { statusCode: 500, error: result.error },
+      });
+    } else {
+      return new BaseRequestDTO().serialize({
+        body: { statusCode: 204, entityId: result.getValue() },
+      });
+    }
+  }
 }

@@ -20,11 +20,11 @@ export class BaseService<T extends BaseModel<T>> {
     throw new ServerError('baseService must be overriden!');
   }
 
-  public async get(id: number): Promise<T> {
+  public async get(id: number): Promise<any> {
     return await this.dao.get(id);
   }
 
-  public async getAll(): Promise<Result<T>> {
+  public async getAll(): Promise<Result<any>> {
     try {
       return Result.ok<any>(await this.dao.getAll());
     } catch (error) {
@@ -32,7 +32,7 @@ export class BaseService<T extends BaseModel<T>> {
     }
   }
 
-  public async create(entry: T): Promise<Result<T>> {
+  public async create(entry: T): Promise<Result<any>> {
     try {
       return Result.ok<any>(this.dao.create(entry));
     } catch (error) {
@@ -44,6 +44,14 @@ export class BaseService<T extends BaseModel<T>> {
     try {
       const entity = this.wrapEntity(this.dao.model, entry);
       return Result.ok<any>(this.dao.update(entity));
+    } catch (error) {
+      return Result.fail<any>(error);
+    }
+  }
+
+  public async remove(id: number): Promise<Result<any>> {
+    try {
+      return Result.ok<any>(this.dao.repository.remove(id));
     } catch (error) {
       return Result.fail<any>(error);
     }
