@@ -6,8 +6,9 @@ import { safeGuard } from '../../../decorators/safeGuard';
 import { AddressDao } from '@modules/address/daos/AddressDAO';
 import { AddressOrganizationDTO } from '@modules/address/dtos/AddressDTO';
 import { Address } from '@modules/address/models/AdressModel';
+import { IAddressService } from '../interfaces/IAddressService';
 
-@provideSingleton()
+@provideSingleton(IAddressService)
 export class AddressService extends BaseService<Address> {
   constructor(public dao: AddressDao) {
     super(dao);

@@ -8,8 +8,9 @@ import { PhoneDao } from '@modules/phones/daos/PhoneDAO';
 import { PhoneDTO } from '@modules/phones/dtos/PhoneDTO';
 import { Organization } from '@modules/organizations/models/Organization';
 import { User } from '@modules/users/models/User';
+import { IPhoneService } from '../interfaces/IPhoneService';
 
-@provideSingleton()
+@provideSingleton(IPhoneService)
 export class PhoneService extends BaseService<Phone> {
   constructor(public dao: PhoneDao) {
     super(dao);

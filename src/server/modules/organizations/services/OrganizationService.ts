@@ -1,5 +1,3 @@
-import { AddressService } from '@modules/address/services/AddressService';
-import { OrganisationLabelService } from './OrganisationLabelService';
 import { getConfig } from '../../../configuration/Configuration';
 import { Collection } from '@mikro-orm/core';
 import { User } from '@modules/users/models/User';
@@ -11,21 +9,24 @@ import { Organization } from '@modules/organizations/models/Organization';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { UserService } from '@modules/users/services/UserService';
 import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import createSchema from '../schemas/createOrganizationSchema';
-import { PhoneService } from '@modules/phones/services/PhoneService';
+import { IOrganizationService } from '../interfaces/IOrganizationService';
+import { IUserService } from '@modules/users/interfaces/IUserService';
+import { IOrganisationLabelService } from '../interfaces/IOrganisationLabelService';
+import { IAddressService } from '@modules/address/interfaces/IAddressService';
+import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
 
-@provideSingleton()
+@provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> {
   constructor(
     public dao: OrganizationDao,
-    public userService: UserService,
-    public labelService: OrganisationLabelService,
-    public adressService: AddressService,
-    public phoneService: PhoneService,
+    public userService: IUserService,
+    public labelService: IOrganisationLabelService,
+    public adressService: IAddressService,
+    public phoneService: IPhoneService,
     public emailService: Email,
   ) {
     super(dao);
@@ -51,11 +52,15 @@ export class OrganizationService extends BaseService<Organization> {
       }
     }
 
-    const user = await this.userService.get(userId);
+    const _user = await this.userService.getUserByCriteria({ id: userId });
+    if (!_user) {
+      return Result.fail<number>(`User with id: ${userId} parent does not exist`);
+    }
+    const user = _user.getValue();
 
     let adminContact;
     if (payload.adminContact) {
-      adminContact = await this.userService.get(payload.adminContact);
+      adminContact = await this.userService.getUserByCriteria({ adminContact: payload.adminContact });
       if (!adminContact) {
         return Result.fail<number>(`User with id: ${payload.adminContact} does not exists.`);
       }
@@ -63,7 +68,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     let direction;
     if (payload.direction) {
-      direction = await this.userService.get(payload.direction);
+      direction = await this.userService.getUserByCriteria({ direction: payload.direction });
       if (!direction) {
         return Result.fail<number>(`User with id: ${payload.direction} does not exists.`);
       }
@@ -80,8 +85,8 @@ export class OrganizationService extends BaseService<Organization> {
       social_twitter: payload.social_twitter,
       social_linkedin: payload.social_linkedin,
     });
-    organization.direction = direction;
-    organization.admin_contact = adminContact;
+    organization.direction = await direction.getValue();
+    organization.admin_contact = await adminContact.getValue();
 
     await user.organizations.init();
     user.organizations.add(organization);
@@ -105,11 +110,11 @@ export class OrganizationService extends BaseService<Organization> {
     let flagError = false;
     await Promise.all(
       payload.members.map(async (el: number) => {
-        const user = await this.userService.get(el);
-        if (!user) {
+        const user = await this.userService.getUserByCriteria({ id: el });
+        if (user.isFailure || !user) {
           flagError = true;
         }
-        if (user) createdOrg.members.add(user);
+        if (user) createdOrg.members.add(user.getValue());
       }),
     );
 
@@ -151,7 +156,7 @@ export class OrganizationService extends BaseService<Organization> {
     user.email = email;
     user.keycloakId = createdKeyCloakUser.id;
 
-    const savedUser = await this.userService.create(user);
+    const savedUser = await this.userService.getInstance().create(user);
 
     if (savedUser.isFailure) {
       return Result.fail<number>(savedUser.error);
@@ -161,7 +166,7 @@ export class OrganizationService extends BaseService<Organization> {
     await existingOrg.members.init();
     existingOrg.members.add(savedUser.getValue());
 
-    await this.userService.update(savedUser.getValue());
+    await this.userService.getInstance().update(savedUser.getValue());
 
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
@@ -178,11 +183,11 @@ export class OrganizationService extends BaseService<Organization> {
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number) {
+  public async getMembers(orgId: number): Promise<Result<Collection<User>>> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>(`Organization with id ${orgId} does not exists.`);
+      return Result.fail(`Organization with id ${orgId} does not exists.`);
     }
 
     const members: Collection<User> = await existingOrg.members.init();
