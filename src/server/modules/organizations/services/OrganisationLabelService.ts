@@ -1,11 +1,11 @@
-import { OrganisationLabelDao } from '../daos/OrganisationLabelDao';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
-import { Organization } from '../models/Organization';
+import { Organization } from '@modules/organizations/models/Organization';
+import { OrganisationLabelDao } from '@modules/organizations/daos/OrganisationLabelDao';
 
 @provideSingleton()
 export class OrganisationLabelService extends BaseService<OrganizationLabel> {

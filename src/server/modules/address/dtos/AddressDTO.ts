@@ -2,7 +2,7 @@ import { dto, include } from 'dto-mapper';
 import { AddressType } from '@modules/address/models/AdressModel';
 
 @dto()
-export class AddressOrganizationRO {
+export class AddressOrganizationDTO {
   @include()
   country: string;
 
