@@ -1,6 +1,6 @@
 import Joi = require('joi');
 
-const ResourceCalendarSchema = Joi.object({
+export const ResourceCalendarSchema = Joi.object({
   name: Joi.string().required(),
   active: Joi.boolean(),
   organization: Joi.number(),

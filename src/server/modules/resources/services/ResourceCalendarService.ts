@@ -7,6 +7,8 @@ import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
 import { ResourceCalendar } from '../models/ResourceCalendar';
 import { ResourceCalendarDao } from '../daos/ResourceCalendarDAO';
+import { validate } from 'server/decorators/bodyValidationDecorators/validate';
+import { ResourceCalendarSchema } from '../schemas/CreateResourceSchema';
 
 @provideSingleton()
 export class ResourceCalendarService extends BaseService<ResourceCalendar> {
@@ -20,19 +22,20 @@ export class ResourceCalendarService extends BaseService<ResourceCalendar> {
 
   @log()
   @safeGuard()
-  public async createResourceCalendar(payload: CreateResourceCalendarRO): Promise<Result<ResourceCalendar | string>> {
+  @validate(ResourceCalendarSchema)
+  public async createResourceCalendar(payload: CreateResourceCalendarRO): Promise<Result<ResourceCalendar>> {
     let org = null;
     if (payload.organization) {
       org = await this.organisationService.get(payload.organization);
       if (!org) {
-        return Result.fail<string>(`Organization with id ${payload.organization} does not exist.`);
+        return Result.fail(`Organization with id ${payload.organization} does not exist.`);
       }
     }
 
     const resourceCalendar: ResourceCalendar = {
       id: null,
       ...payload,
-      organization: org,
+      organization: await org.getValue(),
     };
 
     const createdResourceCalendar = await this.dao.create(resourceCalendar);

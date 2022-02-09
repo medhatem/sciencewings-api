@@ -32,26 +32,32 @@ export class ResourceService extends BaseService<Resource> {
   @safeGuard()
   @validate(CreateResourceSchema)
   public async createResource(payload: CreateResourceRO): Promise<Result<number>> {
-    const calendar = payload.calendar;
-    delete payload.calendar;
-
-    const resource = this.wrapEntity(this.dao.model, payload);
+    let user = null;
+    let organization = null;
 
     if (payload.user) {
-      const user = await this.userService.get(payload.user);
-      if (!user) {
+      const _user = await this.userService.get(payload.user);
+      if (!_user) {
         return Result.fail<number>(`User with id ${payload.user} does not exist.`);
       }
-      resource.user = user;
+      user = await _user.getValue();
     }
 
     if (payload.organization) {
-      const organization = await this.organisationService.get(payload.organization);
-      if (!organization) {
+      const _organization = await this.organisationService.get(payload.organization);
+      if (!_organization) {
         return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
       }
-      resource.organization = organization;
+      organization = await _organization.getValue();
     }
+
+    const calendar = payload.calendar;
+    delete payload.calendar;
+
+    payload.user = user;
+    payload.organization = organization;
+
+    const resource = this.wrapEntity(this.dao.model, payload);
 
     const createResourceCalendar = await this.resourceCalendarService.createResourceCalendar(calendar);
 
