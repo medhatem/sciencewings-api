@@ -88,7 +88,7 @@ pipelines:
       - step: *deploy
     feature/*:
       - step: *chaching
-      - step: *install
+      #- step: *install
       - step: *build
       - step: *lint
       - step: *generateSwagger
