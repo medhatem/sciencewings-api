@@ -1,6 +1,6 @@
 import { AddressOrganizationRO } from '../../address/dtos/AddressDTO';
 import { dto, include } from 'dto-mapper';
-import { PhoneRO } from '../../phones/dtos/PhoneDTO';
+import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
 
 @dto()
 export class CreateOrganizationRO {
@@ -11,7 +11,7 @@ export class CreateOrganizationRO {
   email: string;
 
   @include()
-  phones: PhoneRO[];
+  phones: PhoneDTO[];
 
   @include()
   type: string;

@@ -1,4 +1,4 @@
-import { PhoneRO } from '@modules/phones/dtos/PhoneDTO';
+import { PhoneDTO } from '@modules/phones/dtos/PhoneDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()
@@ -25,7 +25,7 @@ export class UserDetailsRO {
   address: string;
 
   @include()
-  phones: PhoneRO[];
+  phones: PhoneDTO[];
 
   @include()
   dateofbirth: Date;

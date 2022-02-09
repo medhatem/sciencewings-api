@@ -1,7 +1,7 @@
 import { dto, include } from 'dto-mapper';
 
 @dto()
-export class PhoneRO {
+export class PhoneDTO {
   @include()
   label: string;
 

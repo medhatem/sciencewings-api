@@ -5,7 +5,7 @@ import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { Phone } from '../models/Phone';
 import { PhoneDao } from '../daos/PhoneDAO';
-import { PhoneRO } from '../dtos/PhoneDTO';
+import { PhoneDTO } from '../dtos/PhoneDTO';
 import { Organization } from '@modules/organizations/models/Organization';
 import { User } from '@modules/users/models/User';
 
@@ -21,7 +21,7 @@ export class PhoneService extends BaseService<Phone> {
 
   @log()
   @safeGuard()
-  async createPhone(payload: PhoneRO): Promise<Result<number>> {
+  async createPhone(payload: PhoneDTO): Promise<Result<number>> {
     const entity = this.wrapEntity(this.dao.model, payload);
 
     const phone = await this.dao.create(entity);
@@ -30,7 +30,7 @@ export class PhoneService extends BaseService<Phone> {
 
   @log()
   @safeGuard()
-  async createBulkPhoneForUser(payload: PhoneRO[], entity: User): Promise<Result<number>> {
+  async createBulkPhoneForUser(payload: PhoneDTO[], entity: User): Promise<Result<number>> {
     const phones = await Promise.all(
       payload.map(async (phone) => {
         const wrappedPhone = this.wrapEntity(this.dao.model, phone);
@@ -44,7 +44,7 @@ export class PhoneService extends BaseService<Phone> {
 
   @log()
   @safeGuard()
-  async createBulkPhoneForOrganization(payload: PhoneRO[], entity: Organization): Promise<Result<number>> {
+  async createBulkPhoneForOrganization(payload: PhoneDTO[], entity: Organization): Promise<Result<number>> {
     const phones = await Promise.all(
       payload.map(async (phone) => {
         const wrappedPhone = this.wrapEntity(this.dao.model, phone);
