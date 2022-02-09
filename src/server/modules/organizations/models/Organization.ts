@@ -1,11 +1,16 @@
-import { Address } from '../../base/models/AdressModel';
-// import { OrganizationContact } from './OrganizationContact';
+import { Address } from '../../address/models/AdressModel';
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { User } from '@modules/users/models/User';
 import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
-import { Phone } from '@modules/base/models/Phone';
+import { Phone } from '@modules/phones/models/Phone';
+
+export enum OrganizationType {
+  PUBLIC = 'Public',
+  SERVICE = 'Service',
+  INSTITUT = 'Institut',
+}
 
 @provide()
 @Entity()
@@ -33,7 +38,7 @@ export class Organization extends BaseModel<Organization> {
 
   // e.i: Public, Service, Institut
   @Property()
-  type!: string;
+  type!: OrganizationType;
 
   @OneToMany({
     entity: () => Address,
@@ -49,12 +54,6 @@ export class Organization extends BaseModel<Organization> {
 
   @ManyToMany({ entity: () => User })
   members? = new Collection<User>(this);
-
-  // @OneToMany({
-  //   entity: () => OrganizationContact,
-  //   mappedBy: (entity) => entity.organization,
-  // })
-  // public contacts? = new Collection<OrganizationContact>(this);
 
   @Property({ nullable: true })
   social_facebook?: string;

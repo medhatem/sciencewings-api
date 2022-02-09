@@ -1,4 +1,4 @@
-import { PhoneRO } from '@modules/base/dtos/PhoneDTO';
+import { PhoneRO } from '@modules/phones/dtos/PhoneDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()

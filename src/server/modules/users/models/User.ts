@@ -2,7 +2,7 @@ import { Collection, DateType, Entity, Index, ManyToMany, OneToMany, Property, U
 import { container, provideSingleton } from '@di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from '../../organizations/models/Organization';
-import { Phone } from '@modules/base/models/Phone';
+import { Phone } from '@modules/phones/models/Phone';
 
 @provideSingleton()
 @Entity()

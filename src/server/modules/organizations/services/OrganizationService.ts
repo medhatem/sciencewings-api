@@ -1,4 +1,4 @@
-import { AddressService } from '@modules/base/services/AddressService';
+import { AddressService } from '@modules/address/services/AddressService';
 import { OrganisationLabelService } from './OrganisationLabelService';
 import { getConfig } from '../../../configuration/Configuration';
 import { Collection } from '@mikro-orm/core';
@@ -16,7 +16,7 @@ import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import createSchema from '../schemas/createOrganizationSchema';
-import { PhoneService } from '@modules/base/services/PhoneService';
+import { PhoneService } from '@modules/phones/services/PhoneService';
 
 @provideSingleton()
 export class OrganizationService extends BaseService<Organization> {
@@ -98,7 +98,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     if (payload.address.length) this.adressService.createBulkAddress(payload.address);
 
-    if (payload.phones.length) this.phoneService.createBulkPhone(payload.phones, 'Organization', createdOrg);
+    if (payload.phones.length) this.phoneService.createBulkPhoneForOrganization(payload.phones, createdOrg);
 
     if (payload.labels.length) this.labelService.createBulkLabel(payload.labels, createdOrg);
 

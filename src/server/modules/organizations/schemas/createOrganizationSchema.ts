@@ -1,11 +1,12 @@
 import Joi = require('joi');
+import { OrganizationType } from '../models/Organization';
 
 export default Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
   phones: Joi.array(),
   labels: Joi.array(),
-  type: Joi.string(),
+  type: Joi.string().valid(...Object.values(OrganizationType)),
   social_facebook: Joi.string(),
   social_instagram: Joi.string(),
   social_youtube: Joi.string(),

@@ -1,7 +1,7 @@
 import { Organization } from '@modules/organizations/models/Organization';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
-import { BaseModel } from './BaseModel';
+import { BaseModel } from './../../base/models/BaseModel';
 import { User } from '@modules/users/models/User';
 
 // import { ResPartner } from '../../organisations/models/ResPartner';

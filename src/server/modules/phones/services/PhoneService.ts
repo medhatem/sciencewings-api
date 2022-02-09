@@ -9,8 +9,6 @@ import { PhoneRO } from '../dtos/PhoneDTO';
 import { Organization } from '@modules/organizations/models/Organization';
 import { User } from '@modules/users/models/User';
 
-type EntityType = User | Organization;
-
 @provideSingleton()
 export class PhoneService extends BaseService<Phone> {
   constructor(public dao: PhoneDao) {
@@ -32,20 +30,30 @@ export class PhoneService extends BaseService<Phone> {
 
   @log()
   @safeGuard()
-  async createBulkPhone(payload: PhoneRO[], entityModel: string, entity: EntityType): Promise<Result<number>> {
-    await Promise.all(
+  async createBulkPhoneForUser(payload: PhoneRO[], entity: User): Promise<Result<number>> {
+    const phones = await Promise.all(
       payload.map(async (phone) => {
         const wrappedPhone = this.wrapEntity(this.dao.model, phone);
-
-        if (entityModel === 'User') wrappedPhone.user = entity as User;
-        else if (entityModel === 'Organization') wrappedPhone.organization = entity as Organization;
-
-        console.log({ wrappedPhone });
-
-        this.dao.repository.persist(wrappedPhone);
+        wrappedPhone.user = entity as User;
       }),
     );
 
+    this.dao.repository.persist(phones);
+    return Result.ok<number>(200);
+  }
+
+  @log()
+  @safeGuard()
+  async createBulkPhoneForOrganization(payload: PhoneRO[], entity: Organization): Promise<Result<number>> {
+    const phones = await Promise.all(
+      payload.map(async (phone) => {
+        const wrappedPhone = this.wrapEntity(this.dao.model, phone);
+        wrappedPhone.organization = entity as Organization;
+        return wrappedPhone;
+      }),
+    );
+
+    this.dao.repository.persist(phones);
     return Result.ok<number>(200);
   }
 }

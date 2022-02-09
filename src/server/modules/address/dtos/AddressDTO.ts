@@ -1,5 +1,5 @@
 import { dto, include } from 'dto-mapper';
-import { AddressType } from '@modules/base/models/AdressModel';
+import { AddressType } from '@modules/address/models/AdressModel';
 
 @dto()
 export class AddressOrganizationRO {

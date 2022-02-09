@@ -27,12 +27,11 @@ export class OrganisationLabelService extends BaseService<OrganizationLabel> {
   @log()
   @safeGuard()
   async createBulkLabel(payload: string[], organization: Organization): Promise<Result<number>> {
-    payload.map((el: string) => {
-      console.log({ name: el, organization });
-
-      this.dao.repository.persist({ name: el, organization });
+    const labels = payload.map((el: string) => {
+      return { name: el, organization };
     });
 
+    this.dao.repository.persist(labels);
     return Result.ok<number>(200);
   }
 }

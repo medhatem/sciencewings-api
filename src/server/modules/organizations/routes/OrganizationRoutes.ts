@@ -10,7 +10,7 @@ import { CreatedOrganizationDTO } from '../dtos/createdOrganizationDTO';
 import { OrganizationDTO } from '../dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
-import { InviteUserDTO } from '@modules/organizations/dtos/InviteUserDTO';
+import { InviteUserDTO } from '../../organizations/dtos/InviteUserDTO';
 import { UpdateOrganizationDTO } from '../dtos/UpdateOrganizationDTO';
 
 @provideSingleton()

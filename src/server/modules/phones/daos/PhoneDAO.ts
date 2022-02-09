@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@di/index';
-import { BaseDao } from './BaseDao';
+import { BaseDao } from './../../base/daos/BaseDao';
 import { Phone } from '../models/Phone';
 
 @provideSingleton()

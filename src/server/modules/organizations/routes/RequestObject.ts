@@ -1,6 +1,6 @@
-import { AddressOrganizationRO } from '../../base/dtos/AddressDTO';
+import { AddressOrganizationRO } from '../../address/dtos/AddressDTO';
 import { dto, include } from 'dto-mapper';
-import { PhoneRO } from '@modules/base/dtos/PhoneDTO';
+import { PhoneRO } from '../../phones/dtos/PhoneDTO';
 
 @dto()
 export class CreateOrganizationRO {
