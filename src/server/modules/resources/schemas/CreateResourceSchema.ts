@@ -9,7 +9,7 @@ const ResourceCalendarSchema = Joi.object({
   twoWeeksCalendar: Joi.boolean(),
 });
 
-export default Joi.object({
+export const CreateResourceSchema = Joi.object({
   name: Joi.string().required(),
   active: Joi.boolean(),
   organization: Joi.number(),

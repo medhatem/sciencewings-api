@@ -3,7 +3,7 @@ import { ResourceCalendarService } from './ResourceCalendarService';
 import { UserService } from './../../users/services/UserService';
 import { Result } from '@utils/Result';
 import { container, provideSingleton } from '@di/index';
-import CreateResourceSchema from '../schemas/CreateResourceSchema';
+import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Resource } from '@modules/resources/models/Resource';
 import { ResourceDao } from '../daos/ResourceDao';
@@ -40,7 +40,7 @@ export class ResourceService extends BaseService<Resource> {
     if (payload.user) {
       const user = await this.userService.get(payload.user);
       if (!user) {
-        return Result.fail<number>(`User with id ${payload.user} dose not exists.`);
+        return Result.fail<number>(`User with id ${payload.user} does not exist.`);
       }
       resource.user = user;
     }
@@ -48,7 +48,7 @@ export class ResourceService extends BaseService<Resource> {
     if (payload.organization) {
       const organization = await this.organisationService.get(payload.organization);
       if (!organization) {
-        return Result.fail<number>(`Organization with id ${payload.organization} dose not exists.`);
+        return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
       }
       resource.organization = organization;
     }

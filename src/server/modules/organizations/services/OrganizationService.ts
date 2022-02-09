@@ -35,7 +35,7 @@ export class OrganizationService extends BaseService<Organization> {
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
-      return Result.fail<number>(`Organization ${payload.name} already exists.`);
+      return Result.fail<number>(`Organization ${payload.name} already exist.`);
     }
     const user = await this.userDao.get(userId);
 

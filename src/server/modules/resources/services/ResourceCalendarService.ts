@@ -21,19 +21,20 @@ export class ResourceCalendarService extends BaseService<ResourceCalendar> {
   @log()
   @safeGuard()
   public async createResourceCalendar(payload: CreateResourceCalendarRO): Promise<Result<ResourceCalendar | string>> {
-    const resourceCalendar: ResourceCalendar = {
-      id: null,
-      ...payload,
-      organization: null,
-    };
-
+    let org = null;
     if (payload.organization) {
-      const org = await this.organisationService.get(payload.organization);
+      org = await this.organisationService.get(payload.organization);
       if (!org) {
         return Result.fail<string>(`Organization with id ${payload.organization} does not exist.`);
       }
-      resourceCalendar.organization = org;
     }
+
+    const resourceCalendar: ResourceCalendar = {
+      id: null,
+      ...payload,
+      organization: org,
+    };
+
     const createdResourceCalendar = await this.dao.create(resourceCalendar);
     return Result.ok<ResourceCalendar>(createdResourceCalendar);
   }

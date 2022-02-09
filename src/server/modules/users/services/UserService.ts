@@ -41,7 +41,7 @@ export class UserService extends BaseService<User> {
     const userDetail = this.wrapEntity(this.dao.model, payload);
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
-      return Result.fail<number>(`User with id ${userId} dose not existe`);
+      return Result.fail<number>(`User with id ${userId} does not existe`);
     }
 
     const user: User = {
@@ -102,7 +102,7 @@ export class UserService extends BaseService<User> {
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exists.');
+      return Result.fail<number>('The user already exist.');
     }
 
     const existingOrg = await this.organizationService.get(orgId);
