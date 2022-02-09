@@ -26,7 +26,7 @@ export class OrganizationService extends BaseService<Organization> {
     public labelService: OrganisationLabelService,
     public adressService: AddressService,
     public phoneService: PhoneService,
-    public emailService = Email.getInstance(),
+    public emailService: Email,
   ) {
     super(dao);
   }
