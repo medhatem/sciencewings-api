@@ -46,15 +46,13 @@ export class UserService extends BaseService<User> {
     }
 
     const user: User = {
-      toJSON: null,
       ...authedUser,
       ...userDetail,
     };
 
     await Promise.all(
       phones.map(async (p: any) => {
-        p['user'] = user;
-        await this.phoneSerice.create(p);
+        await this.phoneSerice.createPhone(p);
       }),
     );
 
