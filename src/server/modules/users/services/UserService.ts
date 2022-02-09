@@ -105,11 +105,13 @@ export class UserService extends BaseService<User> {
       return Result.fail<number>('The user already exist.');
     }
 
-    const existingOrg = await this.organizationService.get(orgId);
+    const _existingOrg = await this.organizationService.get(orgId);
 
-    if (!existingOrg) {
+    if (!_existingOrg) {
       return Result.fail<number>('The organization to add the user to does not exist.');
     }
+
+    const existingOrg = await _existingOrg.getValue();
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
       email,
