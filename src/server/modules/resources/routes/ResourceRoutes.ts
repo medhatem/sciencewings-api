@@ -5,15 +5,16 @@ import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Resource } from '../models/Resource';
 import { Path, POST, Security } from 'typescript-rest';
 import { ResourceDTO } from '../dtos/ResourceDTO';
-import { LoggerStorage } from '../../../decorators/loggerStorage';
-import { CreateResourceRO } from './RequestObject';
+import { UpdateResourceDTO } from '../dtos/UpdateResourceDTO';
 import { CreateResourceDTO } from '../dtos/CreatedResourceDTO';
+import { CreateResourceRO } from './RequestObject';
+import { LoggerStorage } from 'server/decorators/loggerStorage';
 
 @provideSingleton()
-@Path('resource')
-export class ResourceRoutes extends BaseRoutes<Resource, ResourceDTO> {
+@Path('organization')
+export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: ResourceService) {
-    super(ResourceService, ResourceDTO);
+    super(ResourceService, ResourceDTO, UpdateResourceDTO);
     console.log(this.ResourceService);
   }
 

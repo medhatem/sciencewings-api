@@ -43,16 +43,24 @@ export class OrganizationService extends BaseService<Organization> {
     await user.organizations.init();
     user.organizations.add(organization);
     const createdOrg = await this.create(this.dao.model);
+
+    if (createdOrg.isSuccess) {
+      if (!existingOrg) {
+        return Result.fail<number>(createdOrg.error);
+      }
+    }
+
     if (payload.parentId) {
       const existingOrg = await this.dao.getByCriteria({ id: payload.parentId });
+
       if (!existingOrg) {
         return Result.fail<number>('Organization parent does not exist');
       }
-      createdOrg.parent = existingOrg;
-      await this.update(createdOrg);
+      createdOrg.getValue().parent = existingOrg;
+      await this.update(createdOrg.getValue());
     }
 
-    return Result.ok<number>(createdOrg.id);
+    return Result.ok<number>(createdOrg.getValue().id);
   }
 
   @log()
