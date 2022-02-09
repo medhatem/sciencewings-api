@@ -23,7 +23,6 @@ export class ResourceCalendarService extends BaseService<ResourceCalendar> {
   public async createResourceCalendar(payload: CreateResourceCalendarRO): Promise<Result<ResourceCalendar | string>> {
     const resourceCalendar: ResourceCalendar = {
       id: null,
-      toJSON: null,
       ...payload,
       organization: null,
     };

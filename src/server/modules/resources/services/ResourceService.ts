@@ -60,6 +60,10 @@ export class ResourceService extends BaseService<Resource> {
     }
     resource.calendar = createResourceCalendar.getValue() as ResourceCalendar;
     const createdResource = await this.create(resource);
-    return Result.ok<number>(createdResource.id);
+    if (createdResource.isFailure) {
+      return Result.fail<number>(createdResource.error);
+    }
+    const id = createdResource.getValue().id;
+    return Result.ok<number>(id);
   }
 }
