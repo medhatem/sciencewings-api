@@ -57,6 +57,8 @@ definitions:
           - node
         script:
           - npm install
+        artifacts: # defining the artifacts to be passed to each future step.
+          - node_modules/**
 
 
 pipelines:
