@@ -6,14 +6,13 @@ import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
-import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
+import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
+import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
 import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
-import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
-import { UserDetailsRO } from './RequstObjects';
 
 @provideSingleton()
 @Path('users')
@@ -50,31 +49,6 @@ export class UserRoutes extends BaseRoutes<User> {
     }
 
     return new RegisterUserFromTokenDTO().serialize({
-      body: { statusCode: 201, userId: result.getValue() },
-    });
-  }
-
-  /**
-   * invite a user to an organization
-   * creates the newly invited user in keycloak
-   *
-   * @param payload
-   */
-  @POST
-  @Path('inviteUserToOrganization')
-  @Response<InviteUserDTO>(201, 'User Registred Successfully')
-  @Security([], KEYCLOAK_TOKEN)
-  @LoggerStorage()
-  public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
-    const result = await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
-
-    if (result.isFailure) {
-      return new InviteUserDTO().serialize({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
-    }
-
-    return new InviteUserDTO().serialize({
       body: { statusCode: 201, userId: result.getValue() },
     });
   }
