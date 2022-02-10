@@ -104,9 +104,7 @@ export class UserRoutes extends BaseRoutes<User> {
       return new UserDTO().serialize({ error: { statusCode: 404, errorMessage: result.error } });
     }
 
-    const user = result.getValue();
-    const phones = await user.phone.init();
-    const orgs = await user.organizations.init();
-    return new UserDTO().serialize({ body: { user: { ...user, phones, orgs }, statusCode: 200 } });
+    const { id, firstname, lastname } = result.getValue();
+    return new UserDTO().serialize({ body: { user: { id, firstname, lastname }, statusCode: 200 } });
   }
 }
