@@ -1,4 +1,4 @@
-import { POST, Path, Security, ContextRequest, PUT } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT, GET } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
@@ -7,7 +7,7 @@ import { User } from '../models/User';
 import { UserRequest } from '../../../types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
-import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
+import { KeycloakIdRO, ResetPasswordRO, UserDetailsRO } from './RequstObjects';
 import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
@@ -92,5 +92,21 @@ export class UserRoutes extends BaseRoutes<User> {
     }
 
     return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
+  }
+
+  @GET
+  @Path('getUserByKeycloakId')
+  @LoggerStorage()
+  public async getUserByKeycloakId(payload: KeycloakIdRO): Promise<UserDTO> {
+    const result = await this.userService.getUserByKeycloakId(payload);
+
+    if (result.isFailure) {
+      return new UserDTO().serialize({ error: { statusCode: 404, errorMessage: result.error } });
+    }
+
+    const user = result.getValue();
+    const phones = await user.phone.init();
+    const orgs = await user.organizations.init();
+    return new UserDTO().serialize({ body: { user: { ...user, phones, orgs }, statusCode: 200 } });
   }
 }
