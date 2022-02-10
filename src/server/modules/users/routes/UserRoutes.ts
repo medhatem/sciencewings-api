@@ -1,4 +1,4 @@
-import { POST, Path, Security, ContextRequest, PUT, GET } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
