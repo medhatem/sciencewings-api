@@ -37,7 +37,7 @@ export class UserService extends BaseService<User> implements IUserService {
     const userDetail = this.wrapEntity(this.dao.model, payload);
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
-      return Result.fail<number>(`User with id ${userId} does not existe`);
+      return Result.fail<number>(`User with id ${userId} does not exist`);
     }
 
     const user: User = {
