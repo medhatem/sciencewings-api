@@ -1,10 +1,9 @@
-import { POST, Path, Security, ContextRequest, PUT } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT, GET } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
-import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
 import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
@@ -14,12 +13,13 @@ import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
 import { UserDetailsRO } from './RequstObjects';
+import { IUserService } from '../interfaces/IUserService';
 
 @provideSingleton()
 @Path('users')
 export class UserRoutes extends BaseRoutes<User> {
-  constructor(private userService: UserService) {
-    super(userService, UserDTO, UpdateUserDTO);
+  constructor(private userService: IUserService) {
+    super(userService as any, UserDTO, UpdateUserDTO);
   }
 
   static getInstance(): UserRoutes {
@@ -119,4 +119,8 @@ export class UserRoutes extends BaseRoutes<User> {
 
     return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
   }
+
+  @GET
+  @Path('te')
+  public async te(): Promise<any> {}
 }

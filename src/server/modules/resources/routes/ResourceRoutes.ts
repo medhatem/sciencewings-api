@@ -7,7 +7,7 @@ import { ResourceDTO } from '../dtos/ResourceDTO';
 import { UpdateResourceDTO } from '../dtos/UpdateResourceDTO';
 
 @provideSingleton()
-@Path('organization')
+@Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: ResourceService) {
     super(ResourceService, ResourceDTO, UpdateResourceDTO);

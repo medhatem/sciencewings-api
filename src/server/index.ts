@@ -4,6 +4,12 @@ import { Configuration } from './configuration/Configuration';
 import { Server } from './Server';
 import { container } from './di';
 
+export * from '@modules/users';
+export * from '@modules/base';
+export * from '@modules/hr';
+export * from '@modules/organizations/routes/OrganizationRoutes';
+export * from '@modules/resources';
+
 container.initialize();
 
 // istanbul ignore next

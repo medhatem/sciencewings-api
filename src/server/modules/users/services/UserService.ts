@@ -4,9 +4,10 @@ import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
 import { EmailMessage } from '../../../types/types';
+import { IOrganizationService } from '@modules/organizations/interfaces/IOrganizationService';
+import { IUserService } from '../interfaces/IUserService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { OrganizationService } from '@modules/organizations/services/OrganizationService';
 import { PhoneService } from './PhoneService';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
@@ -16,20 +17,20 @@ import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 
-@provideSingleton()
-export class UserService extends BaseService<User> {
+@provideSingleton(IUserService)
+export class UserService extends BaseService<User> implements IUserService {
   constructor(
     public dao: UserDao,
     public phoneSerice: PhoneService,
-    public organizationService: OrganizationService,
+    public organizationService: IOrganizationService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
   ) {
     super(dao);
   }
 
-  static getInstance(): UserService {
-    return container.get(UserService);
+  static getInstance(): IUserService {
+    return container.get(IUserService);
   }
 
   @log()

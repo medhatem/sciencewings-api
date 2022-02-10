@@ -70,11 +70,13 @@ export class Server {
   private async configureServer() {
     // start the database first since configureAuthenticator method needs the connection stream
     await this.setUpDataBase();
+
     this.configureAuthenticator(); // this method has to be executed first before generating the middlewares
     this.configureServiceFactory();
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
+    // handleRequests();
   }
 
   /**

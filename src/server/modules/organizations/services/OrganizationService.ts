@@ -1,18 +1,19 @@
-import { Collection } from '@mikro-orm/core';
-import { User } from '@modules/users/models/User';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from '@modules/base/services/BaseService';
+import { Collection } from '@mikro-orm/core';
 import { CreateOrganizationRO } from '../routes/RequestObject';
-import { OrganizationDao } from '../daos/OrganizationDao';
+import { IOrganizationService } from '../interfaces/IOrganizationService';
 import { Organization } from '@modules/organizations/models/Organization';
+import { OrganizationDao } from '../daos/OrganizationDao';
 import { Result } from '@utils/Result';
+import { User } from '@modules/users/models/User';
 import { UserDao } from '@modules/users/daos/UserDao';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 
-@provideSingleton()
-export class OrganizationService extends BaseService<Organization> {
+@provideSingleton(IOrganizationService)
+export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(public dao: OrganizationDao, public userDao: UserDao) {
     super(dao);
   }
@@ -65,11 +66,11 @@ export class OrganizationService extends BaseService<Organization> {
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number) {
+  public async getMembers(orgId: number): Promise<Result<Collection<User>>> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>(`Organization with id ${orgId} does not exist.`);
+      return Result.fail<Collection<User>>(`Organization with id ${orgId} does not exist.`);
     }
 
     const members: Collection<User> = await existingOrg.users.init();
