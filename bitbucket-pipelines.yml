@@ -14,8 +14,8 @@ definitions:
         name: install
         script:
           - npm -v
-          - npm run clean
-          - npm install
+          #- npm run clean
+          #- npm install
         artifacts: # defining the artifacts to be passed to each future step.
           - node_modules/**
     - step: &build
@@ -52,15 +52,25 @@ definitions:
           - docker tag staging_api registry.heroku.com/sciencewings-api-staging/web
           - docker push registry.heroku.com/sciencewings-api-staging/web
           - heroku container:release web -a sciencewings-api-staging
+    - step: &chaching
+        caches:
+          - node
+        script:
+          - npm install
+        artifacts: # defining the artifacts to be passed to each future step.
+          - node_modules/**
+
 
 pipelines:
   default:
-    - step: *install
+    - step: *chaching
+    #- step: *install
     - step: *build
     - step: *lint
     - step: *generateSwagger
   branches:
     dev:
+      - step: *chaching
       - step: *install
       - step: *build
       - step: *lint
@@ -69,6 +79,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     master:
+      - step: *chaching
       - step: *install
       - step: *build
       - step: *lint
@@ -76,11 +87,13 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     feature/*:
-      - step: *install
+      - step: *chaching
+      #- step: *install
       - step: *build
       - step: *lint
       - step: *generateSwagger
     release/*:
+      - step: *chaching
       - step: *install
       - step: *build
       - step: *lint
@@ -89,6 +102,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     hotfix/*:
+      - step: *chaching
       - step: *install
       - step: *build
       - step: *lint
@@ -97,6 +111,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     bugfix/*:
+      - step: *chaching
       - step: *install
       - step: *build
       - step: *lint
