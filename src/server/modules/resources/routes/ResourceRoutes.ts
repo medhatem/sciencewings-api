@@ -1,6 +1,5 @@
 import { KEYCLOAK_TOKEN } from './../../../authenticators/constants';
 import { container, provideSingleton } from '@di/index';
-import { ResourceService } from '../services/ResourceService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Resource } from '../models/Resource';
 import { Path, POST, Security } from 'typescript-rest';
@@ -8,13 +7,14 @@ import { ResourceDTO } from '../dtos/ResourceDTO';
 import { UpdateResourceDTO } from '../dtos/UpdateResourceDTO';
 import { CreateResourceDTO } from '../dtos/CreatedResourceDTO';
 import { CreateResourceRO } from './RequestObject';
-import { LoggerStorage } from 'server/decorators/loggerStorage';
+import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { IResourceService } from '../interfaces';
 
 @provideSingleton()
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
-  constructor(private ResourceService: ResourceService) {
-    super(ResourceService, ResourceDTO, UpdateResourceDTO);
+  constructor(private ResourceService: IResourceService) {
+    super(ResourceService as any, ResourceDTO, UpdateResourceDTO);
     console.log(this.ResourceService);
   }
 
