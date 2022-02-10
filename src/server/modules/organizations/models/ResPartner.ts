@@ -56,7 +56,7 @@ export class ResPartner extends BaseModel<ResPartner> {
   lang?: string;
 
   @Property({ nullable: true })
-  tz?: string;
+  timezone?: string;
 
   @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
