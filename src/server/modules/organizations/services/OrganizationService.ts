@@ -13,20 +13,19 @@ import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import createSchema from '../schemas/createOrganizationSchema';
-import { IOrganizationService } from '../interfaces/IOrganizationService';
-import { IUserService } from '@modules/users/interfaces/IUserService';
-import { IOrganisationLabelService } from '../interfaces/IOrganisationLabelService';
-import { IAddressService } from '@modules/address/interfaces/IAddressService';
-import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
+import { UserService } from '@modules/users/services/UserService';
+import { OrganisationLabelService } from './OrganisationLabelService';
+import { AddressService } from '@modules/address/services/AddressService';
+import { PhoneService } from '@modules/phones/services/PhoneService';
 
-@provideSingleton(IOrganizationService)
+@provideSingleton()
 export class OrganizationService extends BaseService<Organization> {
   constructor(
     public dao: OrganizationDao,
-    public userService: IUserService,
-    public labelService: IOrganisationLabelService,
-    public adressService: IAddressService,
-    public phoneService: IPhoneService,
+    public userService: UserService,
+    public labelService: OrganisationLabelService,
+    public adressService: AddressService,
+    public phoneService: PhoneService,
     public emailService: Email,
   ) {
     super(dao);
@@ -42,7 +41,7 @@ export class OrganizationService extends BaseService<Organization> {
   public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
-      return Result.fail<number>(`Organization ${payload.name} already exists.`);
+      return Result.fail<number>(`Organization ${payload.name} already exist.`);
     }
 
     if (payload.parentId) {
@@ -62,7 +61,7 @@ export class OrganizationService extends BaseService<Organization> {
     if (payload.adminContact) {
       adminContact = await this.userService.getUserByCriteria({ adminContact: payload.adminContact });
       if (!adminContact) {
-        return Result.fail<number>(`User with id: ${payload.adminContact} does not exists.`);
+        return Result.fail<number>(`User with id: ${payload.adminContact} does not exist.`);
       }
     }
 
@@ -70,7 +69,7 @@ export class OrganizationService extends BaseService<Organization> {
     if (payload.direction) {
       direction = await this.userService.getUserByCriteria({ direction: payload.direction });
       if (!direction) {
-        return Result.fail<number>(`User with id: ${payload.direction} does not exists.`);
+        return Result.fail<number>(`User with id: ${payload.direction} does not exist.`);
       }
     }
 
@@ -119,7 +118,7 @@ export class OrganizationService extends BaseService<Organization> {
     );
 
     if (flagError) {
-      return Result.fail<number>(`User in members does not exists.`);
+      return Result.fail<number>(`User in members does not exist.`);
     }
 
     await this.update(createdOrg);
@@ -133,13 +132,13 @@ export class OrganizationService extends BaseService<Organization> {
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exists.');
+      return Result.fail<number>('The user already exist.');
     }
 
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>('The organization to add the user to does not exists.');
+      return Result.fail<number>('The organization to add the user to does not exist.');
     }
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
@@ -156,7 +155,7 @@ export class OrganizationService extends BaseService<Organization> {
     user.email = email;
     user.keycloakId = createdKeyCloakUser.id;
 
-    const savedUser = await this.userService.getInstance().create(user);
+    const savedUser = await this.userService.create(user);
 
     if (savedUser.isFailure) {
       return Result.fail<number>(savedUser.error);
@@ -166,7 +165,7 @@ export class OrganizationService extends BaseService<Organization> {
     await existingOrg.members.init();
     existingOrg.members.add(savedUser.getValue());
 
-    await this.userService.getInstance().update(savedUser.getValue());
+    await this.userService.update(savedUser.getValue());
 
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
@@ -187,7 +186,7 @@ export class OrganizationService extends BaseService<Organization> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail(`Organization with id ${orgId} does not exists.`);
+      return Result.fail(`Organization with id ${orgId} does not exist.`);
     }
 
     const members: Collection<User> = await existingOrg.members.init();

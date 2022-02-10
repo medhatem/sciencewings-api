@@ -11,9 +11,6 @@
         "removeComments": false,
         "resolveJsonModule": true
     },
-    "exclude": [
-        "./tsoa-build/*.ts"
-    ],
     "include": [
         "./**/*.ts",
         "./typings.d.ts",

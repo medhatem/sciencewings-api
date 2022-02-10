@@ -5,12 +5,11 @@ import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
 import { Organization } from '@modules/organizations/models/Organization';
-import { OrganisationLabelDao } from '@modules/organizations/daos/OrganisationLabelDao';
-import { IOrganisationLabelService } from '../interfaces/IOrganisationLabelService';
+import { OrganizationLabelDao } from '@modules/organizations/daos/OrganizationLabelDao';
 
-@provideSingleton(IOrganisationLabelService)
+@provideSingleton()
 export class OrganisationLabelService extends BaseService<OrganizationLabel> {
-  constructor(public dao: OrganisationLabelDao) {
+  constructor(public dao: OrganizationLabelDao) {
     super(dao);
   }
 
