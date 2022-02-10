@@ -1,6 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from '../../organizations/models/Organization';
 
@@ -31,7 +30,7 @@ export class ResourceCalendar extends BaseModel<ResourceCalendar> {
   hoursPerDay?: number;
 
   @Property()
-  tz!: string;
+  timezone!: string;
 
   @Property({ nullable: true })
   twoWeeksCalendar?: boolean;

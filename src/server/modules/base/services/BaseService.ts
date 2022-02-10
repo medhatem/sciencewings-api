@@ -25,8 +25,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   @safeGuard()
-  public async get(id: number): Promise<any> {
-    return await this.dao.get(id);
+  public async get(id: number): Promise<Result<any>> {
+    return Result.ok<any>(await this.dao.get(id));
   }
 
   @log()
