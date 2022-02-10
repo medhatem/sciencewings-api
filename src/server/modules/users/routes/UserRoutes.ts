@@ -12,7 +12,6 @@ import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
-import { UserDetailsRO } from './RequstObjects';
 import { IUserService } from '../interfaces/IUserService';
 
 @provideSingleton()

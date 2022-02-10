@@ -6,15 +6,16 @@ import { safeGuard } from '../../../decorators/safeGuard';
 import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
 import { Organization } from '@modules/organizations/models/Organization';
 import { OrganizationLabelDao } from '@modules/organizations/daos/OrganizationLabelDao';
+import { IOrganizationLabelService } from '../interfaces/IOrganizationLabelService';
 
-@provideSingleton()
-export class OrganisationLabelService extends BaseService<OrganizationLabel> {
+@provideSingleton(IOrganizationLabelService)
+export class OrganisationLabelService extends BaseService<OrganizationLabel> implements IOrganizationLabelService {
   constructor(public dao: OrganizationLabelDao) {
     super(dao);
   }
 
-  static getInstance(): OrganisationLabelService {
-    return container.get(OrganisationLabelService);
+  static getInstance(): IOrganizationLabelService {
+    return container.get(IOrganizationLabelService);
   }
 
   @log()

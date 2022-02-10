@@ -2,34 +2,22 @@ import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
-<<<<<<< HEAD
-import { EmailMessage } from '../../../types/types';
-import { IOrganizationService } from '@modules/organizations/interfaces/IOrganizationService';
-import { IUserService } from '../interfaces/IUserService';
+import { IUserService } from '@modules/users/interfaces/IUserService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { PhoneService } from './PhoneService';
-=======
-import { Keycloak } from '@sdks/keycloak';
-import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { PhoneService } from '../../phones/services/PhoneService';
->>>>>>> 9e9c991981c667f27603bed8baca2314c852749a
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
+import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
   constructor(
     public dao: UserDao,
-    public phoneSerice: PhoneService,
-<<<<<<< HEAD
-    public organizationService: IOrganizationService,
-=======
->>>>>>> 9e9c991981c667f27603bed8baca2314c852749a
+    public phoneSerice: IPhoneService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
   ) {
@@ -86,7 +74,7 @@ export class UserService extends BaseService<User> implements IUserService {
     try {
       createdUser = await this.dao.create(user);
     } catch (error) {
-      return Result.fail<number>(error);
+      return Result.fail(error);
     }
 
     return Result.ok<number>(createdUser.id);
@@ -132,5 +120,30 @@ export class UserService extends BaseService<User> implements IUserService {
     });
 
     return Result.ok<string>('Password reset successful');
+  }
+
+  @log()
+  @safeGuard()
+  async create(user: User): Promise<Result<User>> {
+    let createdUser;
+    try {
+      createdUser = await this.dao.create(user);
+    } catch (error) {
+      return Result.fail(error);
+    }
+    return Result.ok<User>(createdUser);
+  }
+
+  @log()
+  @safeGuard()
+  async update(user: User): Promise<Result<User>> {
+    let newUser = await this.dao.get(user.id);
+    if (!newUser) return Result.fail(`User with id ${user.id} does not exist.`);
+    try {
+      newUser = await this.dao.update(user);
+    } catch (error) {
+      return Result.fail(error);
+    }
+    return Result.ok<User>(newUser);
   }
 }

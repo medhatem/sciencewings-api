@@ -1,12 +1,10 @@
 import { ACCESS_TOKEN_HEADER } from './constants';
 import { IUserService } from '@modules/users/interfaces/IUserService';
-import { Unauthorized } from '@errors/Unauthorized';
 import { Result } from '@utils/Result';
 import { UserRequest } from '../types/UserRequest';
 import fetch from 'node-fetch';
 import { getConfig } from '../configuration/Configuration';
 import { provideSingleton } from '../di';
-import { UserService } from '@modules/users/services/UserService';
 
 @provideSingleton()
 export class UserExctractionAndValidation {

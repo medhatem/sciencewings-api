@@ -1,3 +1,3 @@
 export * from './UserService';
-export * from './PhoneService';
+export * from '@modules/phones/services/PhoneService';
 export * from './generateEmail';

@@ -7,33 +7,33 @@ import { Organization } from '@modules/organizations/models/Organization';
 import { OrganizationDao } from '../daos/OrganizationDao';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
-import { UserDao } from '@modules/users/daos/UserDao';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import createSchema from '../schemas/createOrganizationSchema';
-import { UserService } from '@modules/users/services/UserService';
-import { OrganisationLabelService } from './OrganisationLabelService';
-import { AddressService } from '@modules/address/services/AddressService';
-import { PhoneService } from '@modules/phones/services/PhoneService';
+import { getConfig } from './../../../configuration/Configuration';
+import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
+import { IAddressService } from '@modules/address/interfaces/IAddressService';
+import { IUserService } from '@modules/users/interfaces';
+import { IOrganizationLabelService } from '@modules/organizations/interfaces/IOrganizationLabelService';
 
 @provideSingleton(IOrganizationService)
-export class OrganizationService extends BaseService<Organization> {
+export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
-    public userService: UserService,
-    public labelService: OrganisationLabelService,
-    public adressService: AddressService,
-    public phoneService: PhoneService,
+    public userService: IUserService,
+    public labelService: IOrganizationLabelService,
+    public adressService: IAddressService,
+    public phoneService: IPhoneService,
     public emailService: Email,
   ) {
     super(dao);
   }
 
-  static getInstance(): OrganizationService {
-    return container.get(OrganizationService);
+  static getInstance(): IOrganizationService {
+    return container.get(IOrganizationService);
   }
 
   @log()
@@ -60,7 +60,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     let adminContact;
     if (payload.adminContact) {
-      adminContact = await this.userService.getUserByCriteria({ adminContact: payload.adminContact });
+      adminContact = await this.userService.getUserByCriteria({ id: payload.adminContact });
       if (!adminContact) {
         return Result.fail<number>(`User with id: ${payload.adminContact} does not exist.`);
       }
@@ -68,7 +68,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     let direction;
     if (payload.direction) {
-      direction = await this.userService.getUserByCriteria({ direction: payload.direction });
+      direction = await this.userService.getUserByCriteria({ id: payload.direction });
       if (!direction) {
         return Result.fail<number>(`User with id: ${payload.direction} does not exist.`);
       }
@@ -128,11 +128,18 @@ export class OrganizationService extends BaseService<Organization> {
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Collection<User>>> {
+  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
+    const existingUser = await this.keycloak
+      .getAdminClient()
+      .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
+    if (existingUser.length > 0) {
+      return Result.fail<number>('The user already exist.');
+    }
+
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<Collection<User>>(`Organization with id ${orgId} does not exist.`);
+      return Result.fail<number>('The organization to add the user to does not exist.');
     }
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
