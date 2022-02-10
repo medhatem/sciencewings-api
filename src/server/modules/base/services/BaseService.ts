@@ -2,17 +2,18 @@ import { AssignOptions, wrap } from '@mikro-orm/core';
 
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@modules/base/models/BaseModel';
+import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@sdks/keycloak';
 import { Logger } from '../../../utils/Logger';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
-import { ServerError } from '@errors/ServerError';
-import { provideSingleton } from '../../../di';
 import { Result } from '@utils/Result';
+import { ServerError } from '@errors/ServerError';
 import { log } from '../../../decorators/log';
+import { provideSingleton } from '../../../di';
 import { safeGuard } from '../../../decorators/safeGuard';
 
-@provideSingleton()
-export class BaseService<T extends BaseModel<T>> {
+@provideSingleton(IBaseService)
+export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   public logger: Logger;
   constructor(public dao: BaseDao<T>, public keycloak: Keycloak = Keycloak.getInstance()) {
     this.logger = Logger.getInstance();
