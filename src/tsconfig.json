@@ -2,7 +2,6 @@
     "compileOnSave": true,
     "compilerOptions": {
         "baseUrl": ".",
-        "outDir": "../dist",
         "target": "esnext",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
@@ -17,19 +16,40 @@
         "sourceMap": true,
         "pretty": true,
         "paths": {
-            "@/*": ["src/*"],
-            "@di/*": ["server/di/*"],
-            "@types/*": ["server/types/*"],
-            "@errors/*": ["server/errors/*"],
-            "@interface/*": ["server/interface/*"],
-            "@models/*": ["server/models/*"],
-            "@routes/*": ["server/routes/*"],
-            "@service/*": ["server/service/*"],
-            "@dao/*": ["server/dao/*"],
-            "@sdks/*": ["server/sdks/*"],
-            "@modules/*": ["server/modules/*"],
-            "@utils/*": ["server/utils/*"],
-        },
+            "@di/*": [
+                "server/di/*"
+            ],
+            "@types/*": [
+                "server/types/*"
+            ],
+            "@errors/*": [
+                "server/errors/*"
+            ],
+            "@interface/*": [
+                "server/interface/*"
+            ],
+            "@models/*": [
+                "server/models/*"
+            ],
+            "@routes/*": [
+                "server/routes/*"
+            ],
+            "@service/*": [
+                "server/service/*"
+            ],
+            "@dao/*": [
+                "server/dao/*"
+            ],
+            "@sdks/*": [
+                "server/sdks/*"
+            ],
+            "@modules/*": [
+                "server/modules/*"
+            ],
+            "@utils/*": [
+                "server/utils/*"
+            ]
+        }
     },
     "exclude": [
         "node_modules"

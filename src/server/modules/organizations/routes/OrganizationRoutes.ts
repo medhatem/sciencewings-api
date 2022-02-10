@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@di/index';
-import { OrganizationService } from '../services/OrganizationService';
+import { OrganizationService } from '@modules/organizations/services/OrganizationService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Organization } from '@modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
@@ -10,8 +10,7 @@ import { OrganizationDTO } from '@modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@modules/organizations/dtos/UpdateOrganizationDTO';
-import { CreateOrganizationDTO } from '../../organizations/dtos/CreateOrganizationDTO';
-import { InviteUserDTO } from '../../organizations/dtos/InviteUserDTO';
+import { InviteUserDTO } from '@modules/organizations/dtos/InviteUserDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -31,14 +30,14 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
-  ): Promise<CreateOrganizationDTO> {
+  ): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
-      return new CreateOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreateOrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+    return new OrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -73,9 +72,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.getMembers(payload);
 
     if (result.isFailure) {
-      return new CreateOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreateOrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 201 } });
+    return new OrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 201 } });
   }
 }
