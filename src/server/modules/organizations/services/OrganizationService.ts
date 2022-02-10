@@ -204,7 +204,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     const _organizations = await user.getValue().organizations.init();
-    const organizations = _organizations.toArray().map((org) => {
+    const organizations = _organizations.toArray().map((org: Organization) => {
       return { id: org.id, name: org.name };
     });
     return Result.ok<any>(organizations);
