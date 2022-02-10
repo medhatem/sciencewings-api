@@ -1,38 +1,39 @@
-import { getConfig } from '../../../configuration/Configuration';
-import { Collection } from '@mikro-orm/core';
-import { User } from '@modules/users/models/User';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
-import { CreateOrganizationRO } from '@modules/organizations/routes/RequestObject';
-import { OrganizationDao } from '@modules/organizations/daos/OrganizationDao';
+import { Collection } from '@mikro-orm/core';
+import { CreateOrganizationRO } from '../routes/RequestObject';
+import { IOrganizationService } from '../interfaces/IOrganizationService';
 import { Organization } from '@modules/organizations/models/Organization';
+import { OrganizationDao } from '../daos/OrganizationDao';
 import { Result } from '@utils/Result';
+import { User } from '@modules/users/models/User';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { EmailMessage } from '../../../types/types';
 import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import createSchema from '../schemas/createOrganizationSchema';
-import { UserService } from '@modules/users/services/UserService';
-import { OrganisationLabelService } from './OrganisationLabelService';
-import { AddressService } from '@modules/address/services/AddressService';
-import { PhoneService } from '@modules/phones/services/PhoneService';
+import { getConfig } from './../../../configuration/Configuration';
+import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
+import { IAddressService } from '@modules/address/interfaces/IAddressService';
+import { IUserService } from '@modules/users/interfaces';
+import { IOrganizationLabelService } from '@modules/organizations/interfaces/IOrganizationLabelService';
 
-@provideSingleton()
-export class OrganizationService extends BaseService<Organization> {
+@provideSingleton(IOrganizationService)
+export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
-    public userService: UserService,
-    public labelService: OrganisationLabelService,
-    public adressService: AddressService,
-    public phoneService: PhoneService,
+    public userService: IUserService,
+    public labelService: IOrganizationLabelService,
+    public adressService: IAddressService,
+    public phoneService: IPhoneService,
     public emailService: Email,
   ) {
     super(dao);
   }
 
-  static getInstance(): OrganizationService {
-    return container.get(OrganizationService);
+  static getInstance(): IOrganizationService {
+    return container.get(IOrganizationService);
   }
 
   @log()
@@ -59,7 +60,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     let adminContact;
     if (payload.adminContact) {
-      adminContact = await this.userService.getUserByCriteria({ adminContact: payload.adminContact });
+      adminContact = await this.userService.getUserByCriteria({ id: payload.adminContact });
       if (!adminContact) {
         return Result.fail<number>(`User with id: ${payload.adminContact} does not exist.`);
       }
@@ -67,7 +68,7 @@ export class OrganizationService extends BaseService<Organization> {
 
     let direction;
     if (payload.direction) {
-      direction = await this.userService.getUserByCriteria({ direction: payload.direction });
+      direction = await this.userService.getUserByCriteria({ id: payload.direction });
       if (!direction) {
         return Result.fail<number>(`User with id: ${payload.direction} does not exist.`);
       }

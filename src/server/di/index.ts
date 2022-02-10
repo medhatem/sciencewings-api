@@ -25,7 +25,7 @@ export function provideSingleton(identifier?: interfaces.ServiceIdentifier<any>)
       .to(target)
       .inSingletonScope();
 
-    return injectable()(target);
+    return (injectable() as any)(target);
   };
 }
 
@@ -38,7 +38,7 @@ export function provideSingleton(identifier?: interfaces.ServiceIdentifier<any>)
 export function provide(identifier?: interfaces.ServiceIdentifier<any>): (target: any) => any {
   return (target: any): any => {
     container.bind(identifier || target).to(target);
-    return injectable()(target);
+    return (injectable() as any)(target);
   };
 }
 

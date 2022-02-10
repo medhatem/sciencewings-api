@@ -4,7 +4,6 @@ import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
-import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
@@ -13,12 +12,13 @@ import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
+import { IUserService } from '../interfaces/IUserService';
 
 @provideSingleton()
 @Path('users')
 export class UserRoutes extends BaseRoutes<User> {
-  constructor(private userService: UserService) {
-    super(userService, UserDTO, UpdateUserDTO);
+  constructor(private userService: IUserService) {
+    super(userService as any, UserDTO, UpdateUserDTO);
   }
 
   static getInstance(): UserRoutes {

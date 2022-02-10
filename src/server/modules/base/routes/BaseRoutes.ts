@@ -117,7 +117,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
     const currentEntity = await this.service.get(id);
     if (!currentEntity) {
       return new BaseRequestDTO().serialize({
-        error: { statusCode: 404, userId: `Entity with id ${id} does not existe` },
+        error: { statusCode: 404, userId: `Entity with id ${id} does not exist` },
       });
     }
     const result = await this.service.remove(id);
