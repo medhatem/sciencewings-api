@@ -119,8 +119,4 @@ export class UserRoutes extends BaseRoutes<User> {
 
     return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
   }
-
-  @GET
-  @Path('te')
-  public async te(): Promise<any> {}
 }
