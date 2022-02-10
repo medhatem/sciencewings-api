@@ -1,14 +1,14 @@
 import { ACCESS_TOKEN_HEADER } from './constants';
-import { IUserService } from '@modules/users/interfaces/IUserService';
 import { Result } from '@utils/Result';
 import { UserRequest } from '../types/UserRequest';
 import fetch from 'node-fetch';
 import { getConfig } from '../configuration/Configuration';
 import { provideSingleton } from '../di';
+import { UserService } from '@modules/users/services/UserService';
 
 @provideSingleton()
 export class UserExctractionAndValidation {
-  constructor(private userService: IUserService) {}
+  constructor(private userService: UserService) {}
   /**
    *
    * Calls keycloak to validate whether the token is valid or not
