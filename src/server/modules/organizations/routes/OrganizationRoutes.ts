@@ -1,15 +1,16 @@
 import { container, provideSingleton } from '@di/index';
-import { OrganizationService } from '../services/OrganizationService';
+import { OrganizationService } from '@modules/organizations/services/OrganizationService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
-import { Organization } from '../models/Organization';
+import { Organization } from '@modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
-import { CreateOrganizationRO } from './RequestObject';
+import { CreateOrganizationRO, UserInviteToOrgRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
-import { CreatedOrganizationDTO } from '../dtos/createdOrganizationDTO';
-import { OrganizationDTO } from '../dtos/OrganizationDTO';
+import { OrganizationDTO } from '@modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
-import { UpdateOrganizationDTO } from '../dtos/UpdateOrganizationDTO';
+import { Response } from 'typescript-rest-swagger';
+import { UpdateOrganizationDTO } from '@modules/organizations/dtos/UpdateOrganizationDTO';
+import { InviteUserDTO } from '@modules/organizations/dtos/InviteUserDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -29,16 +30,40 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
-  ): Promise<CreatedOrganizationDTO> {
+  ): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
-      return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreatedOrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+    return new OrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
   }
 
+  /**
+   * invite a user to an organization
+   * creates the newly invited user in keycloak
+   *
+   * @param payload
+   */
+  @POST
+  @Path('inviteUserToOrganization')
+  @Response<InviteUserDTO>(201, 'User Registred Successfully')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
+    const result = await this.OrganizationService.inviteUserByEmail(payload.email, payload.organizationId);
+
+    if (result.isFailure) {
+      return new InviteUserDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new InviteUserDTO().serialize({
+      body: { statusCode: 201, userId: result.getValue() },
+    });
+  }
   @GET
   @Path('getMembers/:id')
   @Security('', KEYCLOAK_TOKEN)
@@ -47,9 +72,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.getMembers(payload);
 
     if (result.isFailure) {
-      return new CreatedOrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreatedOrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 201 } });
+    return new OrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 201 } });
   }
 }

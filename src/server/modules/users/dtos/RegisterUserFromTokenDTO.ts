@@ -26,15 +26,6 @@ export class RegisterUserFromTokenDTO extends BaseRequestDTO {
 }
 
 @dto()
-export class InviteUserDTO extends BaseRequestDTO {
-  @include()
-  body?: UserIdDTO = new UserIdDTO();
-
-  @include()
-  error?: BaseErrorDTO = new ErrorDTO();
-}
-
-@dto()
 export class ResetPasswordDTO extends BaseRequestDTO {
   @include()
   body?: ResetDTO = new ResetDTO();

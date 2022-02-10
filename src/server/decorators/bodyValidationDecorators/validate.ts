@@ -1,7 +1,6 @@
 import * as Joi from 'joi';
-
 import { IBase } from '../../interface';
-import { ValidatonError } from '../../errors/ValidationError';
+import { Result } from '@utils/Result';
 
 /**
  * validates the request body against a given Joi schema
@@ -20,7 +19,7 @@ export function validate<T extends IBase | object>(
       try {
         await schema.validateAsync(bodyToValidate);
       } catch (error) {
-        throw new ValidatonError(error.message);
+        return Result.fail<any>(error.message);
       }
       return originalFunction.apply(this, args);
     };

@@ -52,7 +52,7 @@ definitions:
           - docker tag staging_api registry.heroku.com/sciencewings-api-staging/web
           - docker push registry.heroku.com/sciencewings-api-staging/web
           - heroku container:release web -a sciencewings-api-staging
-    - step: &chaching
+    - step: &caching
         caches:
           - node
         script:
@@ -63,14 +63,14 @@ definitions:
 
 pipelines:
   default:
-    - step: *chaching
+    - step: *caching
     #- step: *install
     - step: *build
     - step: *lint
     - step: *generateSwagger
   branches:
     dev:
-      - step: *chaching
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -79,7 +79,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     master:
-      - step: *chaching
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -87,13 +87,13 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     feature/*:
-      - step: *chaching
+      - step: *caching
       #- step: *install
       - step: *build
       - step: *lint
       - step: *generateSwagger
     release/*:
-      - step: *chaching
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -102,7 +102,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     hotfix/*:
-      - step: *chaching
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -111,7 +111,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     bugfix/*:
-      - step: *chaching
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint

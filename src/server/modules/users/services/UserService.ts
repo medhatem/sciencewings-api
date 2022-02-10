@@ -1,17 +1,13 @@
 import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
-import { EmailMessage } from '../../../types/types';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { OrganizationService } from '@modules/organizations/services/OrganizationService';
-import { PhoneService } from './PhoneService';
+import { PhoneService } from '../../phones/services/PhoneService';
 import { Result } from '@utils/Result';
 import { User } from '@modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
-import generateEmail from './generateEmail';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
@@ -21,7 +17,6 @@ export class UserService extends BaseService<User> {
   constructor(
     public dao: UserDao,
     public phoneSerice: PhoneService,
-    public organizationService: OrganizationService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
   ) {
@@ -41,7 +36,7 @@ export class UserService extends BaseService<User> {
     const userDetail = this.wrapEntity(this.dao.model, payload);
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
-      return Result.fail<number>(`User with id ${userId} dose not existe`);
+      return Result.fail<number>(`User with id ${userId} does not existe`);
     }
 
     const user: User = {
@@ -91,58 +86,9 @@ export class UserService extends BaseService<User> {
    */
   @log()
   @safeGuard()
-  async getUserByCriteria(criteria: { [key: string]: any }) {
-    return await this.dao.getByCriteria(criteria);
-  }
-
-  @log()
-  @safeGuard()
-  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
-    const existingUser = await this.keycloak
-      .getAdminClient()
-      .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
-    if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exists.');
-    }
-
-    const existingOrg = await this.organizationService.get(orgId);
-
-    if (!existingOrg) {
-      return Result.fail<number>('The organization to add the user to does not exist.');
-    }
-
-    const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
-      email,
-      firstName: '',
-      lastName: '',
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
-
-    //save created keycloak user in the database
-    const user = this.dao.model;
-    user.firstname = '';
-    user.lastname = '';
-    user.email = email;
-    user.keycloakId = createdKeyCloakUser.id;
-    const savedUser = await this.dao.create(user);
-
-    // add the invited user to the organization
-    await existingOrg.users.init();
-    existingOrg.users.add(savedUser);
-
-    await this.dao.update(savedUser);
-
-    const emailMessage: EmailMessage = {
-      from: this.emailService.from,
-      to: email,
-      text: 'Sciencewings - reset password',
-      html: generateEmail(existingOrg.name),
-      subject: 'Sciencewings - reset password',
-    };
-
-    this.emailService.sendEmail(emailMessage);
-
-    return Result.ok<number>(savedUser.id);
+  async getUserByCriteria(criteria: { [key: string]: any }): Promise<Result<User>> {
+    const user = await this.dao.getByCriteria(criteria);
+    return Result.ok<User>(user);
   }
 
   /**
