@@ -1,6 +1,3 @@
-import { OrganizationService } from '@modules/organizations/services/OrganizationService';
-import { ResourceCalendarService } from './ResourceCalendarService';
-import { UserService } from './../../users/services/UserService';
 import { Result } from '@utils/Result';
 import { container, provideSingleton } from '@di/index';
 import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
@@ -12,20 +9,23 @@ import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import { ResourceCalendar } from '../models/ResourceCalendar';
+import { IResourceCalendarService, IResourceService } from '../interfaces';
+import { IUserService } from '@modules/users/interfaces';
+import { IOrganizationService } from '@modules/organizations/interfaces';
 
-@provideSingleton()
+@provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
   constructor(
     public dao: ResourceDao,
-    public userService: UserService,
-    public organisationService: OrganizationService,
-    public resourceCalendarService: ResourceCalendarService,
+    public userService: IUserService,
+    public organisationService: IOrganizationService,
+    public resourceCalendarService: IResourceCalendarService,
   ) {
     super(dao);
   }
 
-  static getInstance(): ResourceService {
-    return container.get(ResourceService);
+  static getInstance(): IResourceService {
+    return container.get(IResourceService);
   }
 
   @log()
@@ -36,7 +36,7 @@ export class ResourceService extends BaseService<Resource> {
     let organization = null;
 
     if (payload.user) {
-      const _user = await this.userService.get(payload.user);
+      const _user = await this.userService.getUserByCriteria({ id: payload.user });
       if (!_user) {
         return Result.fail<number>(`User with id ${payload.user} does not exist.`);
       }

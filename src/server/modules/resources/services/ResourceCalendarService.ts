@@ -1,4 +1,4 @@
-import { OrganizationService } from '@modules/organizations/services/OrganizationService';
+import { IOrganizationService } from '@modules/organizations/interfaces/IOrganizationService';
 import { Result } from '@utils/Result';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
@@ -7,17 +7,18 @@ import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
 import { ResourceCalendar } from '../models/ResourceCalendar';
 import { ResourceCalendarDao } from '../daos/ResourceCalendarDAO';
-import { validate } from 'server/decorators/bodyValidationDecorators/validate';
+import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import { ResourceCalendarSchema } from '../schemas/CreateResourceSchema';
+import { IResourceCalendarService } from '../interfaces';
 
-@provideSingleton()
+@provideSingleton(IResourceCalendarService)
 export class ResourceCalendarService extends BaseService<ResourceCalendar> {
-  constructor(public dao: ResourceCalendarDao, public organisationService: OrganizationService) {
+  constructor(public dao: ResourceCalendarDao, public organisationService: IOrganizationService) {
     super(dao);
   }
 
-  static getInstance(): ResourceCalendarService {
-    return container.get(ResourceCalendarService);
+  static getInstance(): IResourceCalendarService {
+    return container.get(IResourceCalendarService);
   }
 
   @log()
@@ -25,17 +26,19 @@ export class ResourceCalendarService extends BaseService<ResourceCalendar> {
   @validate(ResourceCalendarSchema)
   public async createResourceCalendar(payload: CreateResourceCalendarRO): Promise<Result<ResourceCalendar>> {
     let org = null;
+    let organization = null;
     if (payload.organization) {
       org = await this.organisationService.get(payload.organization);
       if (!org) {
         return Result.fail(`Organization with id ${payload.organization} does not exist.`);
       }
+      organization = await org.getValue();
     }
 
     const resourceCalendar: ResourceCalendar = {
       id: null,
       ...payload,
-      organization: await org.getValue(),
+      organization,
     };
 
     const createdResourceCalendar = await this.dao.create(resourceCalendar);

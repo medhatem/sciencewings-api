@@ -1,5 +1,4 @@
 import { container, provideSingleton } from '@di/index';
-import { OrganizationService } from '@modules/organizations/services/OrganizationService';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Organization } from '@modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
@@ -11,12 +10,13 @@ import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@modules/organizations/dtos/UpdateOrganizationDTO';
 import { InviteUserDTO } from '@modules/organizations/dtos/InviteUserDTO';
+import { IOrganizationService } from '../interfaces/IOrganizationService';
 
 @provideSingleton()
 @Path('organization')
 export class OrganizationRoutes extends BaseRoutes<Organization> {
-  constructor(private OrganizationService: OrganizationService) {
-    super(OrganizationService, OrganizationDTO, UpdateOrganizationDTO);
+  constructor(private OrganizationService: IOrganizationService) {
+    super(OrganizationService as any, OrganizationDTO, UpdateOrganizationDTO);
   }
 
   static getInstance(): OrganizationRoutes {
