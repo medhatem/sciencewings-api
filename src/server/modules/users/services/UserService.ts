@@ -2,7 +2,6 @@ import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
-import { IUserService } from '../interfaces/IUserService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { PhoneService } from '../../phones/services/PhoneService';
@@ -13,7 +12,7 @@ import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 
-@provideSingleton(IUserService)
+@provideSingleton()
 export class UserService extends BaseService<User> {
   constructor(
     public dao: UserDao,
