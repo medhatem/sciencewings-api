@@ -35,6 +35,11 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   @log()
+  async getAllByCriteria(criteria: { [key: string]: any }): Promise<T[]> {
+    return (this.repository as any).find(criteria);
+  }
+
+  @log()
   public async getAll(): Promise<T[]> {
     this.logger.info(`${this.model.constructor.name}s`);
     return (this.repository as any).findAll();

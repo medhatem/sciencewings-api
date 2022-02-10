@@ -77,4 +77,18 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new OrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 201 } });
   }
+
+  @GET
+  @Path('getUserOrganizations/:id')
+  // @Security('', KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async getUserOrganizations(@PathParam('id') payload: number) {
+    const result = await this.OrganizationService.getUserOrganizations(payload);
+
+    if (result.isFailure) {
+      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new OrganizationDTO().serialize({ body: { organizations: result.getValue(), statusCode: 201 } });
+  }
 }

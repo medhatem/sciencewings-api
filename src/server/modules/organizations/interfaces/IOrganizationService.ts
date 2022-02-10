@@ -8,4 +8,5 @@ export abstract class IOrganizationService extends IBaseService<any> {
   createOrganization: (payload: CreateOrganizationRO, userId: number) => Promise<Result<number>>;
   inviteUserByEmail: (email: string, orgId: number) => Promise<Result<number>>;
   getMembers: (orgId: number) => Promise<Result<Collection<User>>>;
+  getUserOrganizations: (userId: number) => Promise<Result<any>>;
 }

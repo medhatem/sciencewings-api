@@ -193,4 +193,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const members: Collection<User> = await existingOrg.members.init();
     return Result.ok<Collection<User>>(members);
   }
+
+  @log()
+  @safeGuard()
+  public async getUserOrganizations(userId: number): Promise<Result<any>> {
+    const user = await this.userService.getUserByCriteria({ id: userId });
+
+    if (user.isFailure) {
+      return Result.fail(user.error);
+    }
+
+    const _organizations = await user.getValue().organizations.init();
+    const organizations = _organizations.toArray().map((org) => {
+      return { id: org.id, name: org.name };
+    });
+    return Result.ok<any>(organizations);
+  }
 }
