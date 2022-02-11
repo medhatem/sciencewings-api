@@ -91,7 +91,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('getUserOrganizations/:id')
-  // @Security('', KEYCLOAK_TOKEN)
+  @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async getUserOrganizations(@PathParam('id') payload: number) {
     const result = await this.OrganizationService.getUserOrganizations(payload);
