@@ -85,7 +85,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   }
 
   /**
-   * retrive organizations that has that user
+   * retrieve all the organizations a given user is a member of
    *
    * @param id: user id
    */
