@@ -1,4 +1,4 @@
-import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { KeycloakIdRO, ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Email } from '@utils/Email';
@@ -145,5 +145,15 @@ export class UserService extends BaseService<User> implements IUserService {
       return Result.fail(error);
     }
     return Result.ok<User>(newUser);
+  }
+
+  @log()
+  @safeGuard()
+  async getUserByKeycloakId(payload: KeycloakIdRO): Promise<Result<User>> {
+    const user = await this.dao.getByCriteria({ keycloakId: payload.keycloakId });
+    if (!user) {
+      return Result.fail(`User with KCID ${payload.keycloakId} does not exist.`);
+    }
+    return Result.ok<User>(user);
   }
 }
