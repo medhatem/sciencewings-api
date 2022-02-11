@@ -154,9 +154,6 @@ export class UserService extends BaseService<User> implements IUserService {
     if (!user) {
       return Result.fail(`User with KCID ${payload.keycloakId} does not exist.`);
     }
-    delete user.createdAt;
-    delete user.updatedAt;
-
     return Result.ok<User>(user);
   }
 }

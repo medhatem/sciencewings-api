@@ -77,6 +77,11 @@ export class UserRoutes extends BaseRoutes<User> {
     });
   }
 
+  /**
+   * Update user details
+   * Must be authentificated
+   * @param payload: User object
+   */
   @PUT
   @Path('updateUserDetail')
   @Security([], KEYCLOAK_TOKEN)
@@ -94,6 +99,10 @@ export class UserRoutes extends BaseRoutes<User> {
     return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
   }
 
+  /**
+   * Get user By KeycloakId
+   * @param payload: {keycloakId: string}
+   */
   @GET
   @Path('getUserByKeycloakId')
   @LoggerStorage()
