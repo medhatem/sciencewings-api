@@ -1,30 +1,30 @@
 import { Entity, Index, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@modules/base/models/BaseModel';
 import { Contract } from './Contract';
-import { Department } from './Department';
+import { Group } from './Group';
 import { DepartureReason } from './DepartureReason';
 import { Job } from './Job';
-import { Organization } from '../../organizations/models/Organization';
-import { ResCountry } from '../../organizations/models/ResCountry';
-import { ResPartner } from '../../organizations/models/ResPartner';
-import { ResPartnerBank } from '../../organizations/models/ResPartnerBank';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { Resource } from '../../resources/models/Resource';
-import { User } from '../../users/models/User';
+import { Organization } from '@modules/organizations/models/Organization';
+import { ResCountry } from '@modules/organizations/models/ResCountry';
+import { ResPartner } from '@modules/organizations/models/ResPartner';
+import { ResPartnerBank } from '@modules/organizations/models/ResPartnerBank';
+import { ResourceCalendar } from '@modules/resources/models/ResourceCalendar';
+import { Resource } from '@modules/resources/models/Resource';
+import { User } from '@modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 
 @provideSingleton()
 @Entity()
 @Unique({ name: 'hr_employee_user_uniq', properties: ['organization', 'user'] })
-export class Employee extends BaseModel<Employee> {
+export class Membre extends BaseModel<Membre> {
   constructor() {
     super();
   }
 
-  static getInstance(): Employee {
-    return container.get(Employee);
+  static getInstance(): Membre {
+    return container.get(Membre);
   }
 
   @PrimaryKey()
@@ -44,18 +44,14 @@ export class Employee extends BaseModel<Employee> {
   })
   resourceCalendar?: ResourceCalendar;
 
-  @Index({ name: 'hr_employee_message_main_attachment_id_index' })
-  @Property({ nullable: true })
-  messageMainAttachmentId?: number;
-
   @Property({ nullable: true })
   name?: string;
 
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
-  department?: Department;
+  @ManyToOne({ entity: () => Group, onDelete: 'set null', nullable: true })
+  group?: Group;
 
   @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
   job?: Job;
@@ -81,11 +77,11 @@ export class Employee extends BaseModel<Employee> {
   @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
 
-  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
-  parent?: Employee;
+  @ManyToOne({ entity: () => Membre, onDelete: 'set null', nullable: true })
+  parent?: Membre;
 
-  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
-  coach?: Employee;
+  @ManyToOne({ entity: () => Membre, onDelete: 'set null', nullable: true })
+  coach?: Membre;
 
   @Property()
   employeeType!: string;

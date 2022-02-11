@@ -2,4 +2,4 @@ import { BaseRequestDTO } from '@modules/base/dtos/BaseDTO';
 import { dto } from 'dto-mapper';
 
 @dto()
-export class UpdateContractDTO extends BaseRequestDTO {}
+export class UpdateMembreDTO extends BaseRequestDTO {}
