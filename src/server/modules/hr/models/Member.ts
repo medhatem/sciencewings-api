@@ -1,18 +1,18 @@
 import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
-
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
 import { Job } from './Job';
 import { Organization } from '@modules/organizations/models/Organization';
 import { ResCountry } from '@modules/organizations/models/ResCountry';
-import { ResPartner } from '@modules/organizations/models/ResPartner';
 import { ResPartnerBank } from '@modules/organizations/models/ResPartnerBank';
 import { ResourceCalendar } from '@modules/resources/models/ResourceCalendar';
 import { Resource } from '@modules/resources/models/Resource';
 import { User } from '@modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
+import { Phone } from '@modules/phones/models/Phone';
+import { Address } from '../../..';
 
 @provideSingleton()
 @Entity()
@@ -58,14 +58,14 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   jobTitle?: string;
 
-  @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true })
-  address?: ResPartner;
+  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
+  address?: Address;
 
   @Property({ nullable: true })
-  workPhone?: string;
+  workPhone?: Phone;
 
   @Property({ nullable: true })
-  mobilePhone?: string;
+  mobilePhone?: Phone;
 
   @Property({ nullable: true })
   workEmail?: string;
@@ -85,8 +85,8 @@ export class Member extends BaseModel<Member> {
   @Property()
   memberType!: string;
 
-  @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true })
-  addressHome?: ResPartner;
+  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
+  addressHome?: Address;
 
   @ManyToOne({ entity: () => ResCountry, onDelete: 'set null', nullable: true })
   country?: ResCountry;
@@ -155,7 +155,7 @@ export class Member extends BaseModel<Member> {
   emergencyContact?: string;
 
   @Property({ nullable: true })
-  emergencyPhone?: string;
+  emergencyPhone?: Phone;
 
   @Property({ columnType: 'text', nullable: true })
   notes?: string;

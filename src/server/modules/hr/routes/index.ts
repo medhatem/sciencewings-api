@@ -1,2 +1,1 @@
-export * from './Member';
-export * from './Contract';
+export * from './MemberRoutes';

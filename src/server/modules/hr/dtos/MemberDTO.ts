@@ -1,5 +1,8 @@
 import { BaseRequestDTO } from '@modules/base/dtos/BaseDTO';
-import { dto } from 'dto-mapper';
+import { dto, include } from 'dto-mapper';
 
 @dto()
-export class MemberDTO extends BaseRequestDTO {}
+export class MemberDTO extends BaseRequestDTO {
+  @include()
+  id!: number;
+}

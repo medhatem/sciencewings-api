@@ -38,6 +38,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @log()
   @safeGuard()
   public async create(entry: T): Promise<Result<any>> {
+    console.log({ entry });
+
     return Result.ok<any>(this.dao.create(entry));
   }
 

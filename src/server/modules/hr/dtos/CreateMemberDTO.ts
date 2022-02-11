@@ -6,8 +6,9 @@ class BaseBodyGetDTO extends BaseBodyDTO {
   @include()
   id: number;
 }
+
 @dto()
-export class UpdateMemberDTO extends BaseRequestDTO {
+export class CreateMemberDTO extends BaseRequestDTO {
   @include()
   public body?: BaseBodyGetDTO;
 
