@@ -26,18 +26,31 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return container.get(IMemberService);
   }
 
+  private async checkEntitiesExistance(organization: number, resource: number): Promise<Result<any>> {
+    let currentOrg, currentRes;
+    if (organization) {
+      currentOrg = await this.organizationService.get(organization);
+      if (currentOrg.isFailure || currentOrg.getValue() === null) {
+        return Result.fail<number>(`Organization with id ${organization} dose not exist.`);
+      }
+    }
+    if (resource) {
+      currentRes = await this.resourceService.get(resource);
+      if (currentRes.isFailure || currentRes.getValue() === null) {
+        return Result.fail<number>(`Resource with id ${resource} dose not exist.`);
+      }
+    }
+    return Result.ok({ currentOrg, currentRes });
+  }
+
   @log()
   @safeGuard()
   @validate(CreateMemberSchema)
   public async createMember(payload: CreateMemberRO): Promise<Result<number>> {
-    const currentOrg = await this.organizationService.get(payload.organization);
-    if (currentOrg.isFailure || currentOrg.getValue() === null) {
-      return Result.fail<number>(`Organization with id ${payload.organization} dose not exist.`);
-    }
-    const currentRes = await this.resourceService.get(payload.resource);
-    if (currentRes.isFailure || currentRes.getValue() === null) {
-      return Result.fail<number>(`Resource with id ${payload.resource} dose not exist.`);
-    }
+    const existance = await this.checkEntitiesExistance(payload.organization, payload.resource);
+    if (existance.isFailure) return Result.fail<number>(existance.error);
+    const { currentOrg, currentRes } = await existance.getValue();
+
     const member: Member = {
       id: null,
       ...payload,
@@ -50,5 +63,35 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.fail<number>(createdMember.error);
     }
     return Result.ok(createdMember.getValue().id);
+  }
+
+  @log()
+  @safeGuard()
+  @validate(CreateMemberSchema)
+  public async updateMember(payload: CreateMemberRO, memberId: number): Promise<Result<number>> {
+    const member = await this.dao.get(memberId);
+
+    const existance = await this.checkEntitiesExistance(payload.organization, payload.resource);
+
+    if (existance.isFailure) return Result.fail<number>(existance.error);
+    // const { currentOrg, currentRes } = await existance.getValue();
+    // const newMember: any = {
+    //   id: memberId,
+    //   ...member,
+    // };
+
+    // if (payload.organization) newMember.organization = currentOrg.getValue();
+    // if (payload.resource) newMember.resource = currentRes.getValue();
+
+    // delete payload.organization;
+    // delete payload.resource;
+
+    // newMember = { ...payload };
+
+    const updateddMember = await this.update(member);
+    if (updateddMember.isFailure) {
+      return Result.fail<number>(updateddMember.error);
+    }
+    return Result.ok(updateddMember.getValue().id);
   }
 }
