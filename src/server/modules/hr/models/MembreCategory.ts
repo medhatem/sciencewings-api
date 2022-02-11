@@ -16,7 +16,7 @@ export class MembreCategory extends BaseModel<MembreCategory> {
   @PrimaryKey()
   id!: number;
 
-  @Unique({ name: 'hr_employee_category_name_uniq' })
+  @Unique({ name: 'hr_membre_category_name_uniq' })
   @Property()
   name!: string;
 }

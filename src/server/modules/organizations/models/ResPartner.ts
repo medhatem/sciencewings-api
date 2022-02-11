@@ -78,7 +78,7 @@ export class ResPartner extends BaseModel<ResPartner> {
   active?: boolean;
 
   @Property({ nullable: true })
-  employee?: boolean;
+  membre?: boolean;
 
   @Property({ nullable: true })
   function?: string;

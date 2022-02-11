@@ -4,7 +4,6 @@ import { container, provideSingleton } from '@di/index';
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
-import { DepartureReason } from './DepartureReason';
 import { Job } from './Job';
 import { Organization } from '@modules/organizations/models/Organization';
 import { ResCountry } from '@modules/organizations/models/ResCountry';
@@ -17,7 +16,7 @@ import { WorkLocation } from './WorkLocation';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'hr_employee_user_uniq', properties: ['organization', 'user'] })
+@Unique({ name: 'hr_membre_user_uniq', properties: ['organization', 'user'] })
 export class Membre extends BaseModel<Membre> {
   constructor() {
     super();
@@ -30,17 +29,17 @@ export class Membre extends BaseModel<Membre> {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne({ entity: () => Resource, index: 'hr_employee_resource_id_index' })
+  @ManyToOne({ entity: () => Resource, index: 'hr_membre_resource_id_index' })
   resource!: Resource;
 
-  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_employee_organization_id_index' })
+  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_membre_organization_id_index' })
   organization!: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_employee_resource_calendar_id_index',
+    index: 'hr_membre_resource_calendar_id_index',
   })
   resourceCalendar?: ResourceCalendar;
 
@@ -84,7 +83,7 @@ export class Membre extends BaseModel<Membre> {
   coach?: Membre;
 
   @Property()
-  employeeType!: string;
+  membreType!: string;
 
   @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true })
   addressHome?: ResPartner;
@@ -170,15 +169,12 @@ export class Membre extends BaseModel<Membre> {
   @Property({ columnType: 'text', nullable: true })
   notes?: string;
 
-  @Unique({ name: 'hr_employee_barcode_uniq' })
+  @Unique({ name: 'hr_membre_barcode_uniq' })
   @Property({ nullable: true })
   barcode?: string;
 
   @Property({ nullable: true })
   pin?: string;
-
-  @ManyToOne({ entity: () => DepartureReason, nullable: true })
-  departureReason?: DepartureReason;
 
   @Property({ columnType: 'text', nullable: true })
   departureDescription?: string;
