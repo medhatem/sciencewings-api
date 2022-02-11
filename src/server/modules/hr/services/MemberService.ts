@@ -1,5 +1,3 @@
-import { Resource } from '@modules/resources/models/Resource';
-import { Organization } from '@modules/organizations/models/Organization';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Member } from '@modules/hr/models/Member';
