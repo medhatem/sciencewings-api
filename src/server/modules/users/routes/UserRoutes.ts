@@ -7,12 +7,13 @@ import { User } from '../models/User';
 import { UserRequest } from '../../../types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '../dtos/UserDTO';
-import { KeycloakIdRO, ResetPasswordRO, UserDetailsRO } from './RequstObjects';
+import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
 import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
 import { IUserService } from '../interfaces/IUserService';
+import { Organization } from '@modules/organizations';
 
 @provideSingleton()
 @Path('users')
@@ -100,21 +101,22 @@ export class UserRoutes extends BaseRoutes<User> {
   }
 
   /**
-   * Get user By KeycloakId
-   * @param payload: {keycloakId: string}
+   * Get user By auth token
    */
   @GET
   @Path('getUserByKeycloakId')
+  @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
-  public async getUserByKeycloakId(payload: KeycloakIdRO): Promise<UserDTO> {
-    const result = await this.userService.getUserByKeycloakId(payload);
+  public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserDTO> {
+    const id = request.userId;
+    const result = await this.userService.getUserByCriteria({ id });
 
     if (result.isFailure) {
       return new UserDTO().serialize({ error: { statusCode: 404, errorMessage: result.error } });
     }
 
     const user = result.getValue();
-    const organizations = (await user.organizations.init()).toArray().map((org) => {
+    const organizations = (await user.organizations.init()).toArray().map((org: Organization) => {
       return { id: org.id, name: org.name };
     });
     return new UserDTO().serialize({ body: { user: { ...user, organizations }, statusCode: 200 } });
