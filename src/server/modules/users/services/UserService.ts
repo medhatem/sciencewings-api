@@ -89,6 +89,9 @@ export class UserService extends BaseService<User> implements IUserService {
   @safeGuard()
   async getUserByCriteria(criteria: { [key: string]: any }): Promise<Result<User>> {
     const user = await this.dao.getByCriteria(criteria);
+    if (!user) {
+      return Result.fail(`User with id ${criteria.id} does not exist.`);
+    }
     return Result.ok<User>(user);
   }
 

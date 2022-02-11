@@ -39,6 +39,7 @@ export class BaseDao<T extends BaseModel<T>> {
     this.logger.info(`${this.model.constructor.name}s`);
     return (this.repository as any).findAll();
   }
+
   @log()
   public async create(entry: T): Promise<T> {
     const entity = (this.repository as any).create(entry); //generate an entity from a payload

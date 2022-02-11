@@ -18,6 +18,7 @@ import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
 import { IAddressService } from '@modules/address/interfaces/IAddressService';
 import { IUserService } from '@modules/users/interfaces';
 import { IOrganizationLabelService } from '@modules/organizations/interfaces/IOrganizationLabelService';
+import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -192,5 +193,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const members: Collection<User> = await existingOrg.members.init();
     return Result.ok<Collection<User>>(members);
+  }
+
+  @log()
+  @safeGuard()
+  public async getUserOrganizations(userId: number): Promise<Result<GetUserOrganizationDTO[]>> {
+    const user = await this.userService.getUserByCriteria({ id: userId });
+
+    if (user.isFailure) {
+      return Result.fail(user.error);
+    }
+
+    const fetchedUsersOrganization = await user.getValue().organizations.init();
+    const organizations = fetchedUsersOrganization.toArray().map((org: Organization) => {
+      return { id: org.id, name: org.name };
+    });
+    return Result.ok<GetUserOrganizationDTO[]>(organizations);
   }
 }

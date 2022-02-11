@@ -64,6 +64,12 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       body: { statusCode: 201, userId: result.getValue() },
     });
   }
+
+  /**
+   * retrive users that belongs to an organization
+   *
+   * @param id: organization id
+   */
   @GET
   @Path('getMembers/:id')
   @Security('', KEYCLOAK_TOKEN)
@@ -76,5 +82,24 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new OrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
+   * retrieve all the organizations a given user is a member of
+   *
+   * @param id: user id
+   */
+  @GET
+  @Path('getUserOrganizations/:id')
+  @Security('', KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async getUserOrganizations(@PathParam('id') payload: number) {
+    const result = await this.OrganizationService.getUserOrganizations(payload);
+
+    if (result.isFailure) {
+      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new OrganizationDTO().serialize({ body: { organizations: result.getValue(), statusCode: 201 } });
   }
 }

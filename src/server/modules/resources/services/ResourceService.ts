@@ -54,7 +54,6 @@ export class ResourceService extends BaseService<Resource> {
     const calendar = payload.calendar;
     delete payload.calendar;
 
-    payload.user = user;
     payload.organization = organization;
 
     const resource = this.wrapEntity(this.dao.model, payload);
@@ -65,7 +64,7 @@ export class ResourceService extends BaseService<Resource> {
       return Result.fail<number>(createResourceCalendar.error);
     }
     resource.calendar = createResourceCalendar.getValue() as ResourceCalendar;
-    const createdResource = await this.create(resource);
+    const createdResource = await this.create({ ...resource, user });
     if (createdResource.isFailure) {
       return Result.fail<number>(createdResource.error);
     }
