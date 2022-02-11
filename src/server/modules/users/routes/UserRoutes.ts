@@ -14,6 +14,7 @@ import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
 import { IUserService } from '../interfaces/IUserService';
 import { Organization } from '@modules/organizations';
+import { KeycloakIdRO } from '.';
 
 @provideSingleton()
 @Path('users')
@@ -105,11 +106,9 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @GET
   @Path('getUserByKeycloakId')
-  @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
-  public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserDTO> {
-    const id = request.userId;
-    const result = await this.userService.getUserByCriteria({ id });
+  public async getUserByKeycloakId(payload: KeycloakIdRO): Promise<UserDTO> {
+    const result = await this.userService.getUserByKeycloakId(payload);
 
     if (result.isFailure) {
       return new UserDTO().serialize({ error: { statusCode: 404, errorMessage: result.error } });
