@@ -55,7 +55,7 @@ export class BaseDao<T extends BaseModel<T>> {
 
   @log()
   public async remove(entry: T): Promise<T> {
-    await this.repository.remove(entry);
+    await this.repository.removeAndFlush(entry);
     return entry;
   }
 }
