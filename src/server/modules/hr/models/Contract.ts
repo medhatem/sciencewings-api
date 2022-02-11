@@ -1,15 +1,15 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@modules/base/models/BaseModel';
 import { ContractType } from './ContractType';
-import { Department } from './Department';
-import { Employee } from './Employee';
+import { Group } from './Group';
+import { Member } from './Member';
 import { Job } from './Job';
-import { Organization } from '../../organizations/models/Organization';
+import { Organization } from '@modules/organizations/models/Organization';
 import { PayrollStructureType } from './PayrollStructureType';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { User } from '../../users/models/User';
+import { ResourceCalendar } from '@modules/resources/models/ResourceCalendar';
+import { User } from '@modules/users/models/User';
 
 @provideSingleton()
 @Entity()
@@ -25,10 +25,6 @@ export class Contract extends BaseModel<Contract> {
   @PrimaryKey()
   id!: number;
 
-  @Index({ name: 'hr_contract_message_main_attachment_id_index' })
-  @Property({ nullable: true })
-  messageMainAttachmentId?: number;
-
   @Property()
   name!: string;
 
@@ -38,11 +34,11 @@ export class Contract extends BaseModel<Contract> {
   @ManyToOne({ entity: () => PayrollStructureType, onDelete: 'set null', nullable: true })
   structureType?: PayrollStructureType;
 
-  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
-  employee?: Employee;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  member?: Member;
 
-  @ManyToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
-  department?: Department;
+  @ManyToOne({ entity: () => Group, onDelete: 'set null', nullable: true })
+  group?: Group;
 
   @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
   job?: Job;

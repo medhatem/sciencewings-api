@@ -1,7 +1,7 @@
-import { Address } from '../../address/models/AdressModel';
+import { Address } from '@modules/address/models/AdressModel';
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@di/index';
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@modules/base/models/BaseModel';
 import { User } from '@modules/users/models/User';
 import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
 import { Phone } from '@modules/phones/models/Phone';

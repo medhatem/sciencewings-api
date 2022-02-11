@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@di/index';
-import { BaseRoutes } from '../../base/routes/BaseRoutes';
+import { BaseRoutes } from '@modules/base/routes/BaseRoutes';
 import { Organization } from '@modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';

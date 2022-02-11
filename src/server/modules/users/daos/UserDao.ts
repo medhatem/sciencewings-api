@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@di/index';
 
-import { BaseDao } from '../../base/daos/BaseDao';
+import { BaseDao } from '@modules/base/daos/BaseDao';
 import { User } from '@modules/users/models/User';
 
 @provideSingleton()

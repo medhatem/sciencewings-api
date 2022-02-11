@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@modules/base/models/BaseModel';
 import { Organization } from './Organization';
 
 @provideSingleton()
@@ -55,5 +55,5 @@ export class ResConfigSettings extends BaseModel<ResConfigSettings> {
   moduleHrAttendance?: boolean;
 
   @Property({ nullable: true })
-  hrEmployeeSelfEdit?: boolean;
+  hrMemberSelfEdit?: boolean;
 }

@@ -1,52 +1,47 @@
-import { Entity, Index, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@modules/base/models/BaseModel';
 import { Contract } from './Contract';
-import { Department } from './Department';
-import { DepartureReason } from './DepartureReason';
+import { Group } from './Group';
 import { Job } from './Job';
-import { Organization } from '../../organizations/models/Organization';
-import { ResCountry } from '../../organizations/models/ResCountry';
-import { ResPartner } from '../../organizations/models/ResPartner';
-import { ResPartnerBank } from '../../organizations/models/ResPartnerBank';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { Resource } from '../../resources/models/Resource';
-import { User } from '../../users/models/User';
+import { Organization } from '@modules/organizations/models/Organization';
+import { ResCountry } from '@modules/organizations/models/ResCountry';
+import { ResPartner } from '@modules/organizations/models/ResPartner';
+import { ResPartnerBank } from '@modules/organizations/models/ResPartnerBank';
+import { ResourceCalendar } from '@modules/resources/models/ResourceCalendar';
+import { Resource } from '@modules/resources/models/Resource';
+import { User } from '@modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'hr_employee_user_uniq', properties: ['organization', 'user'] })
-export class Employee extends BaseModel<Employee> {
+@Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
+export class Member extends BaseModel<Member> {
   constructor() {
     super();
   }
 
-  static getInstance(): Employee {
-    return container.get(Employee);
+  static getInstance(): Member {
+    return container.get(Member);
   }
 
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne({ entity: () => Resource, index: 'hr_employee_resource_id_index' })
+  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index' })
   resource!: Resource;
 
-  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_employee_organization_id_index' })
+  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_member_organization_id_index' })
   organization!: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_employee_resource_calendar_id_index',
+    index: 'hr_member_resource_calendar_id_index',
   })
   resourceCalendar?: ResourceCalendar;
-
-  @Index({ name: 'hr_employee_message_main_attachment_id_index' })
-  @Property({ nullable: true })
-  messageMainAttachmentId?: number;
 
   @Property({ nullable: true })
   name?: string;
@@ -54,8 +49,8 @@ export class Employee extends BaseModel<Employee> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => Department, onDelete: 'set null', nullable: true })
-  department?: Department;
+  @ManyToOne({ entity: () => Group, onDelete: 'set null', nullable: true })
+  group?: Group;
 
   @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
   job?: Job;
@@ -81,14 +76,14 @@ export class Employee extends BaseModel<Employee> {
   @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
 
-  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
-  parent?: Employee;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  parent?: Member;
 
-  @ManyToOne({ entity: () => Employee, onDelete: 'set null', nullable: true })
-  coach?: Employee;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  coach?: Member;
 
   @Property()
-  employeeType!: string;
+  memberType!: string;
 
   @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true })
   addressHome?: ResPartner;
@@ -119,12 +114,6 @@ export class Employee extends BaseModel<Employee> {
 
   @Property({ columnType: 'date', nullable: true })
   birthday?: Date;
-
-  @Property({ nullable: true })
-  ssnid?: string;
-
-  @Property({ nullable: true })
-  sinid?: string;
 
   @Property({ nullable: true })
   identificationId?: string;
@@ -168,21 +157,8 @@ export class Employee extends BaseModel<Employee> {
   @Property({ nullable: true })
   emergencyPhone?: string;
 
-  @Property({ nullable: true })
-  kmHomeWork?: number;
-
   @Property({ columnType: 'text', nullable: true })
   notes?: string;
-
-  @Unique({ name: 'hr_employee_barcode_uniq' })
-  @Property({ nullable: true })
-  barcode?: string;
-
-  @Property({ nullable: true })
-  pin?: string;
-
-  @ManyToOne({ entity: () => DepartureReason, nullable: true })
-  departureReason?: DepartureReason;
 
   @Property({ columnType: 'text', nullable: true })
   departureDescription?: string;
@@ -190,15 +166,6 @@ export class Employee extends BaseModel<Employee> {
   @Property({ columnType: 'date', nullable: true })
   departureDate?: Date;
 
-  @Property({ nullable: true })
-  vehicle?: string;
-
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
-
-  @Property({ nullable: true })
-  contractWarning?: boolean;
-
-  @Property({ columnType: 'date', nullable: true })
-  firstContractDate?: Date;
 }
