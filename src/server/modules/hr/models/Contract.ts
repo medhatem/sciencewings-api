@@ -4,7 +4,7 @@ import { container, provideSingleton } from '@di/index';
 import { BaseModel } from '@modules/base/models/BaseModel';
 import { ContractType } from './ContractType';
 import { Group } from './Group';
-import { Membre } from './Membre';
+import { Member } from './Member';
 import { Job } from './Job';
 import { Organization } from '@modules/organizations/models/Organization';
 import { PayrollStructureType } from './PayrollStructureType';
@@ -34,8 +34,8 @@ export class Contract extends BaseModel<Contract> {
   @ManyToOne({ entity: () => PayrollStructureType, onDelete: 'set null', nullable: true })
   structureType?: PayrollStructureType;
 
-  @ManyToOne({ entity: () => Membre, onDelete: 'set null', nullable: true })
-  membre?: Membre;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  member?: Member;
 
   @ManyToOne({ entity: () => Group, onDelete: 'set null', nullable: true })
   group?: Group;

@@ -4,19 +4,19 @@ import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()
 @Entity()
-export class MembreCategory extends BaseModel<MembreCategory> {
+export class MemberCategory extends BaseModel<MemberCategory> {
   constructor() {
     super();
   }
 
-  static getInstance(): MembreCategory {
-    return container.get(MembreCategory);
+  static getInstance(): MemberCategory {
+    return container.get(MemberCategory);
   }
 
   @PrimaryKey()
   id!: number;
 
-  @Unique({ name: 'hr_membre_category_name_uniq' })
+  @Unique({ name: 'hr_member_category_name_uniq' })
   @Property()
   name!: string;
 }

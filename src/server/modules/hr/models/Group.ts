@@ -2,7 +2,7 @@ import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '@modules//base/models/BaseModel';
-import { Membre } from './Membre';
+import { Member } from './Member';
 import { Organization } from '@modules/organizations/models/Organization';
 
 @provideSingleton()
@@ -44,8 +44,8 @@ export class Group extends BaseModel<Group> {
   })
   parent?: Group;
 
-  @ManyToOne({ entity: () => Membre, onDelete: 'set null', nullable: true })
-  manager?: Membre;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  manager?: Member;
 
   @Property({ columnType: 'text', nullable: true })
   note?: string;

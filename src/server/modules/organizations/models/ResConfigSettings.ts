@@ -55,5 +55,5 @@ export class ResConfigSettings extends BaseModel<ResConfigSettings> {
   moduleHrAttendance?: boolean;
 
   @Property({ nullable: true })
-  hrMembreSelfEdit?: boolean;
+  hrMemberSelfEdit?: boolean;
 }

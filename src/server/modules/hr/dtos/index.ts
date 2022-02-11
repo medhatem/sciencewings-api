@@ -1,4 +1,4 @@
 export * from './ContractDTO';
-export * from './MembreDTO';
+export * from './MemberDTO';
 export * from './UpdateContractDTO';
-export * from './UpdateMembreDTO';
+export * from './UpdateMemberDTO';

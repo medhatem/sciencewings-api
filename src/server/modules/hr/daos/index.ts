@@ -1,2 +1,2 @@
 export * from './ContractDao';
-export * from './MembreDao';
+export * from './MemberDao';

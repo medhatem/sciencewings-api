@@ -16,30 +16,30 @@ import { WorkLocation } from './WorkLocation';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'hr_membre_user_uniq', properties: ['organization', 'user'] })
-export class Membre extends BaseModel<Membre> {
+@Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
+export class Member extends BaseModel<Member> {
   constructor() {
     super();
   }
 
-  static getInstance(): Membre {
-    return container.get(Membre);
+  static getInstance(): Member {
+    return container.get(Member);
   }
 
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne({ entity: () => Resource, index: 'hr_membre_resource_id_index' })
+  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index' })
   resource!: Resource;
 
-  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_membre_organization_id_index' })
+  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_member_organization_id_index' })
   organization!: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_membre_resource_calendar_id_index',
+    index: 'hr_member_resource_calendar_id_index',
   })
   resourceCalendar?: ResourceCalendar;
 
@@ -76,14 +76,14 @@ export class Membre extends BaseModel<Membre> {
   @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
 
-  @ManyToOne({ entity: () => Membre, onDelete: 'set null', nullable: true })
-  parent?: Membre;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  parent?: Member;
 
-  @ManyToOne({ entity: () => Membre, onDelete: 'set null', nullable: true })
-  coach?: Membre;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  coach?: Member;
 
   @Property()
-  membreType!: string;
+  memberType!: string;
 
   @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true })
   addressHome?: ResPartner;
@@ -114,12 +114,6 @@ export class Membre extends BaseModel<Membre> {
 
   @Property({ columnType: 'date', nullable: true })
   birthday?: Date;
-
-  @Property({ nullable: true })
-  ssnid?: string;
-
-  @Property({ nullable: true })
-  sinid?: string;
 
   @Property({ nullable: true })
   identificationId?: string;
@@ -163,18 +157,8 @@ export class Membre extends BaseModel<Membre> {
   @Property({ nullable: true })
   emergencyPhone?: string;
 
-  @Property({ nullable: true })
-  kmHomeWork?: number;
-
   @Property({ columnType: 'text', nullable: true })
   notes?: string;
-
-  @Unique({ name: 'hr_membre_barcode_uniq' })
-  @Property({ nullable: true })
-  barcode?: string;
-
-  @Property({ nullable: true })
-  pin?: string;
 
   @Property({ columnType: 'text', nullable: true })
   departureDescription?: string;
@@ -182,15 +166,6 @@ export class Membre extends BaseModel<Membre> {
   @Property({ columnType: 'date', nullable: true })
   departureDate?: Date;
 
-  @Property({ nullable: true })
-  vehicle?: string;
-
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
-
-  @Property({ nullable: true })
-  contractWarning?: boolean;
-
-  @Property({ columnType: 'date', nullable: true })
-  firstContractDate?: Date;
 }
