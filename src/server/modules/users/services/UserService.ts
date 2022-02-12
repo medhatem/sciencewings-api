@@ -73,6 +73,7 @@ export class UserService extends BaseService<User> implements IUserService {
     let createdUser: { [key: string]: any } = { id: null };
     try {
       createdUser = await this.dao.create(user);
+      //TODO send email
     } catch (error) {
       return Result.fail(error);
     }
