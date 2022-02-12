@@ -1,4 +1,4 @@
-// import { User } from '@modules/users/models/User';
+// import { User } from '../../users/models/User';
 // import intern from 'intern';
 // import { restore } from 'sinon';
 

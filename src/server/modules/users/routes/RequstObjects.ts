@@ -1,4 +1,4 @@
-import { PhoneDTO } from '@modules/phones/dtos/PhoneDTO';
+import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()

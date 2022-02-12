@@ -1,6 +1,6 @@
 import { ResourceCalendar } from './../models/ResourceCalendar';
 import { container, provideSingleton } from '@di/index';
-import { BaseDao } from '@modules/base/daos/BaseDao';
+import { BaseDao } from '../../base/daos/BaseDao';
 
 @provideSingleton()
 export class ResourceCalendarDao extends BaseDao<ResourceCalendar> {

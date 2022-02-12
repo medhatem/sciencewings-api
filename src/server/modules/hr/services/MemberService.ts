@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@di/index';
 
-import { BaseService } from '@modules/base/services/BaseService';
-import { Member } from '@modules/hr/models/Member';
+import { BaseService } from '../../base/services/BaseService';
+import { Member } from '../../hr/models/Member';
 import { MemberDao } from '../daos/MemberDao';
 
 @provideSingleton()

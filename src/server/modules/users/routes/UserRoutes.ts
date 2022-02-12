@@ -1,6 +1,6 @@
 import { POST, Path, Security, ContextRequest, PUT, GET } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
-import { BaseRoutes } from '@modules/base/routes/BaseRoutes';
+import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
@@ -13,7 +13,7 @@ import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
 import { IUserService } from '../interfaces/IUserService';
-import { Organization } from '@modules/organizations';
+import { Organization } from '../../organizations';
 import { KeycloakIdRO } from '.';
 
 @provideSingleton()

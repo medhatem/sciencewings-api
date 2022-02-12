@@ -1,7 +1,7 @@
-import { IOrganizationService } from '@modules/organizations/interfaces/IOrganizationService';
+import { IOrganizationService } from '../../organizations/interfaces/IOrganizationService';
 import { Result } from '@utils/Result';
 import { container, provideSingleton } from '@di/index';
-import { BaseService } from '@modules/base/services/BaseService';
+import { BaseService } from '../../base/services/BaseService';
 import { CreateResourceCalendarRO } from '../routes/RequestObject';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
