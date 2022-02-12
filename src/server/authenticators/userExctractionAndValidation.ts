@@ -1,5 +1,5 @@
 import { ACCESS_TOKEN_HEADER } from './constants';
-import { IUserService } from '@modules/users/interfaces/IUserService';
+import { IUserService } from '../modules/users/interfaces/IUserService';
 import { Result } from '@utils/Result';
 import { UserRequest } from '../types/UserRequest';
 import fetch from 'node-fetch';

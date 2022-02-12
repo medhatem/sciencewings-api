@@ -1,11 +1,11 @@
 import { container, provideSingleton } from '@di/index';
-import { BaseService } from '@modules/base/services/BaseService';
+import { BaseService } from '../../base/services/BaseService';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { AddressDao } from '@modules/address/daos/AddressDAO';
-import { AddressOrganizationDTO } from '@modules/address/dtos/AddressDTO';
-import { Address } from '@modules/address/models/AdressModel';
+import { AddressDao } from '../../address/daos/AddressDAO';
+import { AddressOrganizationDTO } from '../../address/dtos/AddressDTO';
+import { Address } from '../../address/models/AdressModel';
 import { IAddressService } from '../interfaces/IAddressService';
 
 @provideSingleton(IAddressService)

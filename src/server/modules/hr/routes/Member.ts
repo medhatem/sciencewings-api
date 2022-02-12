@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@di/index';
 import { MemberService as MemberService } from '../services/MemberService';
-import { BaseRoutes } from '@modules/base/routes/BaseRoutes';
+import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Member } from '../models/Member';
 import { Path, GET, QueryParam } from 'typescript-rest';
 import { MemberDTO } from '../dtos/MemberDTO';

@@ -2,8 +2,7 @@ import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { Result } from '@utils/Result';
-import { User } from '@modules/users/models';
-import { KeycloakIdRO } from '@modules/users/routes/RequstObjects';
+import { User } from '../../users/models';
 
 export abstract class IUserService {
   static getInstance: () => IUserService;
@@ -16,5 +15,5 @@ export abstract class IUserService {
   create: (user: User) => Promise<Result<User>>;
   update: (user: User) => Promise<Result<User>>;
 
-  getUserByKeycloakId: (payload: KeycloakIdRO) => Promise<Result<User>>;
+  getUserByKeycloakId: (payload: string) => Promise<Result<User>>;
 }

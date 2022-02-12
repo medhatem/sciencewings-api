@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { ResCountry } from '@modules/organizations/models/ResCountry';
-import { ResourceCalendar } from '@modules/resources/models/ResourceCalendar';
-import { BaseModel } from '@modules/base/models/BaseModel';
+import { ResCountry } from '../../organizations/models/ResCountry';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
+import { BaseModel } from '../../base/models/BaseModel';
 import { container, provideSingleton } from '@di/index';
 
 @provideSingleton()

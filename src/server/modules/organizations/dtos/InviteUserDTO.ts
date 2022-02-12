@@ -1,6 +1,6 @@
 import { dto, include } from 'dto-mapper';
-import { ErrorDTO, UserIdDTO } from '@modules/users/dtos/RegisterUserFromTokenDTO';
-import { BaseErrorDTO, BaseRequestDTO } from '@modules/base/dtos/BaseDTO';
+import { ErrorDTO, UserIdDTO } from '../../users/dtos/RegisterUserFromTokenDTO';
+import { BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
 
 @dto()
 export class InviteUserDTO extends BaseRequestDTO {
