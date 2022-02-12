@@ -2,12 +2,6 @@ import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()
-export class KeycloakIdRO {
-  @include()
-  keycloakId: string;
-}
-
-@dto()
 export class UserInviteToOrgRO {
   @include()
   organizationId: number;

@@ -1,6 +1,6 @@
 import { dto, include } from 'dto-mapper';
+import { PhoneDTO } from 'server';
 import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '../../base/dtos/BaseDTO';
-import { Phone } from '../../phones/models';
 @dto()
 class BaseBodyGetDTO extends BaseBodyDTO {
   @include()
@@ -16,7 +16,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
   email: string;
 
   @include()
-  phones: Phone[];
+  phones: PhoneDTO[];
 
   @include()
   keycloakId: string;

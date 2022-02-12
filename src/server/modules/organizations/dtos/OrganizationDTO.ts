@@ -1,6 +1,6 @@
 import { dto, include } from 'dto-mapper';
-
 import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '../../base/dtos/BaseDTO';
+
 @dto()
 class BaseBodyGetDTO extends BaseBodyDTO {
   @include()
