@@ -48,8 +48,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @log()
   @safeGuard()
   public async update(entry: T): Promise<Result<any>> {
-    // const entity = this.wrapEntity(this.dao.model, entry);
-    return Result.ok<any>(this.dao.update(entry));
+    const entity = this.wrapEntity(this.dao.model, entry);
+    return Result.ok<any>(this.dao.update(entity));
   }
 
   @log()

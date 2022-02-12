@@ -35,11 +35,4 @@ export class AddressService extends BaseService<Address> implements IAddressServ
 
     return Result.ok<number>(200);
   }
-
-  @log()
-  @safeGuard()
-  async deleteAddress(payload: Address): Promise<Result<number>> {
-    await this.dao.remove(payload);
-    return Result.ok<number>(payload.id);
-  }
 }

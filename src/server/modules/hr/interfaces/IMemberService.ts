@@ -4,4 +4,5 @@ import { CreateMemberRO } from '@modules/hr/routes/RequestObject';
 
 export abstract class IMemberService extends IBaseService<any> {
   createMember: (payload: CreateMemberRO) => Promise<Result<number>>;
+  updateMember: (payload: CreateMemberRO, memberId: number) => Promise<Result<number>>;
 }

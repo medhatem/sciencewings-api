@@ -1,8 +1,6 @@
 import Joi = require('joi');
 
-export const CreateMemberSchema = Joi.object({
-  resource: Joi.number().required(),
-  organization: Joi.number().required(),
+const MemberSchema = Joi.object({
   resourceCalendar: Joi.number(),
   name: Joi.string(),
   active: Joi.boolean(),
@@ -45,4 +43,14 @@ export const CreateMemberSchema = Joi.object({
   notes: Joi.string(),
   departureDescription: Joi.string(),
   departureDate: Date,
+});
+
+export const CreateMemberSchema = MemberSchema.keys({
+  resource: Joi.number().required(),
+  organization: Joi.number().required(),
+});
+
+export const UpdateMemberSchema = MemberSchema.keys({
+  resource: Joi.number(),
+  organization: Joi.number(),
 });
