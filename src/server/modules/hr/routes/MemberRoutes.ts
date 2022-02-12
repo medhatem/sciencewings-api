@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@di/index';
 import { BaseRoutes } from '@modules/base/routes/BaseRoutes';
-import { Member } from '../models/Member';
+import { Member } from '@modules/hr/models/Member';
 import { Path, POST, Security } from 'typescript-rest';
 import { MemberDTO } from '../dtos/MemberDTO';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
@@ -23,7 +23,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
 
   @POST
   @Path('create')
-  // @Security('', KEYCLOAK_TOKEN)
+  @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async createOrganization(payload: CreateMemberRO): Promise<MemberDTO> {
     const result = await this.memberService.createMember(payload);

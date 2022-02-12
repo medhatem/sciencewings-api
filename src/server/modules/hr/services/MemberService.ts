@@ -47,8 +47,18 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ currentOrg, currentRes });
   }
 
-  private async addAddressForMemeber(payload: CreateMemberRO): Promise<Result<any>> {
+  private async handleAddressForMemeber(payload: CreateMemberRO, isUpdate = false): Promise<Result<any>> {
     let createdAddress, createdWorkLocation, createdAddressHome;
+
+    if (isUpdate) {
+      if (payload.address) this.addressService.deleteAddress(payload.address);
+      if (payload.workLocation) this.addressService.deleteAddress(payload.workLocation);
+      if (payload.addressHome) this.addressService.deleteAddress(payload.addressHome);
+    }
+
+    if (payload.address) createdAddress = await this.addressService.createAddress(payload.address);
+    if (payload.workLocation) createdWorkLocation = await this.addressService.createAddress(payload.workLocation);
+    if (payload.addressHome) createdAddressHome = await this.addressService.createAddress(payload.addressHome);
 
     if (payload.address) createdAddress = await this.addressService.createAddress(payload.address);
     if (payload.workLocation) createdWorkLocation = await this.addressService.createAddress(payload.workLocation);
@@ -72,8 +82,14 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ address, workLocation, addressHome });
   }
 
-  private async addPhonesForMemeber(payload: CreateMemberRO): Promise<Result<any>> {
+  private async handlePhonesForMemeber(payload: CreateMemberRO, isUpdate = false): Promise<Result<any>> {
     let createdWorkPhone, createdMobilePhone, createdEmergencyPhone;
+
+    if (isUpdate) {
+      if (payload.workPhone) this.phoneService.deletePhone(payload.workPhone);
+      if (payload.mobilePhone) this.phoneService.deletePhone(payload.mobilePhone);
+      if (payload.emergencyPhone) this.phoneService.deletePhone(payload.emergencyPhone);
+    }
 
     if (payload.workPhone) createdWorkPhone = await this.phoneService.createPhone(payload.workPhone);
     if (payload.mobilePhone) createdMobilePhone = await this.phoneService.createPhone(payload.mobilePhone);
@@ -105,11 +121,11 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (existance.isFailure) return Result.fail<number>(existance.error);
     const { currentOrg, currentRes } = await existance.getValue();
 
-    const addresss = await this.addAddressForMemeber(payload);
+    const addresss = await this.handleAddressForMemeber(payload);
     if (addresss.isFailure) return Result.fail<number>(addresss.error);
     const { address, workLocation, addressHome } = await addresss.getValue();
 
-    const phones = await this.addPhonesForMemeber(payload);
+    const phones = await this.handlePhonesForMemeber(payload);
     if (phones.isFailure) return Result.fail<number>(existance.error);
     const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
 
@@ -127,7 +143,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     };
 
     const createdMember = await this.create(member);
-    console.log('*', createdMember);
+
     if (createdMember.isFailure) {
       return Result.fail<number>(createdMember.error);
     }
@@ -139,28 +155,39 @@ export class MemberService extends BaseService<Member> implements IMemberService
   @validate(CreateMemberSchema)
   public async updateMember(payload: CreateMemberRO, memberId: number): Promise<Result<number>> {
     const member = await this.dao.get(memberId);
+    if (!member) {
+      return Result.fail<number>(`Member with id ${memberId} does not exist`);
+    }
 
     const existance = await this.checkEntitiesExistance(payload.organization, payload.resource);
-
     if (existance.isFailure) return Result.fail<number>(existance.error);
-    // const { currentOrg, currentRes } = await existance.getValue();
-    // const newMember: any = {
-    //   id: memberId,
-    //   ...member,
-    // };
+    const { currentOrg, currentRes } = await existance.getValue();
 
-    // if (payload.organization) newMember.organization = currentOrg.getValue();
-    // if (payload.resource) newMember.resource = currentRes.getValue();
+    const addresss = await this.handleAddressForMemeber(payload, true);
+    if (addresss.isFailure) return Result.fail<number>(addresss.error);
+    const { address, workLocation, addressHome } = await addresss.getValue();
 
-    // delete payload.organization;
-    // delete payload.resource;
+    const phones = await this.handlePhonesForMemeber(payload, true);
+    if (phones.isFailure) return Result.fail<number>(existance.error);
+    const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
 
-    // newMember = { ...payload };
+    const newMember = {
+      ...member,
+      ...payload,
+      organization: currentOrg.getValue() ? currentOrg.getValue() : member.organization,
+      resource: currentRes.getValue() ? currentRes.getValue() : member.resource,
+      address: address ? address : member.address,
+      workLocation: workLocation ? workLocation : member.workLocation,
+      addressHome: addressHome ? addressHome : member.addressHome,
+      workPhone: workPhone ? workPhone : member.workPhone,
+      mobilePhone: mobilePhone ? mobilePhone : member.mobilePhone,
+      emergencyPhone: emergencyPhone ? emergencyPhone : member.emergencyPhone,
+    };
 
-    const updateddMember = await this.update(member);
-    if (updateddMember.isFailure) {
-      return Result.fail<number>(updateddMember.error);
+    const updatedMember = await this.update(newMember);
+    if (updatedMember.isFailure) {
+      return Result.fail<number>(updatedMember.error);
     }
-    return Result.ok(updateddMember.getValue().id);
+    return Result.ok(updatedMember.getValue().id);
   }
 }

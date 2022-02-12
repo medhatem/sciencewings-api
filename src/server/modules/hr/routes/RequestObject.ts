@@ -1,5 +1,5 @@
 import { dto, include } from 'dto-mapper';
-import { Address, Phone, ResCountry, ResPartnerBank } from '../../..';
+import { Address, Phone } from '../../..';
 
 @dto()
 export class CreateMemberRO {
