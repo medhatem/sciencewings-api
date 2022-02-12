@@ -54,20 +54,20 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (payload.workLocation) createdWorkLocation = await this.addressService.createAddress(payload.workLocation);
     if (payload.addressHome) createdAddressHome = await this.addressService.createAddress(payload.addressHome);
 
-    if (createdAddress.isFailure) {
+    if (payload.address && createdAddress.isFailure) {
       return Result.fail<number>(createdAddress.error);
-    } else if (createdWorkLocation.isFailure) {
-      await this.addressService.deleteAddress(createdAddress.getValue());
+    } else if (payload.workLocation && createdWorkLocation.isFailure) {
+      if (payload.address) await this.addressService.deleteAddress(createdAddress.getValue());
       return Result.fail<number>(createdWorkLocation.error);
-    } else if (createdAddressHome.isFailure) {
-      await this.addressService.deleteAddress(createdAddress.getValue());
-      await this.addressService.deleteAddress(createdWorkLocation.getValue());
+    } else if (payload.addressHome && createdAddressHome.isFailure) {
+      if (payload.address) await this.addressService.deleteAddress(createdAddress.getValue());
+      if (payload.workLocation) await this.addressService.deleteAddress(createdWorkLocation.getValue());
       return Result.fail<number>(createdAddressHome.error);
     }
 
-    const address = createdAddress.getValue();
-    const workLocation = createdWorkLocation.getValue();
-    const addressHome = createdAddressHome.getValue();
+    const address = payload.address ? createdAddress.getValue() : null;
+    const workLocation = payload.workLocation ? createdWorkLocation.getValue() : null;
+    const addressHome = payload.addressHome ? createdAddressHome.getValue() : null;
 
     return Result.ok({ address, workLocation, addressHome });
   }
@@ -79,20 +79,20 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (payload.mobilePhone) createdMobilePhone = await this.phoneService.createPhone(payload.mobilePhone);
     if (payload.emergencyPhone) createdEmergencyPhone = await this.phoneService.createPhone(payload.emergencyPhone);
 
-    if (createdWorkPhone.isFailure) {
+    if (payload.workPhone && createdWorkPhone.isFailure) {
       return Result.fail<number>(createdWorkPhone.error);
-    } else if (createdMobilePhone.isFailure) {
+    } else if (payload.mobilePhone && createdMobilePhone.isFailure) {
       await this.phoneService.deletePhone(createdWorkPhone.getValue());
       return Result.fail<number>(createdMobilePhone.error);
-    } else if (createdEmergencyPhone.isFailure) {
+    } else if (payload.emergencyPhone && createdEmergencyPhone.isFailure) {
       await this.phoneService.deletePhone(createdWorkPhone.getValue());
       await this.phoneService.deletePhone(createdMobilePhone.getValue());
       return Result.fail<number>(createdEmergencyPhone.error);
     }
 
-    const workPhone = createdWorkPhone.getValue();
-    const mobilePhone = createdMobilePhone.getValue();
-    const emergencyPhone = createdEmergencyPhone.getValue();
+    const workPhone = payload.workPhone ? createdWorkPhone.getValue() : null;
+    const mobilePhone = payload.mobilePhone ? createdMobilePhone.getValue() : null;
+    const emergencyPhone = payload.emergencyPhone ? createdEmergencyPhone.getValue() : null;
 
     return Result.ok({ workPhone, mobilePhone, emergencyPhone });
   }
@@ -109,7 +109,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (addresss.isFailure) return Result.fail<number>(addresss.error);
     const { address, workLocation, addressHome } = await addresss.getValue();
 
-    const phones = await this.addAddressForMemeber(payload);
+    const phones = await this.addPhonesForMemeber(payload);
     if (phones.isFailure) return Result.fail<number>(existance.error);
     const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
 
@@ -127,6 +127,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     };
 
     const createdMember = await this.create(member);
+    console.log('*', createdMember);
     if (createdMember.isFailure) {
       return Result.fail<number>(createdMember.error);
     }

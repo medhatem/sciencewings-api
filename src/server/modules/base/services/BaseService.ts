@@ -38,7 +38,11 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @log()
   @safeGuard()
   public async create(entry: T): Promise<Result<any>> {
-    return Result.ok<any>(this.dao.create(entry));
+    try {
+      return Result.ok<any>(await this.dao.create(entry));
+    } catch (error) {
+      return Result.fail(error);
+    }
   }
 
   @log()

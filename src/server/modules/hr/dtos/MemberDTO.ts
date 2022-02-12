@@ -4,5 +4,5 @@ import { dto, include } from 'dto-mapper';
 @dto()
 export class MemberDTO extends BaseRequestDTO {
   @include()
-  id!: number;
+  memberId!: number;
 }

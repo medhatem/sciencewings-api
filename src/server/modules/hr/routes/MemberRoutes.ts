@@ -23,7 +23,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
 
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  // @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async createOrganization(payload: CreateMemberRO): Promise<MemberDTO> {
     const result = await this.memberService.createMember(payload);

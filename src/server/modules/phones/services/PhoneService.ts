@@ -22,11 +22,10 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
   @log()
   @safeGuard()
-  async createPhone(payload: PhoneDTO): Promise<Result<number>> {
+  async createPhone(payload: PhoneDTO): Promise<Result<Phone>> {
     const entity = this.wrapEntity(this.dao.model, payload);
-
     const phone = await this.dao.create(entity);
-    return Result.ok<number>(phone.id);
+    return Result.ok<Phone>(phone);
   }
 
   @log()
@@ -60,9 +59,8 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
   @log()
   @safeGuard()
-  async deletePhone(payload: number): Promise<Result<number>> {
-    const phone = await this.dao.get(payload);
-    await this.dao.remove(phone);
-    return Result.ok<number>(payload);
+  async deletePhone(payload: Phone): Promise<Result<number>> {
+    await this.dao.remove(payload);
+    return Result.ok<number>(payload.id);
   }
 }

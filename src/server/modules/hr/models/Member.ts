@@ -61,10 +61,10 @@ export class Member extends BaseModel<Member> {
   @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
   address?: Address;
 
-  @Property({ nullable: true })
+  @OneToOne({ entity: () => Phone, nullable: true })
   workPhone?: Phone;
 
-  @Property({ nullable: true })
+  @OneToOne({ entity: () => Phone, nullable: true })
   mobilePhone?: Phone;
 
   @Property({ nullable: true })
@@ -154,7 +154,7 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   emergencyContact?: string;
 
-  @Property({ nullable: true })
+  @OneToOne({ entity: () => Phone, nullable: true })
   emergencyPhone?: Phone;
 
   @Property({ columnType: 'text', nullable: true })
