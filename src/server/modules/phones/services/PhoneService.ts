@@ -57,4 +57,12 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
     this.dao.repository.persist(phones);
     return Result.ok<number>(200);
   }
+
+  @log()
+  @safeGuard()
+  async deletePhone(payload: number): Promise<Result<number>> {
+    const phone = await this.dao.get(payload);
+    await this.dao.remove(phone);
+    return Result.ok<number>(payload);
+  }
 }

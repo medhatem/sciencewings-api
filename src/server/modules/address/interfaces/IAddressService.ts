@@ -5,4 +5,5 @@ import { Address } from '../models/AdressModel';
 export abstract class IAddressService {
   createAddress: (payload: Address) => Promise<Result<number>>;
   createBulkAddress: (payload: AddressOrganizationDTO[]) => Promise<Result<number>>;
+  deleteAddress: (id: number) => Promise<Result<number>>;
 }

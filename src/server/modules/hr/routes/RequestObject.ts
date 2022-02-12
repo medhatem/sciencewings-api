@@ -1,5 +1,5 @@
 import { dto, include } from 'dto-mapper';
-// import { Address, Phone, ResCountry, ResPartnerBank } from '../../..';
+import { Address, Phone, ResCountry, ResPartnerBank } from '../../..';
 
 @dto()
 export class CreateMemberRO {
@@ -21,16 +21,16 @@ export class CreateMemberRO {
   // job?: number;
   @include()
   jobTitle?: string;
-  // @include()
-  // address?: Address;
-  // @include()
-  // workPhone?: Phone;
-  // @include()
-  // mobilePhone?: Phone;
+  @include()
+  address?: Address;
+  @include()
+  workPhone?: Phone;
+  @include()
+  mobilePhone?: Phone;
   @include()
   workEmail?: string;
-  // @include()
-  // workLocation?: Address;
+  @include()
+  workLocation?: Address;
   // @include()
   // user?: number;
   // @include()
@@ -39,8 +39,8 @@ export class CreateMemberRO {
   // coach?: number;
   @include()
   memberType!: string;
-  // @include()
-  // addressHome?: Address;
+  @include()
+  addressHome?: Address;
   // @include()
   // country?: ResCountry;
   @include()
@@ -85,8 +85,8 @@ export class CreateMemberRO {
   studySchool?: string;
   @include()
   emergencyContact?: string;
-  // @include()
-  // emergencyPhone?: Phone;
+  @include()
+  emergencyPhone?: Phone;
   @include()
   notes?: string;
   @include()

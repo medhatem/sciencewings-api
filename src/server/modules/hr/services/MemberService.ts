@@ -1,3 +1,5 @@
+import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
+import { IAddressService } from '@modules/address/interfaces/IAddressService';
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '@modules/base/services/BaseService';
 import { Member } from '@modules/hr/models/Member';
@@ -17,6 +19,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
   constructor(
     public dao: MemberDao,
     public organizationService: IOrganizationService,
+    public addressService: IAddressService,
+    public phoneService: IPhoneService,
     public resourceService: IResourceService,
   ) {
     super(dao);
@@ -43,6 +47,56 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ currentOrg, currentRes });
   }
 
+  private async addAddressForMemeber(payload: CreateMemberRO): Promise<Result<any>> {
+    let createdAddress, createdWorkLocation, createdAddressHome;
+
+    if (payload.address) createdAddress = await this.addressService.createAddress(payload.address);
+    if (payload.workLocation) createdWorkLocation = await this.addressService.createAddress(payload.workLocation);
+    if (payload.addressHome) createdAddressHome = await this.addressService.createAddress(payload.addressHome);
+
+    if (createdAddress.isFailure) {
+      return Result.fail<number>(createdAddress.error);
+    } else if (createdWorkLocation.isFailure) {
+      await this.addressService.deleteAddress(createdAddress.getValue());
+      return Result.fail<number>(createdWorkLocation.error);
+    } else if (createdAddressHome.isFailure) {
+      await this.addressService.deleteAddress(createdAddress.getValue());
+      await this.addressService.deleteAddress(createdWorkLocation.getValue());
+      return Result.fail<number>(createdAddressHome.error);
+    }
+
+    const address = createdAddress.getValue();
+    const workLocation = createdWorkLocation.getValue();
+    const addressHome = createdAddressHome.getValue();
+
+    return Result.ok({ address, workLocation, addressHome });
+  }
+
+  private async addPhonesForMemeber(payload: CreateMemberRO): Promise<Result<any>> {
+    let createdWorkPhone, createdMobilePhone, createdEmergencyPhone;
+
+    if (payload.workPhone) createdWorkPhone = await this.phoneService.createPhone(payload.workPhone);
+    if (payload.mobilePhone) createdMobilePhone = await this.phoneService.createPhone(payload.mobilePhone);
+    if (payload.emergencyPhone) createdEmergencyPhone = await this.phoneService.createPhone(payload.emergencyPhone);
+
+    if (createdWorkPhone.isFailure) {
+      return Result.fail<number>(createdWorkPhone.error);
+    } else if (createdMobilePhone.isFailure) {
+      await this.phoneService.deletePhone(createdWorkPhone.getValue());
+      return Result.fail<number>(createdMobilePhone.error);
+    } else if (createdEmergencyPhone.isFailure) {
+      await this.phoneService.deletePhone(createdWorkPhone.getValue());
+      await this.phoneService.deletePhone(createdMobilePhone.getValue());
+      return Result.fail<number>(createdEmergencyPhone.error);
+    }
+
+    const workPhone = createdWorkPhone.getValue();
+    const mobilePhone = createdMobilePhone.getValue();
+    const emergencyPhone = createdEmergencyPhone.getValue();
+
+    return Result.ok({ workPhone, mobilePhone, emergencyPhone });
+  }
+
   @log()
   @safeGuard()
   @validate(CreateMemberSchema)
@@ -51,11 +105,25 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (existance.isFailure) return Result.fail<number>(existance.error);
     const { currentOrg, currentRes } = await existance.getValue();
 
+    const addresss = await this.addAddressForMemeber(payload);
+    if (addresss.isFailure) return Result.fail<number>(addresss.error);
+    const { address, workLocation, addressHome } = await addresss.getValue();
+
+    const phones = await this.addAddressForMemeber(payload);
+    if (phones.isFailure) return Result.fail<number>(existance.error);
+    const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
+
     const member: Member = {
       id: null,
       ...payload,
       organization: currentOrg.getValue(),
       resource: currentRes.getValue(),
+      address,
+      workLocation,
+      addressHome,
+      workPhone,
+      mobilePhone,
+      emergencyPhone,
     };
 
     const createdMember = await this.create(member);

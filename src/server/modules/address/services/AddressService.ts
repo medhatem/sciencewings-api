@@ -21,8 +21,8 @@ export class AddressService extends BaseService<Address> implements IAddressServ
   @log()
   @safeGuard()
   async createAddress(payload: Address): Promise<Result<number>> {
-    const phone = await this.dao.create(payload);
-    return Result.ok<number>(phone.id);
+    const address = await this.dao.create(payload);
+    return Result.ok<number>(address.id);
   }
 
   @log()
@@ -34,5 +34,13 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     });
 
     return Result.ok<number>(200);
+  }
+
+  @log()
+  @safeGuard()
+  async deleteAddress(payload: number): Promise<Result<number>> {
+    const address = await this.dao.get(payload);
+    await this.dao.remove(address);
+    return Result.ok<number>(payload);
   }
 }

@@ -7,4 +7,5 @@ export abstract class IPhoneService {
   createPhone: (payload: PhoneDTO) => Promise<Result<number>>;
   createBulkPhoneForUser: (payload: PhoneDTO[], entity: User) => Promise<Result<number>>;
   createBulkPhoneForOrganization: (payload: PhoneDTO[], entity: Organization) => Promise<Result<number>>;
+  deletePhone: (id: number) => Promise<Result<number>>;
 }
