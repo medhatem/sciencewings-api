@@ -53,11 +53,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    const _user = await this.userService.getUserByCriteria({ id: userId });
-    if (!_user) {
+    const fetchedUser = await this.userService.getUserByCriteria({ id: userId });
+    if (fetchedUser.isFailure) {
       return Result.fail<number>(`User with id: ${userId} parent does not exist`);
     }
-    const user = _user.getValue();
+    const user = fetchedUser.getValue();
 
     let adminContact;
     if (payload.adminContact) {

@@ -39,6 +39,6 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       return new CreateResourceDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreateResourceDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+    return new CreateResourceDTO().serialize({ body: { resourceId: result.getValue(), statusCode: 201 } });
   }
 }
