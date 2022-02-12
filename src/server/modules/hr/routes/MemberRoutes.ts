@@ -37,7 +37,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
 
   @PUT
   @Path('/update/:id')
-  // @Security('', KEYCLOAK_TOKEN)
+  @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async createUpdateMember(payload: CreateMemberRO, @PathParam('id') id: number): Promise<MemberDTO> {
     const result = await this.memberService.updateMember(payload, id);
