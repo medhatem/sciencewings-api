@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@di/index';
-import { BaseService } from '@modules/base/services/BaseService';
+import { BaseService } from '../../base/services/BaseService';
 import { Group, GroupDAO, IGroupService } from '..';
 
 @provideSingleton(IGroupService)

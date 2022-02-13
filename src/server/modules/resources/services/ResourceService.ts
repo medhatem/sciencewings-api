@@ -1,3 +1,4 @@
+import { UpdateResourceSchema } from './../schemas/CreateResourceSchema';
 import { Result } from '@utils/Result';
 import { container, provideSingleton } from '@di/index';
 import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
@@ -8,7 +9,7 @@ import { CreateResourceRO } from '../routes/RequestObject';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
-import { ResourceCalendar } from '@modules/resources/models/ResourceCalendar';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { IResourceCalendarService, IResourceService } from '../interfaces';
 import { IUserService } from '../../users/interfaces';
 import { IOrganizationService } from '../../organizations/interfaces';

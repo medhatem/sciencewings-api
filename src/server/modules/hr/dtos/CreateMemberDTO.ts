@@ -1,4 +1,4 @@
-import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '@modules/base/dtos/BaseDTO';
+import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '../../base/dtos/BaseDTO';
 import { dto, include } from 'dto-mapper';
 
 @dto()

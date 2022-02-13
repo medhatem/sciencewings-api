@@ -7,13 +7,12 @@ import { Group } from './Group';
 import { Job } from './Job';
 import { Organization } from '../../organizations/models/Organization';
 import { ResCountry } from '../../organizations/models/ResCountry';
-import { ResPartner } from '../../organizations/models/ResPartner';
 import { ResPartnerBank } from '../../organizations/models/ResPartnerBank';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { Resource } from '../../resources/models/Resource';
 import { User } from '../../users/models/User';
 import { WorkLocation } from './WorkLocation';
-import { Phone } from '@modules/phones/models/Phone';
+import { Phone } from '../../phones/models/Phone';
 import { Address } from '../../..';
 
 @provideSingleton()
