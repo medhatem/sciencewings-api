@@ -3,8 +3,9 @@ var process = require('process');
 
 const serverModulesFolder = 'src/server/modules';
 const swaggerConfigFile = 'swaggerConfig.json';
+const dtosIndexPath = 'dtos/index.ts';
 
-fs.readdir(serverModulesFolder, function (err, folders) {
+fs.readdir(serverModulesFolder, function (err, modulesFolder) {
   if (err) {
     console.error('import-dtos.js .Could not list the directory folders.', err);
     process.exit(1);
@@ -17,9 +18,9 @@ fs.readdir(serverModulesFolder, function (err, folders) {
   const entryFile = ['./src/server/routes/index.ts'];
   // loop on modules folders to get names of the modules
   // add path for each module's index.ts
-  folders.forEach(function (moduleFolder) {
-    if (fs.statSync(serverModulesFolder + '/' + moduleFolder).isDirectory()) {
-      entryFile.push(`./src/server/modules/${moduleFolder}/dtos/index.ts`);
+  modulesFolder.forEach(function (moduleFolder) {
+    if (fs.statSync(`${serverModulesFolder}/${moduleFolder}`).isDirectory()) {
+      entryFile.push(`./${serverModulesFolder}/${moduleFolder}/${dtosIndexPath}`);
     }
   });
   // add and write the data into file
