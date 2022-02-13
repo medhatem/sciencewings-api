@@ -10,7 +10,7 @@ import { UpdateMemberDTO } from '../dtos/UpdateMemberDTO';
 @Path('member')
 export class MemberRoutes extends BaseRoutes<Member> {
   constructor(private MemberRoutes: MemberService) {
-    super(MemberRoutes, MemberDTO, UpdateMemberDTO);
+    super(MemberRoutes, new MemberDTO(), new UpdateMemberDTO());
     console.log(this.MemberRoutes);
   }
 

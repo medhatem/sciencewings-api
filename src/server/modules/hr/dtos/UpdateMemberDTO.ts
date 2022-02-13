@@ -1,5 +1,6 @@
+import { Member } from './../models/Member';
 import { BaseRequestDTO } from '../../base/dtos/BaseDTO';
-import { dto } from 'dto-mapper';
+import { Serializable } from 'typescript-json-serializer';
 
-@dto()
-export class UpdateMemberDTO extends BaseRequestDTO {}
+@Serializable()
+export class UpdateMemberDTO extends BaseRequestDTO<Member> {}

@@ -1,5 +1,6 @@
+import { Contract } from './../models/Contract';
 import { BaseRequestDTO } from '../../base/dtos/BaseDTO';
-import { dto } from 'dto-mapper';
+import { Serializable } from 'typescript-json-serializer';
 
-@dto()
-export class UpdateContractDTO extends BaseRequestDTO {}
+@Serializable()
+export class UpdateContractDTO extends BaseRequestDTO<Contract> {}

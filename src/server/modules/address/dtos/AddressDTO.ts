@@ -1,26 +1,26 @@
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { AddressType } from '../../address/models/AdressModel';
 
-@dto()
+@Serializable()
 export class AddressOrganizationDTO {
-  @include()
+  @JsonProperty()
   country: string;
 
-  @include()
+  @JsonProperty()
   province: string;
 
-  @include()
+  @JsonProperty()
   code: string;
 
-  @include()
+  @JsonProperty()
   type: AddressType;
 
-  @include()
+  @JsonProperty()
   city: string;
 
-  @include()
+  @JsonProperty()
   street: string;
 
-  @include()
+  @JsonProperty()
   appartement: number;
 }

@@ -1,58 +1,58 @@
 import { AddressOrganizationDTO } from '../../address/dtos/AddressDTO';
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
 
-@dto()
+@Serializable()
 export class CreateOrganizationRO {
-  @include()
+  @JsonProperty()
   name: string;
 
-  @include()
+  @JsonProperty()
   email: string;
 
-  @include()
+  @JsonProperty()
   phones: PhoneDTO[];
 
-  @include()
+  @JsonProperty()
   type: string;
 
-  @include()
+  @JsonProperty()
   address: AddressOrganizationDTO[];
 
-  @include()
+  @JsonProperty()
   labels: string[];
 
-  @include()
+  @JsonProperty()
   members: number[];
 
-  @include()
+  @JsonProperty()
   direction: number;
 
-  @include()
+  @JsonProperty()
   social_facebook?: string;
-  @include()
+  @JsonProperty()
   social_twitter?: string;
-  @include()
+  @JsonProperty()
   social_github?: string;
-  @include()
+  @JsonProperty()
   social_linkedin?: string;
-  @include()
+  @JsonProperty()
   social_youtube?: string;
-  @include()
+  @JsonProperty()
   social_instagram?: string;
 
-  @include()
+  @JsonProperty()
   adminContact: number;
 
-  @include()
+  @JsonProperty()
   parentId?: string;
 }
 
-@dto()
+@Serializable()
 export class UserInviteToOrgRO {
-  @include()
+  @JsonProperty()
   organizationId: number;
 
-  @include()
+  @JsonProperty()
   email: string;
 }

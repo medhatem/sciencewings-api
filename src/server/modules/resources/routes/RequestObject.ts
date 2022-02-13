@@ -1,49 +1,49 @@
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-@dto()
+@Serializable()
 export class CreateResourceCalendarRO {
-  @include()
+  @JsonProperty()
   name!: string;
 
-  @include()
+  @JsonProperty()
   active?: boolean;
 
-  @include()
+  @JsonProperty()
   organization?: number;
 
-  @include()
+  @JsonProperty()
   hoursPerDay?: number;
 
-  @include()
+  @JsonProperty()
   timezone!: string;
 
-  @include()
+  @JsonProperty()
   twoWeeksCalendar?: boolean;
 }
 
-@dto()
+@Serializable()
 export class CreateResourceRO {
-  @include()
+  @JsonProperty()
   name: string;
 
-  @include()
+  @JsonProperty()
   active?: boolean;
 
-  @include()
+  @JsonProperty()
   organization?: number;
 
-  @include()
+  @JsonProperty()
   resourceType!: string;
 
-  @include()
+  @JsonProperty()
   user?: number;
 
-  @include()
+  @JsonProperty()
   timeEfficiency!: number;
 
-  @include()
+  @JsonProperty()
   timezone!: string;
 
-  @include()
+  @JsonProperty()
   calendar!: CreateResourceCalendarRO;
 }

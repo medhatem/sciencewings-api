@@ -1,19 +1,19 @@
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-@dto()
+@Serializable()
 export class PhoneDTO {
-  @include()
+  @JsonProperty()
   label: string;
 
-  @include()
+  @JsonProperty()
   code: string;
 
-  @include()
+  @JsonProperty()
   number: string;
 
-  @include()
+  @JsonProperty()
   userId?: number;
 
-  @include()
+  @JsonProperty()
   organizationId?: number;
 }

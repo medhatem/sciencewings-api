@@ -3,55 +3,58 @@ import { BaseModel } from '../../base/models/BaseModel';
 import { provideSingleton } from '@di/index';
 import { Path, GET, PUT, PathParam, DELETE, Security } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
-import { BaseDTO, BaseRequestDTO } from '../dtos/BaseDTO';
-import { buildMapper, Class, IMapper } from 'dto-mapper';
+import { BaseRequestDTO } from '../dtos/BaseDTO';
 import { Logger } from '@utils/Logger';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 
 @provideSingleton()
 export class BaseRoutes<T extends BaseModel<T>> {
-  private getDTOMapper: IMapper<BaseRequestDTO, unknown>;
-  private updateDTOMapper: IMapper<BaseRequestDTO, unknown>;
+  private getDTOMapper: BaseRequestDTO<T>;
+  private updateDTOMapper: BaseRequestDTO<T>;
   public logger: Logger;
   constructor(
     private service: BaseService<T>,
-    private baseGetDTO: Class<BaseRequestDTO>,
-    private baseUpdateDTO: Class<BaseRequestDTO>,
+    private baseGetDTO: BaseRequestDTO<T>,
+    private baseUpdateDTO: BaseRequestDTO<T>,
   ) {
-    this.getDTOMapper = this.getMapperFromRequest(this.baseGetDTO);
-    this.updateDTOMapper = this.getMapperFromRequest(this.baseUpdateDTO);
+    this.getDTOMapper = this.baseGetDTO;
+    this.updateDTOMapper = this.baseUpdateDTO;
     this.logger = Logger.getInstance();
   }
 
-  /**
-   *
-   * @param dto the dto to get the mapper for
-   */
-  getMapperFromRequest<EntityT, dtoT extends BaseRequestDTO>(dto: Class<dtoT>): IMapper<dtoT, unknown> {
-    return buildMapper(dto);
-  }
+  // buildMapper<EntityT, dtoT extends BaseRequestDTO<T>>(dto: dtoT): dtoT {
+  //   return dto.deserialize()
+  // }
 
   /**
    *
    * @param dto the dto to get the mapper for
    */
-  getMapper<EntityT, dtoT extends BaseDTO>(dto: Class<dtoT>): IMapper<dtoT, unknown> {
-    return buildMapper(dto);
-  }
+  // getMapperFromRequest<EntityT, dtoT extends BaseRequestDTO<T>>(dto: dtoT): dtoT {
+  //   return buildMapper(dto);
+  // }
 
   /**
    *
    * @param dto the dto to get the mapper for
    */
-  getRequestMapper<EntityT, dtoT>(dto: Class<dtoT>): IMapper<dtoT, unknown> {
-    return buildMapper(dto);
-  }
+  // getMapper<EntityT, dtoT extends BaseDTO>(dto:dtoT): dtoT {
+  //   return buildMapper(dto);
+  // }
+
+  // /**
+  //  *
+  //  * @param dto the dto to get the mapper for
+  //  */
+  // getRequestMapper<EntityT, dtoT>(dto: dtoT): dtoT {
+  //   return buildMapper(dto);
+  // }
 
   @GET
   @Path('/getById/:id')
   @Security([], KEYCLOAK_TOKEN)
   @Response(200, 'success')
-  public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
+  public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO<T>> {
     const result = await this.service.get(id);
     if (!result) {
       return this.getDTOMapper.serialize({

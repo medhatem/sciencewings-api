@@ -1,10 +1,10 @@
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-@dto()
+@Serializable()
 export class GetUserOrganizationDTO {
-  @include()
+  @JsonProperty()
   id: number;
 
-  @include()
+  @JsonProperty()
   name: string;
 }
