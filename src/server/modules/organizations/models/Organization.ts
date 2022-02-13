@@ -56,17 +56,17 @@ export class Organization extends BaseModel<Organization> {
   members? = new Collection<User>(this);
 
   @Property({ nullable: true })
-  social_facebook?: string;
+  socialFacebook?: string;
   @Property({ nullable: true })
-  social_twitter?: string;
+  socialTwitter?: string;
   @Property({ nullable: true })
-  social_github?: string;
+  socialGithub?: string;
   @Property({ nullable: true })
-  social_linkedin?: string;
+  socialLinkedin?: string;
   @Property({ nullable: true })
-  social_youtube?: string;
+  socialYoutube?: string;
   @Property({ nullable: true })
-  social_instagram?: string;
+  socialInstagram?: string;
 
   @OneToOne({
     entity: () => User,
