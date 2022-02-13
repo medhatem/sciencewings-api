@@ -4,13 +4,13 @@ import { Configuration } from './configuration/Configuration';
 import { Server } from './Server';
 import { container } from './di';
 
-export * from '@modules/users';
-export * from '@modules/base';
-export * from '@modules/hr';
-export * from '@modules/organizations';
-export * from '@modules/resources';
-export * from '@modules/address';
-export * from '@modules/phones';
+export * from './modules/users';
+export * from './modules/base';
+export * from './modules/hr';
+export * from './modules/organizations';
+export * from './modules/resources';
+export * from './modules/address';
+export * from './modules/phones';
 
 container.initialize();
 

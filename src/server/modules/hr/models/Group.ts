@@ -1,9 +1,9 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
-import { BaseModel } from '@modules//base/models/BaseModel';
+import { BaseModel } from '../..//base/models/BaseModel';
 import { Member } from './Member';
-import { Organization } from '@modules/organizations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 
 @provideSingleton()
 @Entity()

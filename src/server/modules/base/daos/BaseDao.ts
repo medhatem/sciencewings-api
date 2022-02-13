@@ -1,6 +1,6 @@
 import { EntityRepository, GetRepository } from '@mikro-orm/core';
 
-import { BaseModel } from '@modules/base/models/BaseModel';
+import { BaseModel } from '../../base/models/BaseModel';
 import { Logger } from '../../../utils/Logger';
 import { ServerError } from '../../../errors/ServerError';
 import { connection } from '../../../db/index';

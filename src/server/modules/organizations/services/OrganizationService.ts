@@ -1,12 +1,12 @@
 import { container, provideSingleton } from '@di/index';
-import { BaseService } from '@modules/base/services/BaseService';
+import { BaseService } from '../../base/services/BaseService';
 import { Collection } from '@mikro-orm/core';
 import { CreateOrganizationRO } from '../routes/RequestObject';
 import { IOrganizationService } from '../interfaces/IOrganizationService';
-import { Organization } from '@modules/organizations/models/Organization';
+import { Organization } from '../../organizations/models/Organization';
 import { OrganizationDao } from '../daos/OrganizationDao';
 import { Result } from '@utils/Result';
-import { User } from '@modules/users/models/User';
+import { User } from '../../users/models/User';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { EmailMessage } from '../../../types/types';
@@ -14,10 +14,10 @@ import { Email } from '@utils/Email';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import createSchema from '../schemas/createOrganizationSchema';
 import { getConfig } from './../../../configuration/Configuration';
-import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
-import { IAddressService } from '@modules/address/interfaces/IAddressService';
-import { IUserService } from '@modules/users/interfaces';
-import { IOrganizationLabelService } from '@modules/organizations/interfaces/IOrganizationLabelService';
+import { IPhoneService } from '../../phones/interfaces/IPhoneService';
+import { IAddressService } from '../../address/interfaces/IAddressService';
+import { IUserService } from '../../users/interfaces';
+import { IOrganizationLabelService } from '../../organizations/interfaces/IOrganizationLabelService';
 import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
 
 @provideSingleton(IOrganizationService)

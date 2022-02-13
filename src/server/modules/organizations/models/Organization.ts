@@ -1,10 +1,10 @@
-import { Address } from '@modules/address/models/AdressModel';
+import { Address } from '../../address/models/AdressModel';
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@di/index';
-import { BaseModel } from '@modules/base/models/BaseModel';
-import { User } from '@modules/users/models/User';
-import { OrganizationLabel } from '@modules/organizations/models/OrganizationLabel';
-import { Phone } from '@modules/phones/models/Phone';
+import { BaseModel } from '../../base/models/BaseModel';
+import { User } from '../../users/models/User';
+import { OrganizationLabel } from '../../organizations/models/OrganizationLabel';
+import { Phone } from '../../phones/models/Phone';
 
 export enum OrganizationType {
   PUBLIC = 'Public',

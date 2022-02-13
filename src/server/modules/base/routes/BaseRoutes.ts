@@ -1,5 +1,5 @@
-import { BaseService } from '@modules/base/services/BaseService';
-import { BaseModel } from '@modules/base/models/BaseModel';
+import { BaseService } from '../../base/services/BaseService';
+import { BaseModel } from '../../base/models/BaseModel';
 import { provideSingleton } from '@di/index';
 import { Path, GET, PUT, PathParam, DELETE, Security } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';

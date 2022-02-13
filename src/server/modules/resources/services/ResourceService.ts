@@ -1,17 +1,17 @@
 import { Result } from '@utils/Result';
 import { container, provideSingleton } from '@di/index';
-import { CreateResourceSchema, UpdateResourceSchema } from '@modules/resources/schemas/CreateResourceSchema';
-import { BaseService } from '@modules/base/services/BaseService';
-import { Resource } from '@modules/resources/models/Resource';
-import { ResourceDao } from '@modules/resources/daos/ResourceDao';
-import { CreateResourceRO } from '@modules/resources/routes/RequestObject';
+import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
+import { BaseService } from '../../base/services/BaseService';
+import { Resource } from '../../resources/models/Resource';
+import { ResourceDao } from '../daos/ResourceDao';
+import { CreateResourceRO } from '../routes/RequestObject';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import { ResourceCalendar } from '@modules/resources/models/ResourceCalendar';
 import { IResourceCalendarService, IResourceService } from '../interfaces';
-import { IUserService } from '@modules/users/interfaces';
-import { IOrganizationService } from '@modules/organizations/interfaces';
+import { IUserService } from '../../users/interfaces';
+import { IOrganizationService } from '../../organizations/interfaces';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {

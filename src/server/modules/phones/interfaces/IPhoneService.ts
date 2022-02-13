@@ -1,8 +1,8 @@
 import { Phone } from '@modules/phones/models/Phone';
 import { Result } from '@utils/Result';
 import { PhoneDTO } from '../dtos/PhoneDTO';
-import { Organization } from '@modules/organizations/models/Organization';
-import { User } from '@modules/users/models/User';
+import { Organization } from '../../organizations/models/Organization';
+import { User } from '../../users/models/User';
 import { IBaseService } from '@modules/base/interfaces/IBaseService';
 
 export abstract class IPhoneService extends IBaseService<any> {

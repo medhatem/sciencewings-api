@@ -1,7 +1,7 @@
 import { AssignOptions, wrap } from '@mikro-orm/core';
 
 import { BaseDao } from '../daos/BaseDao';
-import { BaseModel } from '@modules/base/models/BaseModel';
+import { BaseModel } from '../../base/models/BaseModel';
 import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@sdks/keycloak';
 import { Logger } from '../../../utils/Logger';

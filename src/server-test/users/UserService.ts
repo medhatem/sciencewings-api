@@ -1,9 +1,9 @@
 // import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 
 // import { IUser } from '../../server/interface';
-// import { UserDao } from '@modules/users/daos/UserDao';
-// import { UserRO } from '@modules/users/routes/RequestObject';
-// import { UserService } from '@modules/users/services/UserService';
+// import { UserDao } from '../../users/daos/UserDao';
+// import { UserRO } from '../../users/routes/RequestObject';
+// import { UserService } from '../../users/services/UserService';
 // import { ValidatonError } from '../../server/errors/ValidationError';
 // import { container } from '../../server/di';
 // import intern from 'intern';

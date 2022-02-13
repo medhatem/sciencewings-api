@@ -1,6 +1,6 @@
 import { KEYCLOAK_TOKEN } from './../../../authenticators/constants';
 import { container, provideSingleton } from '@di/index';
-import { BaseRoutes } from '@modules/base/routes/BaseRoutes';
+import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Resource } from '../models/Resource';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { ResourceDTO } from '../dtos/ResourceDTO';

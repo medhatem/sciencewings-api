@@ -27,7 +27,7 @@ export class Configuration {
     this.config = {
       currentENV: (process.env.ENV as 'dev' | 'prod' | 'staging') || 'dev',
       dev: {
-        baseConfig: { port: (process.env.PORT as any as number) || 3000 },
+        baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
         DB: {
           host: '127.0.0.1',
           dbUsername: 'localapi',
@@ -59,7 +59,7 @@ export class Configuration {
         },
       },
       staging: {
-        baseConfig: { port: (process.env.PORT as any as number) || 3000 },
+        baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
         DB: {
           host: 'api-dev.ctxnpdpnlwqz.ca-central-1.rds.amazonaws.com',
           dbUsername: 'postgres',
@@ -69,11 +69,11 @@ export class Configuration {
         },
         keycloak: {
           username: 'admin',
-          password: 'sciencewings-keycloak',
+          password: 'Pa55w0rd',
           grantType: 'password',
           clientId: 'admin-cli',
           realmName: 'master',
-          baseUrl: 'https://sciencewings-keycloak.herokuapp.com/auth',
+          baseUrl: 'http://keycloak-app-staging-env.eba-fsrexfym.ca-central-1.elasticbeanstalk.com/auth',
           clientValidation: {
             realmName: 'sciencewings-web',
           },
@@ -90,7 +90,7 @@ export class Configuration {
         },
       },
       prod: {
-        baseConfig: { port: (process.env.PORT as any as number) || 3000 },
+        baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
         DB: {
           host: '127.0.0.1',
           dbUsername: 'admin',

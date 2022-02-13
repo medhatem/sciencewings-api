@@ -1,17 +1,17 @@
-import { KeycloakIdRO, ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
-import { BaseService } from '@modules/base/services/BaseService';
+import { BaseService } from '../../base/services/BaseService';
 import { Email } from '@utils/Email';
-import { IUserService } from '@modules/users/interfaces/IUserService';
+import { IUserService } from '../../users/interfaces/IUserService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { Result } from '@utils/Result';
-import { User } from '@modules/users/models/User';
+import { User } from '../../users/models/User';
 import { UserDao } from '../daos/UserDao';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { IPhoneService } from '@modules/phones/interfaces/IPhoneService';
+import { IPhoneService } from '../../phones/interfaces/IPhoneService';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
@@ -153,10 +153,10 @@ export class UserService extends BaseService<User> implements IUserService {
 
   @log()
   @safeGuard()
-  async getUserByKeycloakId(payload: KeycloakIdRO): Promise<Result<User>> {
-    const user = await this.dao.getByCriteria({ keycloakId: payload.keycloakId });
+  async getUserByKeycloakId(payload: string): Promise<Result<User>> {
+    const user = await this.dao.getByCriteria({ keycloakId: payload });
     if (!user) {
-      return Result.fail(`User with KCID ${payload.keycloakId} does not exist.`);
+      return Result.fail(`User with KCID ${payload} does not exist.`);
     }
     return Result.ok<User>(user);
   }
