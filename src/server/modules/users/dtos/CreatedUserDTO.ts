@@ -1,7 +1,8 @@
-import { BaseErrorDTO } from '../../base/dtos/BaseDTO';
-import { ErrorDTO, UserIdDTO } from './RegisterUserFromTokenDTO';
-import { BaseRequestDTO } from '../../base/dtos/BaseDTO';
+import { ErrorDTO, UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { dto, include } from 'dto-mapper';
+
+import { BaseErrorDTO } from '../../base/dtos/BaseDTO';
+import { BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 
 @dto()
 export class CreatedUserDTO extends BaseRequestDTO {

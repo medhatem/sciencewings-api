@@ -5,13 +5,13 @@ import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
 import { UserRequest } from '../../../types/UserRequest';
-import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
-import { UserDTO } from '../dtos/UserDTO';
+import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
+import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
-import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
+import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
 import { Result } from '@utils/Result';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
-import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
+import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '../interfaces/IUserService';
 import { Organization } from '../../organizations';
 

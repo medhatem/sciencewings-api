@@ -5,11 +5,11 @@ import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { CreateOrganizationRO, UserInviteToOrgRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
-import { OrganizationDTO } from '../../organizations/dtos/OrganizationDTO';
+import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
-import { UpdateOrganizationDTO } from '../../organizations/dtos/UpdateOrganizationDTO';
-import { InviteUserDTO } from '../../organizations/dtos/InviteUserDTO';
+import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
+import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '../interfaces/IOrganizationService';
 
 @provideSingleton()

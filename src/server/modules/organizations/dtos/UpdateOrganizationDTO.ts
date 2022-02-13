@@ -1,5 +1,5 @@
+import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { dto, include } from 'dto-mapper';
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
 
 class BodyUpdateOrganizationDTO extends BaseBodyDTO {
   @include()

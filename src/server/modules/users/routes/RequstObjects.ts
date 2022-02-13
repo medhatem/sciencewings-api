@@ -1,5 +1,6 @@
-import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
 import { dto, include } from 'dto-mapper';
+
+import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 
 @dto()
 export class UserInviteToOrgRO {

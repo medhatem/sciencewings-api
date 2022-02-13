@@ -1,14 +1,15 @@
-import { KEYCLOAK_TOKEN } from './../../../authenticators/constants';
+import { POST, Path, Security } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
-import { Resource } from '../models/Resource';
-import { Path, POST, Security } from 'typescript-rest';
-import { ResourceDTO } from '../dtos/ResourceDTO';
-import { UpdateResourceDTO } from '../dtos/UpdateResourceDTO';
-import { CreateResourceDTO } from '../dtos/CreatedResourceDTO';
+import { CreateResourceDTO } from '@/modules/resources/dtos/CreatedResourceDTO';
 import { CreateResourceRO } from './RequestObject';
-import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { IResourceService } from '../interfaces';
+import { KEYCLOAK_TOKEN } from './../../../authenticators/constants';
+import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { Resource } from '../models/Resource';
+import { ResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
+import { UpdateResourceDTO } from '@/modules/resources/dtos/UpdateResourceDTO';
 
 @provideSingleton()
 @Path('resources')

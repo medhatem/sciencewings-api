@@ -15,7 +15,7 @@
     "stop-local-containers": "docker-compose -f devops/local/docker-compose.yml down",
     "start-staging-containers": "docker-compose -f devops/staging/docker-compose.yml up",
     "stop-staging-containers": "docker-compose -f devops/staging/docker-compose.yml down",
-    "swagger-gen": "node node_modules/typescript-rest-swagger/dist/cli.js -c ./swaggerConfig.json -p './src/server/tsconfig.json'",
+    "swagger-gen": "node node_modules/typescript-rest-swagger/dist/cli.js -c ./swaggerConfig.json -p './src/tsconfig.json'",
     "dev": "nodemon --ignore 'dist/**/swagger.json' --ignore 'dist/**/swagger.yaml'  ./dist/server/index.js ",
     "start": "node ./dist/server/index.js",
     "test": "intern config=src/server-test/intern.json",
@@ -32,7 +32,7 @@
     "@service": "dist/server/service",
     "@dao": "dist/server/dao",
     "@sdks": "dist/server/sdks",
-    "@modules": "dist/server/modules",
+    "@/modules": "dist/server/modules",
     "@utils": "dist/server/utils"
   },
   "repository": {
