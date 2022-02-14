@@ -1,7 +1,7 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
-export class PhoneDTO {
+export class PhoneRO {
   @JsonProperty()
   label: string;
 

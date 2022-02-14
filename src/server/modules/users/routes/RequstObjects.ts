@@ -1,4 +1,4 @@
-import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
+import { PhoneRO } from '../../phones/routes/PhoneRO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
@@ -25,7 +25,7 @@ export class UserDetailsRO {
   address: string;
 
   @JsonProperty()
-  phones: PhoneDTO[];
+  phones: PhoneRO[];
 
   @JsonProperty()
   dateofbirth: Date;

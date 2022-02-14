@@ -1,5 +1,5 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { PhoneDTO } from 'server';
+import { PhoneRO } from '../../phones/routes/PhoneRO';
 import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '../../base/dtos/BaseDTO';
 import { User } from '../models';
 @Serializable()
@@ -17,7 +17,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
   email: string;
 
   @JsonProperty()
-  phones: PhoneDTO[];
+  phones: PhoneRO[];
 
   @JsonProperty()
   keycloakId: string;

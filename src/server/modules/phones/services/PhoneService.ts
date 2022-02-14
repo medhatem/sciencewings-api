@@ -5,7 +5,7 @@ import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { Phone } from '../../phones/models/Phone';
 import { PhoneDao } from '../../phones/daos/PhoneDAO';
-import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
+import { PhoneRO } from '../routes/PhoneRO';
 import { Organization } from '../../organizations/models/Organization';
 import { User } from '../../users/models/User';
 import { IPhoneService } from '../interfaces/IPhoneService';
@@ -22,7 +22,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
   @log()
   @safeGuard()
-  async createPhone(payload: PhoneDTO): Promise<Result<Phone>> {
+  async createPhone(payload: PhoneRO): Promise<Result<Phone>> {
     const entity = this.wrapEntity(this.dao.model, payload);
     const phone = await this.dao.create(entity);
     return Result.ok<Phone>(phone);
@@ -30,7 +30,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
   @log()
   @safeGuard()
-  async createBulkPhoneForUser(payload: PhoneDTO[], entity: User): Promise<Result<number>> {
+  async createBulkPhoneForUser(payload: PhoneRO[], entity: User): Promise<Result<number>> {
     const phones = await Promise.all(
       payload.map(async (phone) => {
         const wrappedPhone = this.wrapEntity(this.dao.model, phone);
@@ -44,7 +44,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
   @log()
   @safeGuard()
-  async createBulkPhoneForOrganization(payload: PhoneDTO[], entity: Organization): Promise<Result<number>> {
+  async createBulkPhoneForOrganization(payload: PhoneRO[], entity: Organization): Promise<Result<number>> {
     const phones = await Promise.all(
       payload.map(async (phone) => {
         const wrappedPhone = this.wrapEntity(this.dao.model, phone);

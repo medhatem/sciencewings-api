@@ -1,5 +1,6 @@
+import { AddressRO } from './../../address/routes/AddressRO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { Address, Phone } from '../../..';
+import { PhoneRO } from '../../..';
 
 @Serializable()
 export class ContractRO {
@@ -79,15 +80,15 @@ export class CreateMemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: Address;
+  address?: AddressRO;
   @JsonProperty()
-  workPhone?: Phone;
+  workPhone?: PhoneRO;
   @JsonProperty()
-  mobilePhone?: Phone;
+  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: Address;
+  workLocation?: AddressRO;
   // @JsonProperty()
   // user?: number;
   // @JsonProperty()
@@ -97,7 +98,7 @@ export class CreateMemberRO {
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: Address;
+  addressHome?: AddressRO;
   // @JsonProperty()
   // country?: ResCountry;
   @JsonProperty()
@@ -143,7 +144,7 @@ export class CreateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: Phone;
+  emergencyPhone?: PhoneRO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
@@ -173,15 +174,15 @@ export class UpdateMemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: Address;
+  address?: AddressRO;
   @JsonProperty()
-  workPhone?: Phone;
+  workPhone?: PhoneRO;
   @JsonProperty()
-  mobilePhone?: Phone;
+  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: Address;
+  workLocation?: AddressRO;
   // @JsonProperty()
   // user?: number;
   // @JsonProperty()
@@ -191,7 +192,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: Address;
+  addressHome?: AddressRO;
   // @JsonProperty()
   // country?: ResCountry;
   @JsonProperty()
@@ -237,7 +238,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: Phone;
+  emergencyPhone?: PhoneRO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
