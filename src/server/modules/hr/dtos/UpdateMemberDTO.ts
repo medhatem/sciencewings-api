@@ -4,3 +4,7 @@ import { Serializable } from 'typescript-json-serializer';
 
 @Serializable()
 export class UpdateMemberDTO extends BaseRequestDTO<Member> {}
+
+  @include()
+  public error?: BaseErrorDTO;
+}

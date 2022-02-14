@@ -20,9 +20,9 @@ export class AddressService extends BaseService<Address> implements IAddressServ
 
   @log()
   @safeGuard()
-  async createAddress(payload: Address): Promise<Result<number>> {
-    const phone = await this.dao.create(payload);
-    return Result.ok<number>(phone.id);
+  async createAddress(payload: Address): Promise<Result<Address>> {
+    const address = await this.dao.create(payload);
+    return Result.ok<Address>(address);
   }
 
   @log()

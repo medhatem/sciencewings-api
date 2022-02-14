@@ -9,7 +9,7 @@ export class PhoneDTO {
   code: string;
 
   @JsonProperty()
-  number: string;
+  number: number;
 
   @JsonProperty()
   userId?: number;

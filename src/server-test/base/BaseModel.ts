@@ -1,4 +1,4 @@
-import { BaseModel } from '@modules/base/models/BaseModel';
+import { BaseModel } from './../../server/modules/base/models/BaseModel';
 import intern from 'intern';
 import { restore } from 'sinon';
 

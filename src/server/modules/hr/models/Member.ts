@@ -7,12 +7,13 @@ import { Group } from './Group';
 import { Job } from './Job';
 import { Organization } from '../../organizations/models/Organization';
 import { ResCountry } from '../../organizations/models/ResCountry';
-import { ResPartner } from '../../organizations/models/ResPartner';
 import { ResPartnerBank } from '../../organizations/models/ResPartnerBank';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { Resource } from '../../resources/models/Resource';
 import { User } from '../../users/models/User';
 import { WorkLocation } from './WorkLocation';
+import { Phone } from '../../phones/models/Phone';
+import { Address } from '../../..';
 
 @provideSingleton()
 @Entity()
@@ -58,14 +59,14 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   jobTitle?: string;
 
-  @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true })
-  address?: ResPartner;
+  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
+  address?: Address;
 
-  @Property({ nullable: true })
-  workPhone?: string;
+  @OneToOne({ entity: () => Phone, nullable: true })
+  workPhone?: Phone;
 
-  @Property({ nullable: true })
-  mobilePhone?: string;
+  @OneToOne({ entity: () => Phone, nullable: true })
+  mobilePhone?: Phone;
 
   @Property({ nullable: true })
   workEmail?: string;
@@ -85,8 +86,8 @@ export class Member extends BaseModel<Member> {
   @Property()
   memberType!: string;
 
-  @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true })
-  addressHome?: ResPartner;
+  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
+  addressHome?: Address;
 
   @ManyToOne({ entity: () => ResCountry, onDelete: 'set null', nullable: true })
   country?: ResCountry;
@@ -154,8 +155,8 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   emergencyContact?: string;
 
-  @Property({ nullable: true })
-  emergencyPhone?: string;
+  @OneToOne({ entity: () => Phone, nullable: true })
+  emergencyPhone?: Phone;
 
   @Property({ columnType: 'text', nullable: true })
   notes?: string;
