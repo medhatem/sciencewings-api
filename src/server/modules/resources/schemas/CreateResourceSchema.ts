@@ -9,13 +9,23 @@ export const ResourceCalendarSchema = Joi.object({
   twoWeeksCalendar: Joi.boolean(),
 });
 
-export const CreateResourceSchema = Joi.object({
-  name: Joi.string().required(),
+const ResourceSchema = Joi.object({
   active: Joi.boolean(),
   organization: Joi.number(),
-  resourceType: Joi.string().required(),
   user: Joi.number(),
-  timeEfficiency: Joi.number().required(),
   timezone: Joi.string(),
+});
+
+export const CreateResourceSchema = ResourceSchema.keys({
+  name: Joi.string().required(),
+  resourceType: Joi.string().required(),
+  timeEfficiency: Joi.number().required(),
   calendar: ResourceCalendarSchema.required(),
+});
+
+export const UpdateResourceSchema = ResourceSchema.keys({
+  name: Joi.string(),
+  resourceType: Joi.string(),
+  timeEfficiency: Joi.number(),
+  calendar: ResourceCalendarSchema,
 });

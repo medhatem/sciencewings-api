@@ -38,21 +38,32 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @log()
   @safeGuard()
   public async create(entry: T): Promise<Result<any>> {
-    return Result.ok<any>(this.dao.create(entry));
+    try {
+      return Result.ok<any>(await this.dao.create(entry));
+    } catch (error) {
+      return Result.fail(error);
+    }
   }
 
   @log()
   @safeGuard()
   public async update(entry: T): Promise<Result<any>> {
-    const entity = this.wrapEntity(this.dao.model, entry);
-    return Result.ok<any>(this.dao.update(entity));
+    try {
+      return Result.ok<any>(this.dao.update(entry));
+    } catch (error) {
+      return Result.fail(error);
+    }
   }
 
   @log()
   @safeGuard()
   public async remove(id: number): Promise<Result<number>> {
-    const entity = this.wrapEntity(this.dao.model, { id });
-    return Result.ok<any>(await this.dao.remove(entity));
+    try {
+      const entity = this.wrapEntity(this.dao.model, { id });
+      return Result.ok<any>(await this.dao.remove(entity));
+    } catch (error) {
+      return Result.fail(error);
+    }
   }
 
   @LoggerStorage()

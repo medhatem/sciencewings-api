@@ -9,7 +9,7 @@ export class PhoneDTO {
   code: string;
 
   @include()
-  number: string;
+  number: number;
 
   @include()
   userId?: number;
