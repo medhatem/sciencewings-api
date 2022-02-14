@@ -4,6 +4,9 @@ import { AddressType } from '../../address/models/AdressModel';
 @Serializable()
 export class AddressRO {
   @JsonProperty()
+  id: number;
+
+  @JsonProperty()
   country: string;
 
   @JsonProperty()
