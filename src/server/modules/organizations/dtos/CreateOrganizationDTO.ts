@@ -1,17 +1,18 @@
-import { dto, include } from 'dto-mapper';
+import { Organization } from './../models/Organization';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
 
-@dto()
+@Serializable()
 export class RegisterUserFromTokenBodyDTO extends BaseBodyDTO {
-  @include()
+  @JsonProperty()
   id: number;
 }
 
-@dto()
-export class CreateOrganizationDTO extends BaseRequestDTO {
-  @include()
+@Serializable()
+export class CreateOrganizationDTO extends BaseRequestDTO<Organization> {
+  @JsonProperty()
   body?: RegisterUserFromTokenBodyDTO = new RegisterUserFromTokenBodyDTO();
 
-  @include()
+  @JsonProperty()
   public error?: BaseErrorDTO;
 }

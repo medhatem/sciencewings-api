@@ -14,7 +14,7 @@ import { UpdateMemberDTO } from '../../hr/dtos/UpdateMemberDTO';
 @Path('members')
 export class MemberRoutes extends BaseRoutes<Member> {
   constructor(private memberService: IMemberService) {
-    super(memberService as any, CreateMemberDTO, UpdateMemberDTO);
+    super(memberService as any, new CreateMemberDTO(), new UpdateMemberDTO());
   }
 
   static getInstance(): MemberRoutes {

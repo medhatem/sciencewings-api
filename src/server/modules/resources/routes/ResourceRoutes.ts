@@ -14,7 +14,7 @@ import { IResourceService } from '../interfaces';
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: IResourceService) {
-    super(ResourceService as any, ResourceDTO, UpdateResourceDTO);
+    super(ResourceService as any, new ResourceDTO(), new UpdateResourceDTO());
     console.log(this.ResourceService);
   }
 

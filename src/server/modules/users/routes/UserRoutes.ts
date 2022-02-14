@@ -19,7 +19,7 @@ import { Organization } from '../../organizations';
 @Path('users')
 export class UserRoutes extends BaseRoutes<User> {
   constructor(private userService: IUserService) {
-    super(userService as any, UserDTO, UpdateUserDTO);
+    super(userService as any, new UserDTO(), new UpdateUserDTO());
   }
 
   static getInstance(): UserRoutes {

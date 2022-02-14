@@ -1,190 +1,190 @@
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { Address, Phone } from '../../..';
 
-@dto()
+@Serializable()
 export class CreateMemberRO {
-  @include()
+  @JsonProperty()
   id: number;
-  @include()
+  @JsonProperty()
   resource!: number;
-  @include()
+  @JsonProperty()
   organization!: number;
-  // @include()
+  // @JsonProperty()
   // resourceCalendar?: number;
-  @include()
+  @JsonProperty()
   name?: string;
-  @include()
+  @JsonProperty()
   active?: boolean;
-  // @include()
+  // @JsonProperty()
   // group?: number;
-  // @include()
+  // @JsonProperty()
   // job?: number;
-  @include()
+  @JsonProperty()
   jobTitle?: string;
-  @include()
+  @JsonProperty()
   address?: Address;
-  @include()
+  @JsonProperty()
   workPhone?: Phone;
-  @include()
+  @JsonProperty()
   mobilePhone?: Phone;
-  @include()
+  @JsonProperty()
   workEmail?: string;
-  @include()
+  @JsonProperty()
   workLocation?: Address;
-  // @include()
+  // @JsonProperty()
   // user?: number;
-  // @include()
+  // @JsonProperty()
   // parent?: number;
-  // @include()
+  // @JsonProperty()
   // coach?: number;
-  @include()
+  @JsonProperty()
   memberType!: string;
-  @include()
+  @JsonProperty()
   addressHome?: Address;
-  // @include()
+  // @JsonProperty()
   // country?: ResCountry;
-  @include()
+  @JsonProperty()
   gender?: string;
-  @include()
+  @JsonProperty()
   marital?: string;
-  @include()
+  @JsonProperty()
   spouseCompleteName?: string;
-  @include()
+  @JsonProperty()
   spouseBirthdate?: Date;
-  @include()
+  @JsonProperty()
   children?: number;
-  @include()
+  @JsonProperty()
   placeOfBirth?: string;
-  // @include()
+  // @JsonProperty()
   // countryOfBirth?: ResCountry;
-  @include()
+  @JsonProperty()
   birthday?: Date;
-  @include()
+  @JsonProperty()
   identificationId?: string;
-  @include()
+  @JsonProperty()
   passportId?: string;
-  // @include()
+  // @JsonProperty()
   // bankAccount?: ResPartnerBank;
-  @include()
+  @JsonProperty()
   permitNo?: string;
-  @include()
+  @JsonProperty()
   visaNo?: string;
-  @include()
+  @JsonProperty()
   visaExpire?: Date;
-  @include()
+  @JsonProperty()
   workPermitExpirationDate?: Date;
-  @include()
+  @JsonProperty()
   workPermitScheduledActivity?: boolean;
-  @include()
+  @JsonProperty()
   additionalNote?: string;
-  @include()
+  @JsonProperty()
   certificate?: string;
-  @include()
+  @JsonProperty()
   studyField?: string;
-  @include()
+  @JsonProperty()
   studySchool?: string;
-  @include()
+  @JsonProperty()
   emergencyContact?: string;
-  @include()
+  @JsonProperty()
   emergencyPhone?: Phone;
-  @include()
+  @JsonProperty()
   notes?: string;
-  @include()
+  @JsonProperty()
   departureDescription?: string;
-  @include()
+  @JsonProperty()
   departureDate?: Date;
 }
 
-@dto()
+@Serializable()
 export class UpdateMemberRO {
-  @include()
+  @JsonProperty()
   id: number;
-  @include()
+  @JsonProperty()
   resource?: number;
-  @include()
+  @JsonProperty()
   organization?: number;
-  // @include()
+  // @JsonProperty()
   // resourceCalendar?: number;
-  @include()
+  @JsonProperty()
   name?: string;
-  @include()
+  @JsonProperty()
   active?: boolean;
-  // @include()
+  // @JsonProperty()
   // group?: number;
-  // @include()
+  // @JsonProperty()
   // job?: number;
-  @include()
+  @JsonProperty()
   jobTitle?: string;
-  @include()
+  @JsonProperty()
   address?: Address;
-  @include()
+  @JsonProperty()
   workPhone?: Phone;
-  @include()
+  @JsonProperty()
   mobilePhone?: Phone;
-  @include()
+  @JsonProperty()
   workEmail?: string;
-  @include()
+  @JsonProperty()
   workLocation?: Address;
-  // @include()
+  // @JsonProperty()
   // user?: number;
-  // @include()
+  // @JsonProperty()
   // parent?: number;
-  // @include()
+  // @JsonProperty()
   // coach?: number;
-  @include()
+  @JsonProperty()
   memberType!: string;
-  @include()
+  @JsonProperty()
   addressHome?: Address;
-  // @include()
+  // @JsonProperty()
   // country?: ResCountry;
-  @include()
+  @JsonProperty()
   gender?: string;
-  @include()
+  @JsonProperty()
   marital?: string;
-  @include()
+  @JsonProperty()
   spouseCompleteName?: string;
-  @include()
+  @JsonProperty()
   spouseBirthdate?: Date;
-  @include()
+  @JsonProperty()
   children?: number;
-  @include()
+  @JsonProperty()
   placeOfBirth?: string;
-  // @include()
+  // @JsonProperty()
   // countryOfBirth?: ResCountry;
-  @include()
+  @JsonProperty()
   birthday?: Date;
-  @include()
+  @JsonProperty()
   identificationId?: string;
-  @include()
+  @JsonProperty()
   passportId?: string;
-  // @include()
+  // @JsonProperty()
   // bankAccount?: ResPartnerBank;
-  @include()
+  @JsonProperty()
   permitNo?: string;
-  @include()
+  @JsonProperty()
   visaNo?: string;
-  @include()
+  @JsonProperty()
   visaExpire?: Date;
-  @include()
+  @JsonProperty()
   workPermitExpirationDate?: Date;
-  @include()
+  @JsonProperty()
   workPermitScheduledActivity?: boolean;
-  @include()
+  @JsonProperty()
   additionalNote?: string;
-  @include()
+  @JsonProperty()
   certificate?: string;
-  @include()
+  @JsonProperty()
   studyField?: string;
-  @include()
+  @JsonProperty()
   studySchool?: string;
-  @include()
+  @JsonProperty()
   emergencyContact?: string;
-  @include()
+  @JsonProperty()
   emergencyPhone?: Phone;
-  @include()
+  @JsonProperty()
   notes?: string;
-  @include()
+  @JsonProperty()
   departureDescription?: string;
-  @include()
+  @JsonProperty()
   departureDate?: Date;
 }
