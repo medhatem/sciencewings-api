@@ -2,6 +2,63 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { Address, Phone } from '../../..';
 
 @Serializable()
+export class ContractRO {
+  @JsonProperty()
+  id: number;
+
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  dateStart!: Date;
+
+  @JsonProperty()
+  wage!: number;
+
+  @JsonProperty()
+  organization!: number;
+
+  @JsonProperty()
+  active?: boolean;
+
+  // @JsonProperty()
+  // structureType?: PayrollStructureType;
+
+  @JsonProperty()
+  member?: number;
+
+  @JsonProperty()
+  group?: number;
+
+  @JsonProperty()
+  job?: number;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  trialDateEnd?: Date;
+
+  @JsonProperty()
+  resourceCalendar?: number;
+
+  @JsonProperty()
+  notes?: string;
+
+  @JsonProperty()
+  state?: string;
+
+  // @JsonProperty()
+  // contractType?: ContractType;
+
+  @JsonProperty()
+  kanbanState?: string;
+
+  @JsonProperty()
+  hrResponsible?: number;
+}
+
+@Serializable()
 export class CreateMemberRO {
   @JsonProperty()
   id: number;

@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@di/index';
 import { BaseDao } from '../../base/daos/BaseDao';
-import { Group } from '..';
+import { Group } from '../models/Group';
 
 @provideSingleton()
 export class GroupDAO extends BaseDao<Group> {

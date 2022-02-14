@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@di/index';
 import { BaseDao } from '../../base/daos/BaseDao';
-import { Job } from '..';
+import { Job } from '../models/Job';
 
 @provideSingleton()
 export class JobDAO extends BaseDao<Job> {

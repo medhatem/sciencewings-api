@@ -1,6 +1,8 @@
 import { container, provideSingleton } from '@di/index';
 import { BaseService } from '../../base/services/BaseService';
-import { IJobService, Job, JobDAO } from '..';
+import { IJobService } from '../interfaces/IJobService';
+import { Job } from '../models/Job';
+import { JobDAO } from '../daos/JobDAO';
 
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {

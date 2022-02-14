@@ -5,7 +5,7 @@ import { BaseService } from '../../base/services/BaseService';
 import { Member } from '../../hr/models/Member';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { IMemberService } from '..';
+import { IMemberService } from '../interfaces/IMemberService';
 import { MemberDao } from '../daos/MemberDao';
 import { Result } from '@utils/Result';
 import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';

@@ -3,8 +3,9 @@ import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { Result } from '@utils/Result';
 import { User } from '../../users/models';
+import { IBaseService } from '../../base/interfaces/IBaseService';
 
-export abstract class IUserService {
+export abstract class IUserService extends IBaseService<any> {
   static getInstance: () => IUserService;
 
   updateUserDetails: (payload: UserDetailsRO, userId: number) => Promise<Result<number>>;
