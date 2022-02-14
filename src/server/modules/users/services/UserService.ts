@@ -61,7 +61,6 @@ export class UserService extends BaseService<User> implements IUserService {
   async registerUser(userInfo: KeycloakUserInfo): Promise<Result<number>> {
     // get the userKeyCloakId
     const users = await this.keycloak.getAdminClient().users.find({ email: userInfo.email, realm: 'sciencewings-web' });
-    console.log({ users });
 
     if (!users || !users.length) {
       return Result.fail<number>('No user found');

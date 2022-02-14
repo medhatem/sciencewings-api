@@ -1,10 +1,9 @@
 import { Member } from './../models/Member';
-import { BaseRequestDTO } from '../../base/dtos/BaseDTO';
-import { Serializable } from 'typescript-json-serializer';
+import { BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
-export class UpdateMemberDTO extends BaseRequestDTO<Member> {}
-
-  @include()
+export class UpdateMemberDTO extends BaseRequestDTO<Member> {
+  @JsonProperty()
   public error?: BaseErrorDTO;
 }
