@@ -89,7 +89,6 @@ export class ContractService extends BaseService<Contract> implements IContractS
       organization: await organization.getValue(),
       ...entities,
     };
-    console.log({ contract });
 
     const createdContract = await this.create(contract);
 
