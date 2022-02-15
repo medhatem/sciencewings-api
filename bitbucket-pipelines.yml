@@ -23,6 +23,8 @@ definitions:
         script:
           - ls
           - npm run build
+        artifacts: # defining the artifacts to be passed to each future step.
+          - dist/**
     - step: &lint
         name: lint
         script:
@@ -59,7 +61,6 @@ definitions:
           - npm install
         artifacts: # defining the artifacts to be passed to each future step.
           - node_modules/**
-
 
 pipelines:
   default:

@@ -1,6 +1,6 @@
-import { BaseRequestDTO } from '../../base/dtos/BaseDTO';
-import { Serializable } from 'typescript-json-serializer';
+import { BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { Resource } from '..';
+import { Serializable } from 'typescript-json-serializer';
 
 @Serializable()
 export class ResourceDTO extends BaseRequestDTO<Resource> {}

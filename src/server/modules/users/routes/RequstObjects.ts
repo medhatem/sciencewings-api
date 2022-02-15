@@ -1,7 +1,7 @@
-import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-@Serializable()
+import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+
 export class UserInviteToOrgRO {
   @JsonProperty()
   organizationId: number;
