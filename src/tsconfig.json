@@ -1,59 +1,38 @@
 {
-    "compileOnSave": true,
-    "compilerOptions": {
-        "baseUrl": ".",
-        "target": "esnext",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": false,
-        "removeComments": true,
-        "skipLibCheck": true,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "pretty": true,
-        "paths": {
-            "@di/*": [
-                "server/di/*"
-            ],
-            "@types/*": [
-                "server/types/*"
-            ],
-            "@errors/*": [
-                "server/errors/*"
-            ],
-            "@interface/*": [
-                "server/interface/*"
-            ],
-            "@models/*": [
-                "server/models/*"
-            ],
-            "@routes/*": [
-                "server/routes/*"
-            ],
-            "@service/*": [
-                "server/service/*"
-            ],
-            "@dao/*": [
-                "server/dao/*"
-            ],
-            "@sdks/*": [
-                "server/sdks/*"
-            ],
-            "@modules/*": [
-                "server/modules/*"
-            ],
-            "@utils/*": [
-                "server/utils/*"
-            ]
-        }
-    },
-    "plugins": [
-        {
-            "name": "typescript-styled-plugin"
-        }
-    ]
+  "compileOnSave": true,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "pretty": true,
+    "paths": {
+      "@/*": ["server/*"],
+      "@/modules/*": ["server/modules/*"],
+      "@di/*": ["server/di/*"],
+      "@types/*": ["server/types/*"],
+      "@errors/*": ["server/errors/*"],
+      "@interface/*": ["server/interface/*"],
+      "@/models/*": ["server/models/*"],
+      "@routes/*": ["server/routes/*"],
+      "@service/*": ["server/service/*"],
+      "@dao/*": ["server/dao/*"],
+      "@sdks/*": ["server/sdks/*"],
+      "@utils/*": ["server/utils/*"]
+    }
+  },
+  "plugins": [
+    {
+      "name": "typescript-styled-plugin"
+    }
+  ]
 }
