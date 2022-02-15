@@ -1,6 +1,7 @@
-import { Organization } from './../models/Organization';
+import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { BaseRequestDTO, BaseBodyDTO, BaseErrorDTO } from '../../base/dtos/BaseDTO';
+
+import { Organization } from './../models/Organization';
 
 @Serializable()
 class BaseBodyGetDTO extends BaseBodyDTO {
