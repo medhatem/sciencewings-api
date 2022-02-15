@@ -2,7 +2,6 @@ import Joi = require('joi');
 
 const ContractSchema = Joi.object({
   active: Joi.boolean(),
-  // structureType: PayrollStructureType,
   member: Joi.number(),
   group: Joi.number(),
   job: Joi.number(),
@@ -11,7 +10,6 @@ const ContractSchema = Joi.object({
   resourceCalendar: Joi.number(),
   notes: Joi.string(),
   state: Joi.string(),
-  // contractType: ContractType,
   kanbanState: Joi.string(),
   hrResponsible: Joi.number(),
 });
