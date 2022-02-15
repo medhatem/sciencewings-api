@@ -1,6 +1,7 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneRO } from '../../phones/routes/PhoneRO';
+
 export class UserInviteToOrgRO {
   @JsonProperty()
   organizationId: number;

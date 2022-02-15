@@ -19,4 +19,7 @@ export class PhoneRO {
 
   @JsonProperty()
   organizationId?: number;
+
+  @JsonProperty()
+  memberId?: number;
 }

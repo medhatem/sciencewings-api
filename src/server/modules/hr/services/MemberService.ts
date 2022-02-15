@@ -1,18 +1,19 @@
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
-import { IAddressService } from '../../address/interfaces/IAddressService';
+import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
+import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '../../base/services/BaseService';
-import { Member } from '../../hr/models/Member';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+import { IAddressService } from '../../address/interfaces/IAddressService';
 import { IMemberService } from '../interfaces/IMemberService';
+import { IOrganizationService } from '../../organizations/interfaces';
+import { IPhoneService } from '../../phones/interfaces/IPhoneService';
+import { IResourceService } from '../../resources/interfaces';
+import { Member } from '../../hr/models/Member';
 import { MemberDao } from '../daos/MemberDao';
 import { Result } from '@utils/Result';
-import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
-import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
-import { IOrganizationService } from '../../organizations/interfaces';
-import { IResourceService } from '../../resources/interfaces';
 
 type MemberRO = CreateMemberRO | UpdateMemberRO;
 @provideSingleton(IMemberService)
@@ -107,7 +108,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ address, workLocation, addressHome });
   }
 
-  private async handlePhonesForMemeber(payload: MemberRO, isUpdate = false): Promise<Result<any>> {
+  private async handlePhonesForMemeber(payload: MemberRO, member: Member, isUpdate = false): Promise<Result<any>> {
     let createdWorkPhone, createdMobilePhone, createdEmergencyPhone;
 
     if (isUpdate) {
@@ -146,9 +147,11 @@ export class MemberService extends BaseService<Member> implements IMemberService
       }
     }
 
-    if (payload.workPhone) createdWorkPhone = await this.phoneService.createPhone(payload.workPhone);
-    if (payload.mobilePhone) createdMobilePhone = await this.phoneService.createPhone(payload.mobilePhone);
-    if (payload.emergencyPhone) createdEmergencyPhone = await this.phoneService.createPhone(payload.emergencyPhone);
+    if (payload.workPhone) createdWorkPhone = await this.phoneService.createPhoneForMember(payload.workPhone, member);
+    if (payload.mobilePhone)
+      createdMobilePhone = await this.phoneService.createPhoneForMember(payload.mobilePhone, member);
+    if (payload.emergencyPhone)
+      createdEmergencyPhone = await this.phoneService.createPhoneForMember(payload.emergencyPhone, member);
 
     if (payload.workPhone && createdWorkPhone.isFailure) {
       return Result.fail<number>(createdWorkPhone.error);
@@ -180,10 +183,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (addresss.isFailure) return Result.fail<number>(addresss.error);
     const { address, workLocation, addressHome } = await addresss.getValue();
 
-    const phones = await this.handlePhonesForMemeber(payload);
-    if (phones.isFailure) return Result.fail<number>(existance.error);
-    const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
-
     const member: Member = {
       id: null,
       ...payload,
@@ -192,9 +191,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
       address,
       workLocation,
       addressHome,
-      workPhone,
-      mobilePhone,
-      emergencyPhone,
     };
 
     const createdMember = await this.create(member);
@@ -202,6 +198,15 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (createdMember.isFailure) {
       return Result.fail<number>(createdMember.error);
     }
+
+    const phones = await this.handlePhonesForMemeber(payload, createdMember.getValue());
+    if (phones.isFailure) return Result.fail<number>(existance.error);
+    const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
+    member.workPhone = workPhone;
+    member.mobilePhone = mobilePhone;
+    member.emergencyPhone = emergencyPhone;
+    await this.update(member);
+
     return Result.ok(createdMember.getValue().id);
   }
 
@@ -223,7 +228,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (addresss.isFailure) return Result.fail<number>(addresss.error);
     const { address, workLocation, addressHome } = await addresss.getValue();
 
-    const phones = await this.handlePhonesForMemeber(payload, true);
+    const phones = await this.handlePhonesForMemeber(payload, member, true);
     if (phones.isFailure) return Result.fail<number>(existance.error);
     const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
 

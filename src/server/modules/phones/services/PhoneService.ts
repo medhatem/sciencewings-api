@@ -1,14 +1,16 @@
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '../../base/services/BaseService';
-import { Result } from '@utils/Result';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+import { IPhoneService } from '../interfaces/IPhoneService';
+import { Member } from './../../hr/models/Member';
+import { Organization } from '../../organizations/models/Organization';
 import { Phone } from '../../phones/models/Phone';
 import { PhoneDao } from '../../phones/daos/PhoneDAO';
 import { PhoneRO } from '../routes/PhoneRO';
-import { Organization } from '../../organizations/models/Organization';
+import { Result } from '@utils/Result';
 import { User } from '../../users/models/User';
-import { IPhoneService } from '../interfaces/IPhoneService';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
 
 @provideSingleton(IPhoneService)
 export class PhoneService extends BaseService<Phone> implements IPhoneService {
@@ -20,12 +22,12 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
     return container.get(IPhoneService);
   }
 
-  @log()
-  @safeGuard()
-  async createPhone(payload: PhoneRO): Promise<Result<Phone>> {
-    const entity = this.wrapEntity(this.dao.model, payload);
-    const phone = await this.dao.create(entity);
-    return Result.ok<Phone>(phone);
+  private extractFromRO(payload: PhoneRO): Partial<Phone> {
+    return {
+      label: payload.label,
+      code: payload.code,
+      number: payload.number,
+    };
   }
 
   @log()
@@ -33,7 +35,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
   async createBulkPhoneForUser(payload: PhoneRO[], entity: User): Promise<Result<number>> {
     const phones = await Promise.all(
       payload.map(async (phone) => {
-        const wrappedPhone = this.wrapEntity(this.dao.model, phone);
+        const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
         wrappedPhone.user = entity as User;
       }),
     );
@@ -47,7 +49,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
   async createBulkPhoneForOrganization(payload: PhoneRO[], entity: Organization): Promise<Result<number>> {
     const phones = await Promise.all(
       payload.map(async (phone) => {
-        const wrappedPhone = this.wrapEntity(this.dao.model, phone);
+        const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
         wrappedPhone.organization = entity as Organization;
         return wrappedPhone;
       }),
@@ -55,5 +57,14 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
     this.dao.repository.persist(phones);
     return Result.ok<number>(200);
+  }
+
+  @log()
+  @safeGuard()
+  async createPhoneForMember(payload: PhoneRO, entity: Member): Promise<Result<Phone>> {
+    const phone = this.wrapEntity(this.dao.model, this.extractFromRO(payload));
+    phone.member = entity as Member;
+    this.dao.repository.persist(phone);
+    return Result.ok<Phone>(phone);
   }
 }

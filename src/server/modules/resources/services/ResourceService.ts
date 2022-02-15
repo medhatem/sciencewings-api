@@ -1,18 +1,19 @@
-import { UpdateResourceSchema } from './../schemas/CreateResourceSchema';
-import { Result } from '@utils/Result';
-import { container, provideSingleton } from '@di/index';
-import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
-import { BaseService } from '../../base/services/BaseService';
-import { Resource } from '../../resources/models/Resource';
-import { ResourceDao } from '../daos/ResourceDao';
-import { CreateResourceRO } from '../routes/RequestObject';
-import { safeGuard } from '../../../decorators/safeGuard';
-import { log } from '../../../decorators/log';
-import { validate } from '../../../decorators/bodyValidationDecorators/validate';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { IResourceCalendarService, IResourceService } from '../interfaces';
-import { IUserService } from '../../users/interfaces';
+import { container, provideSingleton } from '@di/index';
+
+import { BaseService } from '../../base/services/BaseService';
+import { CreateResourceRO } from '../routes/RequestObject';
+import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
 import { IOrganizationService } from '../../organizations/interfaces';
+import { IUserService } from '../../users/interfaces';
+import { Resource } from '../../resources/models/Resource';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
+import { ResourceDao } from '../daos/ResourceDao';
+import { Result } from '@utils/Result';
+import { UpdateResourceSchema } from './../schemas/CreateResourceSchema';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
+import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
@@ -57,7 +58,16 @@ export class ResourceService extends BaseService<Resource> {
 
     payload.organization = organization;
 
-    const resource = this.wrapEntity(this.dao.model, payload);
+    const resource = this.wrapEntity(this.dao.model, {
+      name: payload.name,
+      active: payload.active,
+      organization: payload.organization,
+      resourceType: payload.resourceType,
+      user: payload.user,
+      timeEfficiency: payload.timeEfficiency,
+      timezone: payload.timezone,
+      calendar: payload.calendar,
+    });
 
     const createResourceCalendar = await this.resourceCalendarService.createResourceCalendar(calendar);
 

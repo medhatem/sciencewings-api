@@ -1,7 +1,9 @@
-import { Organization } from '../../organizations/models/Organization';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseModel } from '../../base/models/BaseModel';
+import { Member } from './../../hr/models/Member';
+import { Organization } from '../../organizations/models/Organization';
 import { User } from '../../users/models/User';
 
 // import { ResPartner } from '../../organisations/models/ResPartner';
@@ -30,4 +32,7 @@ export class Phone extends BaseModel<Phone> {
 
   @ManyToOne({ entity: () => Organization, nullable: true })
   organization?: Organization;
+
+  @ManyToOne({ entity: () => Member, nullable: true })
+  member?: Member;
 }

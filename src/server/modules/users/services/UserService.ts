@@ -1,7 +1,9 @@
 import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '../../base/services/BaseService';
 import { Email } from '@utils/Email';
+import { IPhoneService } from '../../phones/interfaces/IPhoneService';
 import { IUserService } from '../../users/interfaces/IUserService';
 import { Keycloak } from '@sdks/keycloak';
 import { KeycloakUserInfo } from '../../../types/UserRequest';
@@ -11,7 +13,6 @@ import { UserDao } from '../daos/UserDao';
 import { getConfig } from '../../../configuration/Configuration';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
@@ -34,7 +35,17 @@ export class UserService extends BaseService<User> implements IUserService {
     const { phones } = payload;
     delete payload.phones;
 
-    const userDetail = this.wrapEntity(this.dao.model, payload);
+    const userDetail = this.wrapEntity(this.dao.model, {
+      email: payload.email,
+      firstname: payload.firstname,
+      lastname: payload.lastname,
+      address: payload.address,
+      phones: payload.phones,
+      dateofbirth: payload.dateofbirth,
+      signature: payload.signature,
+      actionId: payload.actionId,
+      share: payload.share,
+    });
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
       return Result.fail<number>(`User with id ${userId} does not exist`);
@@ -47,7 +58,7 @@ export class UserService extends BaseService<User> implements IUserService {
 
     await Promise.all(
       phones.map(async (p: any) => {
-        await this.phoneSerice.createPhone(p);
+        await this.phoneSerice.createBulkPhoneForUser([p], user);
       }),
     );
 
