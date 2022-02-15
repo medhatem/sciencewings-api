@@ -79,7 +79,7 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
    * @param options for assign options
    *
    */
-  public wrapEntity(entity: T, payload: { [key: string]: any }, options: boolean | AssignOptions = true): T {
+  public wrapEntity(entity: T, payload: any, options: boolean | AssignOptions = true): T {
     return wrap(entity).assign(payload, options);
   }
 }

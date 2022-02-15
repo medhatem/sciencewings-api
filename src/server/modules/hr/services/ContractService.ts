@@ -1,18 +1,19 @@
-import { Result } from './../../../utils/Result';
+import { CreateContractSchema, UpdateContractSchema } from '../schemas/ContractSchema';
+import { IGroupService, IJobService, IMemberService } from '../interfaces';
 import { container, provideSingleton } from '@di/index';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
-import { validate } from '../../../decorators/bodyValidationDecorators/validate';
+
 import { BaseService } from '../../base/services/BaseService';
 import { Contract } from '../../hr/models/Contract';
 import { ContractDao } from '../daos/ContractDao';
-import { IContractService } from '../interfaces/IContractService';
 import { ContractRO } from '../routes/RequestObject';
-import { CreateContractSchema, UpdateContractSchema } from '../schemas/ContractSchema';
+import { IContractService } from '../interfaces/IContractService';
 import { IOrganizationService } from '../../organizations/interfaces';
-import { IUserService } from '../../users/interfaces';
-import { IGroupService, IMemberService, IJobService } from '../interfaces';
 import { IResourceCalendarService } from '../../resources/interfaces';
+import { IUserService } from '../../users/interfaces';
+import { Result } from './../../../utils/Result';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
+import { validate } from '@/decorators/bodyValidationDecorators/validate';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -80,7 +81,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
 
     const resEntities = await this.checkOptionalEntities(payload);
     if (resEntities.isFailure) {
-      return Result.fail<number>(resEntities.error);
+      return resEntities;
     }
     const entities = await resEntities.getValue();
 
@@ -93,7 +94,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     const createdContract = await this.create(contract);
 
     if (createdContract.isFailure) {
-      return Result.fail<number>(createdContract.error);
+      return createdContract;
     }
     return Result.ok(createdContract.getValue().id);
   }
@@ -118,7 +119,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
 
     const resEntities = await this.checkOptionalEntities(payload);
     if (resEntities.isFailure) {
-      return Result.fail<number>(resEntities.error);
+      return resEntities;
     }
     const entities = await resEntities.getValue();
 
@@ -132,7 +133,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     const updatedContract = await this.create(contract);
 
     if (updatedContract.isFailure) {
-      return Result.fail<number>(updatedContract.error);
+      return updatedContract;
     }
     return Result.ok(updatedContract.getValue().id);
   }

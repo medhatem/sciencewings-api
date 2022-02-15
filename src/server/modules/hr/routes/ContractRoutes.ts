@@ -3,7 +3,7 @@ import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { Contract } from '../models/Contract';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
-import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { LoggerStorage } from '@/decorators/loggerStorage';
 import { ContractDTO } from '../dtos/ContractDTO';
 import { UpdateContractDTO } from '../dtos/UpdateContractDTO';
 import { ContractRO } from './RequestObject';
