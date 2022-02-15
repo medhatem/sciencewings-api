@@ -27,7 +27,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<CreateMemberRO>(201, 'Member created Successfully')
-  @Response<CreateMemberRO>(500, 'Error did occurred')
+  @Response<CreateMemberRO>(500, 'Internal Server Error')
   public async createMember(payload: CreateMemberRO): Promise<MemberDTO> {
     const result = await this.memberService.createMember(payload);
 
@@ -43,7 +43,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<MemberDTO>(204, 'Member updated Successfully')
-  @Response<MemberDTO>(500, 'Error did occurred')
+  @Response<MemberDTO>(500, 'Internal Server Error')
   public async createUpdateMember(payload: CreateMemberRO, @PathParam('id') id: number): Promise<MemberDTO> {
     const result = await this.memberService.updateMember(payload, id);
 

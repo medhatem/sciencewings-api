@@ -34,7 +34,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
   @Response<CreateResourceDTO>(201, 'Resource created Successfully')
-  @Response<CreateResourceDTO>(500, 'Error did occurred')
+  @Response<CreateResourceDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async createResource(payload: CreateResourceRO): Promise<CreateResourceDTO> {
     const result = await this.ResourceService.createResource(payload);
@@ -51,7 +51,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<CreateResourceDTO>(204, 'Resource updated Successfully')
-  @Response<CreateResourceDTO>(500, 'Error did occurred')
+  @Response<CreateResourceDTO>(500, 'Internal Server Error')
   public async updateResource(payload: CreateResourceRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
     const result = await this.ResourceService.updateResource(payload, id);
 

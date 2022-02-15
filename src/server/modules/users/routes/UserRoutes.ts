@@ -38,7 +38,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @POST
   @Path('registerUserFromToken')
   @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
-  @Response<ResetPasswordDTO>(500, 'Error did occurred')
+  @Response<ResetPasswordDTO>(500, 'Internal Server Error')
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
@@ -63,7 +63,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @POST
   @Path('resetPassword')
   @Response<ResetPasswordDTO>(201, 'Password reset successfully')
-  @Response<ResetPasswordDTO>(500, 'Error did occurred')
+  @Response<ResetPasswordDTO>(500, 'Internal Server Error')
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
@@ -90,7 +90,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<CreatedUserDTO>(204, 'User updated Successfully')
-  @Response<CreatedUserDTO>(500, 'Error did occurred')
+  @Response<CreatedUserDTO>(500, 'Internal Server Error')
   public async updateUserDetails(
     payload: UserDetailsRO,
     @ContextRequest request: UserRequest,
@@ -111,7 +111,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('getUserByKeycloakId/:kcid')
   @LoggerStorage()
   @Response<UserDTO>(200, 'Return User Successfully')
-  @Response<UserDTO>(500, 'Error did occurred')
+  @Response<UserDTO>(500, 'Internal Server Error')
   public async getUserByKeycloakId(@PathParam('kcid') keycloakId: string): Promise<UserDTO> {
     const result = await this.userService.getUserByKeycloakId(keycloakId);
 

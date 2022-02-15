@@ -28,7 +28,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<OrganizationDTO>(201, 'Organization created Successfully')
-  @Response<OrganizationDTO>(500, 'Error did occurred')
+  @Response<OrganizationDTO>(500, 'Internal Server Error')
   public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
@@ -51,7 +51,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @POST
   @Path('inviteUserToOrganization')
   @Response<InviteUserDTO>(201, 'User Registred Successfully')
-  @Response<OrganizationDTO>(500, 'Error did occurred')
+  @Response<OrganizationDTO>(500, 'Internal Server Error')
   @Security([], KEYCLOAK_TOKEN)
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
@@ -78,7 +78,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<OrganizationDTO>(200, 'Return organization members Successfully')
-  @Response<OrganizationDTO>(500, 'Error did occurred')
+  @Response<OrganizationDTO>(500, 'Internal Server Error')
   public async getUsers(@PathParam('id') payload: number) {
     const result = await this.OrganizationService.getMembers(payload);
 
@@ -99,7 +99,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<OrganizationDTO>(200, 'Return Organization that the users belongs to, Successfully')
-  @Response<OrganizationDTO>(500, 'Error did occurred')
+  @Response<OrganizationDTO>(500, 'Internal Server Error')
   public async getUserOrganizations(@PathParam('id') payload: number) {
     const result = await this.OrganizationService.getUserOrganizations(payload);
 
