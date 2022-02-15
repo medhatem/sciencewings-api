@@ -108,8 +108,5 @@
     "sinon": "latest",
     "tsconfig-paths": "^3.12.0",
     "typescript": "latest"
-  },
-  "mikro-orm": {
-    "useTsNode": true
   }
 }
