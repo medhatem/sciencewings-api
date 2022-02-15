@@ -16,7 +16,7 @@
     "start-staging-containers": "docker-compose -f devops/staging/docker-compose.yml up",
     "stop-staging-containers": "docker-compose -f devops/staging/docker-compose.yml down",
     "swagger-gen": "npm run add-dtos-imports-to-swagger && node node_modules/typescript-rest-swagger/dist/cli.js -c ./swaggerConfig.json -p './src/tsconfig.json'",
-    "add-dtos-imports-to-swagger": "node swaggerConfig-addEntryFile.js",
+    "add-dtos-imports-to-swagger": "node dist/server/scripts/swaggerConfig-addEntryFile.js",
     "dev": "nodemon --ignore 'dist/**/swagger.json' --ignore 'dist/**/swagger.yaml'  ./dist/server/index.js ",
     "start": "node ./dist/server/index.js",
     "test": "intern config=src/server-test/intern.json",
