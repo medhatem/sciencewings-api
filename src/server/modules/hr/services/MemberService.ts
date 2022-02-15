@@ -36,13 +36,13 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (organization) {
       currentOrg = await this.organizationService.get(organization);
       if (currentOrg.isFailure || currentOrg.getValue() === null) {
-        return Result.fail<number>(`Organization with id ${organization} dose not exist.`);
+        return Result.fail<number>(`Organization with id ${organization} does not exist.`);
       }
     }
     if (resource) {
       currentRes = await this.resourceService.get(resource);
       if (currentRes.isFailure || currentRes.getValue() === null) {
-        return Result.fail<number>(`Resource with id ${resource} dose not exist.`);
+        return Result.fail<number>(`Resource with id ${resource} does not exist.`);
       }
     }
     return Result.ok({ currentOrg, currentRes });
