@@ -1,5 +1,6 @@
+import { JsonProperty, Serializable, deserialize, serialize } from 'typescript-json-serializer';
+
 import { BaseModel } from './../models/BaseModel';
-import { deserialize, serialize, JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
 export class BaseBodyDTO {
