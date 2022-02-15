@@ -33,7 +33,12 @@ export class ContractService extends BaseService<Contract> implements IContractS
     return container.get(IContractService);
   }
 
-  private async checkOptionalEntities(payload: ContractRO): Promise<Result<any>> {
+  /**
+   * Check where the optional properties does exists
+   * @param payload
+   * @returns Optional Properties
+   */
+  private async checkForOptionalPropertiesInContract(payload: ContractRO): Promise<Result<any>> {
     let member, group, job, resourceCalendar, hrResponsible;
     if (payload.member) {
       member = await this.memberService.get(payload.member);
@@ -79,7 +84,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
       return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
     }
 
-    const resEntities = await this.checkOptionalEntities(payload);
+    const resEntities = await this.checkForOptionalPropertiesInContract(payload);
     if (resEntities.isFailure) {
       return resEntities;
     }
@@ -117,7 +122,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
       organization = await organization.getValue();
     }
 
-    const resEntities = await this.checkOptionalEntities(payload);
+    const resEntities = await this.checkForOptionalPropertiesInContract(payload);
     if (resEntities.isFailure) {
       return resEntities;
     }
