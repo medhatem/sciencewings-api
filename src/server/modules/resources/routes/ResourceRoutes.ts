@@ -10,6 +10,7 @@ import { LoggerStorage } from '../../../decorators/loggerStorage';
 import { ResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
 import { UpdateResourceDTO } from '@/modules/resources/dtos/UpdateResourceDTO';
 import { CreateResourceDTO } from '@/modules/resources/dtos/CreatedResourceDTO';
+import { Response } from 'typescript-rest-swagger';
 
 @provideSingleton()
 @Path('resources')
@@ -32,6 +33,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @POST
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
+  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
+  @Response<CreateResourceDTO>(500, 'Error did occurred')
   @LoggerStorage()
   public async createResource(payload: CreateResourceRO): Promise<CreateResourceDTO> {
     const result = await this.ResourceService.createResource(payload);
@@ -47,6 +50,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('update/:id')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
+  @Response<CreateResourceDTO>(204, 'Resource updated Successfully')
+  @Response<CreateResourceDTO>(500, 'Error did occurred')
   public async updateResource(payload: CreateResourceRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
     const result = await this.ResourceService.updateResource(payload, id);
 
@@ -54,6 +59,6 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       return new CreateResourceDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreateResourceDTO().serialize({ body: { resourceId: result.getValue(), statusCode: 201 } });
+    return new CreateResourceDTO().serialize({ body: { resourceId: result.getValue(), statusCode: 204 } });
   }
 }

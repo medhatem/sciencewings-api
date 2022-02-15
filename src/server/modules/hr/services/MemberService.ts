@@ -1,18 +1,19 @@
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
-import { IAddressService } from '../../address/interfaces/IAddressService';
+import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
+import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '../../base/services/BaseService';
-import { Member } from '../../hr/models/Member';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+import { IAddressService } from '../../address/interfaces/IAddressService';
 import { IMemberService } from '..';
+import { IOrganizationService } from '../../organizations/interfaces';
+import { IPhoneService } from '../../phones/interfaces/IPhoneService';
+import { IResourceService } from '../../resources/interfaces';
+import { Member } from '../../hr/models/Member';
 import { MemberDao } from '../daos/MemberDao';
 import { Result } from '@utils/Result';
-import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
 import { validate } from '../../../decorators/bodyValidationDecorators/validate';
-import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
-import { IOrganizationService } from '../../organizations/interfaces';
-import { IResourceService } from '../../resources/interfaces';
 
 type MemberRO = CreateMemberRO | UpdateMemberRO;
 @provideSingleton(IMemberService)
@@ -36,13 +37,13 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (organization) {
       currentOrg = await this.organizationService.get(organization);
       if (currentOrg.isFailure || currentOrg.getValue() === null) {
-        return Result.fail<number>(`Organization with id ${organization} dose not exist.`);
+        return Result.fail<number>(`Organization with id ${organization} does not exist.`);
       }
     }
     if (resource) {
       currentRes = await this.resourceService.get(resource);
       if (currentRes.isFailure || currentRes.getValue() === null) {
-        return Result.fail<number>(`Resource with id ${resource} dose not exist.`);
+        return Result.fail<number>(`Resource with id ${resource} does not exist.`);
       }
     }
     return Result.ok({ currentOrg, currentRes });
