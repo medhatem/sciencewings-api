@@ -1,10 +1,12 @@
+import { Phone } from '../../phones/models/Phone';
 import { Result } from '@utils/Result';
 import { PhoneDTO } from '../dtos/PhoneDTO';
 import { Organization } from '../../organizations/models/Organization';
 import { User } from '../../users/models/User';
+import { IBaseService } from '../../base/interfaces/IBaseService';
 
-export abstract class IPhoneService {
-  createPhone: (payload: PhoneDTO) => Promise<Result<number>>;
+export abstract class IPhoneService extends IBaseService<any> {
+  createPhone: (payload: PhoneDTO) => Promise<Result<Phone>>;
   createBulkPhoneForUser: (payload: PhoneDTO[], entity: User) => Promise<Result<number>>;
   createBulkPhoneForOrganization: (payload: PhoneDTO[], entity: Organization) => Promise<Result<number>>;
 }

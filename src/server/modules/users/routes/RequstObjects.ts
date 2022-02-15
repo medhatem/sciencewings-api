@@ -1,52 +1,51 @@
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 
-@dto()
 export class UserInviteToOrgRO {
-  @include()
+  @JsonProperty()
   organizationId: number;
 
-  @include()
+  @JsonProperty()
   email: string;
 }
 
-@dto()
+@Serializable()
 export class UserDetailsRO {
-  @include()
+  @JsonProperty()
   email: string;
 
-  @include()
+  @JsonProperty()
   firstname: string;
 
-  @include()
+  @JsonProperty()
   lastname: string;
 
-  @include()
+  @JsonProperty()
   address: string;
 
-  @include()
+  @JsonProperty()
   phones: PhoneDTO[];
 
-  @include()
+  @JsonProperty()
   dateofbirth: Date;
 
-  @include()
+  @JsonProperty()
   signature?: string;
 
-  @include()
+  @JsonProperty()
   actionId?: number;
 
-  @include()
+  @JsonProperty()
   share?: boolean;
 }
 export class ResetPasswordRO {
-  @include()
+  @JsonProperty()
   email: number;
 
-  @include()
+  @JsonProperty()
   password: string;
 
-  @include()
+  @JsonProperty()
   passwordConfirmation: string;
 }

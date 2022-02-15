@@ -1,34 +1,34 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { User } from '../models';
 
-@dto()
 class BaseBodyGetDTO extends BaseBodyDTO {
-  @include()
+  @JsonProperty()
   id: number;
 
-  @include()
+  @JsonProperty()
   firstname: string;
 
-  @include()
+  @JsonProperty()
   lastname: string;
 
-  @include()
+  @JsonProperty()
   email: string;
 
-  @include()
+  @JsonProperty()
   phones: PhoneDTO[];
 
-  @include()
+  @JsonProperty()
   keycloakId: string;
 }
 
-@dto()
-export class UserDTO extends BaseRequestDTO {
-  @include()
+@Serializable()
+export class UserDTO extends BaseRequestDTO<User> {
+  @JsonProperty()
   public body?: BaseBodyGetDTO;
 
-  @include()
+  @JsonProperty()
   public error?: BaseErrorDTO;
 }

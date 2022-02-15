@@ -16,7 +16,7 @@ import { IOrganizationService } from '../interfaces/IOrganizationService';
 @Path('organization')
 export class OrganizationRoutes extends BaseRoutes<Organization> {
   constructor(private OrganizationService: IOrganizationService) {
-    super(OrganizationService as any, OrganizationDTO, UpdateOrganizationDTO);
+    super(OrganizationService as any, new OrganizationDTO(), new UpdateOrganizationDTO());
   }
 
   static getInstance(): OrganizationRoutes {

@@ -73,6 +73,7 @@ export class UserService extends BaseService<User> implements IUserService {
     let createdUser: { [key: string]: any } = { id: null };
     try {
       createdUser = await this.dao.create(user);
+      //TODO send email
     } catch (error) {
       return Result.fail(error);
     }
@@ -88,11 +89,12 @@ export class UserService extends BaseService<User> implements IUserService {
   @log()
   @safeGuard()
   async getUserByCriteria(criteria: { [key: string]: any }): Promise<Result<User>> {
-    const user = await this.dao.getByCriteria(criteria);
-    if (!user) {
-      return Result.fail(`User with id ${criteria.id} does not exist.`);
+    try {
+      const user = await this.dao.getByCriteria(criteria);
+      return Result.ok<User>(user);
+    } catch (error) {
+      return Result.fail(error);
     }
-    return Result.ok<User>(user);
   }
 
   /**
