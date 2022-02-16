@@ -1,7 +1,5 @@
 import { JsonProperty, Serializable, deserialize, serialize } from 'typescript-json-serializer';
 
-import { BaseModel } from './../models/BaseModel';
-
 @Serializable()
 export class BaseBodyDTO {
   @JsonProperty()
@@ -18,16 +16,12 @@ export class BaseErrorDTO {
 }
 
 @Serializable()
-export class BaseRequestDTO<T extends BaseModel<T>> {
-  // getMapper<T extends BaseRequestDTO>(): IMapper<T, unknown> {
-  //   return buildMapper<unknown, T>(this.constructor as any as Class<T>);
-  // }
-
+export class BaseRequestDTO {
   serialize(payload: { [key: string]: any }): this {
     return serialize(payload as any);
   }
 
-  deserialize(model: T, payload: any): any {
+  deserialize<T extends BaseRequestDTO>(model: T, payload: any): any {
     return deserialize<T>(payload as any, model as any);
   }
 
