@@ -6,7 +6,7 @@ import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { CreateOrganizationRO, UserInviteToOrgRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
-import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { LoggerStorage } from '@/decorators/loggerStorage'
 import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
