@@ -11,8 +11,8 @@ import { Result } from '@utils/Result';
 import { User } from '../../users/models/User';
 import { UserDao } from '../daos/UserDao';
 import { getConfig } from '../../../configuration/Configuration';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {

@@ -6,7 +6,7 @@ import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { CreateResourceRO } from './RequestObject';
 import { IResourceService } from '../interfaces';
 import { KEYCLOAK_TOKEN } from './../../../authenticators/constants';
-import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { LoggerStorage } from '@/decorators/loggerStorage';
 import { ResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
 import { UpdateResourceDTO } from '@/modules/resources/dtos/UpdateResourceDTO';
 import { CreateResourceDTO } from '@/modules/resources/dtos/CreatedResourceDTO';
