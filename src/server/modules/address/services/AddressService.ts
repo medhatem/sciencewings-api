@@ -27,7 +27,7 @@ export class AddressService extends BaseService<Address> implements IAddressServ
       type: payload.type,
       city: payload.city,
       street: payload.street,
-      appartement: payload.appartement,
+      apartment: payload.apartment,
     };
   }
 

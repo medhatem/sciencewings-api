@@ -64,8 +64,6 @@ export class ContractService extends BaseService<Contract> implements IContractS
         return Result.fail<number>(`Resource Calendar with id ${payload.resourceCalendar} does not exist.`);
       resourceCalendar = await resourceCalendar.getValue();
     }
-    // if (payload.contractType) {
-    // }
     if (payload.hrResponsible) {
       hrResponsible = await this.userService.get(payload.hrResponsible);
       if (hrResponsible.isFailure || hrResponsible.getValue() === null)
@@ -75,6 +73,9 @@ export class ContractService extends BaseService<Contract> implements IContractS
     return Result.ok({ member, group, job, resourceCalendar, hrResponsible });
   }
 
+  /**
+   * Override the create method
+   */
   @log()
   @safeGuard()
   @validate(CreateContractSchema)
@@ -104,6 +105,9 @@ export class ContractService extends BaseService<Contract> implements IContractS
     return Result.ok(createdContract.getValue().id);
   }
 
+  /**
+   * Override the update method
+   */
   @log()
   @safeGuard()
   @validate(UpdateContractSchema)
