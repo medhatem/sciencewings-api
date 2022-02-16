@@ -1,6 +1,5 @@
-import { Organization } from './../models/Organization';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
 export class RegisterUserFromTokenBodyDTO extends BaseBodyDTO {
@@ -9,7 +8,7 @@ export class RegisterUserFromTokenBodyDTO extends BaseBodyDTO {
 }
 
 @Serializable()
-export class CreateOrganizationDTO extends BaseRequestDTO<Organization> {
+export class CreateOrganizationDTO extends BaseRequestDTO {
   @JsonProperty()
   body?: RegisterUserFromTokenBodyDTO = new RegisterUserFromTokenBodyDTO();
 

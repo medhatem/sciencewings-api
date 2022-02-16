@@ -1,10 +1,9 @@
-import { User } from './../../users/models/User';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { ErrorDTO, UserIdDTO } from '../../users/dtos/RegisterUserFromTokenDTO';
 import { BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
+import { ErrorDTO, UserIdDTO } from '../../users/dtos/RegisterUserFromTokenDTO';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
-export class InviteUserDTO extends BaseRequestDTO<User> {
+export class InviteUserDTO extends BaseRequestDTO {
   @JsonProperty()
   body?: UserIdDTO = new UserIdDTO();
 
