@@ -34,7 +34,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
   }
 
   /**
-   * Check where the optional properties does exists
+   * check the existence of optional properties for a given contract
    * @param payload
    * @returns Optional Properties
    */

@@ -21,10 +21,13 @@ export class ContractRoutes extends BaseRoutes<Contract> {
     return container.get(ContractRoutes);
   }
 
+  /**
+   * Override the create method
+   */
   @POST
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
-  @Response<ContractDTO>(20, 'Contract updated Successfully')
+  @Response<ContractDTO>(201, 'Contract updated Successfully')
   @Response<ContractDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async createMember(payload: ContractRO): Promise<ContractDTO> {
@@ -37,6 +40,9 @@ export class ContractRoutes extends BaseRoutes<Contract> {
     return new ContractDTO().serialize({ body: { contractId: result.getValue(), statusCode: 201 } });
   }
 
+  /**
+   * Override the update method
+   */
   @PUT
   @Path('/update/:id')
   @Security('', KEYCLOAK_TOKEN)

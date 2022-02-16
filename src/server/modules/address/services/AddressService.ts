@@ -19,7 +19,7 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     return container.get(IAddressService);
   }
 
-  private extractFromRO(payload: AddressRO): Partial<Address> {
+  private extractAdressFromRO(payload: AddressRO): Partial<Address> {
     return {
       country: payload.country,
       province: payload.province,
@@ -34,7 +34,7 @@ export class AddressService extends BaseService<Address> implements IAddressServ
   @log()
   @safeGuard()
   async createAddress(payload: AddressRO): Promise<Result<Address>> {
-    const address = await this.dao.create(this.wrapEntity(this.dao.model, this.extractFromRO(payload)));
+    const address = await this.dao.create(this.wrapEntity(this.dao.model, this.extractAdressFromRO(payload)));
     return Result.ok<Address>(address);
   }
 
@@ -42,7 +42,7 @@ export class AddressService extends BaseService<Address> implements IAddressServ
   @safeGuard()
   async createBulkAddress(payload: AddressRO[]): Promise<Result<number>> {
     payload.map((el: AddressRO) => {
-      const address = this.wrapEntity(this.dao.model, this.extractFromRO(el));
+      const address = this.wrapEntity(this.dao.model, this.extractAdressFromRO(el));
       this.dao.repository.persist(address);
     });
 
