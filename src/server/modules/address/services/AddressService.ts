@@ -1,12 +1,13 @@
 import { container, provideSingleton } from '@di/index';
-import { BaseService } from '../../base/services/BaseService';
-import { Result } from '@utils/Result';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+
+import { Address } from '../../address/models/AdressModel';
 import { AddressDao } from '../../address/daos/AddressDAO';
 import { AddressOrganizationDTO } from '../../address/dtos/AddressDTO';
-import { Address } from '../../address/models/AdressModel';
+import { BaseService } from '../../base/services/BaseService';
 import { IAddressService } from '../interfaces/IAddressService';
+import { Result } from '@utils/Result';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IAddressService)
 export class AddressService extends BaseService<Address> implements IAddressService {
