@@ -4,7 +4,7 @@ import { Member } from '../../hr/models/Member';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { MemberDTO } from '../dtos/MemberDTO';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
-import { LoggerStorage } from '../../../decorators/loggerStorage';
+import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreateMemberRO } from './RequestObject';
 import { IMemberService } from '../../hr/interfaces';
 import { CreateMemberDTO } from '../../hr/dtos/CreateMemberDTO';

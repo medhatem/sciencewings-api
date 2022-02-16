@@ -1,12 +1,13 @@
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '../../base/services/BaseService';
-import { Result } from '@utils/Result';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
-import { OrganizationLabel } from '../../organizations/models/OrganizationLabel';
-import { Organization } from '../../organizations/models/Organization';
-import { OrganizationLabelDao } from '../../organizations/daos/OrganizationLabelDao';
 import { IOrganizationLabelService } from '../interfaces/IOrganizationLabelService';
+import { Organization } from '../../organizations/models/Organization';
+import { OrganizationLabel } from '../../organizations/models/OrganizationLabel';
+import { OrganizationLabelDao } from '../../organizations/daos/OrganizationLabelDao';
+import { Result } from '@utils/Result';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IOrganizationLabelService)
 export class OrganisationLabelService extends BaseService<OrganizationLabel> implements IOrganizationLabelService {

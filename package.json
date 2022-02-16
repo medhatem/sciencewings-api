@@ -34,7 +34,8 @@
     "@dao": "dist/server/dao",
     "@sdks": "dist/server/sdks",
     "@/modules": "dist/server/modules",
-    "@utils": "dist/server/utils"
+    "@utils": "dist/server/utils",
+    "@/decorators" :"dist/server/decorators"
   },
   "repository": {
     "type": "git",
@@ -47,12 +48,14 @@
   },
   "homepage": "https://github.com/abdesselamXpack94/manaServices_server#readme",
   "dependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.6",
     "@keycloak/keycloak-admin-client": "^15.0.2",
-    "@mikro-orm/core": "^4.5.9",
-    "@mikro-orm/postgresql": "^4.5.9",
+    "@mikro-orm/core": "^5.0.0",
+    "@mikro-orm/migrations": "^5.0.0",
+    "@mikro-orm/postgresql": "^5.0.0",
+    "@mikro-orm/seeder": "^5.0.0",
     "@sendgrid/mail": "^7.6.0",
     "@typegoose/typegoose": "^7.6.1",
-    "@types/colors": "^1.2.1",
     "async_hooks": "^1.0.0",
     "bcrypt": "latest",
     "body-parser": "latest",
@@ -66,7 +69,7 @@
     "jsonwebtoken": "latest",
     "module-alias": "^2.2.2",
     "morgan": "^1.10.0",
-    "node-fetch": "2.6.1",
+    "node-fetch": "^2.6.1",
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
@@ -79,9 +82,9 @@
     "winston": "^3.5.1"
   },
   "devDependencies": {
-    "@mikro-orm/migrations": "^4.5.10",
     "@types/bcrypt": "latest",
     "@types/body-parser": "^1.19.1",
+    "@types/colors": "^1.2.1",
     "@types/cors": "latest",
     "@types/express": "latest",
     "@types/inversify-inject-decorators": "^2.0.0",
@@ -89,7 +92,7 @@
     "@types/jsonwebtoken": "latest",
     "@types/morgan": "^1.9.3",
     "@types/node": "^16.11.11",
-    "@types/node-fetch": "2.5.7",
+    "@types/node-fetch": "^2.5.7",
     "@types/passport-jwt": "^3.0.1",
     "@types/sinon": "latest",
     "@types/swagger-jsdoc": "^6.0.0",
