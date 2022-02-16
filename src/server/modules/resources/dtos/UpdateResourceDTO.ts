@@ -3,4 +3,4 @@ import { Serializable } from 'typescript-json-serializer';
 import { Resource } from '../models/Resource';
 
 @Serializable()
-export class UpdateResourceDTO extends BaseRequestDTO<Resource> {}
+export class UpdateResourceDTO extends BaseRequestDTO {}

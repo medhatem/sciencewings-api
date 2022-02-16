@@ -9,52 +9,24 @@ import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 
 @provideSingleton()
 export class BaseRoutes<T extends BaseModel<T>> {
-  private getDTOMapper: BaseRequestDTO<T>;
-  private updateDTOMapper: BaseRequestDTO<T>;
+  private getDTOMapper: BaseRequestDTO;
+  private updateDTOMapper: BaseRequestDTO;
   public logger: Logger;
   constructor(
     private service: BaseService<T>,
-    private baseGetDTO: BaseRequestDTO<T>,
-    private baseUpdateDTO: BaseRequestDTO<T>,
+    private baseGetDTO: BaseRequestDTO,
+    private baseUpdateDTO: BaseRequestDTO,
   ) {
     this.getDTOMapper = this.baseGetDTO;
     this.updateDTOMapper = this.baseUpdateDTO;
     this.logger = Logger.getInstance();
   }
 
-  // buildMapper<EntityT, dtoT extends BaseRequestDTO<T>>(dto: dtoT): dtoT {
-  //   return dto.deserialize()
-  // }
-
-  /**
-   *
-   * @param dto the dto to get the mapper for
-   */
-  // getMapperFromRequest<EntityT, dtoT extends BaseRequestDTO<T>>(dto: dtoT): dtoT {
-  //   return buildMapper(dto);
-  // }
-
-  /**
-   *
-   * @param dto the dto to get the mapper for
-   */
-  // getMapper<EntityT, dtoT extends BaseDTO>(dto:dtoT): dtoT {
-  //   return buildMapper(dto);
-  // }
-
-  // /**
-  //  *
-  //  * @param dto the dto to get the mapper for
-  //  */
-  // getRequestMapper<EntityT, dtoT>(dto: dtoT): dtoT {
-  //   return buildMapper(dto);
-  // }
-
   @GET
   @Path('/getById/:id')
   @Security([], KEYCLOAK_TOKEN)
   @Response(200, 'success')
-  public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO<T>> {
+  public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
     const result = await this.service.get(id);
     if (result.isFailure) {
       return this.getDTOMapper.serialize({
@@ -78,7 +50,6 @@ export class BaseRoutes<T extends BaseModel<T>> {
         error: { statusCode: 500, message: result.error },
       });
     }
-    // return result.map((r) => this.getDTOMapper.serialize(r));
     return this.getDTOMapper.serialize({
       body: { statusCode: 204, enities: result.getValue() },
     });
