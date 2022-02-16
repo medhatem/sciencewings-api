@@ -13,7 +13,8 @@ import { MemberDao } from '../daos/MemberDao';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';
 import { safeGuard } from '../../../decorators/safeGuard';
-import { validate } from '../../../decorators/bodyValidationDecorators/validate';
+import { validate } from '@/decorators/validate';
+import { validateParam } from '@/decorators/validateParam';
 
 type MemberRO = CreateMemberRO | UpdateMemberRO;
 @provideSingleton(IMemberService)
@@ -182,14 +183,10 @@ export class MemberService extends BaseService<Member> implements IMemberService
    */
   @log()
   @safeGuard()
-  @validate(CreateMemberSchema)
-  public async createMember(payload: MemberRO): Promise<Result<number>> {
+  @validate
+  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number>> {
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
-    if (existence.isFailure) {
-      {
-        return Result.fail<number>(existence.error);
-      }
-    }
+    if (existence.isFailure) return Result.fail<number>(existence.error);
     const { currentOrg, currentRes } = await existence.getValue();
 
     const addresss = await this.handleAddressForMemeber(payload);
@@ -232,8 +229,11 @@ export class MemberService extends BaseService<Member> implements IMemberService
    */
   @log()
   @safeGuard()
-  @validate(UpdateMemberSchema)
-  public async updateMember(payload: MemberRO, memberId: number): Promise<Result<number>> {
+  @validate
+  public async updateMember(
+    @validateParam(UpdateMemberSchema) payload: MemberRO,
+    memberId: number,
+  ): Promise<Result<number>> {
     const member = await this.dao.get(memberId);
     if (!member) {
       return Result.fail<number>(`Member with id ${memberId} does not exist`);

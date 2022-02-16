@@ -13,7 +13,8 @@ import { IUserService } from '../../users/interfaces';
 import { Result } from './../../../utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
-import { validate } from '@/decorators/bodyValidationDecorators/validate';
+import { validate } from '@/decorators/validate';
+import { validateParam } from '@/decorators/validateParam';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -78,8 +79,8 @@ export class ContractService extends BaseService<Contract> implements IContractS
    */
   @log()
   @safeGuard()
-  @validate(CreateContractSchema)
-  public async createContract(payload: ContractRO): Promise<Result<number>> {
+  @validate
+  public async createContract(@validateParam(CreateContractSchema) payload: ContractRO): Promise<Result<number>> {
     const organization = await this.origaniaztionService.get(payload.organization);
     if (organization.isFailure || organization.getValue() === null) {
       return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
@@ -110,8 +111,11 @@ export class ContractService extends BaseService<Contract> implements IContractS
    */
   @log()
   @safeGuard()
-  @validate(UpdateContractSchema)
-  public async updateContract(payload: ContractRO, id: number): Promise<Result<number>> {
+  @validate
+  public async updateContract(
+    @validateParam(UpdateContractSchema) payload: ContractRO,
+    id: number,
+  ): Promise<Result<number>> {
     const currentContract = await this.dao.get(id);
     if (currentContract === null) {
       return Result.fail<number>(`Contract with id ${id} does not exist.`);
