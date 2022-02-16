@@ -21,7 +21,7 @@ export function validate(target: any, propertyKey: string, descriptor: TypedProp
   const originalFunction: any = descriptor.value;
   descriptor.value = async function (...args: any[]) {
     try {
-      let parametersToValidate: parameterToValidateWithSchema[] = Reflect.getOwnMetadata(
+      const parametersToValidate: parameterToValidateWithSchema[] = Reflect.getOwnMetadata(
         validateParamMetadataKey,
         target,
         propertyKey,

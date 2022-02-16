@@ -18,9 +18,9 @@ export type parameterToValidateWithSchema = {
  */
 export function validateParam(
   schema: Joi.ObjectSchema,
-): (target: Object, propertyKey: string | symbol, parameterIndex: number) => any {
-  return async (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
-    let existingParamsToValidate: parameterToValidateWithSchema[] =
+): (target: any, propertyKey: string | symbol, parameterIndex: number) => any {
+  return async (target: any, propertyKey: string | symbol, parameterIndex: number) => {
+    const existingParamsToValidate: parameterToValidateWithSchema[] =
       Reflect.getOwnMetadata(validateParamMetadataKey, target, propertyKey) || [];
     existingParamsToValidate.push({
       paramIndex: parameterIndex,
