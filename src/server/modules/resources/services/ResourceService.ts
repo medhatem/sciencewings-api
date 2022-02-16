@@ -8,11 +8,12 @@ import { ResourceDao } from '../daos/ResourceDao';
 import { CreateResourceRO } from '../routes/RequestObject';
 import { safeGuard } from '../../../decorators/safeGuard';
 import { log } from '../../../decorators/log';
-import { validate } from '../../../decorators/bodyValidationDecorators/validate';
 import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { IResourceCalendarService, IResourceService } from '../interfaces';
 import { IUserService } from '../../users/interfaces';
 import { IOrganizationService } from '../../organizations/interfaces';
+import { validateParam } from '@/decorators/validateParam';
+import { validate } from '@/decorators/validate';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
@@ -31,8 +32,8 @@ export class ResourceService extends BaseService<Resource> {
 
   @log()
   @safeGuard()
-  @validate(CreateResourceSchema)
-  public async createResource(payload: CreateResourceRO): Promise<Result<number>> {
+  @validate
+  public async createResource(@validateParam(CreateResourceSchema) payload: CreateResourceRO): Promise<Result<number>> {
     let user = null;
     let organization = null;
 
@@ -75,8 +76,11 @@ export class ResourceService extends BaseService<Resource> {
 
   @log()
   @safeGuard()
-  @validate(UpdateResourceSchema)
-  public async updateResource(payload: CreateResourceRO, resourceId: number): Promise<Result<number>> {
+  @validate
+  public async updateResource(
+    @validateParam(UpdateResourceSchema) payload: CreateResourceRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);

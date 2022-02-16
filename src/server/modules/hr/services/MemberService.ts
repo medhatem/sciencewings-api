@@ -1,18 +1,20 @@
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
-import { IAddressService } from '../../address/interfaces/IAddressService';
+import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
+import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@di/index';
+
 import { BaseService } from '../../base/services/BaseService';
-import { Member } from '../../hr/models/Member';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+import { IAddressService } from '../../address/interfaces/IAddressService';
 import { IMemberService } from '..';
+import { IOrganizationService } from '../../organizations/interfaces';
+import { IPhoneService } from '../../phones/interfaces/IPhoneService';
+import { IResourceService } from '../../resources/interfaces';
+import { Member } from '../../hr/models/Member';
 import { MemberDao } from '../daos/MemberDao';
 import { Result } from '@utils/Result';
-import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
-import { validate } from '../../../decorators/bodyValidationDecorators/validate';
-import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
-import { IOrganizationService } from '../../organizations/interfaces';
-import { IResourceService } from '../../resources/interfaces';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
+import { validate } from '@/decorators/validate';
+import { validateParam } from '@/decorators/validateParam';
 
 type MemberRO = CreateMemberRO | UpdateMemberRO;
 @provideSingleton(IMemberService)
@@ -170,8 +172,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
   @log()
   @safeGuard()
-  @validate(CreateMemberSchema)
-  public async createMember(payload: MemberRO): Promise<Result<number>> {
+  @validate
+  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number>> {
     const existance = await this.checkEntitiesExistance(payload.organization, payload.resource);
     if (existance.isFailure) return Result.fail<number>(existance.error);
     const { currentOrg, currentRes } = await existance.getValue();
@@ -207,8 +209,11 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
   @log()
   @safeGuard()
-  @validate(UpdateMemberSchema)
-  public async updateMember(payload: MemberRO, memberId: number): Promise<Result<number>> {
+  @validate
+  public async updateMember(
+    @validateParam(UpdateMemberSchema) payload: MemberRO,
+    memberId: number,
+  ): Promise<Result<number>> {
     const member = await this.dao.get(memberId);
     if (!member) {
       return Result.fail<number>(`Member with id ${memberId} does not exist`);
