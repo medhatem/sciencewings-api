@@ -34,7 +34,8 @@
     "@dao": "dist/server/dao",
     "@sdks": "dist/server/sdks",
     "@/modules": "dist/server/modules",
-    "@utils": "dist/server/utils"
+    "@utils": "dist/server/utils",
+    "@/decorators" :"dist/server/decorators"
   },
   "repository": {
     "type": "git",

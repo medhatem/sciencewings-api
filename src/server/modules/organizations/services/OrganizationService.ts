@@ -3,23 +3,24 @@ import { container, provideSingleton } from '@di/index';
 import { BaseService } from '../../base/services/BaseService';
 import { Collection } from '@mikro-orm/core';
 import { CreateOrganizationRO } from '../routes/RequestObject';
-import { Email } from '@utils/Email';
-import { EmailMessage } from '../../../types/types';
-import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
-import { IAddressService } from '../../address/interfaces/IAddressService';
-import { IOrganizationLabelService } from '../../organizations/interfaces/IOrganizationLabelService';
 import { IOrganizationService } from '../interfaces/IOrganizationService';
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
-import { IUserService } from '../../users/interfaces';
 import { Organization } from '../../organizations/models/Organization';
 import { OrganizationDao } from '../daos/OrganizationDao';
 import { Result } from '@utils/Result';
 import { User } from '../../users/models/User';
+import { log } from '../../../decorators/log';
+import { safeGuard } from '../../../decorators/safeGuard';
+import { EmailMessage } from '../../../types/types';
+import { Email } from '@utils/Email';
 import createSchema from '../schemas/createOrganizationSchema';
 import { getConfig } from './../../../configuration/Configuration';
-import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
-import { validate } from '@/decorators/bodyValidationDecorators/validate';
+import { IPhoneService } from '../../phones/interfaces/IPhoneService';
+import { IAddressService } from '../../address/interfaces/IAddressService';
+import { IUserService } from '../../users/interfaces';
+import { IOrganizationLabelService } from '../../organizations/interfaces/IOrganizationLabelService';
+import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
+import { validateParam } from '@/decorators/validateParam';
+import { validate } from '@/decorators/validate';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -40,8 +41,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  @validate(createSchema)
-  public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
+  @validate
+  public async createOrganization(
+    @validateParam(createSchema) payload: CreateOrganizationRO,
+    userId: number,
+  ): Promise<Result<number>> {
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
       return Result.fail<number>(`Organization ${payload.name} already exist.`);

@@ -3,14 +3,15 @@ import { container, provideSingleton } from '@di/index';
 import { BaseService } from '../../base/services/BaseService';
 import { CreateResourceCalendarRO } from '../routes/RequestObject';
 import { IOrganizationService } from '../../organizations/interfaces/IOrganizationService';
-import { IResourceCalendarService } from '../interfaces';
-import { ResourceCalendar } from '../models/ResourceCalendar';
-import { ResourceCalendarDao } from '../daos/ResourceCalendarDAO';
-import { ResourceCalendarSchema } from '../schemas/CreateResourceSchema';
 import { Result } from '@utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
-import { validate } from '@/decorators/bodyValidationDecorators/validate';
+import { ResourceCalendar } from '../models/ResourceCalendar';
+import { ResourceCalendarDao } from '../daos/ResourceCalendarDAO';
+import { ResourceCalendarSchema } from '../schemas/CreateResourceSchema';
+import { IResourceCalendarService } from '../interfaces';
+import { validateParam } from '@/decorators/validateParam';
+import { validate } from '@/decorators/validate';
 
 @provideSingleton(IResourceCalendarService)
 export class ResourceCalendarService extends BaseService<ResourceCalendar> {
@@ -24,8 +25,10 @@ export class ResourceCalendarService extends BaseService<ResourceCalendar> {
 
   @log()
   @safeGuard()
-  @validate(ResourceCalendarSchema)
-  public async createResourceCalendar(payload: CreateResourceCalendarRO): Promise<Result<ResourceCalendar>> {
+  @validate
+  public async createResourceCalendar(
+    @validateParam(ResourceCalendarSchema) payload: CreateResourceCalendarRO,
+  ): Promise<Result<ResourceCalendar>> {
     let org = null;
     let organization = null;
     if (payload.organization) {

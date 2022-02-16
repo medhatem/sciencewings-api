@@ -1,19 +1,21 @@
-import { IResourceCalendarService, IResourceService } from '../interfaces';
 import { container, provideSingleton } from '@di/index';
 
 import { BaseService } from '../../base/services/BaseService';
 import { CreateResourceRO } from '../routes/RequestObject';
 import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
-import { IOrganizationService } from '../../organizations/interfaces';
-import { IUserService } from '../../users/interfaces';
+
 import { Resource } from '../../resources/models/Resource';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
 import { ResourceDao } from '../daos/ResourceDao';
 import { Result } from '@utils/Result';
 import { UpdateResourceSchema } from './../schemas/CreateResourceSchema';
-import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
-import { validate } from '@/decorators/bodyValidationDecorators/validate';
+import { log } from '../../../decorators/log';
+import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
+import { IResourceCalendarService, IResourceService } from '../interfaces';
+import { IUserService } from '../../users/interfaces';
+import { IOrganizationService } from '../../organizations/interfaces';
+import { validateParam } from '@/decorators/validateParam';
+import { validate } from '@/decorators/validate';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
@@ -32,8 +34,8 @@ export class ResourceService extends BaseService<Resource> {
 
   @log()
   @safeGuard()
-  @validate(CreateResourceSchema)
-  public async createResource(payload: CreateResourceRO): Promise<Result<number>> {
+  @validate
+  public async createResource(@validateParam(CreateResourceSchema) payload: CreateResourceRO): Promise<Result<number>> {
     let user = null;
     let organization = null;
 
@@ -76,8 +78,11 @@ export class ResourceService extends BaseService<Resource> {
 
   @log()
   @safeGuard()
-  @validate(UpdateResourceSchema)
-  public async updateResource(payload: CreateResourceRO, resourceId: number): Promise<Result<number>> {
+  @validate
+  public async updateResource(
+    @validateParam(UpdateResourceSchema) payload: CreateResourceRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
