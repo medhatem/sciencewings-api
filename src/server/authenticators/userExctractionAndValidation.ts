@@ -18,12 +18,11 @@ export class UserExctractionAndValidation {
    * @param req express request
    */
   userExctractionAndValidation = async (req: UserRequest): Promise<Result<{ keycloakUser: any; userId: any }>> => {
-    if (!req.headers || !req.headers[ACCESS_TOKEN_HEADER]) {
+    if (!req.headers || !req.headers.authorization) {
       return Result.fail('Not Authorized');
     }
 
-    const token = req.headers[ACCESS_TOKEN_HEADER] as string;
-
+    const token = req.headers.authorization as string;
     const res = await fetch(
       `${getConfig('keycloak.baseUrl')}/realms/${getConfig(
         'keycloak.clientValidation.realmName',
@@ -31,7 +30,7 @@ export class UserExctractionAndValidation {
       {
         method: 'get',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `${token}`,
         },
       },
     );
