@@ -2,7 +2,6 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/B
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
-import { User } from '../models';
 
 class BaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
@@ -25,7 +24,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
 }
 
 @Serializable()
-export class UserDTO extends BaseRequestDTO<User> {
+export class UserDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: BaseBodyGetDTO;
 
