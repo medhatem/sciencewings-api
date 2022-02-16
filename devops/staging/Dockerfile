@@ -18,8 +18,8 @@ ADD src/server /app/src/server
 ADD src/tsconfig.json /app/src/tsconfig.json
 ADD swaggerConfig.json /app/swaggerConfig.json
 
-RUN npm run swagger-gen
 RUN npm run build-without-test
+RUN npm run swagger-gen
 
 CMD ["npm" ,"start"]
 
