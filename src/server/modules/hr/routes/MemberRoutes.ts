@@ -1,14 +1,14 @@
 import { container, provideSingleton } from '@di/index';
-import { BaseRoutes } from '../../base/routes/BaseRoutes';
-import { Member } from '../../hr/models/Member';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
+import { Member } from '@/modules/hr/models/Member';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { MemberDTO } from '../dtos/MemberDTO';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
+import { KEYCLOAK_TOKEN } from '@/modules/../authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreateMemberRO } from './RequestObject';
-import { IMemberService } from '../../hr/interfaces';
-import { CreateMemberDTO } from '../../hr/dtos/CreateMemberDTO';
-import { UpdateMemberDTO } from '../../hr/dtos/UpdateMemberDTO';
+import { IMemberService } from '@/modules/hr/interfaces';
+import { CreateMemberDTO } from '@/modules/hr/dtos/CreateMemberDTO';
+import { UpdateMemberDTO } from '@/modules/hr/dtos/UpdateMemberDTO';
 
 @provideSingleton()
 @Path('members')

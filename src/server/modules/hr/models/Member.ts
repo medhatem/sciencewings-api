@@ -1,19 +1,19 @@
 import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
+import { Address } from '@/modules/..';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
 import { Job } from './Job';
-import { Organization } from '../../organizations/models/Organization';
-import { ResCountry } from '../../organizations/models/ResCountry';
-import { ResPartnerBank } from '../../organizations/models/ResPartnerBank';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { Resource } from '../../resources/models/Resource';
-import { User } from '../../users/models/User';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { Phone } from '@/modules/phones/models/Phone';
+import { ResCountry } from '@/modules/organizations/models/ResCountry';
+import { ResPartnerBank } from '@/modules/organizations/models/ResPartnerBank';
+import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
-import { Phone } from '../../phones/models/Phone';
-import { Address } from '../../..';
 
 @provideSingleton()
 @Entity()

@@ -1,0 +1,31 @@
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { ContractType } from './ContractType';
+import { Group } from './Group';
+import { Job } from './Job';
+import { Member } from './Member';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { PayrollStructureType } from './PayrollStructureType';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { User } from '@/modules/users/models/User';
+export declare class Contract extends BaseModel<Contract> {
+    constructor();
+    static getInstance(): Contract;
+    id: number;
+    name: string;
+    active?: boolean;
+    structureType?: PayrollStructureType;
+    member?: Member;
+    group?: Group;
+    job?: Job;
+    dateStart: Date;
+    dateEnd?: Date;
+    trialDateEnd?: Date;
+    resourceCalendar?: ResourceCalendar;
+    wage: number;
+    notes?: string;
+    state?: string;
+    organization: Organization;
+    contractType?: ContractType;
+    kanbanState?: string;
+    hrResponsible?: User;
+}

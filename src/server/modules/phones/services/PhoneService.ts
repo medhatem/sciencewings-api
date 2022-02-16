@@ -1,13 +1,13 @@
 import { container, provideSingleton } from '@di/index';
 
-import { BaseService } from '../../base/services/BaseService';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { IPhoneService } from '../interfaces/IPhoneService';
-import { Organization } from '../../organizations/models/Organization';
-import { Phone } from '../../phones/models/Phone';
-import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
-import { PhoneDao } from '../../phones/daos/PhoneDAO';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { Phone } from '@/modules/phones/models/Phone';
+import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
 import { Result } from '@utils/Result';
-import { User } from '../../users/models/User';
+import { User } from '@/modules/users/models/User';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 

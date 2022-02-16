@@ -1,9 +1,9 @@
 import { EntityRepository, GetRepository } from '@mikro-orm/core';
 
-import { BaseModel } from '../../base/models/BaseModel';
-import { Logger } from '../../../utils/Logger';
-import { ServerError } from '../../../errors/ServerError';
-import { connection } from '../../../db/index';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Logger } from '@/modules/../utils/Logger';
+import { ServerError } from '@/modules/../errors/ServerError';
+import { connection } from '@/modules/../db/index';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
 

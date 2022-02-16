@@ -1,16 +1,16 @@
 import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@di/index';
 
-import { BaseService } from '../../base/services/BaseService';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@utils/Email';
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
-import { IUserService } from '../../users/interfaces/IUserService';
+import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Keycloak } from '@sdks/keycloak';
-import { KeycloakUserInfo } from '../../../types/UserRequest';
+import { KeycloakUserInfo } from '@/modules/../types/UserRequest';
 import { Result } from '@utils/Result';
-import { User } from '../../users/models/User';
+import { User } from '@/modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
-import { getConfig } from '../../../configuration/Configuration';
+import { getConfig } from '@/modules/../configuration/Configuration';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 

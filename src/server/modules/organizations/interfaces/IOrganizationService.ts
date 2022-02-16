@@ -1,9 +1,9 @@
-import { Result } from '@utils/Result';
-import { CreateOrganizationRO } from '../routes/RequestObject';
 import { Collection } from '@mikro-orm/core';
-import { User } from '../../users/models/User';
-import { IBaseService } from '../../base/interfaces/IBaseService';
+import { CreateOrganizationRO } from '../routes/RequestObject';
 import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
+import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { Result } from '@utils/Result';
+import { User } from '@/modules/users/models/User';
 
 export abstract class IOrganizationService extends IBaseService<any> {
   createOrganization: (payload: CreateOrganizationRO, userId: number) => Promise<Result<number>>;

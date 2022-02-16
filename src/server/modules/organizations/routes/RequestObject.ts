@@ -1,6 +1,7 @@
-import { AddressOrganizationDTO } from '../../address/dtos/AddressDTO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
+
+import { AddressOrganizationDTO } from '@/modules/address/dtos/AddressDTO';
+import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 
 @Serializable()
 export class CreateOrganizationRO {

@@ -1,19 +1,19 @@
 import { container, provideSingleton } from '@di/index';
 
-import { BaseService } from '../../base/services/BaseService';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { CreateResourceRO } from '../routes/RequestObject';
 import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
 
-import { Resource } from '../../resources/models/Resource';
+import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceDao } from '../daos/ResourceDao';
 import { Result } from '@utils/Result';
 import { UpdateResourceSchema } from './../schemas/CreateResourceSchema';
 import { safeGuard } from '@/decorators/safeGuard';
-import { log } from '../../../decorators/log';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
+import { log } from '@/modules/../decorators/log';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { IResourceCalendarService, IResourceService } from '../interfaces';
-import { IUserService } from '../../users/interfaces';
-import { IOrganizationService } from '../../organizations/interfaces';
+import { IUserService } from '@/modules/users/interfaces';
+import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 

@@ -1,8 +1,8 @@
 import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 
-import { KeycloakUserInfo } from '../../../types/UserRequest';
+import { KeycloakUserInfo } from '@/modules/../types/UserRequest';
 import { Result } from '@utils/Result';
-import { User } from '../../users/models';
+import { User } from '@/modules/users/models';
 
 export abstract class IUserService {
   static getInstance: () => IUserService;

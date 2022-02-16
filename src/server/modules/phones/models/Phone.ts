@@ -1,10 +1,11 @@
-import { Organization } from '../../organizations/models/Organization';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@di/index';
-import { BaseModel } from '../../base/models/BaseModel';
-import { User } from '../../users/models/User';
 
-// import { ResPartner } from '../../organisations/models/ResPartner';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { User } from '@/modules/users/models/User';
+
+// import { ResPartner } from '@/modules/organisations/models/ResPartner';
 
 @provideSingleton()
 @Entity()

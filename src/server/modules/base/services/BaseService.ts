@@ -1,10 +1,10 @@
 import { AssignOptions, wrap } from '@mikro-orm/core';
 
 import { BaseDao } from '../daos/BaseDao';
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@sdks/keycloak';
-import { Logger } from '../../../utils/Logger';
+import { Logger } from '@/modules/../utils/Logger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Result } from '@utils/Result';
 import { ServerError } from '@errors/ServerError';
