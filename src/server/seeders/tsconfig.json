@@ -1,0 +1,19 @@
+{
+    "extends": "../tsconfig",
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "rootDir": "./",
+        "outDir": "../../dist/server",
+        "declaration": true,
+        "removeComments": false,
+        "resolveJsonModule": true
+    },
+    "include": [
+        "./**/*.ts",
+        "./typings.d.ts",
+        "custome-template.js"
+    ]
+}

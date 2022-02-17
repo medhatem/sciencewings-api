@@ -1,9 +1,22 @@
 import { SeedUsers } from './users';
+import { container } from './../di/index';
 import { generateKCUsers } from './keycloak';
+import { provideSingleton } from './../di';
 
-async function main() {
-  const users = await generateKCUsers();
-  await SeedUsers.createUsers(users);
+@provideSingleton()
+export class Seeders {
+  constructor(private seedUser: SeedUsers) {}
+
+  static getInstance(): Seeders {
+    return container.get(Seeders);
+  }
+
+  async main() {
+    const KDUsers = await generateKCUsers();
+    const users = this.seedUser.createUsers(KDUsers);
+    console.log({ users });
+  }
 }
 
-main();
+const seed = Seeders.getInstance();
+seed.main();

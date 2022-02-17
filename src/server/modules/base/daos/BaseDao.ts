@@ -5,7 +5,7 @@ import { Logger } from '../../../utils/Logger';
 import { ServerError } from '../../../errors/ServerError';
 import { connection } from '../../../db/index';
 import { log } from '@/decorators/log';
-import { provideSingleton } from '@/di';
+import { provideSingleton } from '@di/index';
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {

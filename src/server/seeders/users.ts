@@ -1,30 +1,35 @@
-import { IUserService } from '@/modules/users/interfaces';
-import { KeycloakUserInfo } from '@/types/UserRequest';
 import { UserDao } from './../modules/users/daos/UserDao';
-import { UserService } from './../modules/users/services/UserService';
+import { provideSingleton } from './../di';
 // import { config } from './config';
 // import fetch from 'node-fetch';
-
+@provideSingleton()
 export class SeedUsers {
-  constructor(private userService: IUserService) {}
+  constructor(private dao: UserDao) {}
 
   async createUsers(users: any) {
-    await Promise.all(
+    const usersInDB = await Promise.all(
       users.map(async (user: any) => {
-        const kcuser: KeycloakUserInfo = {
-          email_verified: user.emailVerified,
-          name: user.username,
-          email: user.email,
-          address: {},
-          groups: [],
-          preferred_username: '',
-          given_name: '',
-          family_name: '',
-        };
+        const fetchedUser = await this.dao.getByCriteria({ keycloakId: user.id });
+        if (fetchedUser === null) {
+          const kcuser = {
+            keycloakId: user.id,
+            email_verified: user.emailVerified,
+            name: user.username,
+            email: user.email,
+            firstname: '',
+            lastname: '',
+            dateofbirth: new Date(),
+            organizations: null as any,
+          };
 
-        await this.userService.registerUser(kcuser);
+          return await this.dao.create(kcuser);
+        } else {
+          return fetchedUser;
+        }
       }),
     );
+
+    return usersInDB;
   }
 }
 
