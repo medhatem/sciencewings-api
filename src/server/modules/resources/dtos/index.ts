@@ -1,3 +1,3 @@
-export * from '@/modules/resources/dtos/ResourceDTO';
-export * from '@/modules/resources/dtos/UpdateResourceDTO';
-export * from '@/modules/resources/dtos/CreatedResourceDTO';
+export * from './ResourceDTO';
+export * from './UpdateResourceDTO';
+export * from './CreatedResourceDTO';

@@ -1,2 +1,2 @@
-export * from '@/modules/resources/interfaces/IResourceService';
-export * from '@/modules/resources/interfaces/IResourceCalendarService';
+export * from './IResourceService';
+export * from './IResourceCalendarService';
