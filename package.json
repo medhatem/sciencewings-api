@@ -36,7 +36,7 @@
     "@sdks": "dist/server/sdks",
     "@/modules": "dist/server/modules",
     "@utils": "dist/server/utils",
-    "@/decorators" :"dist/server/decorators"
+    "@/decorators": "dist/server/decorators"
   },
   "repository": {
     "type": "git",
