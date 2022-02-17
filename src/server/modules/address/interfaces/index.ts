@@ -1,1 +1,1 @@
-export * from '@/modules/address/interfaces/IAddressService';
+export * from './IAddressService';

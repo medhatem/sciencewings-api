@@ -1,1 +1,1 @@
-export * from '@/modules/address/daos/AddressDAO';
+export * from './AddressDAO';

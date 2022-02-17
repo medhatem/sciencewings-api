@@ -1,6 +1,6 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { AddressOrganizationDTO } from '@/modules/address/dtos/AddressDTO';
+import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 
 @Serializable()
@@ -18,7 +18,7 @@ export class CreateOrganizationRO {
   type: string;
 
   @JsonProperty()
-  address: AddressOrganizationDTO[];
+  address: AddressDTO[];
 
   @JsonProperty()
   labels: string[];

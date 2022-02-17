@@ -3,6 +3,9 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 @Serializable()
 export class PhoneDTO {
   @JsonProperty()
+  id: number;
+
+  @JsonProperty()
   label: string;
 
   @JsonProperty()

@@ -8,6 +8,7 @@ export * from '@/modules/users';
 export * from '@/modules/base';
 export * from '@/modules/hr';
 export * from '@/modules/resources';
+export * from '@/modules/organizations';
 export * from '@/modules/address';
 export * from '@/modules/phones';
 

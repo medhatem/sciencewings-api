@@ -1,4 +1,4 @@
-import { Address, Phone } from '@/modules/..';
+import { AddressDTO, PhoneDTO } from '@/modules/..';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
@@ -22,15 +22,15 @@ export class CreateMemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: Address;
+  address?: AddressDTO;
   @JsonProperty()
-  workPhone?: Phone;
+  workPhone?: PhoneDTO;
   @JsonProperty()
-  mobilePhone?: Phone;
+  mobilePhone?: PhoneDTO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: Address;
+  workLocation?: AddressDTO;
   // @JsonProperty()
   // user?: number;
   // @JsonProperty()
@@ -40,7 +40,7 @@ export class CreateMemberRO {
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: Address;
+  addressHome?: AddressDTO;
   // @JsonProperty()
   // country?: ResCountry;
   @JsonProperty()
@@ -86,7 +86,7 @@ export class CreateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: Phone;
+  emergencyPhone?: PhoneDTO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
@@ -116,15 +116,15 @@ export class UpdateMemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: Address;
+  address?: AddressDTO;
   @JsonProperty()
-  workPhone?: Phone;
+  workPhone?: PhoneDTO;
   @JsonProperty()
-  mobilePhone?: Phone;
+  mobilePhone?: PhoneDTO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: Address;
+  workLocation?: AddressDTO;
   // @JsonProperty()
   // user?: number;
   // @JsonProperty()
@@ -134,7 +134,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: Address;
+  addressHome?: AddressDTO;
   // @JsonProperty()
   // country?: ResCountry;
   @JsonProperty()
@@ -180,7 +180,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: Phone;
+  emergencyPhone?: PhoneDTO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
