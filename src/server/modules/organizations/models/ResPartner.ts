@@ -2,7 +2,7 @@ import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Organization } from './Organization';
+import { Organization } from '@/modules/organizations/models/Organization';
 import { ResCountry } from '@/modules/organizations/models/ResCountry';
 import { ResCountryState } from '@/modules/organizations/models/ResCountryState';
 import { ResPartnerIndustry } from '@/modules/organizations/models/ResPartnerIndustry';

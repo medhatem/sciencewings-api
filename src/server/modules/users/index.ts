@@ -1,6 +1,6 @@
-export * from './services';
-// export * from './routes';
-// export * from './models';
-// export * from './interfaces';
-// export * from './dtos';
-// export * from './daos';
+export * from '@/modules/users/services';
+export * from '@/modules/users/routes';
+export * from '@/modules/users/models';
+export * from '@/modules/users/interfaces';
+export * from '@/modules/users/dtos';
+export * from '@/modules/users/daos';

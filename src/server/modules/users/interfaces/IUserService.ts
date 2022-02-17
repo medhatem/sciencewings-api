@@ -1,6 +1,6 @@
-import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { ResetPasswordRO, UserDetailsRO } from '@/modules/users/routes/RequstObjects';
 
-import { KeycloakUserInfo } from '@/modules/../types/UserRequest';
+import { KeycloakUserInfo } from '../../../types/UserRequest';
 import { Result } from '@utils/Result';
 import { User } from '@/modules/users/models';
 

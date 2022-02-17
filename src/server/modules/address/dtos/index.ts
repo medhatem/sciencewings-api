@@ -1,1 +1,1 @@
-export * from './AddressDTO';
+export * from '@/modules/address/dtos/AddressDTO';

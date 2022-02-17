@@ -3,8 +3,8 @@ import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Resource } from './Resource';
-import { ResourceCalendar } from './ResourceCalendar';
+import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 
 @provideSingleton()
 @Entity()

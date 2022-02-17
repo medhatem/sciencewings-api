@@ -1,1 +1,1 @@
-export * from './ResourceRoutes';
+export * from '../routes/ResourceRoutes';

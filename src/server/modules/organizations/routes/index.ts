@@ -1,2 +1,2 @@
-export * from './OrganizationRoutes';
-export * from './RequestObject';
+export * from '@/modules/organizations/routes/OrganizationRoutes';
+export * from '@/modules/organizations/routes/RequestObject';

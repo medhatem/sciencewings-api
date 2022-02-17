@@ -1,1 +1,1 @@
-export * from './IUserService';
+export * from '@/modules/users/interfaces/IUserService';

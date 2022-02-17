@@ -2,10 +2,10 @@ import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikr
 import { container, provideSingleton } from '@di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Organization } from './Organization';
-import { ResBank } from './ResBank';
-import { ResCurrency } from './ResCurrency';
-import { ResPartner } from './ResPartner';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { ResBank } from '@/modules/organizations/models/ResBank';
+import { ResCurrency } from '@/modules/organizations/models/ResCurrency';
+import { ResPartner } from '@/modules/organizations/models/ResPartner';
 
 @provideSingleton()
 @Entity()

@@ -1,2 +1,2 @@
-export * from './UserRoutes';
-export * from './RequstObjects';
+export * from '@/modules/users/routes/UserRoutes';
+export * from '@/modules/users/routes/RequstObjects';

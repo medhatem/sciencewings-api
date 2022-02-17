@@ -1,10 +1,10 @@
 import { container, provideSingleton } from '@di/index';
 
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { Resource } from '../models/Resource';
+import { Resource } from '@/modules/resources/models/Resource';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
-import { CreateResourceRO } from './RequestObject';
-import { IResourceService } from '../interfaces';
+import { CreateResourceRO } from '@/modules/resources/routes/RequestObject';
+import { IResourceService } from '@/modules/resources/interfaces';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { ResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
