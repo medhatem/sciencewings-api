@@ -1,25 +1,25 @@
-import { POST, Path, Security, ContextRequest, PUT } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT, GET, PathParam } from 'typescript-rest';
 import { container, provideSingleton } from '@di/index';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '../models/User';
-import { UserService } from '../services/UserService';
 import { UserRequest } from '../../../types/UserRequest';
-import { InviteUserDTO, RegisterUserFromTokenDTO, ResetPasswordDTO } from '../dtos/RegisterUserFromTokenDTO';
-import { UserDTO } from '../dtos/UserDTO';
-import { UpdateUserDTO } from '../dtos/UserUpdateDTO';
-import { ResetPasswordRO, UserInviteToOrgRO } from './RequstObjects';
+import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
+import { UserDTO } from '@/modules/users/dtos/UserDTO';
+import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
+import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
 import { Result } from '@utils/Result';
-import { LoggerStorage } from '../../../decorators/loggerStorage';
-import { CreatedUserDTO } from '../dtos/CreatedUserDTO';
-import { UserDetailsRO } from './RequstObjects';
+import { LoggerStorage } from '@/decorators/loggerStorage';
+import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
+import { IUserService } from '../interfaces/IUserService';
+import { Organization } from '../../organizations';
 
 @provideSingleton()
 @Path('users')
 export class UserRoutes extends BaseRoutes<User> {
-  constructor(private userService: UserService) {
-    super(userService, UserDTO, UpdateUserDTO);
+  constructor(private userService: IUserService) {
+    super(userService as any, new UserDTO(), new UpdateUserDTO());
   }
 
   static getInstance(): UserRoutes {
@@ -55,31 +55,6 @@ export class UserRoutes extends BaseRoutes<User> {
   }
 
   /**
-   * invite a user to an organization
-   * creates the newly invited user in keycloak
-   *
-   * @param payload
-   */
-  @POST
-  @Path('inviteUserToOrganization')
-  @Response<InviteUserDTO>(201, 'User Registred Successfully')
-  @Security([], KEYCLOAK_TOKEN)
-  @LoggerStorage()
-  public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
-    const result = await this.userService.inviteUserByEmail(payload.email, payload.organizationId);
-
-    if (result.isFailure) {
-      return new InviteUserDTO().serialize({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
-    }
-
-    return new InviteUserDTO().serialize({
-      body: { statusCode: 201, userId: result.getValue() },
-    });
-  }
-
-  /**
    *  Method that resets a user password in keycloak
    *
    * @param payload
@@ -103,6 +78,11 @@ export class UserRoutes extends BaseRoutes<User> {
     });
   }
 
+  /**
+   * Update user details
+   * Must be authentificated
+   * @param payload: User object
+   */
   @PUT
   @Path('updateUserDetail')
   @Security([], KEYCLOAK_TOKEN)
@@ -118,5 +98,25 @@ export class UserRoutes extends BaseRoutes<User> {
     }
 
     return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * Get user By auth token
+   */
+  @GET
+  @Path('getUserByKeycloakId/:kcid')
+  @LoggerStorage()
+  public async getUserByKeycloakId(@PathParam('kcid') keycloakId: string): Promise<UserDTO> {
+    const result = await this.userService.getUserByKeycloakId(keycloakId);
+
+    if (result.isFailure) {
+      return new UserDTO().serialize({ error: { statusCode: 404, errorMessage: result.error } });
+    }
+
+    const user = result.getValue();
+    const organizations = (await user.organizations.init()).toArray().map((org: Organization) => {
+      return { id: org.id, name: org.name };
+    });
+    return new UserDTO().serialize({ body: { user: { ...user, organizations }, statusCode: 200 } });
   }
 }

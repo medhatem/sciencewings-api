@@ -1,19 +1,28 @@
 {
-    "swagger": {
-        "basePath":"/api/v1",
-        "outputDirectory": "./dist/server",
-        "entryFile": "./src/server/routes/index.ts",
-        "securityDefinitions": {
-            "api_key": {
-                "type": "apiKey",
-                "name": "access_token",
-                "in": "query"
-            },
-            "keycloak_token": {
-                "type": "apiKey",
-                "name": "access_token",
-                "in": "query"
-            }
-        }
+  "swagger": {
+    "basePath": "/api/v1",
+    "outputDirectory": "./dist/server",
+    "entryFile": [
+      "./src/server/modules/address/dtos/index.ts",
+      "./src/server/modules/base/dtos/index.ts",
+      "./src/server/modules/hr/dtos/index.ts",
+      "./src/server/modules/organizations/dtos/index.ts",
+      "./src/server/modules/phones/dtos/index.ts",
+      "./src/server/modules/resources/dtos/index.ts",
+      "./src/server/modules/users/dtos/index.ts",
+      "./src/server/routes/index.ts"
+    ],
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "access_token",
+        "in": "query"
+      },
+      "keycloak_token": {
+        "type": "apiKey",
+        "name": "access_token",
+        "in": "query"
+      }
     }
+  }
 }

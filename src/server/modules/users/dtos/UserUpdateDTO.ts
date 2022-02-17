@@ -1,16 +1,16 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@modules/base/dtos/BaseDTO';
-import { dto, include } from 'dto-mapper';
+import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 class BodyUpdateUserDTO extends BaseBodyDTO {
-  @include()
+  @JsonProperty()
   id: number;
 }
 
-@dto()
+@Serializable()
 export class UpdateUserDTO extends BaseRequestDTO {
-  @include()
+  @JsonProperty()
   public body?: BodyUpdateUserDTO;
 
-  @include()
+  @JsonProperty()
   public error?: BaseErrorDTO;
 }

@@ -7,16 +7,13 @@
         "emitDecoratorMetadata": true,
         "rootDir": "./",
         "outDir": "../../dist/server",
-        // "baseUrl": ".",
-        // "paths": {
-        //     "aws-sdk": ["node_modules/aws-sdk"], // needed for mapping of aws-sdk imports 
-        //     "aws-sdk/*": ["node_modules/aws-sdk/*" ], // needed for mapping of aws-sdk imports  
-        //     "@/*": ["src/*"]
-        // },
         "declaration": true,
         "removeComments": false,
-        "resolveJsonModule": true,  
+        "resolveJsonModule": true
     },
-    "exclude": ["./tsoa-build/*.ts"],
-    "include": ["./**/*.ts", "./typings.d.ts", "custome-template.js"]
+    "include": [
+        "./**/*.ts",
+        "./typings.d.ts",
+        "custome-template.js"
+    ]
 }

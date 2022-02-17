@@ -1,14 +1,14 @@
-import { ErrorDTO, UserIdDTO } from './RegisterUserFromTokenDTO';
-import { dto, include } from 'dto-mapper';
+import { ErrorDTO, UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { BaseErrorDTO } from './../../base/dtos/BaseDTO';
-import { BaseRequestDTO } from '@modules/base/dtos/BaseDTO';
+import { BaseErrorDTO } from '../../base/dtos/BaseDTO';
+import { BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 
-@dto()
+@Serializable()
 export class CreatedUserDTO extends BaseRequestDTO {
-  @include()
+  @JsonProperty()
   body?: UserIdDTO = new UserIdDTO();
 
-  @include()
+  @JsonProperty()
   error?: BaseErrorDTO = new ErrorDTO();
 }

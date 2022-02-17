@@ -4,6 +4,7 @@ import * as BodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
 import * as express from 'express';
+import * as morgan from 'morgan';
 
 import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
@@ -20,6 +21,7 @@ import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
+
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -70,11 +72,13 @@ export class Server {
   private async configureServer() {
     // start the database first since configureAuthenticator method needs the connection stream
     await this.setUpDataBase();
+
     this.configureAuthenticator(); // this method has to be executed first before generating the middlewares
     this.configureServiceFactory();
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
+    // handleRequests();
   }
 
   /**
@@ -84,6 +88,8 @@ export class Server {
     this.expressApp.use(this.bodyParser.json({}));
     this.expressApp.use(this.bodyParser.urlencoded({ extended: false }));
     this.expressApp.use(this.expressCors());
+    this.expressApp.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+
     dotevnv.config(); // init the environement
   }
 

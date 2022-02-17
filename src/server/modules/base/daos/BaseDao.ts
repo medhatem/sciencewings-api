@@ -1,11 +1,11 @@
 import { EntityRepository, GetRepository } from '@mikro-orm/core';
 
-import { BaseModel } from '@modules/base/models/BaseModel';
+import { BaseModel } from '../../base/models/BaseModel';
 import { Logger } from '../../../utils/Logger';
 import { ServerError } from '../../../errors/ServerError';
 import { connection } from '../../../db/index';
-import { log } from '../../../decorators/log';
-import { provideSingleton } from '../../../di';
+import { log } from '@/decorators/log';
+import { provideSingleton } from '@/di';
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
@@ -39,6 +39,7 @@ export class BaseDao<T extends BaseModel<T>> {
     this.logger.info(`${this.model.constructor.name}s`);
     return (this.repository as any).findAll();
   }
+
   @log()
   public async create(entry: T): Promise<T> {
     const entity = (this.repository as any).create(entry); //generate an entity from a payload
@@ -54,7 +55,7 @@ export class BaseDao<T extends BaseModel<T>> {
 
   @log()
   public async remove(entry: T): Promise<T> {
-    await this.repository.remove(entry);
+    await this.repository.removeAndFlush(entry);
     return entry;
   }
 }

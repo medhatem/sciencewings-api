@@ -14,8 +14,8 @@ definitions:
         name: install
         script:
           - npm -v
-          - npm run clean
-          - npm install
+          #- npm run clean
+          #- npm install
         artifacts: # defining the artifacts to be passed to each future step.
           - node_modules/**
     - step: &build
@@ -23,6 +23,8 @@ definitions:
         script:
           - ls
           - npm run build
+        artifacts: # defining the artifacts to be passed to each future step.
+          - dist/**
     - step: &lint
         name: lint
         script:
@@ -52,15 +54,24 @@ definitions:
           - docker tag staging_api registry.heroku.com/sciencewings-api-staging/web
           - docker push registry.heroku.com/sciencewings-api-staging/web
           - heroku container:release web -a sciencewings-api-staging
+    - step: &caching
+        caches:
+          - node
+        script:
+          - npm install
+        artifacts: # defining the artifacts to be passed to each future step.
+          - node_modules/**
 
 pipelines:
   default:
-    - step: *install
+    - step: *caching
+    #- step: *install
     - step: *build
     - step: *lint
     - step: *generateSwagger
   branches:
     dev:
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -69,6 +80,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     master:
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -76,11 +88,13 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     feature/*:
-      - step: *install
+      - step: *caching
+      #- step: *install
       - step: *build
       - step: *lint
       - step: *generateSwagger
     release/*:
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -89,6 +103,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     hotfix/*:
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint
@@ -97,6 +112,7 @@ pipelines:
       - step: *buildForDeployment
       - step: *deploy
     bugfix/*:
+      - step: *caching
       - step: *install
       - step: *build
       - step: *lint

@@ -1,43 +1,43 @@
-import { Class, IMapper, buildMapper, dto, include } from 'dto-mapper';
+import { JsonProperty, Serializable, deserialize, serialize } from 'typescript-json-serializer';
 
-@dto()
+@Serializable()
 export class BaseBodyDTO {
-  @include()
+  @JsonProperty()
   statusCode: number;
 }
 
-@dto()
+@Serializable()
 export class BaseErrorDTO {
-  @include()
+  @JsonProperty()
   statusCode: number;
 
-  @include()
+  @JsonProperty()
   errorMessage: string;
 }
 
-@dto()
+@Serializable()
 export class BaseRequestDTO {
-  getMapper<T extends BaseRequestDTO>(): IMapper<T, unknown> {
-    return buildMapper<unknown, T>((this.constructor as any) as Class<T>);
-  }
-
   serialize(payload: { [key: string]: any }): this {
-    return this.getMapper<this>().serialize<this>(payload as any);
+    return serialize(payload as any);
   }
 
-  @include()
+  deserialize<T extends BaseRequestDTO>(model: T, payload: any): any {
+    return deserialize<T>(payload as any, model as any);
+  }
+
+  @JsonProperty()
   public body?: BaseBodyDTO;
 
-  @include()
+  @JsonProperty()
   public error?: BaseErrorDTO;
 }
 
-@dto()
+@Serializable()
 export class BaseDTO {
-  @include()
+  @JsonProperty()
   id: number;
-  @include()
+  @JsonProperty()
   createdAt: Date;
-  @include()
+  @JsonProperty()
   updatedAt: Date;
 }

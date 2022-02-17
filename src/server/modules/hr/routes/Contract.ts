@@ -7,10 +7,10 @@ import { ContractDTO } from '../dtos/ContractDTO';
 import { UpdateContractDTO } from '../dtos/UpdateContractDTO';
 
 @provideSingleton()
-@Path('employee')
+@Path('contracts')
 export class ContractRoutes extends BaseRoutes<Contract> {
   constructor(private ContractRoutes: ContractService) {
-    super(ContractRoutes, ContractDTO, UpdateContractDTO);
+    super(ContractRoutes, new ContractDTO(), new UpdateContractDTO());
     console.log(this.ContractRoutes);
   }
 
