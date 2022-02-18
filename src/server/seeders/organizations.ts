@@ -6,13 +6,11 @@ import { OrganizationDao } from './../modules/organizations/daos/OrganizationDao
 import { OrganizationLabelDao } from './../modules/organizations/daos/OrganizationLabelDao';
 import { Phone } from './../modules/phones/models/Phone';
 import { PhoneDao } from './../modules/phones/daos/PhoneDAO';
-// import { User } from './../modules/users/models/User';
 import { connection } from '../db/index';
 import { faker } from '@faker-js/faker';
 import { provideSingleton } from '../di';
 import { wrap } from '@mikro-orm/core';
-// import { config } from './config';
-// import fetch from 'node-fetch';
+
 @provideSingleton()
 export class SeedOrganizations {
   constructor(
@@ -35,7 +33,6 @@ export class SeedOrganizations {
             street: faker.address.streetAddress(),
             appartement: faker.datatype.number().toString(),
             city: faker.address.city(),
-            organization: null,
           }),
         );
         const phone = await this.phoneDAO.create(
