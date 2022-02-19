@@ -5,7 +5,7 @@
 // import { UserRO } from '@/modules/users/routes/RequestObject';
 // import { UserService } from '@/modules/users/services/UserService';
 // import { ValidatonError } from '@/modules/server/errors/ValidationError';
-// import { container } from '@/modules/server/di';
+// import { container } from '@/di/';
 // import intern from 'intern';
 
 // const { suite, test, beforeEach, afterEach } = intern.getPlugin('interface.tdd');

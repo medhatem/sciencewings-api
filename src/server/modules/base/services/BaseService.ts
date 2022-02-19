@@ -9,7 +9,7 @@ import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Result } from '@utils/Result';
 import { ServerError } from '@errors/ServerError';
 import { log } from '@/decorators/log';
-import { provideSingleton } from '../../../di';
+import { provideSingleton } from '@/di/';
 import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IBaseService)

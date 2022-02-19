@@ -8,7 +8,7 @@ import * as morgan from 'morgan';
 
 import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
-import { container, provideSingleton } from './di';
+import { container, provideSingleton } from '@/di/';
 
 import { KEYCLOAK_TOKEN } from './authenticators/constants';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
@@ -21,7 +21,6 @@ import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
-
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;

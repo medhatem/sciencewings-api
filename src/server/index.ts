@@ -2,7 +2,7 @@ import 'module-alias/register';
 
 import { Configuration } from './configuration/Configuration';
 import { Server } from './Server';
-import { container } from './di';
+import { container } from '@/di/';
 
 export * from '@/modules/users';
 export * from '@/modules/base';
