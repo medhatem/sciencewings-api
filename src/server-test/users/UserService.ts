@@ -1,10 +1,10 @@
 // import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 
-// import { IUser } from '@/modules/server/interface';
+// import { IUser } from '@/interface';
 // import { UserDao } from '@/modules/users/daos/UserDao';
 // import { UserRO } from '@/modules/users/routes/RequestObject';
 // import { UserService } from '@/modules/users/services/UserService';
-// import { ValidatonError } from '@/modules/server/errors/ValidationError';
+// import { ValidatonError } from '@/errors/ValidationError';
 // import { container } from '@/di/';
 // import intern from 'intern';
 
