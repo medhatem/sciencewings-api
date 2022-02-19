@@ -1,5 +1,5 @@
+import { getConfig } from '@/configuration/Configuration';
 import KcAdminClient from '@keycloak/keycloak-admin-client';
-import { config } from './config';
 
 const dummyUsers = [
   { username: 'username1', email: 'user1@example.com' },
@@ -10,15 +10,15 @@ const dummyUsers = [
 export let kcAdminClient: any;
 export const generateKCUsers = async () => {
   kcAdminClient = new KcAdminClient({
-    baseUrl: config.baseUrl,
-    realmName: config.realmName,
+    baseUrl: getConfig('keycloak.baseUrl'),
+    realmName: getConfig('keycloak.realmName'),
   });
 
   await kcAdminClient.auth({
-    username: config.username,
-    password: config.password,
-    grantType: config.grantType as any,
-    clientId: config.clientId,
+    username: getConfig('keycloak.username'),
+    password: getConfig('keycloak.password'),
+    grantType: getConfig('keycloak.grantType') as any,
+    clientId: getConfig('keycloak.clientId'),
   });
 
   const existingUsers = await kcAdminClient.users.find();
@@ -30,7 +30,7 @@ export const generateKCUsers = async () => {
       dummyUsers.map(async (user: any) => {
         const { username, email } = user;
         const kcuser = await kcAdminClient.users.create({
-          realm: config.clientValidation.realmName,
+          realm: getConfig('keycloak.clientValidation.realmName'),
           enabled: true,
           emailVerified: true,
           username,
@@ -38,7 +38,7 @@ export const generateKCUsers = async () => {
         });
         await kcAdminClient.users.resetPassword({
           id: kcuser.id,
-          realm: config.clientValidation.realmName,
+          realm: getConfig('keycloak.clientValidation.realmName'),
           credential: {
             temporary: false,
             type: 'password',
@@ -46,7 +46,10 @@ export const generateKCUsers = async () => {
           },
         });
         console.log({
-          k: await kcAdminClient.users.getCredentials({ id: kcuser.id, realm: config.clientValidation.realmName }),
+          k: await kcAdminClient.users.getCredentials({
+            id: kcuser.id,
+            realm: getConfig('keycloak.clientValidation.realmName'),
+          }),
         });
         user.id = kcuser.id;
         return kcuser;
