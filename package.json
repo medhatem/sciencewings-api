@@ -23,7 +23,7 @@
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "resolve-imports": "ef-tspm -r src/ -c  src/tsconfig.json",
-    "seeding": "npm run build && npm run resolve-imports && node dist/server/seeders/main.js"
+    "seeding": "npm run build ; npm run resolve-imports ; node dist/server/seeders/main.js"
   },
   "_moduleAliases": {
     "@di": "dist/server/di",

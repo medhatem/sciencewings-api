@@ -8,9 +8,16 @@ import { Phone } from '@/modules/phones/models/Phone';
 import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
 import { connection } from '../db/index';
 import { faker } from '@faker-js/faker';
-import { provideSingleton } from '../di';
+import { provideSingleton } from '@/di';
 import { wrap } from '@mikro-orm/core';
+import { Logger } from '@/utils/Logger';
+import { applyToAll } from '@/utils/utilities';
 
+/**
+ * create organizations
+ * by making for each one { Address, Phone, Labels }
+ * and assing a user to it
+ */
 @provideSingleton()
 export class SeedOrganizations {
   constructor(
@@ -21,9 +28,9 @@ export class SeedOrganizations {
   ) {}
 
   async createOgranizations(users: any) {
-    const repository = connection.em.getRepository(Organization as any);
-    await Promise.all(
-      users.map(async (user: any) => {
+    try {
+      const repository = connection.em.getRepository(Organization as any);
+      await applyToAll(users, async (user: any) => {
         const address = await this.addressDAO.create(
           wrap(new Address()).assign({
             country: faker.address.country(),
@@ -57,21 +64,28 @@ export class SeedOrganizations {
         const organization: any = repository.create(org);
         repository.persist(organization);
         return organization;
-      }),
-    );
+      });
 
-    await repository.flush();
+      await repository.flush();
 
-    return await this.dao.getAll();
+      return await this.dao.getAll();
+    } catch (error) {
+      Logger.getInstance().error(error);
+      return null;
+    }
   }
 
   async createLabels(organizations: any) {
-    await Promise.all(
-      organizations.map(async (organization: any) => {
+    try {
+      await applyToAll(organizations, async (organization: any) => {
         await this.labelDAO.create({ name: faker.company.bsNoun(), organization: organization.id });
-      }),
-    );
-    return await this.dao.getAll();
+      });
+
+      return await this.dao.getAll();
+    } catch (error) {
+      Logger.getInstance().error(error);
+      return null;
+    }
   }
 }
 

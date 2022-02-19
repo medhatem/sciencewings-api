@@ -1,23 +1,29 @@
 import { Address, AddressType } from '@/modules/address/models/AdressModel';
 
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
-import { Member } from '../modules/hr/models/Member';
-import { Phone } from '../modules/phones/models/Phone';
-import { PhoneDao } from '../modules/phones/daos/PhoneDAO';
+import { Member } from '@/modules/hr/models/Member';
+import { Phone } from '@/modules/phones/models/Phone';
+import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
 import { connection } from '../db/index';
 import { faker } from '@faker-js/faker';
-import { provideSingleton } from '../di';
+import { provideSingleton } from '@/di';
 import { wrap } from '@mikro-orm/core';
+import { Logger } from '@/utils/Logger';
+import { applyToAll } from '@/utils/utilities';
 
+/**
+ * create member
+ * by making for each one { Address, Phone }
+ * and assing an organizations, resource to it
+ */
 @provideSingleton()
 export class SeedMembers {
   constructor(private phoneDAO: PhoneDao, private addressDAO: AddressDao) {}
 
-  async createMembers(organizations: any, resources: any): Promise<any> {
-    const repository = connection.em.getRepository(Member as any);
-    let idx = 0;
-    await Promise.all(
-      organizations.map(async () => {
+  async createMembersForOrganization(organizations: any, resources: any): Promise<any> {
+    try {
+      const repository = connection.em.getRepository(Member as any);
+      await applyToAll(organizations, async (org: any, idx: number) => {
         const phone = await this.phoneDAO.create(
           wrap(new Phone()).assign({
             label: 'personal',
@@ -37,7 +43,7 @@ export class SeedMembers {
           }),
         );
 
-        const _member = {
+        const member = {
           resource: resources[idx],
           organization: organizations[idx],
           name: faker.name.findName(),
@@ -48,13 +54,15 @@ export class SeedMembers {
           memberType: 'regular',
         };
 
-        const member: any = repository.create(_member);
-        repository.persist(member);
-        idx++;
-        return member;
-      }),
-    );
+        const createdMember: any = repository.create(member);
+        repository.persist(createdMember);
+        return createdMember;
+      });
 
-    await repository.flush();
+      await repository.flush();
+    } catch (error) {
+      Logger.getInstance().error(error);
+      return null;
+    }
   }
 }

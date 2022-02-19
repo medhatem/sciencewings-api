@@ -2,16 +2,21 @@ import { User } from '@/modules/users/models/User';
 import { UserDao } from '@/modules/users/daos/UserDao';
 import { connection } from './../db/index';
 import { faker } from '@faker-js/faker';
-import { provideSingleton } from './../di';
+import { provideSingleton } from '@/di';
 import { wrap } from '@mikro-orm/core';
+import { Logger } from '@/utils/Logger';
+import { applyToAll } from '@/utils/utilities';
 @provideSingleton()
 export class SeedUsers {
   constructor(private dao: UserDao) {}
 
+  /**
+   * registering Keycloack users in db
+   */
   async createUsers(users: any) {
-    const repository = connection.em.getRepository(User as any);
-    await Promise.all(
-      users.map(async (user: any) => {
+    try {
+      const repository = connection.em.getRepository(User as any);
+      await applyToAll(users, async (user: any) => {
         const fetchedUser = await this.dao.getByCriteria({ keycloakId: user.id });
 
         if (fetchedUser) {
@@ -27,15 +32,17 @@ export class SeedUsers {
           lastname: faker.name.findName(),
         };
 
-        const _kcuser = wrap(new User()).assign(kcuser as any);
-        const persistedUser = repository.create(_kcuser as any);
+        const createdKCUser = wrap(new User()).assign(kcuser as any);
+        const persistedUser = repository.create(createdKCUser as any);
         repository.persist(persistedUser);
         return persistedUser;
-      }),
-    );
-    await repository.flush();
-    return await this.dao.getAll();
+      });
+
+      await repository.flush();
+      return await this.dao.getAll();
+    } catch (error) {
+      Logger.getInstance().error(error);
+      return null;
+    }
   }
 }
-
-// export const updateUsers = () => {};

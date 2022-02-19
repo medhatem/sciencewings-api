@@ -3,11 +3,11 @@ import { SeedMembers } from './members';
 import { SeedOrganizations } from './organizations';
 import { SeedResources } from './resources';
 import { SeedUsers } from './users';
-import { container } from './../di/index';
-import { generateKCUsers } from './keycloak';
+import { container } from '@/di/index';
+import { createKCUsers, getKCUsers } from './keycloak';
 import { getConfig } from '@/configuration/Configuration';
-import { provideSingleton } from './../di';
-import { startDB } from '@/db';
+import { provideSingleton } from '@/di';
+import { startDB } from '@/db/';
 
 @provideSingleton()
 export class Seeders {
@@ -24,7 +24,8 @@ export class Seeders {
 
   async main() {
     // generate keycloak users
-    const KDUsers = await generateKCUsers();
+    await createKCUsers();
+    const KDUsers = await getKCUsers();
     // remove admin
     KDUsers.shift();
     // register keycloak users
@@ -36,7 +37,7 @@ export class Seeders {
     // creating resources
     const resources = await this.seedResources.createResources(users, organizations);
     // creating members
-    await this.seedMembers.createMembers(organizations, resources);
+    await this.seedMembers.createMembersForOrganization(organizations, resources);
   }
 }
 

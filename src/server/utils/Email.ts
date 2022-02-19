@@ -1,4 +1,4 @@
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 import { getConfig } from '../configuration/Configuration';
 import { EmailMessage } from '../types/types';
 import { MailService } from '@sendgrid/mail';

@@ -15,13 +15,12 @@ import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { Keycloak } from '@sdks/keycloak';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
-import { RestServiceFactory } from '@di/ServiceFactory';
+import { RestServiceFactory } from '@/di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
 import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
-
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
