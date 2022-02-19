@@ -22,12 +22,15 @@ export const generateKCUsers = async () => {
   });
 
   const existingUsers = await kcAdminClient.users.find();
+  if (existingUsers) {
+    return existingUsers;
+  }
   try {
     const users = await Promise.all(
       dummyUsers.map(async (user: any) => {
         const { username, email } = user;
         const kcuser = await kcAdminClient.users.create({
-          realm: 'sciencewings-web',
+          realm: config.clientValidation.realmName,
           enabled: true,
           emailVerified: true,
           username,
@@ -52,7 +55,6 @@ export const generateKCUsers = async () => {
     return users;
   } catch (error) {
     console.log({ error });
-
-    return existingUsers;
+    return null;
   }
 };
