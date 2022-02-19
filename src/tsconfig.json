@@ -1,8 +1,9 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "outDir": "../dist",
     "baseUrl": ".",
-    "target": "esnext",
+    "target": "es6",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
