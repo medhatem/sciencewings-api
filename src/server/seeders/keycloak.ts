@@ -35,14 +35,16 @@ export const generateKCUsers = async () => {
         });
         await kcAdminClient.users.resetPassword({
           id: kcuser.id,
-          realm: 'sciencewings-web',
+          realm: config.clientValidation.realmName,
           credential: {
             temporary: false,
             type: 'password',
             value: 'azeaze',
           },
         });
-        console.log({ k: await kcAdminClient.users.getCredentials({ id: kcuser.id, realm: 'sciencewings-web' }) });
+        console.log({
+          k: await kcAdminClient.users.getCredentials({ id: kcuser.id, realm: config.clientValidation.realmName }),
+        });
         user.id = kcuser.id;
         return kcuser;
       }),

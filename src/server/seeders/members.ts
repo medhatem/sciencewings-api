@@ -1,6 +1,6 @@
-import { Address, AddressType } from './../modules/address/models/AdressModel';
+import { Address, AddressType } from '@/modules/address/models/AdressModel';
 
-import { AddressDao } from './../modules/address/daos/AddressDAO';
+import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { Member } from '../modules/hr/models/Member';
 import { Phone } from '../modules/phones/models/Phone';
 import { PhoneDao } from '../modules/phones/daos/PhoneDAO';

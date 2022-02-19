@@ -1,11 +1,9 @@
-import { User } from './../modules/users/models/User';
-import { UserDao } from './../modules/users/daos/UserDao';
+import { User } from '@/modules/users/models/User';
+import { UserDao } from '@/modules/users/daos/UserDao';
 import { connection } from './../db/index';
+import { faker } from '@faker-js/faker';
 import { provideSingleton } from './../di';
 import { wrap } from '@mikro-orm/core';
-
-// import { config } from './config';
-// import fetch from 'node-fetch';
 @provideSingleton()
 export class SeedUsers {
   constructor(private dao: UserDao) {}
@@ -25,8 +23,8 @@ export class SeedUsers {
           email_verified: user.emailVerified,
           name: user.username,
           email: user.email,
-          firstname: '',
-          lastname: '',
+          firstname: faker.name.firstName(),
+          lastname: faker.name.findName(),
         };
 
         const _kcuser = wrap(new User()).assign(kcuser as any);
