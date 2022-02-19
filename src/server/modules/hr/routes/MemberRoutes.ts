@@ -29,8 +29,8 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
-  @Response<MemberDTO>(201, 'Member created Successfully')
-  @Response<MemberDTO>(500, 'Internal Server Error')
+  @Response<CreateMemberRO>(201, 'Member created Successfully')
+  @Response<CreateMemberRO>(500, 'Internal Server Error')
   public async createMember(payload: CreateMemberRO): Promise<MemberDTO> {
     const result = await this.memberService.createMember(payload);
 

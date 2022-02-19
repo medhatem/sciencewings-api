@@ -7,10 +7,10 @@
   "types": "dist/server/index.d.ts",
   "scripts": {
     "clean": "rm -rf node_modules && rm -rf package-lock.json",
-    "init": "rm -rf dist/ && npm run clean && npm i && npm run build",
+    "init": "rm -rf dist/ && npm run clean && npm i && npm run build && npm run swagger-gen",
     "build": "tsc -p src/server && tsc -p src/client && tsc -p src/server-test",
     "build-without-test": "tsc -p src/server && tsc -p src/client",
-    "watch": " concurrently --names 'server,client,server-test' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-test --watch' ",
+    "watch": " concurrently --names 'server,client,server-test' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-test --watch'",
     "start-local-containers": "docker-compose -f devops/local/docker-compose.yml up",
     "stop-local-containers": "docker-compose -f devops/local/docker-compose.yml down",
     "start-staging-containers": "docker-compose -f devops/staging/docker-compose.yml up",
@@ -21,7 +21,8 @@
     "start": "node ./dist/server/index.js",
     "test": "intern config=src/server-test/intern.json",
     "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix"
+    "lint-and-fix": "eslint . --ext .ts --fix",
+    "resolve-imports": "ef-tspm -r src/ -c  src/tsconfig.json"
   },
   "_moduleAliases": {
     "@di": "dist/server/di",
@@ -35,7 +36,7 @@
     "@sdks": "dist/server/sdks",
     "@/modules": "dist/server/modules",
     "@utils": "dist/server/utils",
-    "@/decorators" :"dist/server/decorators"
+    "@/decorators": "dist/server/decorators"
   },
   "repository": {
     "type": "git",
@@ -82,6 +83,7 @@
     "winston": "^3.5.1"
   },
   "devDependencies": {
+    "@ef-carbon/tspm": "^2.2.5",
     "@types/bcrypt": "latest",
     "@types/body-parser": "^1.19.1",
     "@types/colors": "^1.2.1",
