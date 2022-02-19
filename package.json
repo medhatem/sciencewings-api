@@ -25,7 +25,7 @@
     "resolve-imports": "ef-tspm -r src/ -c  src/tsconfig.json"
   },
   "_moduleAliases": {
-    "@di": "dist/server/di",
+    "@/di": "dist/server/di",
     "@types": "dist/server/types",
     "@errors": "dist/server/errors",
     "@interface": "dist/server/interface/*",

@@ -1,4 +1,4 @@
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';

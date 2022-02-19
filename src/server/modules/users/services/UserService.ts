@@ -1,5 +1,5 @@
 import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@utils/Email';

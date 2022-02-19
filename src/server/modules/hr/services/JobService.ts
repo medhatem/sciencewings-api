@@ -1,5 +1,5 @@
 import { IJobService, Job, JobDAO } from '..';
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 

@@ -2,7 +2,7 @@ import { Entity, Index, ManyToOne } from '@mikro-orm/core';
 
 import { ResCountry } from '@/modules/organizations/models/ResCountry';
 import { ResCountryGroup } from '@/modules/organizations/models/ResCountryGroup';
-import { provideSingleton } from '@di/index';
+import { provideSingleton } from '@/di/index';
 
 @provideSingleton()
 @Entity()

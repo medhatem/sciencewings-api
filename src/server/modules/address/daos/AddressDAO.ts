@@ -1,4 +1,4 @@
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
 import { Address } from '@/modules/address/models/AdressModel';
 import { BaseDao } from '@/modules/base/daos/BaseDao';

@@ -2,7 +2,7 @@ import * as express from 'express';
 
 import { ServiceAuthenticator } from 'typescript-rest';
 import { UserExctractionAndValidation } from './userExctractionAndValidation';
-import { provideSingleton } from '@/di/';
+import { provideSingleton } from '@/di';
 
 @provideSingleton()
 export class KeyCloakToken implements ServiceAuthenticator {

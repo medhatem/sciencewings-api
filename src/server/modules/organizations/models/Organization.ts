@@ -1,5 +1,5 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
-import { container, provide } from '@di/index';
+import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address/models/AdressModel';
 import { BaseModel } from '@/modules/base/models/BaseModel';

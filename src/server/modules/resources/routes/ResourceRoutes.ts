@@ -1,4 +1,4 @@
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Resource } from '@/modules/resources/models/Resource';

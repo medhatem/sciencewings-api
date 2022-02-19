@@ -1,6 +1,6 @@
 import { CreateMemberRO, UpdateMemberRO } from '@/modules/hr/routes/RequestObject';
 import { CreateMemberSchema, UpdateMemberSchema } from '@/modules/hr/schemas/MemberSchema';
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';

@@ -2,7 +2,7 @@ import * as colors from 'colors';
 
 import { Format, TransformableInfo } from 'logform';
 import { Logger as WinstonLogger, createLogger, format, transports } from 'winston';
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
 import { Json } from '../types/types';
 import { LocalStorage } from './LocalStorage';
