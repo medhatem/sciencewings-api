@@ -8,7 +8,7 @@ import { Logger } from '@/utils/Logger';
 import { applyToAll } from '@/utils/utilities';
 @provideSingleton()
 export class SeedUsers {
-  constructor(private dao: UserDao) {}
+  constructor(private dao: UserDao, private logger: Logger) {}
 
   /**
    * registering Keycloack users in db
@@ -41,7 +41,7 @@ export class SeedUsers {
       await repository.flush();
       return await this.dao.getAll();
     } catch (error) {
-      Logger.getInstance().error(error);
+      this.logger.error(error);
       return null;
     }
   }
