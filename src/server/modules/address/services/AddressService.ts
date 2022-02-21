@@ -34,7 +34,9 @@ export class AddressService extends BaseService<Address> implements IAddressServ
   @log()
   @safeGuard()
   async createAddress(payload: AddressRO): Promise<Result<Address>> {
-    const address = await this.dao.create(this.wrapEntity(this.dao.model, this.extractAdressFromRO(payload)));
+    const address = await this.dao.create(
+      this.wrapEntity(this.dao.generateNewModelInstance(), this.extractAdressFromRO(payload)),
+    );
     return Result.ok<Address>(address);
   }
 
@@ -42,7 +44,7 @@ export class AddressService extends BaseService<Address> implements IAddressServ
   @safeGuard()
   async createBulkAddress(payload: AddressRO[]): Promise<Result<number>> {
     payload.map((el: AddressRO) => {
-      const address = this.wrapEntity(this.dao.model, this.extractAdressFromRO(el));
+      const address = this.wrapEntity(this.dao.generateNewModelInstance(), this.extractAdressFromRO(el));
       this.dao.repository.persist(address);
     });
 

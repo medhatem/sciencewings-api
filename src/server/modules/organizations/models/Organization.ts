@@ -34,7 +34,7 @@ export class Organization extends BaseModel<Organization> {
     entity: () => Phone,
     mappedBy: (entity) => entity.organization,
   })
-  phone!: Phone;
+  public phones = new Collection<Phone>(this);
 
   // e.i: Public, Service, Institut
   @Property()

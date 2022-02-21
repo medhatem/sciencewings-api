@@ -27,6 +27,10 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
+  generateNewInstance?(): Member {
+    return Member.getInstance();
+  }
+
   @PrimaryKey()
   id!: number;
 

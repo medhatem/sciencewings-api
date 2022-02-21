@@ -33,6 +33,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return container.get(IMemberService);
   }
 
+  @log()
+  @safeGuard()
   private async checkEntitiesExistence(organization: number, resource: number): Promise<Result<any>> {
     let currentOrg, currentRes;
     if (organization) {
@@ -50,6 +52,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ currentOrg, currentRes });
   }
 
+  @log()
+  @safeGuard()
   private async handleAddressForMemeber(payload: MemberRO, isUpdate = false): Promise<Result<any>> {
     let createdAddress, createdWorkLocation, createdAddressHome;
 
@@ -109,6 +113,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ address, workLocation, addressHome });
   }
 
+  @log()
+  @safeGuard()
   private async handlePhonesForMemeber(payload: MemberRO, member: Member, isUpdate = false): Promise<Result<any>> {
     let createdWorkPhone, createdMobilePhone, createdEmergencyPhone;
 

@@ -39,6 +39,8 @@ export class ContractService extends BaseService<Contract> implements IContractS
    * @param payload
    * @returns Optional Properties
    */
+  @log()
+  @safeGuard()
   private async checkForOptionalPropertiesInContract(payload: ContractRO): Promise<Result<any>> {
     let member, group, job, resourceCalendar, hrResponsible;
     if (payload.member) {

@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@di/index';
+import { container, provide } from '@di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from '../../organizations/models/Organization';
@@ -9,11 +9,15 @@ export enum AddressType {
   ORGANIZATION = 'ORGANIZATION',
 }
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Address extends BaseModel<Address> {
-  static getInstance(): void {
-    container.get(Address);
+  static getInstance(): Address {
+    return container.get(Address);
+  }
+
+  generateNewInstance(): Address {
+    return Address.getInstance();
   }
 
   @Property()
