@@ -1,6 +1,6 @@
 import { PrimaryKey, Property } from '@mikro-orm/core';
 
-import { provideSingleton } from '@di/index';
+import { provideSingleton } from '@/di/index';
 
 @provideSingleton()
 export class BaseModel<T = any> {

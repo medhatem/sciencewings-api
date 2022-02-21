@@ -2,7 +2,7 @@ import { Organization } from '../../organizations/models/Organization';
 import { BaseModel } from '../../base/models/BaseModel';
 import { Property, Entity, ManyToOne } from '@mikro-orm/core';
 
-import { provideSingleton, container } from '@di/index';
+import { provideSingleton, container } from '@/di/index';
 
 export enum AddressType {
   USER = 'USER',

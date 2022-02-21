@@ -1,4 +1,4 @@
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '../../base/services/BaseService';
 import { IPhoneService } from '../interfaces/IPhoneService';

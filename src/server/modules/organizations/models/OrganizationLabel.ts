@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
-import { container, provide } from '@di/index';
+import { container, provide } from '@/di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { Organization } from '../../organizations/models/Organization';
 

@@ -1,5 +1,5 @@
 import { OrganizationLabel } from '../../organizations/models/OrganizationLabel';
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 import { BaseDao } from '../../base/daos/BaseDao';
 
 @provideSingleton()

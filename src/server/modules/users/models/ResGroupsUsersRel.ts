@@ -1,7 +1,7 @@
 import { Entity, Index, ManyToOne } from '@mikro-orm/core';
 import { ResGroups } from './ResGroups';
 import { User } from './User';
-import { provideSingleton } from '@di/index';
+import { provideSingleton } from '@/di/index';
 
 @provideSingleton()
 @Entity()

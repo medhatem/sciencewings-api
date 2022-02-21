@@ -1,5 +1,5 @@
 import { POST, Path, Security, ContextRequest, PUT, GET, PathParam } from 'typescript-rest';
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';

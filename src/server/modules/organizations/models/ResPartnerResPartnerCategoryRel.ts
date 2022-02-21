@@ -1,7 +1,7 @@
 import { Entity, Index, ManyToOne } from '@mikro-orm/core';
 import { ResPartner } from './ResPartner';
 import { ResPartnerCategory } from './ResPartnerCategory';
-import { provideSingleton } from '@di/index';
+import { provideSingleton } from '@/di/index';
 
 @provideSingleton()
 @Entity()
