@@ -15,7 +15,7 @@ import { applyToAll } from '@/utils/utilities';
  */
 @provideSingleton()
 export class SeedResources {
-  constructor(private dao: ResourceDao, private calendarDAO: ResourceCalendarDao) {}
+  constructor(private dao: ResourceDao, private calendarDAO: ResourceCalendarDao, private logger: Logger) {}
 
   async createResources(users: any, organizations: any) {
     try {
@@ -50,7 +50,7 @@ export class SeedResources {
 
       return await this.dao.getAll();
     } catch (error) {
-      Logger.getInstance().error(error);
+      this.logger.error(error);
       return null;
     }
   }

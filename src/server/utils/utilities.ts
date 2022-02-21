@@ -4,6 +4,16 @@ const wait = async (time: number) => {
   });
 };
 
+/**
+ * apply a callback method with certain behavior to every element of a given array
+ * can be called seuentially with a regular for loop
+ * or non sequentially with a map
+ * @param list
+ * @param callback
+ * @param sequential
+ * @param standoff
+ * @returns
+ */
 export const applyToAll = async <T, G>(
   list: T[],
   callback: (element: T, index?: number) => Promise<G>,

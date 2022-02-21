@@ -18,7 +18,7 @@ import { applyToAll } from '@/utils/utilities';
  */
 @provideSingleton()
 export class SeedMembers {
-  constructor(private phoneDAO: PhoneDao, private addressDAO: AddressDao) {}
+  constructor(private phoneDAO: PhoneDao, private addressDAO: AddressDao, private logger: Logger) {}
 
   async createMembersForOrganization(organizations: any, resources: any): Promise<any> {
     try {
@@ -61,7 +61,7 @@ export class SeedMembers {
 
       await repository.flush();
     } catch (error) {
-      Logger.getInstance().error(error);
+      this.logger.error(error);
       return null;
     }
   }

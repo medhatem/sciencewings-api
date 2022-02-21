@@ -25,6 +25,7 @@ export class SeedOrganizations {
     private addressDAO: AddressDao,
     private phoneDAO: PhoneDao,
     private labelDAO: OrganizationLabelDao,
+    private logger: Logger,
   ) {}
 
   async createOgranizations(users: any) {
@@ -83,7 +84,7 @@ export class SeedOrganizations {
 
       return await this.dao.getAll();
     } catch (error) {
-      Logger.getInstance().error(error);
+      this.logger.error(error);
       return null;
     }
   }
