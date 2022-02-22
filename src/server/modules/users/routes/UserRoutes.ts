@@ -9,7 +9,7 @@ import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
 import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '@/modules/users/interfaces/IUserService';

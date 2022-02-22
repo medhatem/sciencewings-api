@@ -2,7 +2,7 @@ import { Collection } from '@mikro-orm/core';
 import { CreateOrganizationRO } from '../routes/RequestObject';
 import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { User } from '@/modules/users/models/User';
 
 export abstract class IOrganizationService extends IBaseService<any> {

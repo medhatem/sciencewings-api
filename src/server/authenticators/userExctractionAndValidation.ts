@@ -1,5 +1,5 @@
 import { IUserService } from '../modules/users/interfaces/IUserService';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { UserRequest } from '../types/UserRequest';
 import fetch from 'node-fetch';
 import { getConfig } from '../configuration/Configuration';

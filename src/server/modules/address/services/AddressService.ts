@@ -5,7 +5,7 @@ import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { IAddressService } from '../interfaces/IAddressService';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 

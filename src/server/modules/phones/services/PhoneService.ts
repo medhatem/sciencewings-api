@@ -6,7 +6,7 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { User } from '@/modules/users/models/User';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';

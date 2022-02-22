@@ -6,7 +6,7 @@ import { CreateResourceSchema } from '../schemas/CreateResourceSchema';
 
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceDao } from '../daos/ResourceDao';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { UpdateResourceSchema } from './../schemas/CreateResourceSchema';
 import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/modules/../decorators/log';

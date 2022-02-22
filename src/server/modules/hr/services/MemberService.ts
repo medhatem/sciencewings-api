@@ -10,7 +10,7 @@ import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IResourceService } from '@/modules/resources/interfaces';
 import { Member } from '@/modules/hr/models/Member';
 import { MemberDao } from '../daos/MemberDao';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { log } from '@/modules/../decorators/log';
 import { safeGuard } from '@/modules/../decorators/safeGuard';
 import { validate } from '@/decorators/validate';

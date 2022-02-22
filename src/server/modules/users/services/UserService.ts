@@ -2,12 +2,12 @@ import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Email } from '@utils/Email';
+import { Email } from '@/utils/Email';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { Keycloak } from '@sdks/keycloak';
+import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUserInfo } from '@/modules/../types/UserRequest';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { User } from '@/modules/users/models/User';
 import { UserDao } from '../daos/UserDao';
 import { getConfig } from '@/modules/../configuration/Configuration';

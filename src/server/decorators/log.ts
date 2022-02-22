@@ -1,4 +1,4 @@
-import { LogLevel, LogOptions, Logger } from '@utils/Logger';
+import { LogLevel, LogOptions, Logger } from '@/utils/Logger';
 
 import { getConfig } from '../configuration/Configuration';
 

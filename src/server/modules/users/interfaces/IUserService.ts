@@ -1,7 +1,7 @@
 import { ResetPasswordRO, UserDetailsRO } from '@/modules/users/routes/RequstObjects';
 
 import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { User } from '@/modules/users/models';
 
 export abstract class IUserService {

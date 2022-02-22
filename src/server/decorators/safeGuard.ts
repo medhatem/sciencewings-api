@@ -1,4 +1,4 @@
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 
 /**
  * method decorator that catches any potential errors

@@ -5,7 +5,7 @@ import { IOrganizationLabelService } from '../interfaces/IOrganizationLabelServi
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationLabelDao';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 
