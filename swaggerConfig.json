@@ -8,6 +8,7 @@
       "./src/server/modules/hr/dtos/index.ts",
       "./src/server/modules/organizations/dtos/index.ts",
       "./src/server/modules/phones/dtos/index.ts",
+      "./src/server/modules/projects/dtos/index.ts",
       "./src/server/modules/resources/dtos/index.ts",
       "./src/server/modules/users/dtos/index.ts",
       "./src/server/routes/index.ts"

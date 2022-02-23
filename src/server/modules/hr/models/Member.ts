@@ -1,4 +1,5 @@
-import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Project } from './../../projects/models/Project';
+import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique, ManyToMany, Collection } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
@@ -13,7 +14,7 @@ import { Resource } from '../../resources/models/Resource';
 import { User } from '../../users/models/User';
 import { WorkLocation } from './WorkLocation';
 import { Phone } from '../../phones/models/Phone';
-import { Address } from '../../..';
+import { Address } from '../../address/models/AdressModel';
 
 @provideSingleton()
 @Entity()
@@ -169,4 +170,9 @@ export class Member extends BaseModel<Member> {
 
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
+
+  @ManyToMany(() => Project, (project) => project.responsibles)
+  responsibles? = new Collection<Project>(this);
+  @ManyToMany(() => Project, (project) => project.participants)
+  participants? = new Collection<Project>(this);
 }

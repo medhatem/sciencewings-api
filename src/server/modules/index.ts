@@ -5,3 +5,4 @@ export * from './hr';
 export * from './base';
 export * from './address';
 export * from './phones';
+export * from './projects';

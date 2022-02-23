@@ -2,7 +2,7 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseD
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
-export class ProjectDTO extends BaseRequestDTO {}
+export class ProjectTagDTO extends BaseRequestDTO {}
 
 @Serializable()
 class BaseBodyGetDTO extends BaseBodyDTO {
@@ -11,7 +11,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
 }
 
 @Serializable()
-export class CreateProjectDTO extends BaseRequestDTO {
+export class CreateProjectTagDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: BaseBodyGetDTO;
 
@@ -20,7 +20,7 @@ export class CreateProjectDTO extends BaseRequestDTO {
 }
 
 @Serializable()
-export class UpdateProjectDTO extends BaseRequestDTO {
+export class UpdateProjectTagDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: BaseBodyGetDTO;
 

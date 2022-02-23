@@ -1,10 +1,8 @@
+import { Organization } from '@/modules/organizations/models/Organization';
 import { Member } from '@/modules/hr/models/Member';
-import { Entity, ManyToOne, Property, Collection, OneToMany } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property, Collection, OneToMany, ManyToMany } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
-
 import { BaseModel } from '../../base/models/BaseModel';
-import { Organization } from '../../organizations/models/Organization';
-import { User } from '../../users/models/User';
 import { ProjectTag } from './ProjetcTag';
 import { ProjectTask } from './ProjetcTask';
 
@@ -27,11 +25,11 @@ export class Project extends BaseModel<Project> {
   @Property()
   description: string;
 
-  @ManyToOne({ entity: () => Member, nullable: true })
-  responsibles: Member;
+  @ManyToMany({ entity: () => Member, owner: true })
+  responsibles = new Collection<Member>(this);
 
-  @ManyToOne({ entity: () => Member, nullable: true })
-  participants: Member;
+  @ManyToMany({ entity: () => Member, owner: true })
+  participants = new Collection<Member>(this);
 
   @Property()
   active: boolean;
@@ -54,5 +52,8 @@ export class Project extends BaseModel<Project> {
   })
   public projectTasks? = new Collection<ProjectTask>(this);
 
-  // FK Organization
+  @ManyToOne({
+    entity: () => Organization,
+  })
+  public organizations? = new Collection<Organization>(this);
 }
