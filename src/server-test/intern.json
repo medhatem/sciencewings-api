@@ -3,5 +3,5 @@
     "bail":false,
     "grep":".*",
     "coverage":["./dist/server/**/*.js"],
-    "suites": "./dist/server-test/**/*.js"
+    "suites": ["./dist/server-test/testSetUp.js", "./dist/server-test/**/*.js"]
 }
