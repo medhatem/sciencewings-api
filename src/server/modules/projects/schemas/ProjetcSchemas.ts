@@ -1,6 +1,6 @@
 import Joi = require('joi');
 
-const ProjectTaskSchema = Joi.object({
+export const ProjectTaskSchema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().required(),
   priority: Joi.string().required(),
@@ -13,7 +13,7 @@ const ProjectTaskSchema = Joi.object({
 const ProjectSchema = Joi.object({
   active: Joi.boolean(),
   date_end: Joi.date(),
-  tags: Joi.array().items(Joi.string()),
+  tags: Joi.array().items(Joi.object()),
   tasks: Joi.array().items(ProjectTaskSchema.keys()),
 });
 

@@ -57,10 +57,10 @@ export class ProjectRO {
   date_end?: Date;
 
   @JsonProperty()
-  public projectTags: ProjectTagRO;
+  public tags: ProjectTagRO[];
 
   @JsonProperty()
-  public projectTasks: ProjectTaskRO;
+  public tasks: ProjectTaskRO[];
 
   @JsonProperty()
   public organization: number;
