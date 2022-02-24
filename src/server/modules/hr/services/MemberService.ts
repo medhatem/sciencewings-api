@@ -1,10 +1,10 @@
-import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
+import { MemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
 import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '../../base/services/BaseService';
 import { IAddressService } from '../../address/interfaces/IAddressService';
-import { IMemberService } from '..';
+import { IMemberService } from '../interfaces/IMemberService';
 import { IOrganizationService } from '../../organizations/interfaces';
 import { IPhoneService } from '../../phones/interfaces/IPhoneService';
 import { IResourceService } from '../../resources/interfaces';
@@ -16,7 +16,7 @@ import { safeGuard } from '../../../decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 
-type MemberRO = CreateMemberRO | UpdateMemberRO;
+type CMemberRO = MemberRO | UpdateMemberRO;
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
   constructor(
@@ -50,7 +50,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ currentOrg, currentRes });
   }
 
-  private async handleAddressForMemeber(payload: MemberRO, isUpdate = false): Promise<Result<any>> {
+  private async handleAddressForMemeber(payload: CMemberRO, isUpdate = false): Promise<Result<any>> {
     let createdAddress, createdWorkLocation, createdAddressHome;
 
     if (isUpdate) {
@@ -109,7 +109,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok({ address, workLocation, addressHome });
   }
 
-  private async handlePhonesForMemeber(payload: MemberRO, isUpdate = false): Promise<Result<any>> {
+  private async handlePhonesForMemeber(payload: CMemberRO, isUpdate = false): Promise<Result<any>> {
     let createdWorkPhone, createdMobilePhone, createdEmergencyPhone;
 
     if (isUpdate) {
@@ -173,7 +173,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
   @log()
   @safeGuard()
   @validate
-  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number>> {
+  public async createMember(@validateParam(CreateMemberSchema) payload: CMemberRO): Promise<Result<number>> {
     const existance = await this.checkEntitiesExistance(payload.organization, payload.resource);
     if (existance.isFailure) return Result.fail<number>(existance.error);
     const { currentOrg, currentRes } = await existance.getValue();
@@ -211,7 +211,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
   @safeGuard()
   @validate
   public async updateMember(
-    @validateParam(UpdateMemberSchema) payload: MemberRO,
+    @validateParam(UpdateMemberSchema) payload: CMemberRO,
     memberId: number,
   ): Promise<Result<number>> {
     const member = await this.dao.get(memberId);

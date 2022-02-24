@@ -2,7 +2,48 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 import { Address, Phone } from '../../..';
 
 @Serializable()
-export class CreateMemberRO {
+export class GroupRO {
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  completeName?: string;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  parent?: number;
+
+  @JsonProperty()
+  manager?: number;
+
+  @JsonProperty()
+  note?: string;
+}
+@Serializable()
+export class JobRO {
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  group?: number;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  state!: string;
+}
+
+@Serializable()
+export class MemberRO {
   @JsonProperty()
   id: number;
   @JsonProperty()
