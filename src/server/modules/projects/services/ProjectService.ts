@@ -1,3 +1,4 @@
+// import { ProjectTag } from './../models/ProjetcTag';
 // import { Member } from '@/modules/hr/models/Member';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { applyToAll } from '../../../utils/utilities';
@@ -76,13 +77,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       return Result.fail<number>(`Member with id ${testParticipants.error} does not exists`);
     }
 
-    if (payload.tasks.length) {
-      await this.projectTaskService.createProjectTasks(payload.tasks);
-    }
-    if (payload.tags.length) {
-      await this.projectTagService.createProjectTags(payload.tags);
-    }
-
     const organization = await testOrganization.getValue();
     const responsibles = await testResponsibles.getValue();
     const participants = await testParticipants.getValue();
@@ -97,13 +91,22 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       organizations: organization,
     };
 
-    console.log({ project });
-
     const createdProject = await this.create(project);
     if (createdProject.isFailure) {
       return Result.fail<number>(createdProject.error);
     }
-    return Result.ok(createdProject.getValue().id);
+
+    const createdProjectVal = await createdProject.getValue();
+
+    if (payload.tasks.length) {
+      await this.projectTaskService.createProjectTasks(payload.tasks, createdProjectVal);
+    }
+
+    if (payload.tags.length) {
+      await this.projectTagService.createProjectTags(payload.tags, createdProjectVal);
+    }
+
+    return Result.ok(createdProjectVal.id);
   }
 
   @log()
@@ -123,32 +126,45 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     return Result.ok(0);
   }
 
-  @log()
-  @safeGuard()
-  async getProject(projetcId: number): Promise<Result<Project>> {
-    try {
-      const project = await this.dao.get(projetcId);
-      // const project: any = {};
-      project.responsibles = await project.responsibles.init();
-      project.participants = await project.participants.init();
-      project.projectTags = await project.projectTags.init();
-      project.projectTasks = await project.projectTasks.init();
+  // @log()
+  // @safeGuard()
+  // async getProject(projetcId: number): Promise<Result<Project>> {
+  //   try {
+  //     const project = await this.dao.get(projetcId);
 
-      return Result.ok(project);
-    } catch (error) {
-      return Result.fail(error);
-    }
-  }
+  //     if (project === null) {
+  //       return Result.fail(`project with id ${projetcId} does not exits`);
+  //     }
+  //     project.responsibles = (await project.responsibles.init()).toArray() as any;
+  //     project.participants = (await project.participants.init()).toArray() as any;
 
-  @log()
-  @safeGuard()
-  @validate
-  async getProjects(): Promise<Result<Project[]>> {
-    try {
-      const projects = await this.dao.getAll();
-      return Result.ok(projects);
-    } catch (error) {
-      return Result.fail(error);
-    }
-  }
+  //     project.projectTags = (await project.projectTags.init()).toArray() as any;
+  //     project.projectTags = (await applyToAll(project.projectTags as any, async (entity: ProjectTag) => {
+  //       delete entity.project;
+  //       return entity;
+  //     })) as any;
+
+  //     project.projectTasks = (await project.projectTasks.init()).toArray() as any;
+  //     project.projectTasks = (await applyToAll(project.projectTasks as any, async (entity: ProjectTag) => {
+  //       delete entity.project;
+  //       return entity;
+  //     })) as any;
+
+  //     return Result.ok(project);
+  //   } catch (error) {
+  //     return Result.fail(error);
+  //   }
+  // }
+
+  // @log()
+  // @safeGuard()
+  // @validate
+  // async getProjects(): Promise<Result<Project[]>> {
+  //   try {
+  //     const projects = await this.dao.getAll();
+  //     return Result.ok(projects);
+  //   } catch (error) {
+  //     return Result.fail(error);
+  //   }
+  // }
 }

@@ -1,15 +1,16 @@
+import { Project } from './../models/Project';
 import { applyToAll } from './../../../utils/utilities';
 import { ProjectTask } from './../models/ProjetcTask';
 import { ProjectTaskDao } from './../daos/projectTaskDAO';
 import { ProjectTaskRO } from './../routes/RequestObject';
 import { BaseService } from './../../base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';
-import { validateParam } from '@/decorators/validateParam';
-import { validate } from '@/decorators/validate';
+// import { validateParam } from '@/decorators/validateParam';
+// import { validate } from '@/decorators/validate';
 import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
 import { Result } from './../../../utils/Result';
-import { ProjectTaskSchema } from '../schemas';
+// import { ProjectTaskSchema } from '../schemas';
 import { IProjectTaskService } from '../interfaces/IProjectTaskInterfaces';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 
@@ -47,7 +48,7 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
 
   @log()
   @safeGuard()
-  public async createProjectTasks(payloads: ProjectTaskRO[]): Promise<Result<ProjectTask[]>> {
+  public async createProjectTasks(payloads: ProjectTaskRO[], project: Project): Promise<Result<ProjectTask[]>> {
     let flagError = null;
 
     const projectTasks = await applyToAll(payloads, async (payload, idx) => {
@@ -56,7 +57,10 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
         flagError = Result.fail(assignedMembers.error);
       }
       delete payload.assigned;
-      const projectTask = await this.create(this.wrapEntity(new ProjectTask(), payload));
+      const projectTask = await this.create({
+        project,
+        ...this.wrapEntity(new ProjectTask(), payload),
+      });
       if (projectTask.isFailure) return null;
       (await projectTask.getValue()).assigned = await assignedMembers.getValue();
       return projectTask;
@@ -72,6 +76,6 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   @log()
   @safeGuard()
   public async updateProjectTask(payload: ProjectTaskRO, projectTaskrId: number): Promise<Result<number>> {
-    return;
+    return Result.ok(0);
   }
 }

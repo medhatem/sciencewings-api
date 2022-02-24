@@ -1,3 +1,4 @@
+import { Project } from './../models/Project';
 import { applyToAll } from '../../../utils/utilities';
 import { ProjectTask } from './../models/ProjetcTask';
 import { ProjectTagDao } from './../daos/projectTagDAO';
@@ -24,9 +25,14 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
 
   @log()
   @safeGuard()
-  public async createProjectTags(payload: ProjectTagRO[]): Promise<Result<ProjectTask[]>> {
+  public async createProjectTags(payload: ProjectTagRO[], project: Project): Promise<Result<ProjectTask[]>> {
     const tasks = await applyToAll(payload, async (task) => {
-      return (await this.create(this.wrapEntity(new ProjectTag(), task))).getValue();
+      return (
+        await this.create({
+          project,
+          ...this.wrapEntity(new ProjectTag(), task),
+        })
+      ).getValue();
     });
     return Result.ok(tasks);
   }
@@ -42,6 +48,6 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
     // }
     // return Result.ok(updatedProjectTag.getValue().id);
 
-    return;
+    return Result.ok(0);
   }
 }

@@ -1,12 +1,12 @@
 import { Project } from './../models/Project';
 import { container, provideSingleton } from '@/di/index';
 import { Response } from 'typescript-rest-swagger';
-import { KEYCLOAK_TOKEN } from './../../../authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { Path, PathParam, POST, PUT, Security, GET } from 'typescript-rest';
+import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { CreateProjectDTO, IProjectService, ProjectDTO, UpdateProjectDTO } from '..';
 import { ProjectRO } from './RequestObject';
+import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 
 @provideSingleton()
 @Path('projects')
@@ -21,7 +21,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
 
   @POST
   @Path('create')
-  // @Security('', KEYCLOAK_TOKEN)
+  @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<ProjectDTO>(201, 'Project created Successfully')
   @Response<ProjectDTO>(500, 'Internal Server Error')
@@ -37,7 +37,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
 
   @PUT
   @Path('/update/:id')
-  // @Security('', KEYCLOAK_TOKEN)
+  @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<ProjectDTO>(204, 'Project updated Successfully')
   @Response<ProjectDTO>(500, 'Internal Server Error')
@@ -51,19 +51,19 @@ export class ProjectRoutes extends BaseRoutes<Project> {
     return new ProjectDTO().serialize({ body: { memberId: result.getValue(), statusCode: 204 } });
   }
 
-  @GET
-  @Path('/:id')
-  // @Security('', KEYCLOAK_TOKEN)
-  @LoggerStorage()
-  @Response<ProjectDTO>(200, 'Project Retrived Successfully')
-  @Response<ProjectDTO>(500, 'Internal Server Error')
-  public async getProject(@PathParam('id') id: number): Promise<ProjectDTO> {
-    const result = await this.projectService.getProject(id);
+  // @GET
+  // @Path('/:id')
+  // // @Security('', KEYCLOAK_TOKEN)
+  // @LoggerStorage()
+  // @Response<ProjectDTO>(200, 'Project Retrived Successfully')
+  // @Response<ProjectDTO>(500, 'Internal Server Error')
+  // public async getProject(@PathParam('id') id: number): Promise<ProjectDTO> {
+  //   const result = await this.projectService.getProject(id);
 
-    if (result.isFailure) {
-      return new ProjectDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
-    }
+  //   if (result.isFailure) {
+  //     return new ProjectDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+  //   }
 
-    return new ProjectDTO().serialize({ body: { project: result.getValue(), statusCode: 200 } });
-  }
+  //   return new ProjectDTO().serialize({ body: { project: result.getValue(), statusCode: 200 } });
+  // }
 }
