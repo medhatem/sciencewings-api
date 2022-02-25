@@ -1,20 +1,20 @@
-import { CreateContractSchema, UpdateContractSchema } from '../schemas/ContractSchema';
-import { IGroupService, IJobService, IMemberService } from '../interfaces';
-import { container, provideSingleton } from '@di/index';
+import { IGroupService, IJobService, IMemberService } from '@/modules/hr/interfaces';
+import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '../../base/services/BaseService';
-import { Contract } from '../../hr/models/Contract';
+import { Contract } from '@/modules/hr/models/Contract';
 import { ContractDao } from '../daos/ContractDao';
 import { ContractRO } from '../routes/RequestObject';
 import { IContractService } from '../interfaces/IContractService';
-import { IOrganizationService } from '../../organizations/interfaces';
-import { IResourceCalendarService } from '../../resources/interfaces';
-import { IUserService } from '../../users/interfaces';
+import { IOrganizationService } from '@/modules/organizations/interfaces';
+import { IResourceCalendarService } from '@/modules/resources/interfaces';
+import { IUserService } from '@/modules/users/interfaces';
 import { Result } from './../../../utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
+import { CreateContractSchema, UpdateContractSchema } from '../schemas/ContractSchema';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {

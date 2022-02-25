@@ -1,6 +1,7 @@
+import 'reflect-metadata';
+
 import { MikroORM } from '@mikro-orm/core';
 import { ServerDBConfig } from '../types/ServerConfiguration';
-import 'reflect-metadata';
 
 export let connection: MikroORM;
 

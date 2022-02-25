@@ -1,6 +1,6 @@
 import { Address } from '../../address/models/AdressModel';
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
-import { container, provide } from '@di/index';
+import { container, provide } from '@/di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { User } from '../../users/models/User';
 import { OrganizationLabel } from '../../organizations/models/OrganizationLabel';

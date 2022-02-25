@@ -23,9 +23,6 @@
       "@/modules/*": [
         "server/modules/*"
       ],
-      "@di/*": [
-        "server/di/*"
-      ],
       "@/di/*": [
         "server/di/*"
       ],
