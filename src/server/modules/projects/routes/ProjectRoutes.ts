@@ -19,6 +19,12 @@ export class ProjectRoutes extends BaseRoutes<Project> {
     return container.get(ProjectRoutes);
   }
 
+  /**
+   * Registers a new project in the database
+   *
+   * @param payload
+   * Should container Project data
+   */
   @POST
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
@@ -35,6 +41,12 @@ export class ProjectRoutes extends BaseRoutes<Project> {
     return new ProjectDTO().serialize({ body: { projectId: result.getValue(), statusCode: 201 } });
   }
 
+  /**
+   * Update a project record in the database
+   *
+   * @param payload
+   * @param project id
+   */
   @PUT
   @Path('/update/:id')
   @Security('', KEYCLOAK_TOKEN)

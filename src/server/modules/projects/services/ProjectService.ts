@@ -1,5 +1,3 @@
-// import { ProjectTag } from './../models/ProjetcTag';
-// import { Member } from '@/modules/hr/models/Member';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { applyToAll } from '../../../utils/utilities';
 import { Project } from './../models/Project';
@@ -158,46 +156,4 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
     return Result.ok((await updatedProject.getValue()).id);
   }
-
-  // @log()
-  // @safeGuard()
-  // async getProject(projetcId: number): Promise<Result<Project>> {
-  //   try {
-  //     const project = await this.dao.get(projetcId);
-
-  //     if (project === null) {
-  //       return Result.fail(`project with id ${projetcId} does not exits`);
-  //     }
-  //     project.responsibles = (await project.responsibles.init()).toArray() as any;
-  //     project.participants = (await project.participants.init()).toArray() as any;
-
-  //     project.projectTags = (await project.projectTags.init()).toArray() as any;
-  //     project.projectTags = (await applyToAll(project.projectTags as any, async (entity: ProjectTag) => {
-  //       delete entity.project;
-  //       return entity;
-  //     })) as any;
-
-  //     project.projectTasks = (await project.projectTasks.init()).toArray() as any;
-  //     project.projectTasks = (await applyToAll(project.projectTasks as any, async (entity: ProjectTag) => {
-  //       delete entity.project;
-  //       return entity;
-  //     })) as any;
-
-  //     return Result.ok(project);
-  //   } catch (error) {
-  //     return Result.fail(error);
-  //   }
-  // }
-
-  // @log()
-  // @safeGuard()
-  // @validate
-  // async getProjects(): Promise<Result<Project[]>> {
-  //   try {
-  //     const projects = await this.dao.getAll();
-  //     return Result.ok(projects);
-  //   } catch (error) {
-  //     return Result.fail(error);
-  //   }
-  // }
 }

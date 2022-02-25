@@ -1,12 +1,11 @@
-import { Organization } from '@/modules/organizations/models/Organization';
-import { Member } from '@/modules/hr/models/Member';
-import { Entity, ManyToOne, Property, Collection, OneToMany, ManyToMany } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
+
 import { BaseModel } from '../../base/models/BaseModel';
+import { Member } from '@/modules/hr/models/Member';
+import { Organization } from '@/modules/organizations/models/Organization';
 import { ProjectTag } from './ProjetcTag';
 import { ProjectTask } from './ProjetcTask';
-
-// import { ResPartner } from '../../organisations/models/ResPartner';
 
 @provideSingleton()
 @Entity()
