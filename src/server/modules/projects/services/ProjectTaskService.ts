@@ -10,8 +10,6 @@ import { ProjectTaskRO } from './../routes/RequestObject';
 import { Result } from './../../../utils/Result';
 import { applyToAll } from './../../../utils/utilities';
 import { log } from '@/decorators/log';
-// import { validateParam } from '@/decorators/validateParam';
-// import { validate } from '@/decorators/validate';
 import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IProjectTaskService)
