@@ -1,5 +1,6 @@
+import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { Address, Phone } from '../../..';
+import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
 
 @Serializable()
 export class GroupRO {
@@ -63,15 +64,15 @@ export class MemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: Address;
+  address?: AddressDTO;
   @JsonProperty()
-  workPhone?: Phone;
+  workPhone?: PhoneDTO;
   @JsonProperty()
-  mobilePhone?: Phone;
+  mobilePhone?: PhoneDTO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: Address;
+  workLocation?: AddressDTO;
   // @JsonProperty()
   // user?: number;
   // @JsonProperty()
@@ -81,7 +82,7 @@ export class MemberRO {
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: Address;
+  addressHome?: AddressDTO;
   // @JsonProperty()
   // country?: ResCountry;
   @JsonProperty()
@@ -127,7 +128,7 @@ export class MemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: Phone;
+  emergencyPhone?: PhoneDTO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
@@ -157,15 +158,15 @@ export class UpdateMemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: Address;
+  address?: AddressDTO;
   @JsonProperty()
-  workPhone?: Phone;
+  workPhone?: PhoneDTO;
   @JsonProperty()
-  mobilePhone?: Phone;
+  mobilePhone?: PhoneDTO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: Address;
+  workLocation?: AddressDTO;
   // @JsonProperty()
   // user?: number;
   // @JsonProperty()
@@ -175,7 +176,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: Address;
+  addressHome?: AddressDTO;
   // @JsonProperty()
   // country?: ResCountry;
   @JsonProperty()
@@ -221,7 +222,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: Phone;
+  emergencyPhone?: PhoneDTO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
