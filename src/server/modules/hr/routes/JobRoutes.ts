@@ -22,7 +22,7 @@ export class JobRoutes extends BaseRoutes<Job> {
 
   @POST
   @Path('create')
-  //   @Security('', KEYCLOAK_TOKEN)
+  @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<JobRO>(201, 'Job created Successfully')
   @Response<JobRO>(500, 'Internal Server Error')
