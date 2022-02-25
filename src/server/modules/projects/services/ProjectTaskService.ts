@@ -57,12 +57,15 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
         flagError = Result.fail(assignedMembers.error);
       }
       delete payload.assigned;
-      const projectTask = await this.create({
-        project,
-        ...this.wrapEntity(new ProjectTask(), payload),
-      });
+      const projectTask = await (
+        await this.create({
+          project,
+          ...this.wrapEntity(new ProjectTask(), payload),
+        })
+      ).getValue();
       if (projectTask.isFailure) return null;
-      (await projectTask.getValue()).assigned = await assignedMembers.getValue();
+      projectTask.assigned = await assignedMembers.getValue();
+      delete projectTask.project;
       return projectTask;
     });
 

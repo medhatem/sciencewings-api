@@ -6,7 +6,7 @@ import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '../../base/routes/BaseRoutes';
 import { CreateProjectDTO, IProjectService, ProjectDTO, UpdateProjectDTO } from '..';
 import { ProjectRO } from './RequestObject';
-import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
+import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 
 @provideSingleton()
 @Path('projects')
@@ -21,7 +21,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
 
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  // @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<ProjectDTO>(201, 'Project created Successfully')
   @Response<ProjectDTO>(500, 'Internal Server Error')
@@ -32,12 +32,12 @@ export class ProjectRoutes extends BaseRoutes<Project> {
       return new ProjectDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new ProjectDTO().serialize({ body: { memberId: result.getValue(), statusCode: 201 } });
+    return new ProjectDTO().serialize({ body: { projectId: result.getValue(), statusCode: 201 } });
   }
 
   @PUT
   @Path('/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  // @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<ProjectDTO>(204, 'Project updated Successfully')
   @Response<ProjectDTO>(500, 'Internal Server Error')
@@ -48,7 +48,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
       return new ProjectDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new ProjectDTO().serialize({ body: { memberId: result.getValue(), statusCode: 204 } });
+    return new ProjectDTO().serialize({ body: { projectId: result.getValue(), statusCode: 204 } });
   }
 
   // @GET

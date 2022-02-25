@@ -27,12 +27,14 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
   @safeGuard()
   public async createProjectTags(payload: ProjectTagRO[], project: Project): Promise<Result<ProjectTask[]>> {
     const tasks = await applyToAll(payload, async (task) => {
-      return (
+      const createdTask = await (
         await this.create({
           project,
           ...this.wrapEntity(new ProjectTag(), task),
         })
       ).getValue();
+      delete createdTask.project;
+      return createdTask;
     });
     return Result.ok(tasks);
   }
