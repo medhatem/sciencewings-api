@@ -8,5 +8,4 @@ export abstract class IProjectTaskService extends IBaseService<any> {
   getProjectTask: (projetcId: number) => Promise<Result<ProjectTask>>;
   getProjectTasks: () => Promise<Result<ProjectTask[]>>;
   createProjectTasks: (payloads: ProjectTaskRO[], project: Project) => Promise<Result<ProjectTask[]>>;
-  updateProjectTask: (payload: ProjectTaskRO, projetcTaskId: number) => Promise<Result<number>>;
 }

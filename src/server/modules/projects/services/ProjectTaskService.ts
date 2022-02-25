@@ -51,7 +51,7 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   public async createProjectTasks(payloads: ProjectTaskRO[], project: Project): Promise<Result<ProjectTask[]>> {
     let flagError = null;
 
-    const projectTasks = await applyToAll(payloads, async (payload, idx) => {
+    const projectTasks = await applyToAll(payloads, async (payload) => {
       const assignedMembers = await this.checkEntitiesExistance(payload.assigned);
       if (assignedMembers.isFailure) {
         flagError = Result.fail(assignedMembers.error);
@@ -74,11 +74,5 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
     }
 
     return Result.ok(projectTasks as any);
-  }
-
-  @log()
-  @safeGuard()
-  public async updateProjectTask(payload: ProjectTaskRO, projectTaskrId: number): Promise<Result<number>> {
-    return Result.ok(0);
   }
 }

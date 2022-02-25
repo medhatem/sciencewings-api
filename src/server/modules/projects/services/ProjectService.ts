@@ -116,14 +116,47 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     @validateParam(UpdateProjectSchema) payload: ProjectRO,
     projetcId: number,
   ): Promise<Result<number>> {
-    // ...
+    const project = await this.dao.get(projetcId);
+    if (!project) {
+      return Result.fail<number>(`Project with id ${projetcId} does not exists`);
+    }
 
-    // const updatedProject = await this.update(_member);
-    // if (updatedProject.isFailure) {
-    //   return Result.fail<number>(updatedProject.error);
-    // }
-    // return Result.ok(updatedProject.getValue().id);
-    return Result.ok(0);
+    if (payload.organization) {
+      const testOrganization = await this.organizationService.get(payload.organization);
+      if (testOrganization.isFailure) {
+        return Result.fail(`Organization with id ${payload.organization} does not exist.`);
+      }
+      project.organizations = await testOrganization.getValue();
+    }
+
+    if (payload.responsibles) {
+      const testResponsibles = await this.checkEntitiesExistance(payload.responsibles);
+      delete payload.responsibles;
+      if (testResponsibles.isFailure) {
+        return Result.fail<number>(`Member with id ${testResponsibles.error} does not exists`);
+      }
+      project.responsibles = await testResponsibles.getValue();
+    }
+
+    if (payload.participants) {
+      const testParticipants = await this.checkEntitiesExistance(payload.participants);
+      delete payload.participants;
+      if (testParticipants.isFailure) {
+        return Result.fail<number>(`Member with id ${testParticipants.error} does not exists`);
+      }
+      project.participants = await testParticipants.getValue();
+    }
+
+    const updatedProject = await this.update(
+      this.wrapEntity(project, {
+        ...project,
+        ...payload,
+      }),
+    );
+    if (updatedProject.isFailure) {
+      return Result.fail<number>(updatedProject.error);
+    }
+    return Result.ok((await updatedProject.getValue()).id);
   }
 
   // @log()

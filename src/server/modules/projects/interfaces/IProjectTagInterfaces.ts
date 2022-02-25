@@ -9,5 +9,4 @@ export abstract class IProjectTagService extends IBaseService<any> {
   getProjectTag: (projetcId: number) => Promise<Result<ProjectTag>>;
   getProjectTags: () => Promise<Result<ProjectTag[]>>;
   createProjectTags: (payload: ProjectTagRO[], project: Project) => Promise<Result<ProjectTask[]>>;
-  updateProjectTag: (payload: ProjectTagRO, project: number) => Promise<Result<number>>;
 }

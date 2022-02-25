@@ -38,18 +38,4 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
     });
     return Result.ok(tasks);
   }
-
-  @log()
-  @safeGuard()
-  public async updateProjectTag(payload: ProjectTagRO, projectId: number): Promise<Result<number>> {
-    // ...
-
-    // const updatedProjectTag = await this.update(_member);
-    // if (updatedProjectTag.isFailure) {
-    //   return Result.fail<number>(updatedProjectTag.error);
-    // }
-    // return Result.ok(updatedProjectTag.getValue().id);
-
-    return Result.ok(0);
-  }
 }
