@@ -1,8 +1,9 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { BaseModel } from '../../base/models/BaseModel';
-import { ResourceCalendar } from './ResourceCalendar';
-import { Resource } from './Resource';
 import { container, provideSingleton } from '@/di/index';
+
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Resource } from './Resource';
+import { ResourceCalendar } from './ResourceCalendar';
 
 @provideSingleton()
 @Entity()

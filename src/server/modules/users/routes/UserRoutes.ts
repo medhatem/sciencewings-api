@@ -1,19 +1,19 @@
 import { POST, Path, Security, ContextRequest, PUT, GET, PathParam } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
-import { BaseRoutes } from '../../base/routes/BaseRoutes';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
-import { User } from '../models/User';
+import { User } from '@/modules/users/models/User';
 import { UserRequest } from '../../../types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
 import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
-import { IUserService } from '../interfaces/IUserService';
-import { Organization } from '../../organizations';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { Organization } from '@/modules/organizations';
 
 @provideSingleton()
 @Path('users')

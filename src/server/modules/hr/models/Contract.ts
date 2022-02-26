@@ -1,15 +1,15 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
-import { ContractType } from './ContractType';
-import { Group } from './Group';
-import { Member } from './Member';
-import { Job } from './Job';
-import { Organization } from '../../organizations/models/Organization';
-import { PayrollStructureType } from './PayrollStructureType';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { User } from '../../users/models/User';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { ContractType } from '@/modules/hr/models/ContractType';
+import { Group } from '@/modules/hr/models/Group';
+import { Job } from '@/modules/hr/models/Job';
+import { Member } from '@/modules/hr/models/Member';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { PayrollStructureType } from '@/modules/hr/models/PayrollStructureType';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { User } from '@/modules/users/models/User';
 
 @provideSingleton()
 @Entity()

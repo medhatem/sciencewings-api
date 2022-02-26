@@ -29,28 +29,28 @@
       "@types/*": [
         "server/types/*"
       ],
-      "@errors/*": [
+      "@/errors/*": [
         "server/errors/*"
       ],
-      "@interface/*": [
+      "@/interface/*": [
         "server/interface/*"
       ],
       "@/models/*": [
         "server/models/*"
       ],
-      "@routes/*": [
+      "@/routes/*": [
         "server/routes/*"
       ],
-      "@service/*": [
+      "@/service/*": [
         "server/service/*"
       ],
-      "@dao/*": [
+      "@/dao/*": [
         "server/dao/*"
       ],
-      "@sdks/*": [
+      "@/sdks/*": [
         "server/sdks/*"
       ],
-      "@utils/*": [
+      "@/utils/*": [
         "server/utils/*"
       ]
     }

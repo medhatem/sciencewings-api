@@ -1,5 +1,5 @@
 import { AssignOptions } from '@mikro-orm/core';
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 
 export abstract class IBaseService<T> {
   static getInstance: () => any;
