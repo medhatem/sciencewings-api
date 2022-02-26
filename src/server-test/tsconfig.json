@@ -6,7 +6,9 @@
         "outDir": "../../dist",
         "removeComments": false,
         "moduleResolution": "node",
-        "types": ["intern"]
+        "types": [
+            "intern"
+        ]
     },
     "include": [
         "./**/*.ts",

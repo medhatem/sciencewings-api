@@ -1,13 +1,13 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
-import { Organization } from './Organization';
-import { ResCountry } from '../../organizations/models/ResCountry';
-import { ResCountryState } from '../../organizations/models/ResCountryState';
-import { ResPartnerIndustry } from '../../organizations/models/ResPartnerIndustry';
-import { ResPartnerTitle } from '../../organizations/models/ResPartnerTitle';
-import { User } from '../../users/models/User';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { ResCountry } from '@/modules/organizations/models/ResCountry';
+import { ResCountryState } from '@/modules/organizations/models/ResCountryState';
+import { ResPartnerIndustry } from '@/modules/organizations/models/ResPartnerIndustry';
+import { ResPartnerTitle } from '@/modules/organizations/models/ResPartnerTitle';
+import { User } from '@/modules/users/models/User';
 
 @provideSingleton()
 @Entity()

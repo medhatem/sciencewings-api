@@ -1,4 +1,4 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()

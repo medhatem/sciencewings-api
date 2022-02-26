@@ -1,8 +1,8 @@
 import { container, provideSingleton } from '@/di/index';
-import { BaseService } from '../../base/services/BaseService';
-import { Group } from '../models/Group';
-import { GroupDAO } from '../daos/GroupDAO';
-import { IGroupService } from '../interfaces/IGroupService';
+import { BaseService } from '@/modules/base/services/BaseService';
+import { Group } from '@/modules/hr/models/Group';
+import { GroupDAO } from '@/modules/hr/daos/GroupDAO';
+import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {

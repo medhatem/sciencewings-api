@@ -1,7 +1,7 @@
 import { IGroupService, IJobService, IMemberService } from '@/modules/hr/interfaces';
 import { container, provideSingleton } from '@/di/index';
 
-import { BaseService } from '../../base/services/BaseService';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { Contract } from '@/modules/hr/models/Contract';
 import { ContractDao } from '../daos/ContractDao';
 import { ContractRO } from '../routes/RequestObject';

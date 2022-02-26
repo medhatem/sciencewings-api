@@ -1,6 +1,6 @@
-import { IBaseService } from '../../base/interfaces/IBaseService';
-import { Result } from '@utils/Result';
-import { CreateMemberRO } from '../../hr/routes/RequestObject';
+import { CreateMemberRO } from '@/modules/hr/routes/RequestObject';
+import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { Result } from '@/utils/Result';
 
 export abstract class IMemberService extends IBaseService<any> {
   createMember: (payload: CreateMemberRO) => Promise<Result<number>>;

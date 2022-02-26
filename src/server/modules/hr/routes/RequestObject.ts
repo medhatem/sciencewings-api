@@ -1,7 +1,7 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { AddressRO } from './../../address/routes/AddressRO';
-import { PhoneRO } from '../../..';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 
 @Serializable()
 export class ContractRO {

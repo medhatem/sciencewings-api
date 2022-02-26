@@ -1,9 +1,9 @@
 import { container, provideSingleton } from '@/di/index';
 
-import { BaseService } from '../../base/services/BaseService';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { CreateResourceCalendarRO } from '../routes/RequestObject';
-import { IOrganizationService } from '../../organizations/interfaces/IOrganizationService';
-import { Result } from '@utils/Result';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
+import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { ResourceCalendar } from '../models/ResourceCalendar';

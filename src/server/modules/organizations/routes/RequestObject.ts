@@ -1,6 +1,6 @@
-import { AddressRO } from './../../address/routes/AddressRO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { PhoneRO } from '../../phones/routes/PhoneRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 
 @Serializable()
 export class CreateOrganizationRO {
