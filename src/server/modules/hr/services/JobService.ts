@@ -1,17 +1,17 @@
-import { Job } from './../models/Job';
+import { Job } from '@/modules/hr/models/Job';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
-import { JobRO } from './../routes/RequestObject';
-import { BaseService } from './../../base/services/BaseService';
+import { JobRO } from '@/modules/hr/routes/RequestObject';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
 import { Result } from './../../../utils/Result';
-import { JobSchema } from '../schemas/JobSchema';
-import { IJobService } from '../interfaces/IJobService';
-import { JobDAO } from '../daos/JobDAO';
-import { IGroupService } from '../interfaces/IGroupService';
+import { JobSchema } from '@/modules/hr/schemas/JobSchema';
+import { IJobService } from '@/modules/hr/interfaces/IJobService';
+import { JobDAO } from '@/modules/hr/daos/JobDAO';
+import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
 
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {

@@ -1,12 +1,12 @@
 import { container, provideSingleton } from '@/di/index';
-import { BaseRoutes } from '../../base/routes/BaseRoutes';
-import { Job } from '../../hr/models/Job';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
+import { Job } from '@/modules/hr/models/Job';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
-import { JobDTO, CreateJobDTO, UpdateJobDTO } from '../dtos/JobDTO';
+import { JobDTO, CreateJobDTO, UpdateJobDTO } from '@/modules/hr/dtos/JobDTO';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { JobRO } from './RequestObject';
-import { IJobService } from '../../hr/interfaces';
+import { IJobService } from '@/modules/hr/interfaces';
 import { Response } from 'typescript-rest-swagger';
 
 @provideSingleton()
@@ -20,6 +20,11 @@ export class JobRoutes extends BaseRoutes<Job> {
     return container.get(JobRoutes);
   }
 
+  /**
+   * create a job
+   * @param payload
+   * @returns
+   */
   @POST
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
@@ -36,13 +41,19 @@ export class JobRoutes extends BaseRoutes<Job> {
     return new JobDTO().serialize({ body: { jobId: result.getValue(), statusCode: 201 } });
   }
 
+  /**
+   * update a job
+   * @param payload
+   * @param id
+   * @returns
+   */
   @PUT
   @Path('/update/:id')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<JobDTO>(204, 'Job updated Successfully')
   @Response<JobDTO>(500, 'Internal Server Error')
-  public async createUpdateJob(payload: JobRO, @PathParam('id') id: number): Promise<JobDTO> {
+  public async updateJob(payload: JobRO, @PathParam('id') id: number): Promise<JobDTO> {
     const result = await this.jobService.updateJob(payload, id);
 
     if (result.isFailure) {
