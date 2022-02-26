@@ -6,9 +6,6 @@ export class PhoneRO {
   id: number;
 
   @JsonProperty()
-  id: number;
-
-  @JsonProperty()
   label: string;
 
   @JsonProperty()
