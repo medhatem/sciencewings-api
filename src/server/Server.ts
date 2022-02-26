@@ -8,11 +8,11 @@ import * as morgan from 'morgan';
 
 import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
-import { container, provideSingleton } from './di';
+import { container, provideSingleton } from '@/di';
 
 import { KEYCLOAK_TOKEN } from './authenticators/constants';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
-import { Keycloak } from '@sdks/keycloak';
+import { Keycloak } from '@/sdks/keycloak';
 import { RequestHandler } from 'express';
 import { Server as RestServer } from 'typescript-rest';
 import { RestServiceFactory } from '@/di/ServiceFactory';

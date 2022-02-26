@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 
 import { parameterToValidateWithSchema, validateParamMetadataKey } from './validateParam';
 
-import { Result } from '@utils/Result';
+import { Result } from '@/utils/Result';
 
 /**
  *
@@ -27,12 +27,10 @@ export function validate(target: any, propertyKey: string, descriptor: TypedProp
         propertyKey,
       );
       await Promise.all(
-        parametersToValidate.map(
-          async (param: parameterToValidateWithSchema): Promise<any> => {
-            const argumentToValidate = !!args.length && args[param.paramIndex];
-            await (param['schema'] as Joi.ObjectSchema).validateAsync(argumentToValidate);
-          },
-        ),
+        parametersToValidate.map(async (param: parameterToValidateWithSchema): Promise<any> => {
+          const argumentToValidate = !!args.length && args[param.paramIndex];
+          await (param['schema'] as Joi.ObjectSchema).validateAsync(argumentToValidate);
+        }),
       );
       return originalFunction.apply(this, args);
     } catch (error) {

@@ -1,7 +1,7 @@
 import { ErrorDTO, UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { BaseErrorDTO } from '../../base/dtos/BaseDTO';
+import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 import { BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 
 @Serializable()

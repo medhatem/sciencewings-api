@@ -1,11 +1,14 @@
 {
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint":  true,
+        "source.fixAll.eslint": true,
     },
     "editor.formatOnSave": true,
-     "eslint.validate": ["typescript", "typescriptreact"],
-     "editor.autoIndent": "full",
-     "[typescript]": {
+    "eslint.validate": [
+        "typescript",
+        "typescriptreact"
+    ],
+    "editor.autoIndent": "full",
+    "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-      }
+    }
 }

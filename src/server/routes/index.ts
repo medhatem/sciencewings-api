@@ -3,3 +3,4 @@ export { BaseRoutes } from '../modules/base/routes/index';
 export { OrganizationRoutes } from '../modules/organizations/routes/index';
 export { ResourceRoutes } from '../modules/resources/routes/index';
 export { ProjectRoutes } from '../modules/projects/routes/index';
+export { MemberRoutes } from '../modules/hr/routes/index';

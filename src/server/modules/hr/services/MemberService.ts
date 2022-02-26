@@ -10,9 +10,9 @@ import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IResourceService } from '@/modules/resources/interfaces';
 import { Member } from '@/modules/hr/models/Member';
 import { MemberDao } from '../daos/MemberDao';
-import { Result } from '@utils/Result';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+import { Result } from '@/utils/Result';
+import { log } from '@/modules/../decorators/log';
+import { safeGuard } from '@/modules/../decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 
