@@ -2,7 +2,7 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/B
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 @Serializable()
-class BaseBodyGetDTO extends BaseBodyDTO {
+class OrganizationBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 
@@ -16,7 +16,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
 @Serializable()
 export class OrganizationDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
+  public body?: OrganizationBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;
