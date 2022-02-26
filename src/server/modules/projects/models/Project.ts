@@ -1,5 +1,5 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '../../base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
@@ -7,7 +7,7 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { ProjectTag } from './ProjetcTag';
 import { ProjectTask } from './ProjetcTask';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Project extends BaseModel<Project> {
   constructor() {

@@ -1,10 +1,10 @@
-import { Project } from './Project';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Project } from './Project';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class ProjectTag extends BaseModel<ProjectTag> {
   constructor() {

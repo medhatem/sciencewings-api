@@ -1,11 +1,11 @@
-import { Project } from './Project';
+import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
+
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
-import { Entity, OneToOne, Property, ManyToOne } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { Project } from './Project';
 
-import { BaseModel } from '../../base/models/BaseModel';
-
-@provideSingleton()
+@provide()
 @Entity()
 export class ProjectTask extends BaseModel<ProjectTask> {
   constructor() {
