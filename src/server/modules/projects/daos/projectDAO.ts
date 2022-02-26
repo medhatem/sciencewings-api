@@ -1,6 +1,7 @@
-import { Project } from './../models/Project';
 import { container, provideSingleton } from '@/di/index';
-import { BaseDao } from '../../base/daos/BaseDao';
+
+import { BaseDao } from '@/modules/base/daos/BaseDao';
+import { Project } from '@/modules/projects/models/Project';
 
 @provideSingleton()
 export class ProjectDao extends BaseDao<Project> {

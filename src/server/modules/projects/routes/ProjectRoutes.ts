@@ -1,9 +1,9 @@
-import { Project } from './../models/Project';
+import { Project } from '@/modules/projects/models/Project';
 import { container, provideSingleton } from '@/di/index';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
-import { BaseRoutes } from '../../base/routes/BaseRoutes';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { CreateProjectDTO, IProjectService, ProjectDTO, UpdateProjectDTO } from '..';
 import { ProjectRO } from './RequestObject';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';

@@ -8,7 +8,6 @@ import { ProjectTagDao } from '@/modules/projects/daos/projectTagDAO';
 import { ProjectTagRO } from '@/modules/projects/routes/RequestObject';
 import { ProjectTask } from '@/modules/projects/models/ProjetcTask';
 import { Result } from './../../../utils/Result';
-import { applyToAll } from '../../../utils/utilities';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 
@@ -31,19 +30,21 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
   @log()
   @safeGuard()
   public async createProjectTags(payload: ProjectTagRO[], project: Project): Promise<Result<ProjectTask[]>> {
-    const tasks = await applyToAll(payload, async (task) => {
-      const createdTask = await this.create({
+    const tasks: ProjectTask[] = [];
+    const size = payload.length;
+    for (let index = 0; index < size; index++) {
+      const createdTaskResult = await this.create({
         project,
-        ...this.wrapEntity(this.dao.model, task),
+        ...this.wrapEntity(this.dao.model, payload[index]),
       });
-      if (createdTask.isFailure) {
-        return Result.fail(createdTask.error);
+      if (createdTaskResult.isFailure) {
+        return Result.fail(createdTaskResult.error);
       }
-      const resTask = await createdTask.getValue();
+      const createdTask = await createdTaskResult.getValue();
       // should be remove to avoid circular referencing
-      delete resTask.project;
-      return resTask;
-    });
+      delete createdTask.project;
+      tasks.push(createdTask);
+    }
     return Result.ok(tasks);
   }
 }

@@ -3,6 +3,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
+import { Member } from '@/modules/hr/models/Member';
 import { Project } from '@/modules/projects/models/Project';
 import { ProjectTask } from '@/modules/projects/models/ProjetcTask';
 import { ProjectTaskDao } from '@/modules/projects/daos/projectTaskDAO';
@@ -24,23 +25,19 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   @log()
   @safeGuard()
   private async checkEntitiesExistance(entities: number[]): Promise<Result<any>> {
-    let flagEntity = null;
+    const members: Member[] = [];
 
-    const members = await entities.map(async (entity) => {
-      const getMember = await this.memberService.get(entity);
+    const size = entities.length;
+    for (let index = 0; index < size; index++) {
+      const getMember = await this.memberService.get(entities[index]);
       const getMemberValue = getMember.getValue();
       if (getMemberValue === null) {
-        flagEntity = entity;
-        return null;
+        return Result.fail(`Member with id ${entities[index]} does not exist`);
       }
-      return getMemberValue;
-    });
-
-    if (flagEntity) {
-      return Result.fail(flagEntity);
-    } else {
-      return Result.ok(members);
+      members.push(getMemberValue);
     }
+
+    return Result.ok(members);
   }
 
   /**
@@ -52,32 +49,26 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   @log()
   @safeGuard()
   public async createProjectTasks(payloads: ProjectTaskRO[], project: Project): Promise<Result<ProjectTask[]>> {
-    let flagError = null;
-
     const projectTasks = await payloads.map(async (payload) => {
       const assignedMembers = await this.checkEntitiesExistance(payload.assigned);
       if (assignedMembers.isFailure) {
-        flagError = Result.fail(assignedMembers.error);
+        return Result.fail(assignedMembers.error);
       }
       // should be remove to avoid circular referencing
       delete payload.assigned;
-      const createdProjectTask = await this.create({
+      const createdProjectTaskReslt = await this.create({
         project,
         ...this.wrapEntity(this.dao.model, payload),
       });
-      if (createdProjectTask.isFailure) {
+      if (createdProjectTaskReslt.isFailure) {
         return null;
       }
-      const projectTask = await createdProjectTask.getValue();
-      projectTask.assigned = await assignedMembers.getValue();
+      const createdProjectTask = await createdProjectTaskReslt.getValue();
+      createdProjectTask.assigned = await assignedMembers.getValue();
       // should be remove to avoid circular referencing
-      delete projectTask.project;
-      return projectTask;
+      delete createdProjectTask.project;
+      return createdProjectTask;
     });
-
-    if (flagError) {
-      return Result.fail('Assigned Member does not exist');
-    }
 
     return Result.ok(projectTasks as any);
   }
