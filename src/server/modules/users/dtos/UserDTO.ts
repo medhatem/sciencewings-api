@@ -3,7 +3,7 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 
-class BaseBodyGetDTO extends BaseBodyDTO {
+class UserBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 
@@ -26,7 +26,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
 @Serializable()
 export class UserDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
+  public body?: UserBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;
