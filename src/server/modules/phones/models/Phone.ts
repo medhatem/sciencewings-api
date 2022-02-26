@@ -24,7 +24,7 @@ export class Phone extends BaseModel<Phone> {
   code: string;
 
   @Property()
-  number: number;
+  number: string;
 
   @ManyToOne({ entity: () => User, nullable: true })
   user?: User;
