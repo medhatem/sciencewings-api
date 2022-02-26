@@ -1,13 +1,13 @@
-import { Logger } from '@utils/Logger';
+import { Logger } from '@/utils/Logger';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { ResourceCalendarDao } from '@/modules/resources/daos/ResourceCalendarDAO';
 import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
+import { applyToAll } from '@/utils/utilities';
 import { connection } from '../db/index';
 import { faker } from '@faker-js/faker';
 import { provideSingleton } from '@/di';
 import { wrap } from '@mikro-orm/core';
-import { applyToAll } from '@/utils/utilities';
 
 /**
  * create resource
