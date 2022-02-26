@@ -10,6 +10,7 @@
     "init": "rm -rf dist/ && npm run clean && npm i && npm run build && npm run swagger-gen",
     "build": "tsc -p src/server && tsc -p src/client && tsc -p src/server-test",
     "build-without-test": "tsc -p src/server && tsc -p src/client",
+    "build-for-test": "tsc -p src/server-test",
     "watch": " concurrently --names 'server,client,server-test' -c 'bgBlue,black.bgGreen,black.bgYellow' 'tsc -p src/server --watch' 'tsc -p src/client --watch' 'tsc -p src/server-test --watch'",
     "start-local-containers": "docker-compose -f devops/local/docker-compose.yml up",
     "stop-local-containers": "docker-compose -f devops/local/docker-compose.yml down",
