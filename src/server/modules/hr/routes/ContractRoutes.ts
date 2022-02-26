@@ -1,10 +1,10 @@
 import { container, provideSingleton } from '@/di/index';
 import { ContractService } from '../services/ContractService';
-import { BaseRoutes } from '../../base/routes/BaseRoutes';
-import { Contract } from '../models/Contract';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
+import { Contract } from '@/modules/hr/models/Contract';
 import { Path, GET, QueryParam } from 'typescript-rest';
-import { ContractDTO } from '../dtos/ContractDTO';
-import { UpdateContractDTO } from '../dtos/UpdateContractDTO';
+import { ContractDTO } from '@/modules/hr/dtos/ContractDTO';
+import { UpdateContractDTO } from '@/modules/hr/dtos/UpdateContractDTO';
 
 @provideSingleton()
 @Path('contracts')

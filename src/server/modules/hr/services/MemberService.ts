@@ -1,14 +1,14 @@
-import { CreateMemberRO, UpdateMemberRO } from '../../hr/routes/RequestObject';
-import { CreateMemberSchema, UpdateMemberSchema } from '../../hr/schemas/MemberSchema';
+import { CreateMemberRO, UpdateMemberRO } from '@/modules/hr/routes/RequestObject';
+import { CreateMemberSchema, UpdateMemberSchema } from '@/modules/hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@/di/index';
 
-import { BaseService } from '../../base/services/BaseService';
-import { IAddressService } from '../../address/interfaces/IAddressService';
-import { IMemberService } from '..';
-import { IOrganizationService } from '../../organizations/interfaces';
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
-import { IResourceService } from '../../resources/interfaces';
-import { Member } from '../../hr/models/Member';
+import { BaseService } from '@/modules/base/services/BaseService';
+import { IAddressService } from '@/modules/address/interfaces/IAddressService';
+import { IMemberService } from '@/modules/hr/interfaces';
+import { IOrganizationService } from '@/modules/organizations/interfaces';
+import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
+import { IResourceService } from '@/modules/resources/interfaces';
+import { Member } from '@/modules/hr/models/Member';
 import { MemberDao } from '../daos/MemberDao';
 import { Result } from '@utils/Result';
 import { log } from '../../../decorators/log';

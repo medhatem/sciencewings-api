@@ -1,9 +1,9 @@
 import { container, provideSingleton } from '@/di/index';
 
-import { BaseService } from '../../base/services/BaseService';
-import { Contract } from '../../hr/models/Contract';
-import { ContractDao } from '../daos/ContractDao';
-import { IContractService } from '../interfaces/IContractService';
+import { BaseService } from '@/modules/base/services/BaseService';
+import { Contract } from '@/modules/hr/models/Contract';
+import { ContractDao } from '@/modules/hr/daos/ContractDao';
+import { IContractService } from '@/modules/hr/interfaces/IContractService';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {

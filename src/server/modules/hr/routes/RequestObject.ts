@@ -1,5 +1,7 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { Address, Phone } from '../../..';
+
+import { Address } from '@/modules/address/models';
+import { Phone } from '@/modules/phones/models';
 
 @Serializable()
 export class CreateMemberRO {
