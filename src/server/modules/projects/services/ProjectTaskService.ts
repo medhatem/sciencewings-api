@@ -1,14 +1,13 @@
 import { container, provideSingleton } from '@/di/index';
 
-import { BaseService } from './../../base/services/BaseService';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { IProjectTaskService } from '../interfaces/IProjectTaskInterfaces';
-import { Project } from './../models/Project';
-import { ProjectTask } from './../models/ProjetcTask';
-import { ProjectTaskDao } from './../daos/projectTaskDAO';
-import { ProjectTaskRO } from './../routes/RequestObject';
+import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
+import { Project } from '@/modules/projects/models/Project';
+import { ProjectTask } from '@/modules/projects/models/ProjetcTask';
+import { ProjectTaskDao } from '@/modules/projects/daos/projectTaskDAO';
+import { ProjectTaskRO } from '@/modules/projects/routes/RequestObject';
 import { Result } from './../../../utils/Result';
-import { applyToAll } from './../../../utils/utilities';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 
@@ -17,17 +16,17 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   constructor(public dao: ProjectTaskDao, public memberService: IMemberService) {
     super(dao);
   }
-  getProjectTask: (projetcId: number) => Promise<Result<ProjectTask>>;
-  getProjectTasks: () => Promise<Result<ProjectTask[]>>;
 
   static getInstance(): IProjectTaskService {
     return container.get(IProjectTaskService);
   }
 
+  @log()
+  @safeGuard()
   private async checkEntitiesExistance(entities: number[]): Promise<Result<any>> {
     let flagEntity = null;
 
-    const members = await applyToAll(entities, async (entity) => {
+    const members = await entities.map(async (entity) => {
       const getMember = await this.memberService.get(entity);
       const getMemberValue = getMember.getValue();
       if (getMemberValue === null) {
@@ -44,25 +43,34 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
     }
   }
 
+  /**
+   * create tasks for the project
+   * @param payloads
+   * @param project
+   * @returns
+   */
   @log()
   @safeGuard()
   public async createProjectTasks(payloads: ProjectTaskRO[], project: Project): Promise<Result<ProjectTask[]>> {
     let flagError = null;
 
-    const projectTasks = await applyToAll(payloads, async (payload) => {
+    const projectTasks = await payloads.map(async (payload) => {
       const assignedMembers = await this.checkEntitiesExistance(payload.assigned);
       if (assignedMembers.isFailure) {
         flagError = Result.fail(assignedMembers.error);
       }
+      // should be remove to avoid circular referencing
       delete payload.assigned;
-      const projectTask = await (
-        await this.create({
-          project,
-          ...this.wrapEntity(new ProjectTask(), payload),
-        })
-      ).getValue();
-      if (projectTask.isFailure) return null;
+      const createdProjectTask = await this.create({
+        project,
+        ...this.wrapEntity(this.dao.model, payload),
+      });
+      if (createdProjectTask.isFailure) {
+        return null;
+      }
+      const projectTask = await createdProjectTask.getValue();
       projectTask.assigned = await assignedMembers.getValue();
+      // should be remove to avoid circular referencing
       delete projectTask.project;
       return projectTask;
     });

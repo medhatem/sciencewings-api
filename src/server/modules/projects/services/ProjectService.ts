@@ -1,5 +1,4 @@
 import { IOrganizationService } from '@/modules/organizations/interfaces';
-import { applyToAll } from '../../../utils/utilities';
 import { Project } from './../models/Project';
 import { ProjectDao } from './../daos/projectDAO';
 import { BaseService } from './../../base/services/BaseService';
@@ -32,10 +31,12 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     return container.get(IProjectService);
   }
 
+  @log()
+  @safeGuard()
   private async checkEntitiesExistance(entities: number[]): Promise<Result<any>> {
     let flagEntity = null;
 
-    const members = await applyToAll(entities, async (entity) => {
+    const members = entities.map(async (entity) => {
       const getMember = await this.memberService.get(entity);
       const getMemberValue = getMember.getValue();
       if (getMemberValue === null) {
@@ -56,28 +57,25 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   @safeGuard()
   @validate
   public async createProject(@validateParam(CreateProjectSchema) payload: ProjectRO): Promise<Result<number>> {
-    const testOrganization = await this.organizationService.get(payload.organization);
+    const fetchedOrganization = await this.organizationService.get(payload.organization);
 
-    if (testOrganization.isFailure) {
+    if (fetchedOrganization.isFailure) {
       return Result.fail(`Organization with id ${payload.organization} does not exist.`);
     }
 
-    const testResponsibles = await this.checkEntitiesExistance(payload.responsibles);
-
-    delete payload.responsibles;
-    if (testResponsibles.isFailure) {
-      return Result.fail<number>(`Member with id ${testResponsibles.error} does not exists`);
+    const fetchedResponsibles = await this.checkEntitiesExistance(payload.responsibles);
+    if (fetchedResponsibles.isFailure) {
+      return Result.fail<number>(`Member with id ${fetchedResponsibles.error} does not exists`);
     }
 
-    const testParticipants = await this.checkEntitiesExistance(payload.participants);
-    delete payload.participants;
-    if (testParticipants.isFailure) {
-      return Result.fail<number>(`Member with id ${testParticipants.error} does not exists`);
+    const fetchedParticipants = await this.checkEntitiesExistance(payload.participants);
+    if (fetchedParticipants.isFailure) {
+      return Result.fail<number>(`Member with id ${fetchedParticipants.error} does not exists`);
     }
 
-    const organization = await testOrganization.getValue();
-    const responsibles = await testResponsibles.getValue();
-    const participants = await testParticipants.getValue();
+    const organization = await fetchedOrganization.getValue();
+    const responsibles = await fetchedResponsibles.getValue();
+    const participants = await fetchedParticipants.getValue();
 
     const project: Project = {
       title: payload.title,
@@ -96,11 +94,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     const createdProjectVal = await createdProject.getValue();
 
-    if (payload.tasks.length) {
+    if (payload.tasks && payload.tasks.length) {
       await this.projectTaskService.createProjectTasks(payload.tasks, createdProjectVal);
     }
 
-    if (payload.tags.length) {
+    if (payload.tags && payload.tags.length) {
       await this.projectTagService.createProjectTags(payload.tags, createdProjectVal);
     }
 
@@ -120,29 +118,31 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     if (payload.organization) {
-      const testOrganization = await this.organizationService.get(payload.organization);
-      if (testOrganization.isFailure) {
+      const fetchedOrganization = await this.organizationService.get(payload.organization);
+      if (fetchedOrganization.isFailure) {
         return Result.fail(`Organization with id ${payload.organization} does not exist.`);
       }
-      project.organizations = await testOrganization.getValue();
+      project.organizations = await fetchedOrganization.getValue();
     }
 
     if (payload.responsibles) {
-      const testResponsibles = await this.checkEntitiesExistance(payload.responsibles);
+      const fetchedResponsibles = await this.checkEntitiesExistance(payload.responsibles);
+      // should be remove to avoid type conflic
       delete payload.responsibles;
-      if (testResponsibles.isFailure) {
-        return Result.fail<number>(`Member with id ${testResponsibles.error} does not exists`);
+      if (fetchedResponsibles.isFailure) {
+        return Result.fail<number>(`Member with id ${fetchedResponsibles.error} does not exists`);
       }
-      project.responsibles = await testResponsibles.getValue();
+      project.responsibles = await fetchedResponsibles.getValue();
     }
 
     if (payload.participants) {
-      const testParticipants = await this.checkEntitiesExistance(payload.participants);
+      const fetchedParticipants = await this.checkEntitiesExistance(payload.participants);
+      // should be remove to avoid type conflic
       delete payload.participants;
-      if (testParticipants.isFailure) {
-        return Result.fail<number>(`Member with id ${testParticipants.error} does not exists`);
+      if (fetchedParticipants.isFailure) {
+        return Result.fail<number>(`Member with id ${fetchedParticipants.error} does not exists`);
       }
-      project.participants = await testParticipants.getValue();
+      project.participants = await fetchedParticipants.getValue();
     }
 
     const updatedProject = await this.update(

@@ -1,11 +1,9 @@
-import { Project } from './../models/Project';
-import { ProjectTaskRO } from './../routes/RequestObject';
-import { ProjectTask } from './../models/ProjetcTask';
-import { IBaseService } from '../../base/interfaces/IBaseService';
+import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { Project } from '@/modules/projects/models/Project';
+import { ProjectTask } from '@/modules/projects/models/ProjetcTask';
+import { ProjectTaskRO } from '@/modules/projects/routes/RequestObject';
 import { Result } from '@utils/Result';
 
 export abstract class IProjectTaskService extends IBaseService<any> {
-  getProjectTask: (projetcId: number) => Promise<Result<ProjectTask>>;
-  getProjectTasks: () => Promise<Result<ProjectTask[]>>;
   createProjectTasks: (payloads: ProjectTaskRO[], project: Project) => Promise<Result<ProjectTask[]>>;
 }
