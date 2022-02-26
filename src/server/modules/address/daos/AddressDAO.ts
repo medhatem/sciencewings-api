@@ -1,6 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
-import { BaseDao } from '../../base/daos/BaseDao';
-import { Address } from '../../address/models/AdressModel';
+
+import { Address } from '@/modules/address/models/AdressModel';
+import { BaseDao } from '@/modules/base/daos/BaseDao';
 
 @provideSingleton()
 export class AddressDao extends BaseDao<Address> {

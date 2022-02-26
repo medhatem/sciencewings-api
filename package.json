@@ -26,17 +26,17 @@
     "seeding": "npm run build ; npm run resolve-imports ; node dist/server/seeders/main.js"
   },
   "_moduleAliases": {
-    "@di": "dist/server/di",
+    "@/di": "dist/server/di",
     "@types": "dist/server/types",
-    "@errors": "dist/server/errors",
-    "@interface": "dist/server/interface/*",
-    "@models": "dist/server/models",
-    "@routes": "dist/server/routes",
-    "@service": "dist/server/service",
-    "@dao": "dist/server/dao",
-    "@sdks": "dist/server/sdks",
+    "@/errors": "dist/server/errors",
+    "@/interface": "dist/server/interface/*",
+    "@/models": "dist/server/models",
+    "@/routes": "dist/server/routes",
+    "@/service": "dist/server/service",
+    "@/dao": "dist/server/dao",
+    "@/sdks": "dist/server/sdks",
     "@/modules": "dist/server/modules",
-    "@utils": "dist/server/utils",
+    "@/utils": "dist/server/utils",
     "@/decorators": "dist/server/decorators"
   },
   "repository": {

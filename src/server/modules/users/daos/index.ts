@@ -1,2 +1,2 @@
 export * from './UserDao';
-export * from '../../phones/daos/PhoneDAO';
+export * from '@/modules/phones/daos/PhoneDAO';

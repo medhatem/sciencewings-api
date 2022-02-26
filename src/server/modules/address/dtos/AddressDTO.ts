@@ -1,8 +1,9 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { AddressType } from '../../address/models/AdressModel';
-
 @Serializable()
-export class AddressOrganizationDTO {
+export class AddressDTO {
+  @JsonProperty()
+  id: number;
+
   @JsonProperty()
   country: string;
 
@@ -13,7 +14,7 @@ export class AddressOrganizationDTO {
   code: string;
 
   @JsonProperty()
-  type: AddressType;
+  type: string;
 
   @JsonProperty()
   city: string;

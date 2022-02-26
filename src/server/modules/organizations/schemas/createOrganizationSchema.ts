@@ -1,5 +1,6 @@
 import Joi = require('joi');
-import { OrganizationType } from '../../organizations/models/Organization';
+
+import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 export default Joi.object({
   name: Joi.string().required(),
