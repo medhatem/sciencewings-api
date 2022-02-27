@@ -2,7 +2,7 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/B
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
-import { unique } from '@/decorators/Unique';
+import { unique } from '@/decorators/unique';
 
 @unique
 class UserBaseBodyGetDTO extends BaseBodyDTO {

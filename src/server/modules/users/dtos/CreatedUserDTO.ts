@@ -3,7 +3,7 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 import { BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { unique } from '@/decorators/Unique';
+import { unique } from '@/decorators/unique';
 
 @Serializable()
 @unique
