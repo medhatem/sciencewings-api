@@ -1,6 +1,6 @@
 import { JsonProperty, Serializable, deserialize, serialize } from 'typescript-json-serializer';
 
-import { unique } from '@/decorators/Unique';
+import { unique } from '@/decorators/unique';
 
 @Serializable()
 @unique
