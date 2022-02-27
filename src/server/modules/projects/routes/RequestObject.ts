@@ -1,12 +1,16 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
+import { unique } from '@/decorators/unique';
+
 @Serializable()
+@unique
 export class ProjectTagRO {
-  @Serializable()
+  @JsonProperty()
   title: string;
 }
 
 @Serializable()
+@unique
 export class ProjectTaskRO {
   @JsonProperty()
   title: string;
@@ -34,6 +38,7 @@ export class ProjectTaskRO {
 }
 
 @Serializable()
+@unique
 export class ProjectRO {
   @JsonProperty()
   title: string;
