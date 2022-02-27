@@ -2,6 +2,7 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { AddressRO } from './../../address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { unique } from '@/decorators/unique';
 
 @Serializable()
 export class ContractRO {
@@ -55,6 +56,7 @@ export class ContractRO {
 }
 
 @Serializable()
+@unique
 export class CreateMemberRO {
   @JsonProperty()
   id: number;
@@ -131,6 +133,7 @@ export class CreateMemberRO {
 }
 
 @Serializable()
+@unique
 export class UpdateMemberRO {
   @JsonProperty()
   id: number;

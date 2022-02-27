@@ -1,8 +1,11 @@
-import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
+
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { unique } from '@/decorators/unique';
 
 @Serializable()
+@unique
 export class CreateOrganizationRO {
   @JsonProperty()
   name: string;
@@ -49,6 +52,7 @@ export class CreateOrganizationRO {
 }
 
 @Serializable()
+@unique
 export class UserInviteToOrgRO {
   @JsonProperty()
   organizationId: number;

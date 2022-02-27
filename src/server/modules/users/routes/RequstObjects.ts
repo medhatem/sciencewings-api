@@ -1,6 +1,7 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneRO } from '../../phones/routes/PhoneRO';
+import { unique } from '@/decorators/unique';
 
 export class UserInviteToOrgRO {
   @JsonProperty()
@@ -11,6 +12,7 @@ export class UserInviteToOrgRO {
 }
 
 @Serializable()
+@unique
 export class UserDetailsRO {
   @JsonProperty()
   email: string;
@@ -39,6 +41,7 @@ export class UserDetailsRO {
   @JsonProperty()
   share?: boolean;
 }
+@unique
 export class ResetPasswordRO {
   @JsonProperty()
   email: number;

@@ -1,6 +1,9 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
+import { unique } from '@/decorators/unique';
+
 @Serializable()
+@unique
 export class PhoneRO {
   @JsonProperty()
   id: number;
