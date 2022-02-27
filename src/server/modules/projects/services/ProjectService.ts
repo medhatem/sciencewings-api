@@ -31,6 +31,12 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     return container.get(IProjectService);
   }
 
+  /**
+   * check if the members does exist
+   * given an array of member ids
+   * @param entities
+   * @returns
+   */
   @log()
   @safeGuard()
   private async checkEntitiesExistance(entities: number[]): Promise<Result<any>> {

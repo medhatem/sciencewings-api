@@ -22,6 +22,12 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
     return container.get(IProjectTaskService);
   }
 
+  /**
+   * check if the members does exist
+   * given an array of member ids
+   * @param entities
+   * @returns
+   */
   @log()
   @safeGuard()
   private async checkEntitiesExistance(entities: number[]): Promise<Result<any>> {
