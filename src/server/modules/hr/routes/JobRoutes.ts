@@ -21,9 +21,9 @@ export class JobRoutes extends BaseRoutes<Job> {
   }
 
   /**
-   * create a job
+   * create a job that the organization offer
    * @param payload
-   * @returns
+   * @returns the created job id
    */
   @POST
   @Path('create')
@@ -42,10 +42,10 @@ export class JobRoutes extends BaseRoutes<Job> {
   }
 
   /**
-   * update a job
+   * update a job data given its id
    * @param payload
    * @param id
-   * @returns
+   * @returns the updated job id
    */
   @PUT
   @Path('/update/:id')

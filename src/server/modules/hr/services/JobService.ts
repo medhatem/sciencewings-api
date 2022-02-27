@@ -1,3 +1,4 @@
+import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
@@ -7,7 +8,7 @@ import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
-import { Result } from './../../../utils/Result';
+import { Result } from '@/utils/Result';
 import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
@@ -27,41 +28,65 @@ export class JobService extends BaseService<Job> implements IJobService {
     return container.get(IJobService);
   }
 
+  private async getGroup(groupId: number): Promise<Result<any>> {
+    const fetchedGroup = await this.groupService.get(groupId);
+    if (fetchedGroup.isFailure || fetchedGroup.getValue() === null) {
+      return Result.fail(`Group with id ${groupId} does not exist`);
+    }
+    return Result.ok(await fetchedGroup.getValue());
+  }
+
+  private async getOrganization(organizationId: number): Promise<Result<any>> {
+    const fetchedOrganization = await this.organizationService.get(organizationId);
+    if (fetchedOrganization.isFailure || fetchedOrganization.getValue() === null) {
+      return Result.fail(`Organization with id ${organizationId} does not exist`);
+    }
+    return Result.ok(await fetchedOrganization.getValue());
+  }
+
+  /**
+   * create a new job
+   * @param payload job data
+   * @returns the created job id
+   */
   @log()
   @safeGuard()
   @validate
   public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<Result<number>> {
-    let fetchedGroup;
+    let group;
     if (payload.group) {
-      fetchedGroup = await this.groupService.get(payload.group);
-      if (fetchedGroup.isFailure || fetchedGroup.getValue() === null) {
-        return Result.fail(`Group with id ${payload.group} does not exist`);
-      }
-      fetchedGroup = await fetchedGroup.getValue();
+      const fetchedGroup = await this.getGroup(payload.group);
+      if (fetchedGroup.isFailure) return fetchedGroup;
+      group = await fetchedGroup.getValue();
     }
 
-    let fetchedOrganization;
+    let organization;
     if (payload.organization) {
-      fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (fetchedOrganization.isFailure || fetchedOrganization.getValue() === null) {
-        return Result.fail(`Organization with id ${payload.organization} does not exist`);
-      }
-      fetchedOrganization = await fetchedOrganization.getValue();
+      const fetchedOrganization = await this.getGroup(payload.group);
+      if (fetchedOrganization.isFailure) return fetchedOrganization;
+      organization = await fetchedOrganization.getValue();
     }
 
-    const createdJob = await this.create({
-      id: null,
-      ...payload,
-      group: fetchedGroup,
-      organization: fetchedOrganization,
-    });
+    const createdJob = await this.create(
+      this.wrapEntity(this.dao.model, {
+        ...payload,
+        group,
+        organization,
+      }),
+    );
 
     if (createdJob.isFailure) {
-      return Result.fail<number>(createdJob.error);
+      return createdJob;
     }
     return Result.ok(createdJob.getValue().id);
   }
 
+  /**
+   * update an existing job data given its id
+   * @param payload the new job data
+   * @param jobId
+   * @returns the updated job id
+   */
   @log()
   @safeGuard()
   public async updateJob(payload: JobRO, jobId: number): Promise<Result<number>> {
@@ -70,21 +95,15 @@ export class JobService extends BaseService<Job> implements IJobService {
       return Result.fail(`Job with id ${jobId} does not exist`);
     }
 
-    let fetchedGroup;
     if (payload.group) {
-      fetchedGroup = await this.groupService.get(payload.group);
-      if (fetchedGroup.isFailure || fetchedGroup.getValue() === null) {
-        return Result.fail(`Group with id ${payload.group} does not exist`);
-      }
+      const fetchedGroup = await this.getGroup(payload.group);
+      if (fetchedGroup.isFailure) return fetchedGroup;
       fetchedJob.group = await fetchedGroup.getValue();
     }
 
-    let fetchedOrganization;
     if (payload.organization) {
-      fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (fetchedOrganization.isFailure || fetchedOrganization.getValue() === null) {
-        return Result.fail(`Organization with id ${payload.organization} does not exist`);
-      }
+      const fetchedOrganization = await this.getGroup(payload.group);
+      if (fetchedOrganization.isFailure) return fetchedOrganization;
       fetchedJob.organization = await fetchedOrganization.getValue();
     }
 
@@ -96,7 +115,7 @@ export class JobService extends BaseService<Job> implements IJobService {
     );
 
     if (updatedJob.isFailure) {
-      return Result.fail<number>(updatedJob.error);
+      return updatedJob;
     }
     return Result.ok((await updatedJob.getValue()).id);
   }
