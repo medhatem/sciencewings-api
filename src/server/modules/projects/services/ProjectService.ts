@@ -1,4 +1,4 @@
-import { Member } from '@/modules/hr/models/Member';
+import { checkMemberExistance } from './ProjectServiceUtils';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { Project } from '@/modules/projects/models/Project';
 import { ProjectDao } from '@/modules/projects/daos/projectDAO';
@@ -31,30 +31,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     return container.get(IProjectService);
   }
 
-  /**
-   * check if the members does exist
-   * given an array of member ids
-   * @param entities
-   * @returns
-   */
-  @log()
-  @safeGuard()
-  private async checkEntitiesExistance(entities: number[]): Promise<Result<any>> {
-    const members: Member[] = [];
-
-    const size = entities.length;
-    for (let index = 0; index < size; index++) {
-      const getMember = await this.memberService.get(entities[index]);
-      const getMemberValue = getMember.getValue();
-      if (!getMemberValue) {
-        return Result.fail(`Member with id ${entities[index]} does not exist`);
-      }
-      members.push(getMemberValue);
-    }
-
-    return Result.ok(members);
-  }
-
   @log()
   @safeGuard()
   @validate
@@ -65,12 +41,12 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       return Result.fail(`Organization with id ${payload.organization} does not exist.`);
     }
 
-    const fetchedResponsibles = await this.checkEntitiesExistance(payload.managers);
+    const fetchedResponsibles = await checkMemberExistance(payload.managers, this.memberService);
     if (fetchedResponsibles.isFailure) {
       return Result.fail<number>(`Member with id ${fetchedResponsibles.error} does not exist`);
     }
 
-    const fetchedParticipants = await this.checkEntitiesExistance(payload.participants);
+    const fetchedParticipants = await checkMemberExistance(payload.participants, this.memberService);
     if (fetchedParticipants.isFailure) {
       return Result.fail<number>(`Member with id ${fetchedParticipants.error} does not exist`);
     }
@@ -128,7 +104,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     if (payload.managers) {
-      const fetchedResponsibles = await this.checkEntitiesExistance(payload.managers);
+      const fetchedResponsibles = await checkMemberExistance(payload.managers, this.memberService);
       // should be remove to avoid type conflic
       delete payload.managers;
       if (fetchedResponsibles.isFailure) {
@@ -138,7 +114,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     if (payload.participants) {
-      const fetchedParticipants = await this.checkEntitiesExistance(payload.participants);
+      const fetchedParticipants = await checkMemberExistance(payload.participants, this.memberService);
       // should be remove to avoid type conflic
       delete payload.participants;
       if (fetchedParticipants.isFailure) {

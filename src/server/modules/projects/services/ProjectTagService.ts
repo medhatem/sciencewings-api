@@ -22,7 +22,8 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
   }
 
   /**
-   * create tags for the project
+   * add a list of tasks for a given project
+   * a project can have one or many tasks
    * @param payload
    * @param project id
    * @returns
@@ -31,18 +32,18 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
   @safeGuard()
   public async createProjectTags(payload: ProjectTagRO[], project: Project): Promise<Result<ProjectTask[]>> {
     const tasks: ProjectTask[] = [];
-    const size = payload.length;
-    for (let index = 0; index < size; index++) {
-      const createdTaskResult = await this.create({
-        project,
-        ...this.wrapEntity(this.dao.model, payload[index]),
-      });
+    for (const tag of payload) {
+      const createdTaskResult = await this.create(
+        this.wrapEntity(this.dao.model, {
+          project,
+          ...this.wrapEntity(this.dao.model, tag),
+        }),
+      );
       if (createdTaskResult.isFailure) {
         return Result.fail(createdTaskResult.error);
       }
       const createdTask = await createdTaskResult.getValue();
-      // should be remove to avoid circular referencing
-      delete createdTask.project;
+
       tasks.push(createdTask);
     }
     return Result.ok(tasks);

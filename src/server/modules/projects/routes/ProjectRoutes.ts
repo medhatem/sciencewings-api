@@ -6,7 +6,7 @@ import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { CreateProjectDTO, IProjectService, ProjectDTO, UpdateProjectDTO } from '..';
 import { ProjectRO } from './RequestObject';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
+import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 
 @provideSingleton()
 @Path('projects')
@@ -20,7 +20,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   }
 
   /**
-   * Registers a new project in the database
+   * Containing data related to the project to be saved in the database
    *
    * @param payload
    * Should container Project data
@@ -53,7 +53,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @LoggerStorage()
   @Response<ProjectDTO>(204, 'Project updated Successfully')
   @Response<ProjectDTO>(500, 'Internal Server Error')
-  public async createUpdateProject(payload: ProjectRO, @PathParam('id') id: number): Promise<ProjectDTO> {
+  public async updateProject(payload: ProjectRO, @PathParam('id') id: number): Promise<ProjectDTO> {
     const result = await this.projectService.updateProject(payload, id);
 
     if (result.isFailure) {
