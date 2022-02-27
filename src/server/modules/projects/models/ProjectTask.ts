@@ -41,6 +41,7 @@ export class ProjectTask extends BaseModel<ProjectTask> {
     entity: () => Project,
     onDelete: 'cascade',
     nullable: true,
+    eager: false,
   })
   project: Project;
 

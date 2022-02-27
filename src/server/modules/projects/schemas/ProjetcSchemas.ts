@@ -21,7 +21,7 @@ export const CreateProjectSchema = ProjectSchema.keys({
   title: Joi.string().required(),
   description: Joi.string().required(),
   organization: Joi.number().required(),
-  responsibles: Joi.array().items(Joi.number()).required(),
+  managers: Joi.array().items(Joi.number()).required(),
   participants: Joi.array().items(Joi.number()).required(),
   dateStart: Joi.date().required(),
 });
@@ -30,7 +30,7 @@ export const UpdateProjectSchema = ProjectSchema.keys({
   title: Joi.string(),
   description: Joi.string(),
   organization: Joi.number(),
-  responsibles: Joi.array().items(Joi.number()),
+  managers: Joi.array().items(Joi.number()),
   participants: Joi.array().items(Joi.number()),
   dateStart: Joi.date(),
 });

@@ -1,7 +1,7 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ProjectTag } from './ProjectTag';
@@ -25,7 +25,7 @@ export class Project extends BaseModel<Project> {
   description: string;
 
   @ManyToMany({ entity: () => Member, owner: true })
-  responsibles = new Collection<Member>(this);
+  managers = new Collection<Member>(this);
 
   @ManyToMany({ entity: () => Member, owner: true })
   participants = new Collection<Member>(this);

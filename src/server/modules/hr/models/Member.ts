@@ -171,8 +171,8 @@ export class Member extends BaseModel<Member> {
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
 
-  @ManyToMany(() => Project, (project) => project.responsibles)
-  responsibles? = new Collection<Project>(this);
+  @ManyToMany(() => Project, (project) => project.managers)
+  managers? = new Collection<Project>(this);
   @ManyToMany(() => Project, (project) => project.participants)
   participants? = new Collection<Project>(this);
 }

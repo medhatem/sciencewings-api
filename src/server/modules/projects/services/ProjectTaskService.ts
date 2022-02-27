@@ -8,7 +8,7 @@ import { Project } from '@/modules/projects/models/Project';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { ProjectTaskDao } from '@/modules/projects/daos/projectTaskDAO';
 import { ProjectTaskRO } from '@/modules/projects/routes/RequestObject';
-import { Result } from './../../../utils/Result';
+import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 

@@ -7,7 +7,7 @@ import { ProjectTag } from '@/modules/projects/models/ProjectTag';
 import { ProjectTagDao } from '@/modules/projects/daos/projectTagDAO';
 import { ProjectTagRO } from '@/modules/projects/routes/RequestObject';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
-import { Result } from './../../../utils/Result';
+import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 

@@ -5,7 +5,7 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 export class ProjectTagDTO extends BaseRequestDTO {}
 
 @Serializable()
-class BaseBodyGetDTO extends BaseBodyDTO {
+class ProjectTagBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
@@ -13,7 +13,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
 @Serializable()
 export class CreateProjectTagDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
+  public body?: ProjectTagBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;
@@ -22,7 +22,7 @@ export class CreateProjectTagDTO extends BaseRequestDTO {
 @Serializable()
 export class UpdateProjectTagDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
+  public body?: ProjectTagBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;

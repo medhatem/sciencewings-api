@@ -8,8 +8,8 @@ import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
-import { Result } from './../../../utils/Result';
-import { ProjectRO } from '../routes/RequestObject';
+import { Result } from '@/utils/Result';
+import { ProjectRO } from '@/modules/projects/routes/RequestObject';
 import { CreateProjectSchema, UpdateProjectSchema } from '../schemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
@@ -46,7 +46,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     for (let index = 0; index < size; index++) {
       const getMember = await this.memberService.get(entities[index]);
       const getMemberValue = getMember.getValue();
-      if (getMemberValue === null) {
+      if (!getMemberValue) {
         return Result.fail(`Member with id ${entities[index]} does not exist`);
       }
       members.push(getMemberValue);
@@ -65,7 +65,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       return Result.fail(`Organization with id ${payload.organization} does not exist.`);
     }
 
-    const fetchedResponsibles = await this.checkEntitiesExistance(payload.responsibles);
+    const fetchedResponsibles = await this.checkEntitiesExistance(payload.managers);
     if (fetchedResponsibles.isFailure) {
       return Result.fail<number>(`Member with id ${fetchedResponsibles.error} does not exist`);
     }
@@ -76,7 +76,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     const organization = await fetchedOrganization.getValue();
-    const responsibles = await fetchedResponsibles.getValue();
+    const managers = await fetchedResponsibles.getValue();
     const participants = await fetchedParticipants.getValue();
 
     const project: Project = {
@@ -84,7 +84,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       description: payload.description,
       active: payload.active,
       dateStart: payload.dateStart,
-      responsibles: responsibles,
+      managers: managers,
       participants: participants,
       organizations: organization,
     };
@@ -127,14 +127,14 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       project.organizations = await fetchedOrganization.getValue();
     }
 
-    if (payload.responsibles) {
-      const fetchedResponsibles = await this.checkEntitiesExistance(payload.responsibles);
+    if (payload.managers) {
+      const fetchedResponsibles = await this.checkEntitiesExistance(payload.managers);
       // should be remove to avoid type conflic
-      delete payload.responsibles;
+      delete payload.managers;
       if (fetchedResponsibles.isFailure) {
         return Result.fail<number>(`Member with id ${fetchedResponsibles.error} does not exist`);
       }
-      project.responsibles = await fetchedResponsibles.getValue();
+      project.managers = await fetchedResponsibles.getValue();
     }
 
     if (payload.participants) {

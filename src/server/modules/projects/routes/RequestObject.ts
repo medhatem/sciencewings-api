@@ -42,7 +42,7 @@ export class ProjectRO {
   description: string;
 
   @JsonProperty()
-  responsibles: number[];
+  managers: number[];
 
   @JsonProperty()
   participants: number[];
