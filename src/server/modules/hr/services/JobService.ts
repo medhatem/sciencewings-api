@@ -1,4 +1,3 @@
-import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
@@ -62,7 +61,7 @@ export class JobService extends BaseService<Job> implements IJobService {
 
     let organization;
     if (payload.organization) {
-      const fetchedOrganization = await this.getGroup(payload.group);
+      const fetchedOrganization = await this.getOrganization(payload.group);
       if (fetchedOrganization.isFailure) return fetchedOrganization;
       organization = await fetchedOrganization.getValue();
     }
@@ -102,7 +101,7 @@ export class JobService extends BaseService<Job> implements IJobService {
     }
 
     if (payload.organization) {
-      const fetchedOrganization = await this.getGroup(payload.group);
+      const fetchedOrganization = await this.getOrganization(payload.group);
       if (fetchedOrganization.isFailure) return fetchedOrganization;
       fetchedJob.organization = await fetchedOrganization.getValue();
     }
