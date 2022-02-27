@@ -1,7 +1,10 @@
 import { AddressDTO, PhoneDTO } from '@/modules/..';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
+import { unique } from '@/decorators/unique';
+
 @Serializable()
+@unique
 export class CreateMemberRO {
   @JsonProperty()
   id: number;
@@ -78,6 +81,7 @@ export class CreateMemberRO {
 }
 
 @Serializable()
+@unique
 export class UpdateMemberRO {
   @JsonProperty()
   id: number;
