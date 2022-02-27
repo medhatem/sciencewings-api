@@ -2,7 +2,9 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/B
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { unique } from '@/decorators/Unique';
 
+@unique
 class UserBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
@@ -23,6 +25,7 @@ class UserBaseBodyGetDTO extends BaseBodyDTO {
   keycloakId: string;
 }
 
+@unique
 @Serializable()
 export class UserDTO extends BaseRequestDTO {
   @JsonProperty()

@@ -1,12 +1,16 @@
 import { JsonProperty, Serializable, deserialize, serialize } from 'typescript-json-serializer';
 
+import { unique } from '@/decorators/Unique';
+
 @Serializable()
+@unique
 export class BaseBodyDTO {
   @JsonProperty()
   statusCode: number;
 }
 
 @Serializable()
+@unique
 export class BaseErrorDTO {
   @JsonProperty()
   statusCode: number;
@@ -16,6 +20,7 @@ export class BaseErrorDTO {
 }
 
 @Serializable()
+@unique
 export class BaseRequestDTO {
   serialize(payload: { [key: string]: any }): this {
     return serialize(payload as any);
@@ -33,6 +38,7 @@ export class BaseRequestDTO {
 }
 
 @Serializable()
+@unique
 export class BaseDTO {
   @JsonProperty()
   id: number;

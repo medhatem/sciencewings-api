@@ -2,8 +2,10 @@ import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { unique } from '@/decorators/Unique';
 
 @Serializable()
+@unique
 export class CreateOrganizationRO {
   @JsonProperty()
   name: string;
@@ -50,6 +52,7 @@ export class CreateOrganizationRO {
 }
 
 @Serializable()
+@unique
 export class UserInviteToOrgRO {
   @JsonProperty()
   organizationId: number;
