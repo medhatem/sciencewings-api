@@ -5,7 +5,7 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
 import { Member } from '@/modules/hr/models/Member';
 import { Project } from '@/modules/projects/models/Project';
-import { ProjectTask } from '@/modules/projects/models/ProjetcTask';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { ProjectTaskDao } from '@/modules/projects/daos/projectTaskDAO';
 import { ProjectTaskRO } from '@/modules/projects/routes/RequestObject';
 import { Result } from './../../../utils/Result';

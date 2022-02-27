@@ -77,7 +77,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       title: payload.title,
       description: payload.description,
       active: payload.active,
-      date_start: payload.date_start,
+      dateStart: payload.dateStart,
       responsibles: responsibles,
       participants: participants,
       organizations: organization,

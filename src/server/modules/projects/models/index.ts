@@ -1,3 +1,3 @@
 export * from './Project';
-export * from './ProjetcTag';
-export * from './ProjetcTask';
+export * from './ProjectTag';
+export * from './ProjectTask';

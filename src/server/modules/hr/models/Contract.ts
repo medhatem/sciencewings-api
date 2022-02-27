@@ -43,7 +43,7 @@ export class Contract extends BaseModel<Contract> {
   @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
   job?: Job;
 
-  @Index({ name: 'hr_contract_date_start_index' })
+  @Index({ name: 'hr_contract_dateStart_index' })
   @Property({ columnType: 'date' })
   dateStart!: Date;
 

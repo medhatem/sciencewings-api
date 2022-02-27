@@ -6,13 +6,13 @@ export const ProjectTaskSchema = Joi.object({
   priority: Joi.string().required(),
   assigned: Joi.array().items(Joi.number()),
   active: Joi.boolean(),
-  date_end: Joi.date(),
+  dateEnd: Joi.date(),
   parent: Joi.number(),
 });
 
 const ProjectSchema = Joi.object({
   active: Joi.boolean(),
-  date_end: Joi.date(),
+  dateEnd: Joi.date(),
   tags: Joi.array().items(Joi.object()),
   tasks: Joi.array().items(ProjectTaskSchema.keys()),
 });
@@ -23,7 +23,7 @@ export const CreateProjectSchema = ProjectSchema.keys({
   organization: Joi.number().required(),
   responsibles: Joi.array().items(Joi.number()).required(),
   participants: Joi.array().items(Joi.number()).required(),
-  date_start: Joi.date().required(),
+  dateStart: Joi.date().required(),
 });
 
 export const UpdateProjectSchema = ProjectSchema.keys({
@@ -32,5 +32,5 @@ export const UpdateProjectSchema = ProjectSchema.keys({
   organization: Joi.number(),
   responsibles: Joi.array().items(Joi.number()),
   participants: Joi.array().items(Joi.number()),
-  date_start: Joi.date(),
+  dateStart: Joi.date(),
 });

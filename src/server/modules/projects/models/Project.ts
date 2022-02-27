@@ -4,8 +4,8 @@ import { container, provide } from '@/di/index';
 import { BaseModel } from '../../base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { ProjectTag } from './ProjetcTag';
-import { ProjectTask } from './ProjetcTask';
+import { ProjectTag } from './ProjectTag';
+import { ProjectTask } from './ProjectTask';
 
 @provide()
 @Entity()
@@ -34,10 +34,10 @@ export class Project extends BaseModel<Project> {
   active: boolean;
 
   @Property()
-  date_start: Date;
+  dateStart: Date;
 
   @Property({ nullable: true })
-  date_end?: Date;
+  dateEnd?: Date;
 
   @OneToMany({
     entity: () => ProjectTag,

@@ -32,10 +32,10 @@ export class ProjectTask extends BaseModel<ProjectTask> {
   priority: string;
 
   @Property()
-  date_start: Date;
+  dateStart: Date;
 
   @Property({ nullable: true })
-  date_end?: Date;
+  dateEnd?: Date;
 
   @ManyToOne({
     entity: () => Project,

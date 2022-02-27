@@ -1,6 +1,6 @@
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Project } from '@/modules/projects/models/Project';
-import { ProjectTask } from '@/modules/projects/models/ProjetcTask';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { ProjectTaskRO } from '@/modules/projects/routes/RequestObject';
 import { Result } from '@/utils/Result';
 

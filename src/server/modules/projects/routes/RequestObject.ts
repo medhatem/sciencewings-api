@@ -24,10 +24,10 @@ export class ProjectTaskRO {
   priority: string;
 
   @JsonProperty()
-  date_start: Date;
+  dateStart: Date;
 
   @JsonProperty()
-  date_end?: Date;
+  dateEnd?: Date;
 
   @JsonProperty()
   public parent?: number;
@@ -51,10 +51,10 @@ export class ProjectRO {
   active: boolean;
 
   @JsonProperty()
-  date_start: Date;
+  dateStart: Date;
 
   @JsonProperty()
-  date_end?: Date;
+  dateEnd?: Date;
 
   @JsonProperty()
   public tags: ProjectTagRO[];
