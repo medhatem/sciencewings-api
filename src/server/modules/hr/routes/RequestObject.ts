@@ -5,6 +5,7 @@ import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
 @Serializable()
+@unique
 export class ContractRO {
   @JsonProperty()
   id: number;
@@ -56,6 +57,7 @@ export class ContractRO {
 }
 
 @Serializable()
+@unique
 @unique
 export class CreateMemberRO {
   @JsonProperty()
