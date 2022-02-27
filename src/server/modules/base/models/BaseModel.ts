@@ -32,11 +32,7 @@ export class BaseModel<T = any> {
     Object.keys(payload)
       // eslint-disable-next-line no-prototype-builtins
       .filter((prop: string) => (this as any).prototype.hasOwnProperty(prop))
-      .map((prop: string) => {
-        console.log({ prop });
-
-        return ((this as any)[prop] = payload[prop]);
-      });
+      .map((prop: string) => ((this as any)[prop] = payload[prop]));
 
     console.log({ payload });
     console.log({ thethis: this });
