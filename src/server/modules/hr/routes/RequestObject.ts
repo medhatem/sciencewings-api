@@ -5,6 +5,7 @@ import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 import { unique } from '@/decorators/unique';
 
 @Serializable()
+@unique
 export class GroupRO {
   @JsonProperty()
   name!: string;
@@ -28,6 +29,7 @@ export class GroupRO {
   note?: string;
 }
 @Serializable()
+@unique
 export class JobRO {
   @JsonProperty()
   name!: string;
