@@ -43,12 +43,12 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     const fetchedResponsibles = await checkMemberExistance(payload.managers, this.memberService);
     if (fetchedResponsibles.isFailure) {
-      return Result.fail<number>(`Member with id ${fetchedResponsibles.error} does not exist`);
+      return fetchedResponsibles;
     }
 
     const fetchedParticipants = await checkMemberExistance(payload.participants, this.memberService);
     if (fetchedParticipants.isFailure) {
-      return Result.fail<number>(`Member with id ${fetchedParticipants.error} does not exist`);
+      return fetchedParticipants;
     }
 
     const organization = await fetchedOrganization.getValue();
@@ -67,7 +67,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     const createdProjectResult = await this.create(project);
     if (createdProjectResult.isFailure) {
-      return Result.fail<number>(createdProjectResult.error);
+      return createdProjectResult;
     }
 
     const createdProject = await createdProjectResult.getValue();
@@ -108,7 +108,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       // should be remove to avoid type conflic
       delete payload.managers;
       if (fetchedResponsibles.isFailure) {
-        return Result.fail<number>(`Member with id ${fetchedResponsibles.error} does not exist`);
+        return fetchedResponsibles;
       }
       project.managers = await fetchedResponsibles.getValue();
     }
@@ -118,7 +118,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       // should be remove to avoid type conflic
       delete payload.participants;
       if (fetchedParticipants.isFailure) {
-        return Result.fail<number>(`Member with id ${fetchedParticipants.error} does not exist`);
+        return fetchedParticipants;
       }
       project.participants = await fetchedParticipants.getValue();
     }

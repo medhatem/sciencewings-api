@@ -23,7 +23,8 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   }
 
   /**
-   * create tasks for the project
+   * add a list of tasks for a given project
+   * a project can have one or many tasks
    * @param payloads
    * @param project
    * @returns
@@ -31,24 +32,24 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   @log()
   @safeGuard()
   public async createProjectTasks(payloads: ProjectTaskRO[], project: Project): Promise<Result<ProjectTask[]>> {
-    const projectTasks = await payloads.map(async (payload) => {
-      const assignedMembers = await checkMemberExistance(payload.assigned, this.memberService);
-      if (assignedMembers.isFailure) {
-        return Result.fail(assignedMembers.error);
-      }
-      // should be remove to avoid circular referencing
-      delete payload.assigned;
-      const createdProjectTaskReslt = await this.create({
-        project,
-        ...this.wrapEntity(this.dao.model, payload),
-      });
-      if (createdProjectTaskReslt.isFailure) {
-        return null;
-      }
-      const createdProjectTask = await createdProjectTaskReslt.getValue();
-      createdProjectTask.assigned = await assignedMembers.getValue();
-      return createdProjectTask;
-    });
+    const projectTasks = await Promise.all(
+      payloads.map(async (payload) => {
+        const assignedMembers = await checkMemberExistance(payload.assigned, this.memberService);
+        if (assignedMembers.isFailure) {
+          return assignedMembers;
+        }
+        const createdProjectTaskReslt = await this.create({
+          project,
+          ...this.wrapEntity(this.dao.model, payload),
+        });
+        if (createdProjectTaskReslt.isFailure) {
+          return null;
+        }
+        const createdProjectTask = await createdProjectTaskReslt.getValue();
+        createdProjectTask.assigned = await assignedMembers.getValue();
+        return createdProjectTask;
+      }),
+    );
 
     return Result.ok(projectTasks as any);
   }
