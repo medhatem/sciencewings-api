@@ -16,10 +16,6 @@ export class Address extends BaseModel<Address> {
     return container.get(Address);
   }
 
-  generateNewInstance(): Address {
-    return Address.getInstance();
-  }
-
   @Property()
   country: string;
 

@@ -13,10 +13,6 @@ export class BaseModel<T = any> {
     throw new Error('The base model class cannot be instanciated and needs to be overriden!');
   }
 
-  generateNewInstance?(): T {
-    throw new Error('The base model class cannot be instanciated and needs to be overriden!');
-  }
-
   @PrimaryKey()
   id?: number;
 
