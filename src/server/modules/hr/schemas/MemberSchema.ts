@@ -43,6 +43,7 @@ const MemberSchema = Joi.object({
   notes: Joi.string(),
   departureDescription: Joi.string(),
   departureDate: Date,
+  status: Joi.string(),
 });
 
 export const CreateMemberSchema = MemberSchema.keys({

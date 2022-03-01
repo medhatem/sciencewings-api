@@ -15,6 +15,10 @@ import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 
+export enum MemberStatusType {
+  INVITATION_PENDING = 'INVITATION_PENDING',
+  ACTIVE = 'ACTIVE',
+}
 @provideSingleton()
 @Entity()
 @Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
@@ -169,4 +173,7 @@ export class Member extends BaseModel<Member> {
 
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
+
+  @Property({ nullable: true })
+  status?: MemberStatusType;
 }

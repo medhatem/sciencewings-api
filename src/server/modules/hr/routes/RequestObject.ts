@@ -96,6 +96,8 @@ export class CreateMemberRO {
   departureDescription?: string;
   @JsonProperty()
   departureDate?: Date;
+  @JsonProperty()
+  status?: string;
 }
 
 @Serializable()
@@ -191,4 +193,6 @@ export class UpdateMemberRO {
   departureDescription?: string;
   @JsonProperty()
   departureDate?: Date;
+  @JsonProperty()
+  status?: string;
 }
