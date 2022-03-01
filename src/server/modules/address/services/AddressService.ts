@@ -19,18 +19,6 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     return container.get(IAddressService);
   }
 
-  // private extractAdressFromRO(payload: AddressRO): Partial<Address> {
-  //   return {
-  //     country: payload.country,
-  //     province: payload.province,
-  //     code: payload.code,
-  //     type: payload.type,
-  //     city: payload.city,
-  //     street: payload.street,
-  //     apartment: payload.apartment,
-  //   };
-  // }
-
   @log()
   @safeGuard()
   async createAddress(payload: AddressRO): Promise<Result<Address>> {
