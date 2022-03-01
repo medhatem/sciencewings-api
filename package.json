@@ -58,7 +58,6 @@
     "@mikro-orm/postgresql": "^5.0.0",
     "@mikro-orm/seeder": "^5.0.0",
     "@sendgrid/mail": "^7.6.0",
-    "@typegoose/typegoose": "^7.6.1",
     "async_hooks": "^1.0.0",
     "bcrypt": "latest",
     "body-parser": "latest",
