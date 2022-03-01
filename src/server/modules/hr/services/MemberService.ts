@@ -4,15 +4,15 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';
-import { IMemberService } from '..';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IResourceService } from '@/modules/resources/interfaces';
 import { Member } from '@/modules/hr/models/Member';
-import { MemberDao } from '../daos/MemberDao';
+import { MemberDao } from '@/modules/hr/daos/MemberDao';
 import { Result } from '@/utils/Result';
-import { log } from '@/modules/../decorators/log';
-import { safeGuard } from '@/modules/../decorators/safeGuard';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 
@@ -186,8 +186,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (phones.isFailure) return Result.fail<number>(existance.error);
     const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
 
-    const member: Member = {
-      id: null,
+    const member = {
       ...payload,
       organization: currentOrg.getValue(),
       resource: currentRes.getValue(),
@@ -199,7 +198,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       emergencyPhone,
     };
 
-    const createdMember = await this.create(member);
+    const createdMember = await this.create(this.wrapEntity(this.dao.model, member));
 
     if (createdMember.isFailure) {
       return Result.fail<number>(createdMember.error);

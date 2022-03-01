@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
-import { Address } from '@/modules/..';
+import { Address } from '@/modules/address/models/AdressModel';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
