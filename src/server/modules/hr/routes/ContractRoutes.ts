@@ -1,26 +1,60 @@
+import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { container, provideSingleton } from '@/di/index';
-import { ContractService } from '../services/ContractService';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Contract } from '@/modules/hr/models/Contract';
-import { Path, GET, QueryParam } from 'typescript-rest';
+import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { ContractDTO } from '@/modules/hr/dtos/ContractDTO';
-import { UpdateContractDTO } from '@/modules/hr/dtos/UpdateContractDTO';
-
+import { UpdateContractDTO } from '@/modules/hr/dtos/ContractDTO';
+import { ContractRO } from './RequestObject';
+import { Response } from 'typescript-rest-swagger';
+import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
+import { LoggerStorage } from '@/decorators/loggerStorage';
 @provideSingleton()
 @Path('contracts')
 export class ContractRoutes extends BaseRoutes<Contract> {
-  constructor(private ContractRoutes: ContractService) {
-    super(ContractRoutes, new ContractDTO(), new UpdateContractDTO());
-    console.log(this.ContractRoutes);
+  constructor(private contractService: IContractService) {
+    super(contractService as any, new ContractDTO(), new UpdateContractDTO());
   }
 
   static getInstance(): ContractRoutes {
     return container.get(ContractRoutes);
   }
 
-  @GET
-  @Path('newRoute')
-  public async newRoute(@QueryParam('body') body: string) {
-    return body;
+  /**
+   * Override the create method
+   */
+  @POST
+  @Path('create')
+  @Security('', KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  @Response<ContractRO>(201, 'Contract created Successfully')
+  @Response<ContractRO>(500, 'Internal Server Error')
+  public async createContract(payload: ContractRO): Promise<ContractDTO> {
+    const result = await this.contractService.createContract(payload);
+
+    if (result.isFailure) {
+      return new ContractDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new ContractDTO().serialize({ body: { contractId: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
+   * Override the update method
+   */
+  @PUT
+  @Path('/update/:id')
+  @Security('', KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  @Response<ContractDTO>(204, 'Contract updated Successfully')
+  @Response<ContractDTO>(500, 'Internal Server Error')
+  public async createUpdateContract(payload: ContractRO, @PathParam('id') id: number): Promise<ContractDTO> {
+    const result = await this.contractService.updateContract(payload, id);
+
+    if (result.isFailure) {
+      return new ContractDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new ContractDTO().serialize({ body: { contractId: result.getValue(), statusCode: 204 } });
   }
 }
