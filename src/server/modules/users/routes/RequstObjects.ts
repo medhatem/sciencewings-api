@@ -1,7 +1,15 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { PhoneRO } from '../../phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
+
+export class UserInviteToOrgRO {
+  @JsonProperty()
+  organizationId: number;
+
+  @JsonProperty()
+  email: string;
+}
 
 @Serializable()
 @unique
@@ -19,7 +27,7 @@ export class UserDetailsRO {
   address: string;
 
   @JsonProperty()
-  phones: PhoneDTO[];
+  phones: PhoneRO[];
 
   @JsonProperty()
   dateofbirth: Date;

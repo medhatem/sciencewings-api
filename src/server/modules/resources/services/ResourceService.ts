@@ -60,7 +60,16 @@ export class ResourceService extends BaseService<Resource> {
 
     payload.organization = organization;
 
-    const resource = this.wrapEntity(this.dao.model, payload);
+    const resource = this.wrapEntity(this.dao.model, {
+      name: payload.name,
+      active: payload.active,
+      organization: payload.organization,
+      resourceType: payload.resourceType,
+      user: payload.user,
+      timeEfficiency: payload.timeEfficiency,
+      timezone: payload.timezone,
+      calendar: payload.calendar,
+    });
 
     const createResourceCalendar = await this.resourceCalendarService.createResourceCalendar(calendar);
 

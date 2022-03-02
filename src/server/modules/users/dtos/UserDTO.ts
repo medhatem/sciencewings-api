@@ -1,7 +1,7 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
 @unique
@@ -19,7 +19,7 @@ class UserBaseBodyGetDTO extends BaseBodyDTO {
   email: string;
 
   @JsonProperty()
-  phones: PhoneDTO[];
+  phones: PhoneRO[];
 
   @JsonProperty()
   keycloakId: string;
