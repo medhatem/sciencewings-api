@@ -3,13 +3,13 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Contract } from '@/modules/hr/models/Contract';
-import { ContractDao } from '../daos/ContractDao';
-import { ContractRO } from '../routes/RequestObject';
-import { IContractService } from '../interfaces/IContractService';
+import { ContractDao } from '@/modules/hr/daos/ContractDao';
+import { ContractRO } from '@/modules/hr/routes/RequestObject';
+import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { IResourceCalendarService } from '@/modules/resources/interfaces';
 import { IUserService } from '@/modules/users/interfaces';
-import { Result } from './../../../utils/Result';
+import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { validate } from '@/decorators/validate';
