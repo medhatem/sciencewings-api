@@ -2,13 +2,14 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/B
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
+
 @Serializable()
 @unique
 export class JobDTO extends BaseRequestDTO {}
 
 @Serializable()
 @unique
-class BaseBodyGetDTO extends BaseBodyDTO {
+class JobBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
@@ -17,7 +18,7 @@ class BaseBodyGetDTO extends BaseBodyDTO {
 @unique
 export class CreateJobDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
+  public body?: JobBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;
@@ -27,7 +28,7 @@ export class CreateJobDTO extends BaseRequestDTO {
 @unique
 export class UpdateJobDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
+  public body?: JobBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;
