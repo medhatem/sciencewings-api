@@ -19,6 +19,7 @@ export class BaseDao<T extends BaseModel<T>> {
   static getInstance(): void {
     throw new ServerError('baseModel must be overriden');
   }
+
   @log()
   public async get(id: number): Promise<T> {
     return (this.repository as any).findOne(id);

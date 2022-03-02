@@ -4,7 +4,7 @@ import { unique } from '@/decorators/unique';
 
 @Serializable()
 @unique
-export class PhoneDTO {
+export class PhoneRO {
   @JsonProperty()
   id: number;
 
@@ -22,4 +22,7 @@ export class PhoneDTO {
 
   @JsonProperty()
   organizationId?: number;
+
+  @JsonProperty()
+  memberId?: number;
 }

@@ -1,9 +1,63 @@
-import { AddressDTO, PhoneDTO } from '@/modules/..';
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
+import { AddressRO } from './../../address/routes/AddressRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
 @Serializable()
+@unique
+export class ContractRO {
+  @JsonProperty()
+  id: number;
+
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  dateStart!: Date;
+
+  @JsonProperty()
+  wage!: number;
+
+  @JsonProperty()
+  organization!: number;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  member?: number;
+
+  @JsonProperty()
+  group?: number;
+
+  @JsonProperty()
+  job?: number;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  trialDateEnd?: Date;
+
+  @JsonProperty()
+  resourceCalendar?: number;
+
+  @JsonProperty()
+  notes?: string;
+
+  @JsonProperty()
+  state?: string;
+
+  @JsonProperty()
+  kanbanState?: string;
+
+  @JsonProperty()
+  hrResponsible?: number;
+}
+
+@Serializable()
+@unique
 @unique
 export class CreateMemberRO {
   @JsonProperty()
@@ -12,40 +66,26 @@ export class CreateMemberRO {
   resource!: number;
   @JsonProperty()
   organization!: number;
-  // @JsonProperty()
-  // resourceCalendar?: number;
   @JsonProperty()
   name?: string;
   @JsonProperty()
   active?: boolean;
-  // @JsonProperty()
-  // group?: number;
-  // @JsonProperty()
-  // job?: number;
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: AddressDTO;
+  address?: AddressRO;
   @JsonProperty()
-  workPhone?: PhoneDTO;
+  workPhone?: PhoneRO;
   @JsonProperty()
-  mobilePhone?: PhoneDTO;
+  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: AddressDTO;
-  // @JsonProperty()
-  // user?: number;
-  // @JsonProperty()
-  // parent?: number;
-  // @JsonProperty()
-  // coach?: number;
+  workLocation?: AddressRO;
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: AddressDTO;
-  // @JsonProperty()
-  // country?: ResCountry;
+  addressHome?: AddressRO;
   @JsonProperty()
   gender?: string;
   @JsonProperty()
@@ -58,16 +98,12 @@ export class CreateMemberRO {
   children?: number;
   @JsonProperty()
   placeOfBirth?: string;
-  // @JsonProperty()
-  // countryOfBirth?: ResCountry;
   @JsonProperty()
   birthday?: Date;
   @JsonProperty()
   identificationId?: string;
   @JsonProperty()
   passportId?: string;
-  // @JsonProperty()
-  // bankAccount?: ResPartnerBank;
   @JsonProperty()
   permitNo?: string;
   @JsonProperty()
@@ -89,7 +125,7 @@ export class CreateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: PhoneDTO;
+  emergencyPhone?: PhoneRO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
@@ -107,40 +143,26 @@ export class UpdateMemberRO {
   resource?: number;
   @JsonProperty()
   organization?: number;
-  // @JsonProperty()
-  // resourceCalendar?: number;
   @JsonProperty()
   name?: string;
   @JsonProperty()
   active?: boolean;
-  // @JsonProperty()
-  // group?: number;
-  // @JsonProperty()
-  // job?: number;
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: AddressDTO;
+  address?: AddressRO;
   @JsonProperty()
-  workPhone?: PhoneDTO;
+  workPhone?: PhoneRO;
   @JsonProperty()
-  mobilePhone?: PhoneDTO;
+  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: AddressDTO;
-  // @JsonProperty()
-  // user?: number;
-  // @JsonProperty()
-  // parent?: number;
-  // @JsonProperty()
-  // coach?: number;
+  workLocation?: AddressRO;
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: AddressDTO;
-  // @JsonProperty()
-  // country?: ResCountry;
+  addressHome?: AddressRO;
   @JsonProperty()
   gender?: string;
   @JsonProperty()
@@ -153,16 +175,12 @@ export class UpdateMemberRO {
   children?: number;
   @JsonProperty()
   placeOfBirth?: string;
-  // @JsonProperty()
-  // countryOfBirth?: ResCountry;
   @JsonProperty()
   birthday?: Date;
   @JsonProperty()
   identificationId?: string;
   @JsonProperty()
   passportId?: string;
-  // @JsonProperty()
-  // bankAccount?: ResPartnerBank;
   @JsonProperty()
   permitNo?: string;
   @JsonProperty()
@@ -184,7 +202,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: PhoneDTO;
+  emergencyPhone?: PhoneRO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()

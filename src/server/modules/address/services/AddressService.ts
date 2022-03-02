@@ -1,8 +1,8 @@
 import { container, provideSingleton } from '@/di/index';
 
 import { Address } from '@/modules/address/models/AdressModel';
-import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { IAddressService } from '../interfaces/IAddressService';
 import { Result } from '@/utils/Result';
@@ -21,7 +21,7 @@ export class AddressService extends BaseService<Address> implements IAddressServ
 
   @log()
   @safeGuard()
-  async createAddress(payload: AddressDTO): Promise<Result<Address>> {
+  async createAddress(payload: AddressRO): Promise<Result<Address>> {
     const wrappedAddress = this.wrapEntity(this.dao.model, payload);
     const address = await this.dao.create(wrappedAddress);
     return Result.ok<Address>(address);
@@ -29,8 +29,8 @@ export class AddressService extends BaseService<Address> implements IAddressServ
 
   @log()
   @safeGuard()
-  async createBulkAddress(payload: AddressDTO[]): Promise<Result<number>> {
-    payload.map((el: AddressDTO) => {
+  async createBulkAddress(payload: AddressRO[]): Promise<Result<number>> {
+    payload.map((el: AddressRO) => {
       const address = this.wrapEntity(this.dao.model, el);
       this.dao.repository.persist(address);
     });
