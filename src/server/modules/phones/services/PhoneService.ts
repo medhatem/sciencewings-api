@@ -33,29 +33,33 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
   @log()
   @safeGuard()
   async createBulkPhoneForUser(payload: PhoneRO[], entity: User): Promise<Result<number>> {
-    const phones = await Promise.all(
-      payload.map(async (phone) => {
-        const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
-        wrappedPhone.user = entity as User;
-      }),
-    );
+    if (payload) {
+      const phones = await Promise.all(
+        payload.map(async (phone) => {
+          const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
+          wrappedPhone.user = entity as User;
+        }),
+      );
 
-    this.dao.repository.persist(phones);
+      this.dao.repository.persist(phones);
+    }
     return Result.ok<number>(200);
   }
 
   @log()
   @safeGuard()
   async createBulkPhoneForOrganization(payload: PhoneRO[], entity: Organization): Promise<Result<number>> {
-    const phones = await Promise.all(
-      payload.map(async (phone) => {
-        const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
-        wrappedPhone.organization = entity as Organization;
-        return wrappedPhone;
-      }),
-    );
+    if (payload) {
+      const phones = await Promise.all(
+        payload.map(async (phone) => {
+          const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
+          wrappedPhone.organization = entity as Organization;
+          return wrappedPhone;
+        }),
+      );
 
-    this.dao.repository.persist(phones);
+      this.dao.repository.persist(phones);
+    }
     return Result.ok<number>(200);
   }
 
