@@ -1,7 +1,7 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
-import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
 @Serializable()
@@ -14,13 +14,13 @@ export class CreateOrganizationRO {
   email: string;
 
   @JsonProperty()
-  phones: PhoneDTO[];
+  phones: PhoneRO[];
 
   @JsonProperty()
   type: string;
 
   @JsonProperty()
-  address: AddressDTO[];
+  address: AddressRO[];
 
   @JsonProperty()
   labels: string[];

@@ -1,12 +1,13 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
-import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
-@unique
-export class GroupRO {
+export class ContractRO {
+  @JsonProperty()
+  id: number;
+
   @JsonProperty()
   name!: string;
 
@@ -14,10 +15,16 @@ export class GroupRO {
   completeName?: string;
 
   @JsonProperty()
-  active?: boolean;
+  dateStart!: Date;
 
   @JsonProperty()
-  organization?: number;
+  wage!: number;
+
+  @JsonProperty()
+  organization!: number;
+
+  @JsonProperty()
+  active?: boolean;
 
   @JsonProperty()
   parent?: number;
@@ -27,7 +34,23 @@ export class GroupRO {
 
   @JsonProperty()
   note?: string;
+
+  @JsonProperty()
+  member?: number;
+
+  @JsonProperty()
+  group?: number;
+
+  @JsonProperty()
+  job?: number;
+
+  @JsonProperty()
+  resourceCalendar?: number;
+
+  @JsonProperty()
+  hrResponsible?: number;
 }
+
 @Serializable()
 @unique
 export class JobRO {
@@ -44,7 +67,31 @@ export class JobRO {
   organization?: number;
 
   @JsonProperty()
-  state!: string;
+  member?: number;
+
+  @JsonProperty()
+  job?: number;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  trialDateEnd?: Date;
+
+  @JsonProperty()
+  resourceCalendar?: number;
+
+  @JsonProperty()
+  notes?: string;
+
+  @JsonProperty()
+  state?: string;
+
+  @JsonProperty()
+  kanbanState?: string;
+
+  @JsonProperty()
+  hrResponsible?: number;
 }
 
 @Serializable()
@@ -63,19 +110,19 @@ export class MemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: AddressDTO;
+  address?: AddressRO;
   @JsonProperty()
-  workPhone?: PhoneDTO;
+  workPhone?: PhoneRO;
   @JsonProperty()
-  mobilePhone?: PhoneDTO;
+  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: AddressDTO;
+  workLocation?: AddressRO;
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: AddressDTO;
+  addressHome?: AddressRO;
   @JsonProperty()
   gender?: string;
   @JsonProperty()
@@ -115,7 +162,7 @@ export class MemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: PhoneDTO;
+  emergencyPhone?: PhoneRO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
@@ -140,19 +187,19 @@ export class UpdateMemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: AddressDTO;
+  address?: AddressRO;
   @JsonProperty()
-  workPhone?: PhoneDTO;
+  workPhone?: PhoneRO;
   @JsonProperty()
-  mobilePhone?: PhoneDTO;
+  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: AddressDTO;
+  workLocation?: AddressRO;
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: AddressDTO;
+  addressHome?: AddressRO;
   @JsonProperty()
   gender?: string;
   @JsonProperty()
@@ -192,7 +239,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: PhoneDTO;
+  emergencyPhone?: PhoneRO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()

@@ -22,6 +22,9 @@ export class MemberRoutes extends BaseRoutes<Member> {
     return container.get(MemberRoutes);
   }
 
+  /**
+   * Override the create method
+   */
   @POST
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
@@ -38,6 +41,9 @@ export class MemberRoutes extends BaseRoutes<Member> {
     return new MemberDTO().serialize({ body: { memberId: result.getValue(), statusCode: 201 } });
   }
 
+  /**
+   * Override the update method
+   */
   @PUT
   @Path('/update/:id')
   @Security('', KEYCLOAK_TOKEN)
