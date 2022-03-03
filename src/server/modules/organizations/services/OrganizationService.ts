@@ -58,24 +58,24 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    const fetchedUser = await this.userService.getUserByCriteria({ id: userId });
-    if (fetchedUser.isFailure) {
+    const fetchedUser = await this.userService.get(userId);
+    if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
       return Result.fail<number>(`User with id: ${userId} parent does not exist`);
     }
     const user = fetchedUser.getValue();
 
     let adminContact;
     if (payload.adminContact) {
-      adminContact = await this.userService.getUserByCriteria({ id: payload.adminContact });
-      if (!adminContact) {
+      adminContact = await this.userService.get(payload.adminContact);
+      if (adminContact.isFailure || adminContact.getValue() === null) {
         return Result.fail<number>(`User with id: ${payload.adminContact} does not exist.`);
       }
     }
 
     let direction;
     if (payload.direction) {
-      direction = await this.userService.getUserByCriteria({ id: payload.direction });
-      if (!direction) {
+      direction = await this.userService.get(payload.direction);
+      if (direction.isFailure || direction.getValue() === null) {
         return Result.fail<number>(`User with id: ${payload.direction} does not exist.`);
       }
     }
