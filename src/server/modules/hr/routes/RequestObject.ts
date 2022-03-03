@@ -58,7 +58,6 @@ export class ContractRO {
 
 @Serializable()
 @unique
-@unique
 export class CreateMemberRO {
   @JsonProperty()
   id: number;
