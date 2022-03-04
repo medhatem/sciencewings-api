@@ -3,3 +3,4 @@
 /**/tsoa-build/*
 package-lock.json
 /src/migrations
+/target
