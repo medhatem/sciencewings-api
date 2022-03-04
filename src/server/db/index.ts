@@ -11,7 +11,7 @@ export async function startDB(config: ServerDBConfig) {
     dbName: config.dbName,
     host: config.host,
     port: config.port,
-    // allowGlobalContext: true,
+    allowGlobalContext: true,
     user: config.dbUsername,
     password: config.dbPassword,
     entities: ['dist/server/modules/**/models/*'],
