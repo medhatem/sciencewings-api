@@ -28,6 +28,7 @@
   },
   "_moduleAliases": {
     "@/di": "dist/server/di",
+    "@/authenticators": "dist/server/authenticators",
     "@types": "dist/server/types",
     "@/errors": "dist/server/errors",
     "@/interface": "dist/server/interface/*",
@@ -58,7 +59,6 @@
     "@mikro-orm/postgresql": "^5.0.0",
     "@mikro-orm/seeder": "^5.0.0",
     "@sendgrid/mail": "^7.6.0",
-    "@typegoose/typegoose": "^7.6.1",
     "async_hooks": "^1.0.0",
     "bcrypt": "latest",
     "body-parser": "latest",
