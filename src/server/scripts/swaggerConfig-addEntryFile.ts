@@ -19,10 +19,6 @@ import { exit } from 'process';
  * @Returns a warning if one or many modules DTO | Route | Models | Interfaces do not
  * contain an index.ts file
  *
- *
- *
- *
- *
  */
 
 const SERVER_MODULES_FOLDER = 'src/server/modules';
