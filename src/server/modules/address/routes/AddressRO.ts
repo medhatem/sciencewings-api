@@ -1,6 +1,9 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { AddressType } from '@/modules/address/models/AdressModel';
+export enum AddressType {
+  USER = 'USER',
+  ORGANIZATION = 'ORGANIZATION',
+}
 
 @Serializable()
 export class AddressRO {
