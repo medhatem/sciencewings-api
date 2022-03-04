@@ -65,6 +65,9 @@ readdir(SERVER_MODULES_FOLDER, (err, modulesFolder: string[]) => {
       const statuses = [...namespaces.map((namespace) => checkIfValid(`${pathToModulesSubDirectory}/${namespace}`))];
 
       if (statuses.includes(STATUS_ENUM.warning)) {
+        // skip the moduleFolder that does not contain an index.ts
+        // file in any of the namespaces (DTO | Route | Models | Interfaces)
+        // and display a warning to notify the end user
         return prev;
       }
 
