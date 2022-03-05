@@ -26,13 +26,23 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   /**
-   * fetches using a given search criteria
+   * fetches single record using a given search criteria
    *
    * @param criteria the criteria to fetch with
    */
   @log()
   async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
     return (this.repository as any).findOne(criteria);
+  }
+
+  /**
+   * fetches all records  using a given search criteria
+   *
+   * @param criteria the criteria to fetch with
+   */
+  @log()
+  async getAllByCriteria(criteria: { [key: string]: any }): Promise<T[]> {
+    return (this.repository as any).find(criteria);
   }
 
   @log()
