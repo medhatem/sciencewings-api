@@ -2,7 +2,7 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Resource } from '@/modules/resources/models/Resource';
-import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { Path, PathParam, POST, PUT, Security, GET } from 'typescript-rest';
 import { CreateResourceRO } from './RequestObject';
 import { IResourceService } from '@/modules/resources/interfaces';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
@@ -15,9 +15,8 @@ import { Response } from 'typescript-rest-swagger';
 @provideSingleton()
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
-  constructor(private ResourceService: IResourceService) {
-    super(ResourceService as any, new ResourceDTO(), new UpdateResourceDTO());
-    console.log(this.ResourceService);
+  constructor(private resourceService: IResourceService) {
+    super(resourceService as any, new ResourceDTO(), new UpdateResourceDTO());
   }
 
   static getInstance(): ResourceRoutes {
@@ -37,7 +36,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<CreateResourceDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async createResource(payload: CreateResourceRO): Promise<CreateResourceDTO> {
-    const result = await this.ResourceService.createResource(payload);
+    const result = await this.resourceService.createResource(payload);
 
     if (result.isFailure) {
       return new CreateResourceDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
@@ -53,12 +52,28 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<CreateResourceDTO>(204, 'Resource updated Successfully')
   @Response<CreateResourceDTO>(500, 'Internal Server Error')
   public async updateResource(payload: CreateResourceRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
-    const result = await this.ResourceService.updateResource(payload, id);
+    const result = await this.resourceService.updateResource(payload, id);
 
     if (result.isFailure) {
       return new CreateResourceDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
     return new CreateResourceDTO().serialize({ body: { resourceId: result.getValue(), statusCode: 204 } });
+  }
+
+  @GET
+  @Path('getOgranizationResourcesById/:id')
+  @Security('', KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  @Response<CreateResourceDTO>(200, 'Resource Retrived Successfully')
+  @Response<CreateResourceDTO>(500, 'Internal Server Error')
+  public async getOgranizationResources(@PathParam('id') id: number): Promise<CreateResourceDTO> {
+    const result = await this.resourceService.getOgranizationResources(id);
+
+    if (result.isFailure) {
+      return new CreateResourceDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new CreateResourceDTO().serialize({ body: { resources: result.getValue(), statusCode: 200 } });
   }
 }

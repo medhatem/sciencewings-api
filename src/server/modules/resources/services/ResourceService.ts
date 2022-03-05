@@ -1,3 +1,5 @@
+import { User } from '@/modules/users/models/User';
+import { Organization } from '@/modules/organizations/models/Organization';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -34,44 +36,53 @@ export class ResourceService extends BaseService<Resource> {
 
   @log()
   @safeGuard()
+  public async getOgranizationResources(organizationId: number): Promise<Result<Resource[]>> {
+    if (organizationId) {
+      const fetchedOrganization = await this.organisationService.get(organizationId);
+      if (!fetchedOrganization) {
+        return Result.fail(`Organization with id ${organizationId} does not exist.`);
+      }
+      const resources = await this.dao.getAllByCriteria({ organization: organizationId });
+      return Result.ok(resources);
+    }
+    return Result.fail(`Organization id should be provided.`);
+  }
+
+  @log()
+  @safeGuard()
   @validate
   public async createResource(@validateParam(CreateResourceSchema) payload: CreateResourceRO): Promise<Result<number>> {
-    let user = null;
-    let organization = null;
+    let user: User = null;
+    let organization: Organization = null;
 
     if (payload.user) {
-      const _user = await this.userService.getUserByCriteria({ id: payload.user });
-      if (!_user) {
+      const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
+      if (!fetchedUser) {
         return Result.fail<number>(`User with id ${payload.user} does not exist.`);
       }
-      user = await _user.getValue();
+      user = fetchedUser.getValue();
     }
 
     if (payload.organization) {
-      const _organization = await this.organisationService.get(payload.organization);
-      if (!_organization) {
+      const fetchedOrganization = await this.organisationService.get(payload.organization);
+      if (!fetchedOrganization) {
         return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
       }
-      organization = await _organization.getValue();
+      organization = await fetchedOrganization.getValue();
     }
-
-    const calendar = payload.calendar;
-    delete payload.calendar;
-
-    payload.organization = organization;
 
     const resource = this.wrapEntity(this.dao.model, {
       name: payload.name,
       active: payload.active,
-      organization: payload.organization,
       resourceType: payload.resourceType,
-      user: payload.user,
       timeEfficiency: payload.timeEfficiency,
       timezone: payload.timezone,
-      calendar: payload.calendar,
     });
 
-    const createResourceCalendar = await this.resourceCalendarService.createResourceCalendar(calendar);
+    resource.organization = organization;
+    resource.user = user;
+
+    const createResourceCalendar = await this.resourceCalendarService.createResourceCalendar(payload.calendar);
 
     if (createResourceCalendar.isFailure) {
       return Result.fail<number>(createResourceCalendar.error);
