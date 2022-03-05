@@ -5,7 +5,7 @@ import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { MemberDTO } from '../dtos/MemberDTO';
 import { KEYCLOAK_TOKEN } from '@/modules/../authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { CreateMemberRO } from './RequestObject';
+import { MemberRO } from './RequestObject';
 import { IMemberService } from '../../hr/interfaces';
 import { CreateMemberDTO } from '../../hr/dtos/CreateMemberDTO';
 import { UpdateMemberDTO } from '../../hr/dtos/UpdateMemberDTO';
@@ -29,9 +29,9 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Path('create')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
-  @Response<CreateMemberRO>(201, 'Member created Successfully')
-  @Response<CreateMemberRO>(500, 'Internal Server Error')
-  public async createMember(payload: CreateMemberRO): Promise<MemberDTO> {
+  @Response<MemberRO>(201, 'Member created Successfully')
+  @Response<MemberRO>(500, 'Internal Server Error')
+  public async createMember(payload: MemberRO): Promise<MemberDTO> {
     const result = await this.memberService.createMember(payload);
 
     if (result.isFailure) {
@@ -50,7 +50,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @LoggerStorage()
   @Response<MemberDTO>(204, 'Member updated Successfully')
   @Response<MemberDTO>(500, 'Internal Server Error')
-  public async createUpdateMember(payload: CreateMemberRO, @PathParam('id') id: number): Promise<MemberDTO> {
+  public async createUpdateMember(payload: MemberRO, @PathParam('id') id: number): Promise<MemberDTO> {
     const result = await this.memberService.updateMember(payload, id);
 
     if (result.isFailure) {
