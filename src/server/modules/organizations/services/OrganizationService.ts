@@ -183,7 +183,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       ),
     );
     if (createdMemberResult.isFailure) {
-      return Result.fail<number>('Cannot create the member');
+      return Result.fail<number>(createdMemberResult.error);
     }
 
     // add the invited user to the organization
