@@ -34,18 +34,24 @@ export class ResourceService extends BaseService<Resource> {
     return container.get(IResourceService);
   }
 
+  /**
+   * retrieve all resources of a given organization by id
+   *
+   * @param organizationId organization id
+   * @return list of the resources that match the criteria
+   */
   @log()
   @safeGuard()
-  public async getOgranizationResources(organizationId: number): Promise<Result<Resource[]>> {
-    if (organizationId) {
-      const fetchedOrganization = await this.organisationService.get(organizationId);
-      if (!fetchedOrganization) {
-        return Result.fail(`Organization with id ${organizationId} does not exist.`);
-      }
-      const resources = await this.dao.getAllByCriteria({ organization: organizationId });
-      return Result.ok(resources);
+  public async getResourcesOfAGivenOrganizationById(organizationId: number): Promise<Result<Resource[]>> {
+    if (!organizationId) {
+      return Result.fail(`Organization id should be provided.`);
     }
-    return Result.fail(`Organization id should be provided.`);
+    const fetchedOrganization = await this.organisationService.get(organizationId);
+    if (!fetchedOrganization) {
+      return Result.fail(`Organization with id ${organizationId} does not exist.`);
+    }
+    const resources = await this.dao.getAllByCriteria({ organization: organizationId });
+    return Result.ok(resources);
   }
 
   @log()
@@ -68,7 +74,7 @@ export class ResourceService extends BaseService<Resource> {
       if (fetchedOrganization.isFailure || !fetchedOrganization) {
         return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
       }
-      organization = await fetchedOrganization.getValue();
+      organization = fetchedOrganization.getValue();
     }
 
     const resource = this.wrapEntity(this.dao.model, {
@@ -123,7 +129,7 @@ export class ResourceService extends BaseService<Resource> {
       if (fetchedOrganization.isFailure || !fetchedOrganization) {
         return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
       }
-      payload.organization = await fetchedOrganization.getValue();
+      payload.organization = fetchedOrganization.getValue();
     }
 
     if (payload.calendar) {
@@ -132,7 +138,7 @@ export class ResourceService extends BaseService<Resource> {
       if (updatedResourceCalendar.isFailure) {
         return Result.fail<number>(updatedResourceCalendar.error);
       }
-      payload.calendar = await updatedResourceCalendar.getValue();
+      payload.calendar = updatedResourceCalendar.getValue();
     }
 
     const resource = this.wrapEntity(fetchedResource, {

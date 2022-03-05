@@ -66,18 +66,20 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   }
 
   /**
-   * get all resources given and organization id
+   * retrieve all resources of a given organization by id
    *
-   * @param id organization id
+   * @param organizationId organization id
    */
   @GET
-  @Path('getOgranizationResourcesById/:id')
+  @Path('getOgranizationResourcesById/:organizationId')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
   @Response<CreateResourceDTO>(200, 'Resource Retrived Successfully')
   @Response<CreateResourceDTO>(500, 'Internal Server Error')
-  public async getOgranizationResources(@PathParam('id') id: number): Promise<CreateResourceDTO> {
-    const result = await this.resourceService.getOgranizationResources(id);
+  public async getOgranizationResources(
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<CreateResourceDTO> {
+    const result = await this.resourceService.getResourcesOfAGivenOrganizationById(organizationId);
 
     if (result.isFailure) {
       return new CreateResourceDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
