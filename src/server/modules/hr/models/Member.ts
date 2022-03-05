@@ -9,13 +9,15 @@ import { Job } from './Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { Project } from '@/modules/projects/models/Project';
-import { ResCountry } from '@/modules/organizations/models/ResCountry';
-import { ResPartnerBank } from '@/modules/organizations/models/ResPartnerBank';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 
+export enum MemberStatusType {
+  INVITATION_PENDING = 'INVITATION_PENDING',
+  ACTIVE = 'ACTIVE',
+}
 @provideSingleton()
 @Entity()
 @Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
@@ -60,20 +62,14 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   jobTitle?: string;
 
-  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
-  address?: Address;
-
   @OneToOne({ entity: () => Phone, nullable: true })
   workPhone?: Phone;
-
-  @OneToOne({ entity: () => Phone, nullable: true })
-  mobilePhone?: Phone;
 
   @Property({ nullable: true })
   workEmail?: string;
 
   @ManyToOne({ entity: () => WorkLocation, onDelete: 'set null', nullable: true })
-  workLocation?: WorkLocation;
+  workLocation?: Address;
 
   @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
@@ -87,71 +83,16 @@ export class Member extends BaseModel<Member> {
   @Property()
   memberType!: string;
 
-  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
-  addressHome?: Address;
-
-  @ManyToOne({ entity: () => ResCountry, onDelete: 'set null', nullable: true })
-  country?: ResCountry;
-
-  @Property({ nullable: true })
-  gender?: string;
-
-  @Property({ nullable: true })
-  marital?: string;
-
-  @Property({ nullable: true })
-  spouseCompleteName?: string;
-
-  @Property({ columnType: 'date', nullable: true })
-  spouseBirthdate?: Date;
-
-  @Property({ nullable: true })
-  children?: number;
-
-  @Property({ nullable: true })
-  placeOfBirth?: string;
-
-  @ManyToOne({ entity: () => ResCountry, fieldName: 'country_of_birth', onDelete: 'set null', nullable: true })
-  countryOfBirth?: ResCountry;
-
   @Property({ columnType: 'date', nullable: true })
   birthday?: Date;
 
   @Property({ nullable: true })
   identificationId?: string;
 
-  @Property({ nullable: true })
-  passportId?: string;
-
-  @ManyToOne({ entity: () => ResPartnerBank, onDelete: 'set null', nullable: true })
-  bankAccount?: ResPartnerBank;
-
-  @Property({ nullable: true })
-  permitNo?: string;
-
-  @Property({ nullable: true })
-  visaNo?: string;
-
-  @Property({ columnType: 'date', nullable: true })
-  visaExpire?: Date;
-
-  @Property({ columnType: 'date', nullable: true })
-  workPermitExpirationDate?: Date;
-
-  @Property({ nullable: true })
-  workPermitScheduledActivity?: boolean;
-
-  @Property({ columnType: 'text', nullable: true })
-  additionalNote?: string;
-
-  @Property({ nullable: true })
   certificate?: string;
 
   @Property({ nullable: true })
   studyField?: string;
-
-  @Property({ nullable: true })
-  studySchool?: string;
 
   @Property({ nullable: true })
   emergencyContact?: string;
@@ -175,4 +116,6 @@ export class Member extends BaseModel<Member> {
   managers? = new Collection<Project>(this);
   @ManyToMany(() => Project, (project) => project.participants)
   participants? = new Collection<Project>(this);
+  @Property({ nullable: true })
+  status?: MemberStatusType;
 }

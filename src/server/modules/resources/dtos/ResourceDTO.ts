@@ -5,3 +5,11 @@ import { unique } from '@/decorators/unique';
 @Serializable()
 @unique
 export class ResourceDTO extends BaseRequestDTO {}
+
+@Serializable()
+@unique
+export class CreateResourceDTO extends BaseRequestDTO {}
+
+@Serializable()
+@unique
+export class UpdateResourceDTO extends BaseRequestDTO {}
