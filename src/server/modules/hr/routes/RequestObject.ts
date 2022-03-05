@@ -1,17 +1,19 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { AddressRO } from './../../address/routes/AddressRO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { MemberStatusType } from '@/modules/hr/models/Member';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
-@unique
 export class ContractRO {
   @JsonProperty()
   id: number;
 
   @JsonProperty()
   name!: string;
+
+  @JsonProperty()
+  completeName?: string;
 
   @JsonProperty()
   dateStart!: Date;
@@ -26,10 +28,47 @@ export class ContractRO {
   active?: boolean;
 
   @JsonProperty()
+  parent?: number;
+
+  @JsonProperty()
+  manager?: number;
+
+  @JsonProperty()
+  note?: string;
+
+  @JsonProperty()
   member?: number;
 
   @JsonProperty()
   group?: number;
+
+  @JsonProperty()
+  job?: number;
+
+  @JsonProperty()
+  resourceCalendar?: number;
+
+  @JsonProperty()
+  hrResponsible?: number;
+}
+
+@Serializable()
+@unique
+export class JobRO {
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  group?: number;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  member?: number;
 
   @JsonProperty()
   job?: number;
@@ -55,10 +94,9 @@ export class ContractRO {
   @JsonProperty()
   hrResponsible?: number;
 }
-
 @Serializable()
 @unique
-export class CreateMemberRO {
+export class MemberRO {
   @JsonProperty()
   id: number;
   @JsonProperty()
@@ -131,6 +169,8 @@ export class CreateMemberRO {
   departureDescription?: string;
   @JsonProperty()
   departureDate?: Date;
+  @JsonProperty()
+  status?: MemberStatusType;
 }
 
 @Serializable()
@@ -149,11 +189,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: AddressRO;
-  @JsonProperty()
   workPhone?: PhoneRO;
-  @JsonProperty()
-  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
@@ -161,43 +197,9 @@ export class UpdateMemberRO {
   @JsonProperty()
   memberType!: string;
   @JsonProperty()
-  addressHome?: AddressRO;
-  @JsonProperty()
-  gender?: string;
-  @JsonProperty()
-  marital?: string;
-  @JsonProperty()
-  spouseCompleteName?: string;
-  @JsonProperty()
-  spouseBirthdate?: Date;
-  @JsonProperty()
-  children?: number;
-  @JsonProperty()
-  placeOfBirth?: string;
-  @JsonProperty()
-  birthday?: Date;
-  @JsonProperty()
   identificationId?: string;
   @JsonProperty()
-  passportId?: string;
-  @JsonProperty()
-  permitNo?: string;
-  @JsonProperty()
-  visaNo?: string;
-  @JsonProperty()
-  visaExpire?: Date;
-  @JsonProperty()
-  workPermitExpirationDate?: Date;
-  @JsonProperty()
-  workPermitScheduledActivity?: boolean;
-  @JsonProperty()
-  additionalNote?: string;
-  @JsonProperty()
-  certificate?: string;
-  @JsonProperty()
   studyField?: string;
-  @JsonProperty()
-  studySchool?: string;
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
@@ -208,4 +210,6 @@ export class UpdateMemberRO {
   departureDescription?: string;
   @JsonProperty()
   departureDate?: Date;
+  @JsonProperty()
+  status?: MemberStatusType;
 }

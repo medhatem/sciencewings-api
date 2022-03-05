@@ -1,4 +1,8 @@
-import { CreateMemberRO, UpdateMemberRO } from '@/modules/hr/routes/RequestObject';
+import { Phone } from './../../phones/models/Phone';
+import { Address } from './../../address/models/AdressModel';
+import { Resource } from './../../resources/models/Resource';
+import { Organization } from './../../organizations/models/Organization';
+import { MemberRO } from '@/modules/hr/routes/RequestObject';
 import { CreateMemberSchema, UpdateMemberSchema } from '@/modules/hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@/di/index';
 
@@ -9,14 +13,16 @@ import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IResourceService } from '@/modules/resources/interfaces';
 import { Member } from '@/modules/hr/models/Member';
-import { MemberDao } from '../daos/MemberDao';
+import { MemberDao } from '@/modules/hr/daos/MemberDao';
 import { Result } from '@/utils/Result';
-import { log } from '@/modules/../decorators/log';
-import { safeGuard } from '@/modules/../decorators/safeGuard';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 
-type MemberRO = CreateMemberRO | UpdateMemberRO;
+type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
+type WorkAndEmergencyPhone = { workPhone: Phone; emergencyPhone: Phone };
+
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
   constructor(
@@ -35,123 +41,84 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
   @log()
   @safeGuard()
-  private async checkEntitiesExistence(organization: number, resource: number): Promise<Result<any>> {
-    let currentOrg, currentRes;
+  private async checkEntitiesExistence(
+    organization: number,
+    resource: number,
+  ): Promise<Result<OrganizationAndResource | string>> {
+    let currentOrg;
+    let currentRes;
     if (organization) {
       currentOrg = await this.organizationService.get(organization);
       if (currentOrg.isFailure || currentOrg.getValue() === null) {
-        return Result.fail<number>(`Organization with id ${organization} does not exist.`);
+        return Result.fail(`Organization with id ${organization} does not exist.`);
       }
     }
     if (resource) {
       currentRes = await this.resourceService.get(resource);
       if (currentRes.isFailure || currentRes.getValue() === null) {
-        return Result.fail<number>(`Resource with id ${resource} does not exist.`);
+        return Result.fail(`Resource with id ${resource} does not exist.`);
       }
     }
-    return Result.ok({ currentOrg, currentRes });
+    return Result.ok({ currentOrg: currentOrg.getValue(), currentRes: currentRes.getValue() });
   }
 
   @log()
   @safeGuard()
-  private async handleAddressForMemeber(payload: MemberRO, isUpdate = false): Promise<Result<any>> {
-    let createdAddress, createdWorkLocation, createdAddressHome;
+  private async handleAddressForMemeber(payload: MemberRO, isUpdate = false): Promise<Result<Address | string>> {
+    let createdWorkLocation;
 
     if (isUpdate) {
-      if (payload.address) {
-        const fetchedAdress = await this.addressService.get(payload.address.id);
-        if (fetchedAdress.isFailure) return Result.fail(fetchedAdress.error);
-        const address = {
-          ...fetchedAdress.getValue(),
-          ...payload.address,
-        };
-        this.addressService.update(address);
-      }
       if (payload.workLocation) {
-        const fetchedWorkLocation = await this.addressService.get(payload.address.id);
-        if (fetchedWorkLocation.isFailure) return Result.fail(fetchedWorkLocation.error);
+        const fetchedWorkLocation = await this.addressService.get(payload.workLocation.id);
+        if (fetchedWorkLocation.isFailure) {
+          return fetchedWorkLocation;
+        }
         const workLocation = {
           ...fetchedWorkLocation.getValue(),
           ...payload.workLocation,
         };
         this.addressService.update(workLocation);
       }
-      if (payload.addressHome) {
-        const fetchedAddressHome = await this.addressService.get(payload.address.id);
-        if (fetchedAddressHome.isFailure) return Result.fail(fetchedAddressHome.error);
-        const addressHome = {
-          ...fetchedAddressHome.getValue(),
-          ...payload.addressHome,
-        };
-        this.addressService.update(addressHome);
-      }
     }
 
-    if (payload.address) createdAddress = await this.addressService.createAddress(payload.address);
     if (payload.workLocation) createdWorkLocation = await this.addressService.createAddress(payload.workLocation);
-    if (payload.addressHome) createdAddressHome = await this.addressService.createAddress(payload.addressHome);
 
-    if (payload.address) createdAddress = await this.addressService.createAddress(payload.address);
-    if (payload.workLocation) createdWorkLocation = await this.addressService.createAddress(payload.workLocation);
-    if (payload.addressHome) createdAddressHome = await this.addressService.createAddress(payload.addressHome);
-
-    if (payload.address && createdAddress.isFailure) {
-      return Result.fail<number>(createdAddress.error);
-    } else if (payload.workLocation && createdWorkLocation.isFailure) {
-      if (payload.address) await this.addressService.remove(createdAddress.getValue().id);
-      return Result.fail<number>(createdWorkLocation.error);
-    } else if (payload.addressHome && createdAddressHome.isFailure) {
-      if (payload.address) await this.addressService.remove(createdAddress.getValue().id);
-      if (payload.workLocation) await this.addressService.remove(createdWorkLocation.getValue().id);
-      return Result.fail<number>(createdAddressHome.error);
+    if (payload.workLocation && createdWorkLocation.isFailure) {
+      return Result.fail(createdWorkLocation.error);
     }
 
-    const address = payload.address ? createdAddress.getValue() : null;
     const workLocation = payload.workLocation ? createdWorkLocation.getValue() : null;
-    const addressHome = payload.addressHome ? createdAddressHome.getValue() : null;
 
-    return Result.ok({ address, workLocation, addressHome });
+    return Result.ok(workLocation);
   }
 
   @log()
   @safeGuard()
-  private async handlePhonesForMemeber(payload: MemberRO, member: Member, isUpdate = false): Promise<Result<any>> {
-    let createdWorkPhone, createdMobilePhone, createdEmergencyPhone;
-
-    if (isUpdate) {
-      if (payload.workPhone) {
-        this.phoneService.remove(payload.workPhone.id);
-      }
-      if (payload.mobilePhone) {
-        this.phoneService.remove(payload.mobilePhone.id);
-      }
-      if (payload.emergencyPhone) {
-        this.phoneService.remove(payload.emergencyPhone.id);
-      }
-    }
+  private async handlePhonesForMemeber(
+    payload: MemberRO,
+    member: Member,
+    isUpdate = false,
+  ): Promise<Result<WorkAndEmergencyPhone | string>> {
+    let createdWorkPhone;
+    let createdEmergencyPhone;
 
     if (isUpdate) {
       if (payload.workPhone) {
         const fetchedWorkPhone = await this.phoneService.get(payload.workPhone.id);
-        if (fetchedWorkPhone.isFailure) return Result.fail(fetchedWorkPhone.error);
+        if (fetchedWorkPhone.isFailure) {
+          return fetchedWorkPhone;
+        }
         const workPhone = {
           ...fetchedWorkPhone.getValue(),
           ...payload.workPhone,
         };
         this.phoneService.update(workPhone);
       }
-      if (payload.mobilePhone) {
-        const fetchedMobilePhone = await this.phoneService.get(payload.address.id);
-        if (fetchedMobilePhone.isFailure) return Result.fail(fetchedMobilePhone.error);
-        const mobilePhone = {
-          ...fetchedMobilePhone.getValue(),
-          ...payload.mobilePhone,
-        };
-        this.phoneService.update(mobilePhone);
-      }
       if (payload.emergencyPhone) {
-        const fetchedEmergencyPhone = await this.phoneService.get(payload.address.id);
-        if (fetchedEmergencyPhone.isFailure) return Result.fail(fetchedEmergencyPhone.error);
+        const fetchedEmergencyPhone = await this.phoneService.get(payload.emergencyPhone.id);
+        if (fetchedEmergencyPhone.isFailure) {
+          return fetchedEmergencyPhone;
+        }
         const emergencyPhone = {
           ...fetchedEmergencyPhone.getValue(),
           ...payload.emergencyPhone,
@@ -160,28 +127,24 @@ export class MemberService extends BaseService<Member> implements IMemberService
       }
     }
 
-    if (payload.workPhone) createdWorkPhone = await this.phoneService.createPhoneForMember(payload.workPhone, member);
-    if (payload.mobilePhone)
-      createdMobilePhone = await this.phoneService.createPhoneForMember(payload.mobilePhone, member);
-    if (payload.emergencyPhone)
+    if (payload.workPhone) {
+      createdWorkPhone = await this.phoneService.createPhoneForMember(payload.workPhone, member);
+    }
+    if (payload.emergencyPhone) {
       createdEmergencyPhone = await this.phoneService.createPhoneForMember(payload.emergencyPhone, member);
+    }
 
     if (payload.workPhone && createdWorkPhone.isFailure) {
-      return Result.fail<number>(createdWorkPhone.error);
-    } else if (payload.mobilePhone && createdMobilePhone.isFailure) {
-      await this.phoneService.remove(createdWorkPhone.getValue().id);
-      return Result.fail<number>(createdMobilePhone.error);
+      return Result.fail(createdWorkPhone.error);
     } else if (payload.emergencyPhone && createdEmergencyPhone.isFailure) {
       await this.phoneService.remove(createdWorkPhone.getValue().id);
-      await this.phoneService.remove(createdMobilePhone.getValue().id);
-      return Result.fail<number>(createdEmergencyPhone.error);
+      return Result.fail(createdEmergencyPhone.error);
     }
 
     const workPhone = payload.workPhone ? createdWorkPhone.getValue() : null;
-    const mobilePhone = payload.mobilePhone ? createdMobilePhone.getValue() : null;
     const emergencyPhone = payload.emergencyPhone ? createdEmergencyPhone.getValue() : null;
 
-    return Result.ok({ workPhone, mobilePhone, emergencyPhone });
+    return Result.ok({ workPhone, emergencyPhone });
   }
 
   /**
@@ -190,42 +153,42 @@ export class MemberService extends BaseService<Member> implements IMemberService
   @log()
   @safeGuard()
   @validate
-  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number>> {
+  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number | string>> {
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
-    if (existence.isFailure) return Result.fail<number>(existence.error);
-    const { currentOrg, currentRes } = await existence.getValue();
+    if (existence.isFailure) {
+      return Result.fail(existence.error);
+    }
+    const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
 
     const addresss = await this.handleAddressForMemeber(payload);
-    if (addresss.isFailure) return Result.fail<number>(addresss.error);
-    const { address, workLocation, addressHome } = await addresss.getValue();
+    if (addresss.isFailure) {
+      return Result.fail(addresss.error);
+    }
+    const workLocation = addresss.getValue();
 
-    const member: Member = {
-      id: null,
+    const member = {
       ...payload,
-      organization: currentOrg.getValue(),
-      resource: currentRes.getValue(),
-      address,
+      organization: currentOrg,
+      resource: currentRes,
       workLocation,
-      addressHome,
     };
 
-    const createdMember = await this.create(member);
+    const createdMemberResult = await this.create(this.wrapEntity(this.dao.model, member));
 
-    if (createdMember.isFailure) {
-      return Result.fail<number>(createdMember.error);
+    if (createdMemberResult.isFailure) {
+      return createdMemberResult;
     }
 
-    const phones = await this.handlePhonesForMemeber(payload, createdMember.getValue());
+    const createdMember = createdMemberResult.getValue();
+
+    const phones = await this.handlePhonesForMemeber(payload, createdMember);
     if (phones.isFailure) {
-      {
-        return Result.fail<number>(existence.error);
-      }
+      return Result.fail<number>(existence.error);
     }
-    const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
-    member.workPhone = workPhone;
-    member.mobilePhone = mobilePhone;
-    member.emergencyPhone = emergencyPhone;
-    await this.update(member);
+    const { workPhone, emergencyPhone } = phones.getValue() as WorkAndEmergencyPhone;
+    createdMember.workPhone = workPhone;
+    createdMember.emergencyPhone = emergencyPhone;
+    await this.update(createdMember);
 
     return Result.ok(createdMember.getValue().id);
   }
@@ -239,7 +202,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
   public async updateMember(
     @validateParam(UpdateMemberSchema) payload: MemberRO,
     memberId: number,
-  ): Promise<Result<number>> {
+  ): Promise<Result<number | string>> {
     const member = await this.dao.get(memberId);
     if (!member) {
       return Result.fail<number>(`Member with id ${memberId} does not exist`);
@@ -247,37 +210,36 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
     if (existence.isFailure) {
-      return Result.fail<number>(existence.error);
+      return Result.fail(existence.error);
     }
     delete payload.organization, payload.resource;
-    const { currentOrg, currentRes } = await existence.getValue();
+    const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
 
     const addresss = await this.handleAddressForMemeber(payload, true);
-    if (addresss.isFailure) return Result.fail<number>(addresss.error);
-    const { address, workLocation, addressHome } = await addresss.getValue();
+    if (addresss.isFailure) {
+      return Result.fail(addresss.error);
+    }
+    const workLocation = addresss.getValue();
 
     const phones = await this.handlePhonesForMemeber(payload, member, true);
     if (phones.isFailure) {
-      return Result.fail<number>(existence.error);
+      return Result.fail(phones.error);
     }
-    const { workPhone, mobilePhone, emergencyPhone } = await phones.getValue();
+    const { workPhone, emergencyPhone } = phones.getValue() as WorkAndEmergencyPhone;
 
     const _member = this.wrapEntity(member, {
       ...member,
       ...payload,
-      organization: currentOrg ? currentOrg.getValue() : member.organization,
-      resource: currentRes ? currentRes.getValue() : member.resource,
-      address: address ? address : member.address,
+      organization: currentOrg ? currentOrg : member.organization,
+      resource: currentRes ? currentRes : member.resource,
       workLocation: workLocation ? workLocation : member.workLocation,
-      addressHome: addressHome ? addressHome : member.addressHome,
       workPhone: workPhone ? workPhone : member.workPhone,
-      mobilePhone: mobilePhone ? mobilePhone : member.mobilePhone,
       emergencyPhone: emergencyPhone ? emergencyPhone : member.emergencyPhone,
     });
 
     const updatedMember = await this.update(_member);
     if (updatedMember.isFailure) {
-      return Result.fail<number>(updatedMember.error);
+      return updatedMember;
     }
     return Result.ok(updatedMember.getValue().id);
   }
