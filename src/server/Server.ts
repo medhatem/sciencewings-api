@@ -1,5 +1,3 @@
-import './routes/index';
-
 import * as BodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotevnv from 'dotenv';

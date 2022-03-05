@@ -3,7 +3,7 @@ import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Job } from '@/modules/hr/models/Job';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { JobDTO, CreateJobDTO, UpdateJobDTO } from '@/modules/hr/dtos/JobDTO';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
+import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { JobRO } from './RequestObject';
 import { IJobService } from '@/modules/hr/interfaces';

@@ -32,7 +32,7 @@ export class JobService extends BaseService<Job> implements IJobService {
     if (fetchedGroup.isFailure || fetchedGroup.getValue() === null) {
       return Result.fail(`Group with id ${groupId} does not exist`);
     }
-    return Result.ok(await fetchedGroup.getValue());
+    return Result.ok(fetchedGroup.getValue());
   }
 
   private async getOrganization(organizationId: number): Promise<Result<any>> {
@@ -40,7 +40,7 @@ export class JobService extends BaseService<Job> implements IJobService {
     if (fetchedOrganization.isFailure || fetchedOrganization.getValue() === null) {
       return Result.fail(`Organization with id ${organizationId} does not exist`);
     }
-    return Result.ok(await fetchedOrganization.getValue());
+    return Result.ok(fetchedOrganization.getValue());
   }
 
   /**
@@ -55,15 +55,19 @@ export class JobService extends BaseService<Job> implements IJobService {
     let group;
     if (payload.group) {
       const fetchedGroup = await this.getGroup(payload.group);
-      if (fetchedGroup.isFailure) return fetchedGroup;
-      group = await fetchedGroup.getValue();
+      if (fetchedGroup.isFailure) {
+        return fetchedGroup;
+      }
+      group = fetchedGroup.getValue();
     }
 
     let organization;
     if (payload.organization) {
       const fetchedOrganization = await this.getOrganization(payload.group);
-      if (fetchedOrganization.isFailure) return fetchedOrganization;
-      organization = await fetchedOrganization.getValue();
+      if (fetchedOrganization.isFailure) {
+        return fetchedOrganization;
+      }
+      organization = fetchedOrganization.getValue();
     }
 
     const createdJob = await this.create(
@@ -96,14 +100,18 @@ export class JobService extends BaseService<Job> implements IJobService {
 
     if (payload.group) {
       const fetchedGroup = await this.getGroup(payload.group);
-      if (fetchedGroup.isFailure) return fetchedGroup;
-      fetchedJob.group = await fetchedGroup.getValue();
+      if (fetchedGroup.isFailure) {
+        return fetchedGroup;
+      }
+      fetchedJob.group = fetchedGroup.getValue();
     }
 
     if (payload.organization) {
       const fetchedOrganization = await this.getOrganization(payload.group);
-      if (fetchedOrganization.isFailure) return fetchedOrganization;
-      fetchedJob.organization = await fetchedOrganization.getValue();
+      if (fetchedOrganization.isFailure) {
+        return fetchedOrganization;
+      }
+      fetchedJob.organization = fetchedOrganization.getValue();
     }
 
     const updatedJob = await this.update(
@@ -116,6 +124,6 @@ export class JobService extends BaseService<Job> implements IJobService {
     if (updatedJob.isFailure) {
       return updatedJob;
     }
-    return Result.ok((await updatedJob.getValue()).id);
+    return Result.ok(updatedJob.getValue().id);
   }
 }
