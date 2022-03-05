@@ -45,6 +45,12 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     return new CreateResourceDTO().serialize({ body: { resourceId: result.getValue(), statusCode: 201 } });
   }
 
+  /**
+   * Update a resource in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
   @PUT
   @Path('update/:id')
   @Security('', KEYCLOAK_TOKEN)
@@ -61,6 +67,11 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     return new CreateResourceDTO().serialize({ body: { resourceId: result.getValue(), statusCode: 204 } });
   }
 
+  /**
+   * get all resources given and organization id
+   *
+   * @param id organization id
+   */
   @GET
   @Path('getOgranizationResourcesById/:id')
   @Security('', KEYCLOAK_TOKEN)
