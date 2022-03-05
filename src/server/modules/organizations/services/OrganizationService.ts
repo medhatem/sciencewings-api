@@ -1,24 +1,26 @@
+import { Member } from '@/modules/hr/models/Member';
+import { IMemberService } from '@/modules/hr/interfaces';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Collection } from '@mikro-orm/core';
-import { CreateOrganizationRO } from '../routes/RequestObject';
-import { IOrganizationService } from '../interfaces/IOrganizationService';
+import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { OrganizationDao } from '../daos/OrganizationDao';
+import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { Result } from '@/utils/Result';
 import { User } from '@/modules/users/models/User';
-import { log } from '@/modules/../decorators/log';
-import { safeGuard } from '@/modules/../decorators/safeGuard';
-import { EmailMessage } from '@/modules/../types/types';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
+import { EmailMessage } from '@/types/types';
 import { Email } from '@/utils/Email';
-import createSchema from '../schemas/createOrganizationSchema';
-import { getConfig } from '../../../configuration/Configuration';
+import createSchema from '@/modules/organizations/schemas/createOrganizationSchema';
+import { getConfig } from '@/configuration/Configuration';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { IUserService } from '@/modules/users/interfaces';
 import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
-import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
+import { GetUserOrganizationDTO } from '@/modules/organizations/dtos/GetUserOrganizationDTO';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 
@@ -30,6 +32,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public labelService: IOrganizationLabelService,
     public adressService: IAddressService,
     public phoneService: IPhoneService,
+    public memberService: IMemberService,
     public emailService: Email,
   ) {
     super(dao);
@@ -107,25 +110,26 @@ export class OrganizationService extends BaseService<Organization> implements IO
     createdOrg.parent = existingOrg;
     await this.update(createdOrg);
 
-    if (payload.address.length) this.adressService.createBulkAddress(payload.address);
+    if (payload.address?.length) {
+      this.adressService.createBulkAddress(payload.address);
+    }
 
-    if (payload.phones.length) this.phoneService.createBulkPhoneForOrganization(payload.phones, createdOrg);
+    if (payload.phones?.length) {
+      this.phoneService.createBulkPhoneForOrganization(payload.phones, createdOrg);
+    }
 
-    if (payload.labels.length) this.labelService.createBulkLabel(payload.labels, createdOrg);
+    if (payload.labels?.length) {
+      this.labelService.createBulkLabel(payload.labels, createdOrg);
+    }
 
-    let flagError = false;
-    await Promise.all(
-      payload.members.map(async (el: number) => {
-        const user = await this.userService.getUserByCriteria({ id: el });
-        if (user.isFailure || !user) {
-          flagError = true;
+    if (payload.members && payload.members.length) {
+      for (const member in payload.members) {
+        const fetchedMember = await this.memberService.get(member as any);
+        if (fetchedMember.isFailure) {
+          return Result.fail<number>(`Member with id: ${member} does not exist.`);
         }
-        if (user) createdOrg.members.add(user.getValue());
-      }),
-    );
-
-    if (flagError) {
-      return Result.fail<number>(`User in members does not exist.`);
+        createdOrg.members.add(fetchedMember.getValue());
+      }
     }
 
     await this.update(createdOrg);
@@ -167,10 +171,24 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (savedUser.isFailure) {
       return Result.fail<number>(savedUser.error);
     }
+    // create member for the organization
+    const createdMemberResult = await this.memberService.create(
+      this.memberService.wrapEntity(
+        new Member(),
+        {
+          user: savedUser,
+          organization: existingOrg,
+        },
+        false,
+      ),
+    );
+    if (createdMemberResult.isFailure) {
+      return Result.fail<number>(createdMemberResult.error);
+    }
 
     // add the invited user to the organization
     await existingOrg.members.init();
-    existingOrg.members.add(savedUser.getValue());
+    existingOrg.members.add(createdMemberResult.getValue());
 
     await this.userService.update(savedUser.getValue());
 
@@ -189,15 +207,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Collection<User>>> {
+  public async getMembers(orgId: number): Promise<Result<Collection<Member>>> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
       return Result.fail(`Organization with id ${orgId} does not exist.`);
     }
 
-    const members: Collection<User> = await existingOrg.members.init();
-    return Result.ok<Collection<User>>(members);
+    const members: Collection<Member> = await existingOrg.members.init();
+    return Result.ok<Collection<Member>>(members);
   }
 
   @log()

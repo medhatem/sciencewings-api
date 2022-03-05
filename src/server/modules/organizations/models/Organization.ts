@@ -3,6 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address/models/AdressModel';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Member } from '@/modules/hr/models/Member';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
@@ -53,8 +54,8 @@ export class Organization extends BaseModel<Organization> {
   })
   public labels? = new Collection<OrganizationLabel>(this);
 
-  @ManyToMany({ entity: () => User })
-  members? = new Collection<User>(this);
+  @ManyToMany({ entity: () => Member })
+  members? = new Collection<Member>(this);
 
   @Property({ nullable: true })
   socialFacebook?: string;
