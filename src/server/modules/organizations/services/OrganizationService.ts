@@ -110,15 +110,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
     createdOrg.parent = existingOrg;
     await this.update(createdOrg);
 
-    if (payload.address && payload.address.length) {
+    if (payload.address?.length) {
       this.adressService.createBulkAddress(payload.address);
     }
 
-    if (payload.phones && payload.phones.length) {
+    if (payload.phones?.length) {
       this.phoneService.createBulkPhoneForOrganization(payload.phones, createdOrg);
     }
 
-    if (payload.labels && payload.labels.length) {
+    if (payload.labels?.length) {
       this.labelService.createBulkLabel(payload.labels, createdOrg);
     }
 
