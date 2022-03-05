@@ -57,7 +57,7 @@ export class ResourceService extends BaseService<Resource> {
 
     if (payload.user) {
       const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
-      if (!fetchedUser) {
+      if (fetchedUser.isFailure || !fetchedUser) {
         return Result.fail<number>(`User with id ${payload.user} does not exist.`);
       }
       user = fetchedUser.getValue();
@@ -65,7 +65,7 @@ export class ResourceService extends BaseService<Resource> {
 
     if (payload.organization) {
       const fetchedOrganization = await this.organisationService.get(payload.organization);
-      if (!fetchedOrganization) {
+      if (fetchedOrganization.isFailure || !fetchedOrganization) {
         return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
       }
       organization = await fetchedOrganization.getValue();
@@ -111,19 +111,19 @@ export class ResourceService extends BaseService<Resource> {
     let user = null;
 
     if (payload.user) {
-      const _user = await this.userService.getUserByCriteria({ id: payload.user });
-      if (!_user) {
+      const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
+      if (fetchedUser.isFailure || !fetchedUser) {
         return Result.fail<number>(`User with id ${payload.user} does not exist.`);
       }
-      user = _user.getValue();
+      user = fetchedUser.getValue();
     }
 
     if (payload.organization) {
-      const _organization = await this.organisationService.get(payload.organization);
-      if (!_organization) {
+      const fetchedOrganization = await this.organisationService.get(payload.organization);
+      if (fetchedOrganization.isFailure || !fetchedOrganization) {
         return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
       }
-      payload.organization = await _organization.getValue();
+      payload.organization = await fetchedOrganization.getValue();
     }
 
     if (payload.calendar) {
