@@ -7,9 +7,7 @@ import { CreateResourceRO } from './RequestObject';
 import { IResourceService } from '@/modules/resources/interfaces';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { ResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
-import { UpdateResourceDTO } from '@/modules/resources/dtos/UpdateResourceDTO';
-import { CreateResourceDTO } from '@/modules/resources/dtos/CreatedResourceDTO';
+import { ResourceDTO, CreateResourceDTO, UpdateResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
 import { Response } from 'typescript-rest-swagger';
 
 @provideSingleton()
