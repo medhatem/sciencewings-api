@@ -20,6 +20,7 @@ import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
+
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
   constructor(
@@ -56,7 +57,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
         return Result.fail(`Resource with id ${resource} does not exist.`);
       }
     }
-    return Result.ok({ currentOrg, currentRes });
+    return Result.ok({ currentOrg: currentOrg.getValue(), currentRes: currentRes.getValue() });
   }
 
   @log()
@@ -149,20 +150,20 @@ export class MemberService extends BaseService<Member> implements IMemberService
   public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number | string>> {
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
     if (existence.isFailure) {
-      return existence;
+      return Result.fail(existence.error);
     }
-    const { currentOrg, currentRes } = existence.getValue();
+    const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
 
     const addresss = await this.handleAddressForMemeber(payload);
     if (addresss.isFailure) {
-      return addresss;
+      return Result.fail(addresss.error);
     }
     const workLocation = addresss.getValue();
 
     const member = {
       ...payload,
-      organization: currentOrg.getValue(),
-      resource: currentRes.getValue(),
+      organization: currentOrg,
+      resource: currentRes,
       workLocation,
     };
 
@@ -203,28 +204,28 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
     if (existence.isFailure) {
-      return existence;
+      return Result.fail(existence.error);
     }
     delete payload.organization, payload.resource;
-    const { currentOrg, currentRes } = await existence.getValue();
+    const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
 
     const addresss = await this.handleAddressForMemeber(payload, true);
     if (addresss.isFailure) {
-      return addresss;
+      return Result.fail(addresss.error);
     }
-    const { workLocation } = await addresss.getValue();
+    const workLocation = addresss.getValue();
 
     const phones = await this.handlePhonesForMemeber(payload, member, true);
     if (phones.isFailure) {
       return phones;
     }
-    const { workPhone, emergencyPhone } = await phones.getValue();
+    const { workPhone, emergencyPhone } = phones.getValue();
 
     const _member = this.wrapEntity(member, {
       ...member,
       ...payload,
-      organization: currentOrg ? currentOrg.getValue() : member.organization,
-      resource: currentRes ? currentRes.getValue() : member.resource,
+      organization: currentOrg ? currentOrg : member.organization,
+      resource: currentRes ? currentRes : member.resource,
       workLocation: workLocation ? workLocation : member.workLocation,
       workPhone: workPhone ? workPhone : member.workPhone,
       emergencyPhone: emergencyPhone ? emergencyPhone : member.emergencyPhone,

@@ -1,3 +1,4 @@
+import { MemberStatusType } from '@/modules/hr/models/Member';
 import Joi = require('joi');
 
 const MemberSchema = Joi.object({
@@ -21,7 +22,7 @@ const MemberSchema = Joi.object({
   notes: Joi.string(),
   departureDescription: Joi.string(),
   departureDate: Date,
-  status: Joi.string(),
+  status: Joi.string().valid(MemberStatusType.ACTIVE, MemberStatusType.INVITATION_PENDING),
 });
 
 export const CreateMemberSchema = MemberSchema.keys({
