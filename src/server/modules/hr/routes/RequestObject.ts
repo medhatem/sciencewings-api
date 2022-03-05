@@ -1,6 +1,7 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { MemberStatusType } from '@/modules/hr/models/Member';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
@@ -168,6 +169,8 @@ export class MemberRO {
   departureDescription?: string;
   @JsonProperty()
   departureDate?: Date;
+  @JsonProperty()
+  status?: MemberStatusType;
 }
 
 @Serializable()
@@ -208,5 +211,5 @@ export class UpdateMemberRO {
   @JsonProperty()
   departureDate?: Date;
   @JsonProperty()
-  status?: string;
+  status?: MemberStatusType;
 }
