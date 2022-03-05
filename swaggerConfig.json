@@ -4,14 +4,31 @@
     "outputDirectory": "./dist/server",
     "entryFile": [
       "./src/server/modules/address/dtos/index.ts",
+      "./src/server/modules/address/routes/index.ts",
+      "./src/server/modules/address/models/index.ts",
+      "./src/server/modules/address/interfaces/index.ts",
       "./src/server/modules/base/dtos/index.ts",
+      "./src/server/modules/base/routes/index.ts",
+      "./src/server/modules/base/models/index.ts",
+      "./src/server/modules/base/interfaces/index.ts",
       "./src/server/modules/hr/dtos/index.ts",
+      "./src/server/modules/hr/routes/index.ts",
+      "./src/server/modules/hr/models/index.ts",
+      "./src/server/modules/hr/interfaces/index.ts",
       "./src/server/modules/organizations/dtos/index.ts",
+      "./src/server/modules/organizations/routes/index.ts",
+      "./src/server/modules/organizations/models/index.ts",
+      "./src/server/modules/organizations/interfaces/index.ts",
       "./src/server/modules/phones/dtos/index.ts",
       "./src/server/modules/projects/dtos/index.ts",
       "./src/server/modules/resources/dtos/index.ts",
+      "./src/server/modules/resources/routes/index.ts",
+      "./src/server/modules/resources/models/index.ts",
+      "./src/server/modules/resources/interfaces/index.ts",
       "./src/server/modules/users/dtos/index.ts",
-      "./src/server/routes/index.ts"
+      "./src/server/modules/users/routes/index.ts",
+      "./src/server/modules/users/models/index.ts",
+      "./src/server/modules/users/interfaces/index.ts"
     ],
     "securityDefinitions": {
       "api_key": {
