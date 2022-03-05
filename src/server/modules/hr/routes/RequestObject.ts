@@ -1,17 +1,18 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { AddressRO } from './../../address/routes/AddressRO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
-@unique
 export class ContractRO {
   @JsonProperty()
   id: number;
 
   @JsonProperty()
   name!: string;
+
+  @JsonProperty()
+  completeName?: string;
 
   @JsonProperty()
   dateStart!: Date;
@@ -26,10 +27,47 @@ export class ContractRO {
   active?: boolean;
 
   @JsonProperty()
+  parent?: number;
+
+  @JsonProperty()
+  manager?: number;
+
+  @JsonProperty()
+  note?: string;
+
+  @JsonProperty()
   member?: number;
 
   @JsonProperty()
   group?: number;
+
+  @JsonProperty()
+  job?: number;
+
+  @JsonProperty()
+  resourceCalendar?: number;
+
+  @JsonProperty()
+  hrResponsible?: number;
+}
+
+@Serializable()
+@unique
+export class JobRO {
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  group?: number;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  member?: number;
 
   @JsonProperty()
   job?: number;
@@ -58,7 +96,7 @@ export class ContractRO {
 
 @Serializable()
 @unique
-export class CreateMemberRO {
+export class MemberRO {
   @JsonProperty()
   id: number;
   @JsonProperty()

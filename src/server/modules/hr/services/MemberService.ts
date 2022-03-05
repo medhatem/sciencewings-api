@@ -1,4 +1,4 @@
-import { CreateMemberRO, UpdateMemberRO } from '@/modules/hr/routes/RequestObject';
+import { MemberRO } from '@/modules/hr/routes/RequestObject';
 import { CreateMemberSchema, UpdateMemberSchema } from '@/modules/hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@/di/index';
 
@@ -16,7 +16,6 @@ import { safeGuard } from '@/modules/../decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 
-type MemberRO = CreateMemberRO | UpdateMemberRO;
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
   constructor(
