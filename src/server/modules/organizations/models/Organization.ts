@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address/models/AdressModel';
@@ -54,19 +54,27 @@ export class Organization extends BaseModel<Organization> {
   })
   public labels? = new Collection<OrganizationLabel>(this);
 
-  @ManyToMany({ entity: () => Member })
-  members? = new Collection<Member>(this);
+  @OneToMany({
+    entity: () => Member,
+    mappedBy: (entity) => entity.organization,
+  })
+  public members? = new Collection<Member>(this);
 
   @Property({ nullable: true })
   socialFacebook?: string;
+
   @Property({ nullable: true })
   socialTwitter?: string;
+
   @Property({ nullable: true })
   socialGithub?: string;
+
   @Property({ nullable: true })
   socialLinkedin?: string;
+
   @Property({ nullable: true })
   socialYoutube?: string;
+
   @Property({ nullable: true })
   socialInstagram?: string;
 

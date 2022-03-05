@@ -33,11 +33,17 @@ export class Member extends BaseModel<Member> {
   @PrimaryKey()
   id!: number;
 
-  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index' })
+  @ManyToOne({
+    entity: () => Resource,
+    index: 'hr_member_resource_id_index',
+  })
   resource!: Resource;
 
-  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_member_organization_id_index' })
-  organization!: Organization;
+  @ManyToOne({
+    entity: () => Organization,
+    nullable: true,
+  })
+  organization: Organization;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
@@ -114,8 +120,10 @@ export class Member extends BaseModel<Member> {
 
   @ManyToMany(() => Project, (project) => project.managers)
   managers? = new Collection<Project>(this);
+
   @ManyToMany(() => Project, (project) => project.participants)
   participants? = new Collection<Project>(this);
+
   @Property({ nullable: true })
   status?: MemberStatusType;
 }

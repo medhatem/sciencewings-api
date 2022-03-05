@@ -28,6 +28,7 @@
   },
   "_moduleAliases": {
     "@/di": "dist/server/di",
+    "@/configuration": "dist/server/configuration",
     "@/authenticators": "dist/server/authenticators",
     "@types": "dist/server/types",
     "@/errors": "dist/server/errors",
