@@ -7,7 +7,7 @@
 
 ## Prerequisites
 
-- [Node and npm](https://nodejs.org/en/download/)
+- [Node and npm](https://nodejs.org/en/download/1)
 - [Docker](https://www.docker.com/)
 
 ## Nice to have
