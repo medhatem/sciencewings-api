@@ -80,6 +80,14 @@ export class UserRoutes extends BaseRoutes<User> {
     });
   }
 
+  public setUserObjectForDeserialize(user: User) {
+    return {
+      ...user,
+      phone: user.phone.toArray(),
+      address: user.address.toArray(),
+    };
+  }
+
   /**
    * Create user
    * Must be authentificated
@@ -98,12 +106,17 @@ export class UserRoutes extends BaseRoutes<User> {
       return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    const user = result.getValue();
-    user.phone = user.phone.toArray() as any;
-    user.address = user.address.toArray() as any;
-    console.log({ user });
+    const user: User = result.getValue();
 
-    return deserialize({ body: { ...user, statusCode: 204 } }, CreatedUserDTO);
+    return deserialize(
+      {
+        body: {
+          ...this.setUserObjectForDeserialize(user),
+          statusCode: 201,
+        },
+      },
+      CreatedUserDTO,
+    );
   }
 
   /**
@@ -124,7 +137,17 @@ export class UserRoutes extends BaseRoutes<User> {
       return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreatedUserDTO().serialize({ body: { user: result.getValue(), statusCode: 201 } });
+    const user: User = result.getValue();
+
+    return deserialize(
+      {
+        body: {
+          ...this.setUserObjectForDeserialize(user),
+          statusCode: 204,
+        },
+      },
+      CreatedUserDTO,
+    );
   }
 
   /**

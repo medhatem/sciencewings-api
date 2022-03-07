@@ -18,7 +18,6 @@ import { validateParam } from '@/decorators/validateParam';
 import { CreateUserSchema, UpdateUserSchema } from '@/modules/users/schemas/UserSchema';
 import { validate } from '@/decorators/validate';
 import { IAddressService } from '@/modules/address';
-import { QueryFlag } from '@mikro-orm/core';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
@@ -172,8 +171,8 @@ export class UserService extends BaseService<User> implements IUserService {
       }
 
       this.dao.repository.flush();
-      //populate
-      const fetchdUser: User = await this.dao.get(createdUser.id, { flags: [QueryFlag.INCLUDE_LAZY_FORMULAS] });
+
+      const fetchdUser: User = await this.dao.get(createdUser.id);
       return Result.ok<User>(fetchdUser);
     } catch (error) {
       return Result.fail(error);
@@ -192,7 +191,7 @@ export class UserService extends BaseService<User> implements IUserService {
     }
     try {
       const updateUser = await this.dao.update(
-        this.wrapEntity(this.dao.model, {
+        this.wrapEntity(fetchedUser, {
           ...fetchedUser,
           ...user,
         }),
