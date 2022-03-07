@@ -3,6 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
+import { User } from '@/modules/users';
 
 export enum AddressType {
   USER = 'USER',
@@ -41,6 +42,10 @@ export class Address extends BaseModel<Address> {
     entity: () => Organization,
     onDelete: 'cascade',
     nullable: true,
+    eager: false,
   })
-  organization: Organization;
+  organization?: Organization;
+
+  @ManyToOne({ entity: () => User, onDelete: 'cascade', nullable: true, eager: false })
+  user?: User;
 }

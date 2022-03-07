@@ -1,4 +1,4 @@
-import { EntityRepository, GetRepository } from '@mikro-orm/core';
+import { EntityRepository, GetRepository, LoadStrategy } from '@mikro-orm/core';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Logger } from '@/modules/../utils/Logger';
@@ -21,8 +21,8 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   @log()
-  public async get(id: number): Promise<T> {
-    return (this.repository as any).findOne(id);
+  public async get(id: number, options?: any): Promise<T> {
+    return (this.repository as any).findOne(id, options);
   }
 
   /**
@@ -31,8 +31,8 @@ export class BaseDao<T extends BaseModel<T>> {
    * @param criteria the criteria to fetch with
    */
   @log()
-  async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
-    return (this.repository as any).findOne(criteria);
+  async getByCriteria(criteria: { [key: string]: any }, options?: any): Promise<T> {
+    return (this.repository as any).findOne(criteria, options);
   }
 
   /**
@@ -41,14 +41,14 @@ export class BaseDao<T extends BaseModel<T>> {
    * @param criteria the criteria to fetch with
    */
   @log()
-  async getAllByCriteria(criteria: { [key: string]: any }): Promise<T[]> {
-    return (this.repository as any).find(criteria);
+  async getAllByCriteria(criteria: { [key: string]: any }, options?: any): Promise<T[]> {
+    return (this.repository as any).find(criteria, options);
   }
 
   @log()
   public async getAll(): Promise<T[]> {
     this.logger.info(`${this.model.constructor.name}s`);
-    return (this.repository as any).findAll();
+    return (this.repository as any).findAll({ strategy: LoadStrategy.SELECT_IN });
   }
 
   @log()

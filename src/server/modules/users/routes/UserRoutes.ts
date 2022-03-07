@@ -1,19 +1,19 @@
 import { POST, Path, Security, ContextRequest, PUT, GET, PathParam } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
+import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '@/modules/users/models/User';
-import { UserRequest } from '../../../types/UserRequest';
+import { UserRequest } from '@/types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
-import { ResetPasswordRO, UserDetailsRO } from './RequstObjects';
+import { ResetPasswordRO, UserRO } from './RequstObjects';
 import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
 import { Result } from '@/utils/Result';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { Organization } from '@/modules/organizations';
+import { deserialize } from 'typescript-json-serializer';
 
 @provideSingleton()
 @Path('users')
@@ -81,6 +81,50 @@ export class UserRoutes extends BaseRoutes<User> {
   }
 
   /**
+   * Create user
+   * Must be authentificated
+   * @param payload: User object
+   */
+  @POST
+  @Path('createUser')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  @Response<CreatedUserDTO>(204, 'User updated Successfully')
+  @Response<CreatedUserDTO>(500, 'Internal Server Error')
+  public async createUser(payload: UserRO): Promise<CreatedUserDTO> {
+    const result = await this.userService.createUser(payload);
+
+    if (result.isFailure) {
+      return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    const user = result.getValue();
+
+    return deserialize({ body: { ...user, statusCode: 204 } }, CreatedUserDTO);
+  }
+
+  /**
+   * update user
+   * Must be authentificated
+   * @param payload: User object
+   */
+  @PUT
+  @Path('updateUser/:keycloakId')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  @Response<CreatedUserDTO>(204, 'User updated Successfully')
+  @Response<CreatedUserDTO>(500, 'Internal Server Error')
+  public async updateUser(payload: UserRO, @PathParam('keycloakId') keycloakId: string): Promise<CreatedUserDTO> {
+    const result = await this.userService.updateUser(payload, keycloakId);
+
+    if (result.isFailure) {
+      return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new CreatedUserDTO().serialize({ body: { user: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
    * Update user details
    * Must be authentificated
    * @param payload: User object
@@ -91,17 +135,14 @@ export class UserRoutes extends BaseRoutes<User> {
   @LoggerStorage()
   @Response<CreatedUserDTO>(204, 'User updated Successfully')
   @Response<CreatedUserDTO>(500, 'Internal Server Error')
-  public async updateUserDetails(
-    payload: UserDetailsRO,
-    @ContextRequest request: UserRequest,
-  ): Promise<CreatedUserDTO> {
+  public async updateUserDetails(payload: UserRO, @ContextRequest request: UserRequest): Promise<CreatedUserDTO> {
     const result = await this.userService.updateUserDetails(payload, request.userId);
 
     if (result.isFailure) {
       return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreatedUserDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 204 } });
+    return new CreatedUserDTO().serialize({ body: { user: result.getValue(), statusCode: 204 } });
   }
 
   /**
@@ -118,11 +159,7 @@ export class UserRoutes extends BaseRoutes<User> {
     if (result.isFailure) {
       return new UserDTO().serialize({ error: { statusCode: 404, errorMessage: result.error } });
     }
-
     const user = result.getValue();
-    const organizations = (await user.organizations.init()).toArray().map((org: Organization) => {
-      return { id: org.id, name: org.name };
-    });
-    return new UserDTO().serialize({ body: { user: { ...user, organizations }, statusCode: 200 } });
+    return new UserDTO().serialize({ body: { user, statusCode: 200 } });
   }
 }

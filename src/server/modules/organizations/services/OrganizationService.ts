@@ -20,7 +20,6 @@ import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { IUserService } from '@/modules/users/interfaces';
 import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
-import { GetUserOrganizationDTO } from '@/modules/organizations/dtos/GetUserOrganizationDTO';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 
@@ -111,7 +110,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.update(createdOrg);
 
     if (payload.address?.length) {
-      this.adressService.createBulkAddress(payload.address);
+      this.adressService.createBulkAddressForOrganization(payload.address, createdOrg);
     }
 
     if (payload.phones?.length) {
@@ -220,17 +219,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getUserOrganizations(userId: number): Promise<Result<GetUserOrganizationDTO[]>> {
-    const user = await this.userService.getUserByCriteria({ id: userId });
-
-    if (user.isFailure) {
-      return Result.fail(user.error);
+  public async getUserOrganizations(userId: number): Promise<Result<Organization[]>> {
+    try {
+      const organizations = await this.dao.getAllByCriteria({ owner: userId });
+      return Result.ok<Organization[]>(organizations);
+    } catch (error) {
+      return Result.fail(error);
     }
-
-    const fetchedUsersOrganization = await user.getValue().organizations.init();
-    const organizations = fetchedUsersOrganization.toArray().map((org: Organization) => {
-      return { id: org.id, name: org.name };
-    });
-    return Result.ok<GetUserOrganizationDTO[]>(organizations);
   }
 }

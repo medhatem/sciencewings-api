@@ -38,6 +38,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
         payload.map(async (phone) => {
           const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
           wrappedPhone.user = entity as User;
+          return wrappedPhone;
         }),
       );
 

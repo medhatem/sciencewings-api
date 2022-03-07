@@ -26,6 +26,9 @@
       "@/di/*": [
         "server/di/*"
       ],
+      "@/configuration/*": [
+        "server/configuration/*"
+      ],
       "@types/*": [
         "server/types/*"
       ],

@@ -1,13 +1,14 @@
-import { Collection, DateType, Entity, Index, ManyToMany, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { Collection, DateType, Entity, Index, LoadStrategy, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
+import { Address } from '@/modules/address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 
 @provideSingleton()
 @Entity()
 export class User extends BaseModel<User> {
+  user: any;
   constructor() {
     super();
   }
@@ -25,13 +26,20 @@ export class User extends BaseModel<User> {
   @Unique()
   email: string;
 
-  @Property({ nullable: true })
-  address?: string;
+  @OneToMany({
+    entity: () => Address,
+    mappedBy: (entity) => entity.user,
+    nullable: true,
+    eager: false,
+    strategy: LoadStrategy.SELECT_IN,
+  })
+  address? = new Collection<Address>(this);
 
   @OneToMany({
     entity: () => Phone,
     mappedBy: (entity) => entity.user,
-    nullable: true,
+    eager: false,
+    strategy: LoadStrategy.SELECT_IN,
   })
   phone? = new Collection<Phone>(this);
 
@@ -41,14 +49,6 @@ export class User extends BaseModel<User> {
   @Property()
   @Index()
   keycloakId: string;
-
-  // @ManyToOne({ entity: () => Organisation })
-  // @ManyToMany(() => Organisation, 'users', { owner: true })
-  @ManyToMany(() => Organization, (organization) => organization.members)
-  organizations = new Collection<Organization>(this);
-
-  // @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })
-  // partner!: ResPartner;
 
   @Property({ columnType: 'text', nullable: true })
   signature?: string;

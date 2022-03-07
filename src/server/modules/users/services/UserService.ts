@@ -1,4 +1,4 @@
-import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { ResetPasswordRO } from '@/modules/users/routes/RequstObjects';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -6,19 +6,26 @@ import { Email } from '@/utils/Email';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Keycloak } from '@/sdks/keycloak';
-import { KeycloakUserInfo } from '@/modules/../types/UserRequest';
+import { KeycloakUserInfo } from '@/types/UserRequest';
 import { Result } from '@/utils/Result';
 import { User } from '@/modules/users/models/User';
-import { UserDao } from '../daos/UserDao';
-import { getConfig } from '@/modules/../configuration/Configuration';
+import { UserDao } from '@/modules/users/daos/UserDao';
+import { UserRO } from '@/modules/users/routes/RequstObjects';
+import { getConfig } from '@/configuration/Configuration';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
+import { validateParam } from '@/decorators/validateParam';
+import { CreateUserSchema, UpdateUserSchema } from '@/modules/users/schemas/UserSchema';
+import { validate } from '@/decorators/validate';
+import { IAddressService } from '@/modules/address';
+import { QueryFlag } from '@mikro-orm/core';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
   constructor(
     public dao: UserDao,
-    public phoneSerice: IPhoneService,
+    public phoneService: IPhoneService,
+    public addressService: IAddressService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
   ) {
@@ -31,7 +38,7 @@ export class UserService extends BaseService<User> implements IUserService {
 
   @log()
   @safeGuard()
-  async updateUserDetails(payload: UserDetailsRO, userId: number): Promise<Result<number>> {
+  async updateUserDetails(payload: UserRO, userId: number): Promise<Result<number>> {
     const { phones } = payload;
     delete payload.phones;
 
@@ -58,7 +65,7 @@ export class UserService extends BaseService<User> implements IUserService {
 
     await Promise.all(
       phones.map(async (p: any) => {
-        await this.phoneSerice.createBulkPhoneForUser([p], user);
+        await this.phoneService.createBulkPhoneForUser([p], user);
       }),
     );
 
@@ -140,27 +147,60 @@ export class UserService extends BaseService<User> implements IUserService {
 
   @log()
   @safeGuard()
-  async create(user: User): Promise<Result<User>> {
-    let createdUser;
+  @validate
+  async createUser(@validateParam(CreateUserSchema) user: UserRO): Promise<Result<User>> {
     try {
-      createdUser = await this.dao.create(user);
+      const userAddress = user.address;
+      const userPhones = user.phones;
+
+      // removing unmanaged entities
+      delete user.address;
+      delete user.phones;
+
+      const createdUser = await this.dao.create(
+        this.wrapEntity(new User(), {
+          ...user,
+        }),
+      );
+
+      if (userAddress?.length) {
+        this.addressService.createBulkAddressForUser(userAddress, createdUser);
+      }
+
+      if (userPhones?.length) {
+        this.phoneService.createBulkPhoneForUser(userPhones, createdUser);
+      }
+
+      this.dao.repository.flush();
+      //populate
+      const fetchdUser: User = await this.dao.get(createdUser.id, { flags: [QueryFlag.INCLUDE_LAZY_FORMULAS] });
+      return Result.ok<User>(fetchdUser);
     } catch (error) {
       return Result.fail(error);
     }
-    return Result.ok<User>(createdUser);
   }
 
   @log()
   @safeGuard()
-  async update(user: User): Promise<Result<User>> {
-    let newUser = await this.dao.get(user.id);
-    if (!newUser) return Result.fail(`User with id ${user.id} does not exist.`);
+  @validate
+  async updateUser(@validateParam(UpdateUserSchema) user: UserRO, keycloakId: string): Promise<Result<User>> {
+    const fetchedUser = await this.dao.getByCriteria({ keycloakId });
+    console.log({ fetchedUser });
+
+    if (!fetchedUser) {
+      return Result.fail(`User with KCID ${keycloakId} does not exist.`);
+    }
     try {
-      newUser = await this.dao.update(user);
+      const updateUser = await this.dao.update(
+        this.wrapEntity(this.dao.model, {
+          ...fetchedUser,
+          ...user,
+        }),
+      );
+      return Result.ok<User>(updateUser);
     } catch (error) {
       return Result.fail(error);
     }
-    return Result.ok<User>(newUser);
   }
 
   @log()
