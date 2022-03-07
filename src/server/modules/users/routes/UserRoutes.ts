@@ -99,6 +99,9 @@ export class UserRoutes extends BaseRoutes<User> {
     }
 
     const user = result.getValue();
+    user.phone = user.phone.toArray() as any;
+    user.address = user.address.toArray() as any;
+    console.log({ user });
 
     return deserialize({ body: { ...user, statusCode: 204 } }, CreatedUserDTO);
   }

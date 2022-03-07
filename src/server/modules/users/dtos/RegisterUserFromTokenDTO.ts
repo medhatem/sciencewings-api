@@ -1,5 +1,5 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonProperty, Serializable, deserialize } from 'typescript-json-serializer';
 
 import { AddressDTO } from '@/modules/address';
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
@@ -10,24 +10,38 @@ import { unique } from '@/decorators/unique';
 export class UserIdDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
+
   @JsonProperty()
   createdAt: Date;
+
   @JsonProperty()
   updatedAt: Date;
+
   @JsonProperty()
   dateofbirth: Date;
+
   @JsonProperty()
   email: string;
+
   @JsonProperty()
   firstname: string;
+
   @JsonProperty()
   lastname: string;
+
   @JsonProperty()
   keycloakId: string;
-  @JsonProperty()
-  phone: PhoneDTO;
-  @JsonProperty()
-  address: AddressDTO;
+
+  @JsonProperty({ type: PhoneDTO })
+  phone: Array<PhoneDTO>;
+
+  @JsonProperty({
+    type: AddressDTO,
+    beforeDeserialize: (entity) => {
+      return entity.map((el: any) => deserialize(el, AddressDTO));
+    },
+  })
+  address: Array<AddressDTO>;
 }
 
 @Serializable()
