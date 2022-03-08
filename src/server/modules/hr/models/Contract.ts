@@ -8,8 +8,6 @@ import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { User } from '@/modules/users/models/User';
-
 @provideSingleton()
 @Entity()
 export class Contract extends BaseModel<Contract> {
