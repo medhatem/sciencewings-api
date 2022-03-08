@@ -28,10 +28,10 @@ export class UserRO {
   lastname: string;
 
   @JsonProperty()
-  address: AddressRO[];
+  address: Array<AddressRO>;
 
   @JsonProperty()
-  phones: PhoneRO[];
+  phones: Array<PhoneRO>;
 
   @JsonProperty()
   dateofbirth: Date;

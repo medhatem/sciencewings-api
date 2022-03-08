@@ -1,4 +1,4 @@
-import { Collection, DateType, Entity, Index, LoadStrategy, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { Collection, DateType, Entity, Index, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
 import { Address } from '@/modules/address';

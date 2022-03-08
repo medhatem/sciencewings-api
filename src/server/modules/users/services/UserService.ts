@@ -1,9 +1,10 @@
+import { Phone } from '@/modules/phones/models/Phone';
+import { wrap } from '@mikro-orm/core';
 import { ResetPasswordRO } from '@/modules/users/routes/RequstObjects';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@/utils/Email';
-import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUserInfo } from '@/types/UserRequest';
@@ -17,14 +18,11 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateUserSchema, UpdateUserSchema } from '@/modules/users/schemas/UserSchema';
 import { validate } from '@/decorators/validate';
-import { IAddressService } from '@/modules/address';
-
+import { Address } from '@/modules/address';
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
   constructor(
     public dao: UserDao,
-    public phoneService: IPhoneService,
-    public addressService: IAddressService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
   ) {
@@ -38,8 +36,8 @@ export class UserService extends BaseService<User> implements IUserService {
   @log()
   @safeGuard()
   async updateUserDetails(payload: UserRO, userId: number): Promise<Result<number>> {
-    const { phones } = payload;
-    delete payload.phones;
+    // const { phones } = payload;
+    // delete payload.phones;
 
     const userDetail = this.wrapEntity(this.dao.model, {
       email: payload.email,
@@ -62,11 +60,11 @@ export class UserService extends BaseService<User> implements IUserService {
       ...userDetail,
     };
 
-    await Promise.all(
-      phones.map(async (p: any) => {
-        await this.phoneService.createBulkPhoneForUser([p], user);
-      }),
-    );
+    // await Promise.all(
+    //   phones.map(async (p: any) => {
+    //     await this.phoneService.createBulkPhoneForUser([p], user);
+    //   }),
+    // );
 
     await this.dao.update(user);
 
@@ -162,13 +160,31 @@ export class UserService extends BaseService<User> implements IUserService {
         }),
       );
 
-      if (userAddress?.length) {
-        this.addressService.createBulkAddressForUser(userAddress, createdUser);
-      }
+      createdUser.address = await createdUser.address.init();
+      createdUser.phone = await createdUser.phone.init();
 
-      if (userPhones?.length) {
-        this.phoneService.createBulkPhoneForUser(userPhones, createdUser);
-      }
+      userAddress.map((address) => {
+        const wrappedAddress = wrap(new Address()).assign({
+          city: address.city,
+          apartment: address.apartment,
+          country: address.country,
+          code: address.code,
+          province: address.province,
+          street: address.street,
+          type: address.type,
+        });
+        wrappedAddress.user = createdUser;
+        createdUser.address.add(wrappedAddress);
+      });
+      userPhones.map((phone) => {
+        const wrappedPhone = wrap(new Phone()).assign({
+          label: phone.label,
+          code: phone.code,
+          number: phone.number,
+        });
+        wrappedPhone.user = createdUser;
+        createdUser.phone.add(wrappedPhone);
+      });
 
       this.dao.repository.flush();
 
