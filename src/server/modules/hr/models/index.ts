@@ -5,5 +5,4 @@ export * from './Member';
 export * from './MemberCategory';
 export * from './MemberCategoryRel';
 export * from './Job';
-export * from './PayrollStructureType';
 export * from './WorkLocation';

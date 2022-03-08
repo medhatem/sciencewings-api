@@ -7,7 +7,6 @@ import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { PayrollStructureType } from '@/modules/hr/models/PayrollStructureType';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 
@@ -31,9 +30,6 @@ export class Contract extends BaseModel<Contract> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => PayrollStructureType, onDelete: 'set null', nullable: true })
-  structureType?: PayrollStructureType;
-
   @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
   member?: Member;
 
@@ -49,9 +45,6 @@ export class Contract extends BaseModel<Contract> {
 
   @Property({ columnType: 'date', nullable: true })
   dateEnd?: Date;
-
-  @Property({ columnType: 'date', nullable: true })
-  trialDateEnd?: Date;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
@@ -79,6 +72,6 @@ export class Contract extends BaseModel<Contract> {
   @Property({ nullable: true })
   kanbanState?: string;
 
-  @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  hrResponsible?: User;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  supervisor?: Member;
 }
