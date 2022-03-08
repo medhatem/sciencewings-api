@@ -7,6 +7,11 @@ import { connection } from '@/db/index';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di/index';
 
+export enum FETCH_STRATEGY {
+  'ALL' = 'ALL',
+  'SINGLE' = 'SIGNLE',
+}
+
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
   public repository: GetRepository<T, EntityRepository<T>>;
@@ -26,23 +31,29 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   /**
-   * fetches single record using a given search criteria
+   * fetches record using a given search criteria
    *
    * @param criteria the criteria to fetch with
+   * @param fetchStrategy were it return list or single matched record
+   * @param options extra option for search
    */
   @log()
-  async getByCriteria(criteria: { [key: string]: any }, options?: any): Promise<T> {
-    return (this.repository as any).findOne(criteria, options);
-  }
-
-  /**
-   * fetches all records  using a given search criteria
-   *
-   * @param criteria the criteria to fetch with
-   */
-  @log()
-  async getAllByCriteria(criteria: { [key: string]: any }, options?: any): Promise<T[]> {
-    return (this.repository as any).find(criteria, options);
+  async getByCriteria(
+    criteria: { [key: string]: any },
+    fetchStrategy = FETCH_STRATEGY.SINGLE,
+    options?: any,
+  ): Promise<T | T[]> {
+    switch (fetchStrategy) {
+      case FETCH_STRATEGY.ALL:
+        return (this.repository as any).find(criteria, options);
+        break;
+      case FETCH_STRATEGY.SINGLE:
+        return (this.repository as any).findOne(criteria, options);
+        break;
+      default:
+        return (this.repository as any).findOne(criteria, options);
+        break;
+    }
   }
 
   @log()

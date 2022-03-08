@@ -29,7 +29,7 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
-  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index' })
+  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index', nullable: true })
   resource?: Resource;
 
   @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_member_organization_id_index' })

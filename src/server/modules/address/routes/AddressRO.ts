@@ -26,7 +26,7 @@ export class AddressRO {
   street: string;
 
   @JsonProperty()
-  apartment: string;
+  apartment?: number;
 
   @JsonProperty()
   user?: number;

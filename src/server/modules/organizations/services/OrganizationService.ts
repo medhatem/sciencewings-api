@@ -1,9 +1,11 @@
+import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { IMemberService } from '@/modules/hr/interfaces';
-import { container, provideSingleton } from '@/di/index';
+import { MemberStatusType } from '@/modules/hr/models/Member';
+import { container, provide } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Collection, wrap } from '@mikro-orm/core';
+import { Collection } from '@mikro-orm/core';
 import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
@@ -20,16 +22,24 @@ import { IUserService } from '@/modules/users/interfaces';
 import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
-import { Address } from '@/modules/address';
-import { Phone } from '@/modules/users';
+import { IAddressService } from '@/modules/address';
+import { FETCH_STRATEGY } from '@/modules/base';
+import { CreateMemberSchema } from '@/modules/hr/schemas/MemberSchema';
+import { MemberRO } from '@/modules/hr/routes/RequestObject';
+import { IResourceService, Resource } from '@/modules/resources';
+import { IPhoneService } from '@/modules/phones';
 
-@provideSingleton(IOrganizationService)
+type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
+@provide(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public memberService: IMemberService,
+    public resourceService: IResourceService,
+    public addressService: IAddressService,
+    public phoneService: IPhoneService,
     public emailService: Email,
   ) {
     super(dao);
@@ -46,6 +56,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(createSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<Result<number>> {
+    // check if the organization already exist
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
       return Result.fail<number>(`Organization ${payload.name} already exist.`);
@@ -62,7 +73,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
       return Result.fail<number>(`User with id: ${userId} parent does not exist`);
     }
-    const user = fetchedUser.getValue();
 
     let adminContact;
     if (payload.adminContact) {
@@ -80,7 +90,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    const organization = this.wrapEntity(this.dao.model, {
+    const wrappedOrganization = this.wrapEntity(this.dao.model, {
       name: payload.name,
       email: payload.email,
       type: payload.type,
@@ -91,24 +101,25 @@ export class OrganizationService extends BaseService<Organization> implements IO
       social_twitter: payload.social_twitter,
       social_linkedin: payload.social_linkedin,
     });
-    organization.direction = await direction.getValue();
-    organization.admin_contact = await adminContact.getValue();
+    wrappedOrganization.direction = await direction.getValue();
+    wrappedOrganization.admin_contact = await adminContact.getValue();
 
-    await user.organizations.init();
-    user.organizations.add(organization);
-    const _createdOrg = await this.create(organization);
+    const createdOrg = await this.create(wrappedOrganization);
 
-    if (_createdOrg.isFailure) {
-      return Result.fail<number>(_createdOrg.error);
+    if (createdOrg.isFailure) {
+      return Result.fail<number>(createdOrg.error);
     }
 
-    const createdOrg = await _createdOrg.getValue();
+    const organization = await createdOrg.getValue();
+    console.log({ createdOrg });
 
-    createdOrg.parent = existingOrg;
-    await this.update(createdOrg);
+    organization.parent = existingOrg;
+    await organization.address.init();
+    await organization.phones.init();
+    await organization.members.init();
 
-    payload.address.map((address) => {
-      const wrappedAddress = wrap(new Address()).assign({
+    applyToAll(payload.address, async (address) => {
+      await this.addressService.create({
         city: address.city,
         apartment: address.apartment,
         country: address.country,
@@ -116,36 +127,37 @@ export class OrganizationService extends BaseService<Organization> implements IO
         province: address.province,
         street: address.street,
         type: address.type,
+        organization,
       });
-      wrappedAddress.user = createdOrg;
-      createdOrg.address.add(wrappedAddress);
     });
-    payload.phones.map((phone) => {
-      const wrappedPhone = wrap(new Phone()).assign({
+    applyToAll(payload.phones, async (phone) => {
+      this.phoneService.create({
         label: phone.label,
         code: phone.code,
         number: phone.number,
+        organization,
       });
-      wrappedPhone.user = createdOrg;
-      createdOrg.phone.add(wrappedPhone);
     });
 
     if (payload.labels?.length) {
-      this.labelService.createBulkLabel(payload.labels, createdOrg);
+      this.labelService.createBulkLabel(payload.labels, organization);
     }
 
-    if (payload.members && payload.members.length) {
-      for (const member in payload.members) {
-        const fetchedMember = await this.memberService.get(member as any);
-        if (fetchedMember.isFailure) {
-          return Result.fail<number>(`Member with id: ${member} does not exist.`);
-        }
-        createdOrg.members.add(fetchedMember.getValue());
-      }
+    const user = fetchedUser.getValue();
+    const member = await this.memberService.create({
+      name: user.firstname + ' ' + user.lastname,
+      user,
+      active: true,
+      organization,
+      memberType: MemberStatusType.ACTIVE,
+    });
+
+    if (!member.isFailure) {
+      organization.members.add(member.getValue());
     }
 
-    await this.update(createdOrg);
-    return Result.ok<number>(createdOrg.id);
+    await this.update(organization);
+    return Result.ok<number>(organization.id);
   }
 
   @log()
@@ -234,10 +246,94 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   public async getUserOrganizations(userId: number): Promise<Result<Organization[]>> {
     try {
-      const organizations = await this.dao.getAllByCriteria({ owner: userId });
+      const organizations: Organization[] = (await this.dao.getByCriteria(
+        { owner: userId },
+        FETCH_STRATEGY.ALL,
+      )) as Organization[];
       return Result.ok<Organization[]>(organizations);
     } catch (error) {
       return Result.fail(error);
     }
+  }
+
+  @log()
+  @safeGuard()
+  private async checkEntitiesExistence(
+    organization: number,
+    resource: number,
+  ): Promise<Result<OrganizationAndResource | string>> {
+    let currentOrg;
+    let currentRes;
+    if (organization) {
+      currentOrg = await this.dao.get(organization);
+      if (currentOrg === null) {
+        return Result.fail(`Organization with id ${organization} does not exist.`);
+      }
+    }
+    if (resource) {
+      currentRes = await this.resourceService.get(resource);
+      if (currentRes.isFailure || currentRes.getValue() === null) {
+        return Result.fail(`Resource with id ${resource} does not exist.`);
+      }
+    }
+    return Result.ok({ currentOrg, currentRes: currentRes.getValue() });
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number | string>> {
+    const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
+    if (existence.isFailure) {
+      return Result.fail(existence.error);
+    }
+    const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
+
+    const createdMemberResult = await this.memberService.create({
+      ...payload,
+      organization: currentOrg,
+      resource: currentRes,
+    });
+
+    if (createdMemberResult.isFailure) {
+      return createdMemberResult;
+    }
+
+    const createdMember = createdMemberResult.getValue();
+
+    const createdWorkLocation = await this.addressService.create({
+      city: payload.workLocation.city,
+      apartment: payload.workLocation.apartment,
+      country: payload.workLocation.country,
+      code: payload.workLocation.code,
+      province: payload.workLocation.province,
+      street: payload.workLocation.street,
+      type: payload.workLocation.type,
+      member: createdMember,
+    });
+
+    createdMember.workLocation = createdWorkLocation;
+
+    if (payload.workPhone) {
+      createdMember.workPhone = await this.phoneService.create({
+        label: payload.workPhone.label,
+        code: payload.workPhone.code,
+        number: payload.workPhone.number,
+        member: createdMember,
+      });
+    }
+
+    if (payload.emergencyPhone) {
+      createdMember.emergencyPhone = await this.phoneService.create({
+        label: payload.emergencyPhone.label,
+        code: payload.emergencyPhone.code,
+        number: payload.emergencyPhone.number,
+        member: createdMember,
+      });
+    }
+
+    await this.memberService.update(createdMember);
+
+    return Result.ok(createdMember.getValue().id);
   }
 }

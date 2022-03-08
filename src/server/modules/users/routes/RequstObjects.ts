@@ -40,7 +40,7 @@ export class UserRO {
   signature?: string;
 
   @JsonProperty()
-  keycloakId?: string;
+  keycloakId: string;
 
   @JsonProperty()
   actionId?: number;

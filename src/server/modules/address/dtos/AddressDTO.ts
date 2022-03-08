@@ -27,5 +27,5 @@ export class AddressDTO {
   street: string;
 
   @JsonProperty()
-  apartment: string;
+  apartment?: number;
 }

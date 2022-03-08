@@ -54,7 +54,4 @@ export class User extends BaseModel<User> {
 
   @Property({ nullable: true })
   share?: boolean;
-
-  // @Property()
-  // notificationType!: string;
 }
