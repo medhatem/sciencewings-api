@@ -153,8 +153,8 @@ export class UserService extends BaseService<User> implements IUserService {
       const userPhones = user.phones;
 
       // removing unmanaged entities
-      // delete user.address;
-      // delete user.phones;
+      delete user.address;
+      delete user.phones;
 
       const createdUser = await this.dao.create(
         this.wrapEntity(new User(), {
