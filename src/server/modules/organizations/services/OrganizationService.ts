@@ -3,7 +3,7 @@ import { IMemberService } from '@/modules/hr/interfaces';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Collection } from '@mikro-orm/core';
+import { Collection, wrap } from '@mikro-orm/core';
 import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
@@ -16,12 +16,12 @@ import { EmailMessage } from '@/types/types';
 import { Email } from '@/utils/Email';
 import createSchema from '@/modules/organizations/schemas/createOrganizationSchema';
 import { getConfig } from '@/configuration/Configuration';
-import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { IUserService } from '@/modules/users/interfaces';
 import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
+import { Address } from '@/modules/address';
+import { Phone } from '@/modules/users';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -29,8 +29,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public dao: OrganizationDao,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
-    public adressService: IAddressService,
-    public phoneService: IPhoneService,
     public memberService: IMemberService,
     public emailService: Email,
   ) {
@@ -109,13 +107,28 @@ export class OrganizationService extends BaseService<Organization> implements IO
     createdOrg.parent = existingOrg;
     await this.update(createdOrg);
 
-    if (payload.address?.length) {
-      this.adressService.createBulkAddressForOrganization(payload.address, createdOrg);
-    }
-
-    if (payload.phones?.length) {
-      this.phoneService.createBulkPhoneForOrganization(payload.phones, createdOrg);
-    }
+    payload.address.map((address) => {
+      const wrappedAddress = wrap(new Address()).assign({
+        city: address.city,
+        apartment: address.apartment,
+        country: address.country,
+        code: address.code,
+        province: address.province,
+        street: address.street,
+        type: address.type,
+      });
+      wrappedAddress.user = createdOrg;
+      createdOrg.address.add(wrappedAddress);
+    });
+    payload.phones.map((phone) => {
+      const wrappedPhone = wrap(new Phone()).assign({
+        label: phone.label,
+        code: phone.code,
+        number: phone.number,
+      });
+      wrappedPhone.user = createdOrg;
+      createdOrg.phone.add(wrappedPhone);
+    });
 
     if (payload.labels?.length) {
       this.labelService.createBulkLabel(payload.labels, createdOrg);
