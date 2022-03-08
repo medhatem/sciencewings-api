@@ -153,8 +153,8 @@ export class UserService extends BaseService<User> implements IUserService {
       const userPhones = user.phones;
 
       // removing unmanaged entities
-      delete user.address;
-      delete user.phones;
+      // delete user.address;
+      // delete user.phones;
 
       const createdUser = await this.dao.create(
         this.wrapEntity(new User(), {
@@ -184,7 +184,6 @@ export class UserService extends BaseService<User> implements IUserService {
   @validate
   async updateUser(@validateParam(UpdateUserSchema) user: UserRO, keycloakId: string): Promise<Result<User>> {
     const fetchedUser = await this.dao.getByCriteria({ keycloakId });
-    console.log({ fetchedUser });
 
     if (!fetchedUser) {
       return Result.fail(`User with KCID ${keycloakId} does not exist.`);

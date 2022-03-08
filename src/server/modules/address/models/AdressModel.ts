@@ -41,11 +41,9 @@ export class Address extends BaseModel<Address> {
   @ManyToOne({
     entity: () => Organization,
     onDelete: 'cascade',
-    nullable: true,
-    eager: false,
   })
   organization?: Organization;
 
-  @ManyToOne({ entity: () => User, onDelete: 'cascade', nullable: true, eager: false })
+  @ManyToOne({ entity: () => User, onDelete: 'cascade', nullable: true })
   user?: User;
 }

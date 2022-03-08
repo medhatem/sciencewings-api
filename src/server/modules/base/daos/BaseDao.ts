@@ -1,9 +1,9 @@
-import { EntityRepository, GetRepository, LoadStrategy } from '@mikro-orm/core';
+import { EntityRepository, GetRepository } from '@mikro-orm/core';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Logger } from '@/modules/../utils/Logger';
-import { ServerError } from '@/modules/../errors/ServerError';
-import { connection } from '@/modules/../db/index';
+import { Logger } from '@/utils/Logger';
+import { ServerError } from '@/errors/ServerError';
+import { connection } from '@/db/index';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di/index';
 
@@ -48,7 +48,7 @@ export class BaseDao<T extends BaseModel<T>> {
   @log()
   public async getAll(): Promise<T[]> {
     this.logger.info(`${this.model.constructor.name}s`);
-    return (this.repository as any).findAll({ strategy: LoadStrategy.SELECT_IN });
+    return (this.repository as any).findAll();
   }
 
   @log()

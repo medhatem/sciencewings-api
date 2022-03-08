@@ -30,16 +30,12 @@ export class User extends BaseModel<User> {
     entity: () => Address,
     mappedBy: (entity) => entity.user,
     nullable: true,
-    eager: false,
-    strategy: LoadStrategy.SELECT_IN,
   })
   address? = new Collection<Address>(this);
 
   @OneToMany({
     entity: () => Phone,
     mappedBy: (entity) => entity.user,
-    eager: false,
-    strategy: LoadStrategy.SELECT_IN,
   })
   phone? = new Collection<Phone>(this);
 

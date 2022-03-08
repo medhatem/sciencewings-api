@@ -29,6 +29,13 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     return Result.ok<Address>(address);
   }
 
+  /**
+   * persiste an address for a given user
+   * you need to flush them later
+   * @param payload an array of address
+   * @param user
+   * @returns
+   */
   @log()
   @safeGuard()
   async createBulkAddressForUser(payload: AddressRO[], user: User): Promise<Result<number>> {
@@ -41,6 +48,13 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     return Result.ok<number>(200);
   }
 
+  /**
+   * persiste an address for a given organization
+   * you need to flush them later
+   * @param payload an array of address
+   * @param organization
+   * @returns
+   */
   @log()
   @safeGuard()
   async createBulkAddressForOrganization(payload: AddressRO[], organization: Organization): Promise<Result<number>> {
