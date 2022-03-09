@@ -19,22 +19,16 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     return container.get(IAddressService);
   }
 
+  /**
+   * create an address in the database
+   * @param payload address data
+   * @returns created address
+   */
   @log()
   @safeGuard()
   async createAddress(payload: AddressRO): Promise<Result<Address>> {
     const wrappedAddress = this.wrapEntity(this.dao.model, payload);
-    const address = await this.dao.create(wrappedAddress);
+    const address: Address = await this.dao.create(wrappedAddress);
     return Result.ok<Address>(address);
-  }
-
-  @log()
-  @safeGuard()
-  async createBulkAddress(payload: AddressRO[]): Promise<Result<number>> {
-    payload.map((el: AddressRO) => {
-      const address = this.wrapEntity(this.dao.model, el);
-      this.dao.repository.persist(address);
-    });
-
-    return Result.ok<number>(200);
   }
 }

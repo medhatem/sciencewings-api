@@ -1,6 +1,6 @@
 import { User } from '@/modules/users/models/User';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { container, provideSingleton } from '@/di/index';
+import { container, ingest, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { CreateResourceRO } from '../routes/RequestObject';
@@ -18,13 +18,14 @@ import { IUserService } from '@/modules/users/interfaces';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
+import { FETCH_STRATEGY } from '@/modules/base';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
+  @ingest(IOrganizationService) organisationService: IOrganizationService;
   constructor(
     public dao: ResourceDao,
     public userService: IUserService,
-    public organisationService: IOrganizationService,
     public resourceCalendarService: IResourceCalendarService,
   ) {
     super(dao);
@@ -50,7 +51,10 @@ export class ResourceService extends BaseService<Resource> {
     if (!fetchedOrganization) {
       return Result.fail(`Organization with id ${organizationId} does not exist.`);
     }
-    const resources = await this.dao.getAllByCriteria({ organization: organizationId });
+    const resources = (await this.dao.getByCriteria(
+      { organization: organizationId },
+      FETCH_STRATEGY.ALL,
+    )) as Resource[];
     return Result.ok(resources);
   }
 

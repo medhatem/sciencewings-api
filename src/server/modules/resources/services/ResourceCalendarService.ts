@@ -1,4 +1,4 @@
-import { container, provideSingleton } from '@/di/index';
+import { container, provideSingleton, ingest } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { CreateResourceCalendarRO } from '../routes/RequestObject';
@@ -15,7 +15,8 @@ import { validate } from '@/decorators/validate';
 
 @provideSingleton(IResourceCalendarService)
 export class ResourceCalendarService extends BaseService<ResourceCalendar> {
-  constructor(public dao: ResourceCalendarDao, public organisationService: IOrganizationService) {
+  @ingest(IOrganizationService) organisationService: IOrganizationService;
+  constructor(public dao: ResourceCalendarDao) {
     super(dao);
   }
 

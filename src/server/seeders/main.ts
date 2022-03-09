@@ -1,13 +1,14 @@
-import { Configuration } from './../configuration/Configuration';
+import { createKCUsers, getKCUsers } from './keycloak';
+
+import { Configuration } from '@/configuration/Configuration';
 import { SeedMembers } from './members';
 import { SeedOrganizations } from './organizations';
 import { SeedResources } from './resources';
 import { SeedUsers } from './users';
 import { container } from '@/di/index';
-import { createKCUsers, getKCUsers } from './keycloak';
 import { getConfig } from '@/configuration/Configuration';
 import { provideSingleton } from '@/di';
-import { startDB } from '@/db/';
+import { startDB } from '@/db/index';
 
 @provideSingleton()
 export class Seeders {
