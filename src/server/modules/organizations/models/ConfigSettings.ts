@@ -6,13 +6,13 @@ import { Organization } from './Organization';
 
 @provideSingleton()
 @Entity()
-export class ResConfigSettings extends BaseModel<ResConfigSettings> {
+export class ConfigSettings extends BaseModel<ConfigSettings> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResConfigSettings {
-    return container.get(ResConfigSettings);
+  static getInstance(): ConfigSettings {
+    return container.get(ConfigSettings);
   }
 
   @PrimaryKey()

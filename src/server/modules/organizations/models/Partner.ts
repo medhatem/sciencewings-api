@@ -3,26 +3,26 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { ResCountry } from '@/modules/organizations/models/ResCountry';
-import { ResCountryState } from '@/modules/organizations/models/ResCountryState';
-import { ResPartnerIndustry } from '@/modules/organizations/models/ResPartnerIndustry';
-import { ResPartnerTitle } from '@/modules/organizations/models/ResPartnerTitle';
+import { Country } from '@/modules/organizations/models/Country';
+import { CountryState } from '@/modules/organizations/models/CountryState';
+import { PartnerIndustry } from '@/modules/organizations/models/PartnerIndustry';
+import { PartnerTitle } from '@/modules/organizations/models/PartnerTitle';
 import { User } from '@/modules/users/models/User';
 
 @provideSingleton()
 @Entity()
-export class ResPartner extends BaseModel<ResPartner> {
+export class Partner extends BaseModel<Partner> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResPartner {
-    return container.get(ResPartner);
+  static getInstance(): Partner {
+    return container.get(Partner);
   }
   @PrimaryKey()
   id!: number;
 
-  @Index({ name: 'res_partner_name_index' })
+  @Index({ name: 'partner_name_index' })
   @Property({ nullable: true })
   name?: string;
 
@@ -30,25 +30,25 @@ export class ResPartner extends BaseModel<ResPartner> {
     entity: () => Organization,
     onDelete: 'set null',
     nullable: true,
-    index: 'res_partner_organization_id_index',
+    index: 'partner_organization_id_index',
   })
   organization?: Organization;
 
-  @Index({ name: 'res_partner_display_name_index' })
+  @Index({ name: 'partner_display_name_index' })
   @Property({ nullable: true })
   displayName?: string;
 
-  @Index({ name: 'res_partner_date_index' })
+  @Index({ name: 'partner_date_index' })
   @Property({ columnType: 'date', nullable: true })
   date?: Date;
 
-  @ManyToOne({ entity: () => ResPartnerTitle, fieldName: 'title', onDelete: 'set null', nullable: true })
-  title?: ResPartnerTitle;
+  @ManyToOne({ entity: () => PartnerTitle, fieldName: 'title', onDelete: 'set null', nullable: true })
+  title?: PartnerTitle;
 
-  @ManyToOne({ entity: () => ResPartner, onDelete: 'set null', nullable: true, index: 'res_partner_parent_id_index' })
-  parent?: ResPartner;
+  @ManyToOne({ entity: () => Partner, onDelete: 'set null', nullable: true, index: 'partner_parent_id_index' })
+  parent?: Partner;
 
-  @Index({ name: 'res_partner_ref_index' })
+  @Index({ name: 'partner_ref_index' })
   @Property({ nullable: true })
   ref?: string;
 
@@ -61,7 +61,7 @@ export class ResPartner extends BaseModel<ResPartner> {
   @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
 
-  @Index({ name: 'res_partner_vat_index' })
+  @Index({ name: 'partner_vat_index' })
   @Property({ nullable: true })
   vat?: string;
 
@@ -98,11 +98,11 @@ export class ResPartner extends BaseModel<ResPartner> {
   @Property({ nullable: true })
   city?: string;
 
-  @ManyToOne({ entity: () => ResCountryState, nullable: true })
-  state?: ResCountryState;
+  @ManyToOne({ entity: () => CountryState, nullable: true })
+  state?: CountryState;
 
-  @ManyToOne({ entity: () => ResCountry, nullable: true })
-  country?: ResCountry;
+  @ManyToOne({ entity: () => Country, nullable: true })
+  country?: Country;
 
   @Property({ columnType: 'numeric', nullable: true })
   partnerLatitude?: number;
@@ -122,19 +122,19 @@ export class ResPartner extends BaseModel<ResPartner> {
   @Property({ nullable: true })
   isorganization?: boolean;
 
-  @ManyToOne({ entity: () => ResPartnerIndustry, onDelete: 'set null', nullable: true })
-  industry?: ResPartnerIndustry;
+  @ManyToOne({ entity: () => PartnerIndustry, onDelete: 'set null', nullable: true })
+  industry?: PartnerIndustry;
 
   @Property({ nullable: true })
   partnerShare?: boolean;
 
   @ManyToOne({
-    entity: () => ResPartner,
+    entity: () => Partner,
     onDelete: 'set null',
     nullable: true,
-    index: 'res_partner_commercial_partner_id_index',
+    index: 'partner_commercial_partner_id_index',
   })
-  commercialPartner?: ResPartner;
+  commercialPartner?: Partner;
 
   @Property({ nullable: true })
   commercialorganizationName?: string;
@@ -142,7 +142,7 @@ export class ResPartner extends BaseModel<ResPartner> {
   @Property({ nullable: true })
   organizationName?: string;
 
-  @Index({ name: 'res_partner_message_main_attachment_id_index' })
+  @Index({ name: 'partner_message_main_attachment_id_index' })
   @Property({ nullable: true })
   messageMainAttachmentId?: number;
 

@@ -5,18 +5,20 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provideSingleton()
 @Entity()
-export class ResCountryGroup extends BaseModel<ResCountryGroup> {
+export class PartnerTitle extends BaseModel<PartnerTitle> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResCountryGroup {
-    return container.get(ResCountryGroup);
+  static getInstance(): PartnerTitle {
+    return container.get(PartnerTitle);
   }
-
   @PrimaryKey()
   id!: number;
 
   @Property()
   name!: string;
+
+  @Property({ nullable: true })
+  shortcut?: string;
 }

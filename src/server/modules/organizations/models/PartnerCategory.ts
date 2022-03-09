@@ -5,13 +5,13 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provideSingleton()
 @Entity()
-export class ResPartnerCategory extends BaseModel<ResPartnerCategory> {
+export class PartnerCategory extends BaseModel<PartnerCategory> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResPartnerCategory {
-    return container.get(ResPartnerCategory);
+  static getInstance(): PartnerCategory {
+    return container.get(PartnerCategory);
   }
 
   @PrimaryKey()
@@ -21,17 +21,17 @@ export class ResPartnerCategory extends BaseModel<ResPartnerCategory> {
   name!: string;
 
   @ManyToOne({
-    entity: () => ResPartnerCategory,
+    entity: () => PartnerCategory,
     onDelete: 'cascade',
     nullable: true,
-    index: 'res_partner_category_parent_id_index',
+    index: 'partner_category_parent_id_index',
   })
-  parent?: ResPartnerCategory;
+  parent?: PartnerCategory;
 
   @Property({ nullable: true })
   active?: boolean;
 
-  @Index({ name: 'res_partner_category_parent_path_index' })
+  @Index({ name: 'partner_category_parent_path_index' })
   @Property({ nullable: true })
   parentPath?: string;
 }

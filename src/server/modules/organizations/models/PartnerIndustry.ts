@@ -5,13 +5,13 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provideSingleton()
 @Entity()
-export class ResPartnerIndustry extends BaseModel<ResPartnerIndustry> {
+export class PartnerIndustry extends BaseModel<PartnerIndustry> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResPartnerIndustry {
-    return container.get(ResPartnerIndustry);
+  static getInstance(): PartnerIndustry {
+    return container.get(PartnerIndustry);
   }
   @PrimaryKey()
   id!: number;
