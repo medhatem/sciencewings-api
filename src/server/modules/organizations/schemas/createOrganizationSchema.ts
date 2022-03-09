@@ -1,6 +1,10 @@
 import Joi = require('joi');
 
-import { OrganizationType } from '@/modules/organizations/models/Organization';
+export enum OrganizationType {
+  PUBLIC = 'Public',
+  SERVICE = 'Service',
+  INSTITUT = 'Institut',
+}
 
 export default Joi.object({
   name: Joi.string().required(),

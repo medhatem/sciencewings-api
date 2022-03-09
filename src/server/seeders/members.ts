@@ -38,7 +38,7 @@ export class SeedMembers {
             code: faker.address.countryCode(),
             type: AddressType.ORGANIZATION,
             street: faker.address.streetAddress(),
-            apartment: faker.datatype.number().toString(),
+            apartment: faker.datatype.number(),
             city: faker.address.city(),
           }),
         );
