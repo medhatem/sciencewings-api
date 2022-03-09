@@ -47,9 +47,6 @@ export class User extends BaseModel<User> {
   @ManyToMany(() => Organization, (organization) => organization.members)
   organizations = new Collection<Organization>(this);
 
-  // @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })
-  // partner!: ResPartner;
-
   @Property({ columnType: 'text', nullable: true })
   signature?: string;
 

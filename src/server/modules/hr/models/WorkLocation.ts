@@ -3,7 +3,6 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Partner } from '@/modules/organizations/models/Partner';
 
 @provideSingleton()
 @Entity()
@@ -27,10 +26,4 @@ export class WorkLocation extends BaseModel<WorkLocation> {
 
   @ManyToOne({ entity: () => Organization })
   organization!: Organization;
-
-  @ManyToOne({ entity: () => Partner })
-  address!: Partner;
-
-  @Property({ nullable: true })
-  locationNumber?: string;
 }
