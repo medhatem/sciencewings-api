@@ -283,7 +283,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   @validate
-  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number | string>> {
+  public async addMemberToOrganization(
+    @validateParam(CreateMemberSchema) payload: MemberRO,
+  ): Promise<Result<number | string>> {
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
     if (existence.isFailure) {
       return Result.fail(existence.error);
