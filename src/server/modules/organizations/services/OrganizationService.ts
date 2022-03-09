@@ -73,6 +73,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
       return Result.fail<number>(`User with id: ${userId} parent does not exist`);
     }
+    const user = fetchedUser.getValue();
 
     let adminContact;
     if (payload.adminContact) {
@@ -100,6 +101,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       social_github: payload.social_github,
       social_twitter: payload.social_twitter,
       social_linkedin: payload.social_linkedin,
+      owner: user,
     });
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();
@@ -111,9 +113,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     const organization = await createdOrg.getValue();
-    console.log({ createdOrg });
 
-    organization.parent = existingOrg;
     await organization.address.init();
     await organization.phones.init();
     await organization.members.init();
@@ -143,7 +143,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       this.labelService.createBulkLabel(payload.labels, organization);
     }
 
-    const user = fetchedUser.getValue();
     const member = await this.memberService.create({
       name: user.firstname + ' ' + user.lastname,
       user,
@@ -245,17 +244,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   public async getUserOrganizations(userId: number): Promise<Result<Organization[]>> {
-    try {
-      const organizations: Organization[] = (await this.dao.getByCriteria(
-        { owner: userId },
-        FETCH_STRATEGY.ALL,
-      )) as Organization[];
-      return Result.ok<Organization[]>(organizations);
-    } catch (error) {
-      return Result.fail(error);
-    }
+    const organizations: Organization[] = (await this.dao.getByCriteria(
+      { owner: userId },
+      FETCH_STRATEGY.ALL,
+    )) as Organization[];
+    return Result.ok<Organization[]>(organizations);
   }
 
+  /**
+   * check the required entities for creating an organization
+   * @param organization
+   * @param resource
+   * @returns required entities
+   */
   @log()
   @safeGuard()
   private async checkEntitiesExistence(

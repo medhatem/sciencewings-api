@@ -14,7 +14,7 @@ export abstract class IUserService extends IBaseService<any> {
   resetPassword: (payload: ResetPasswordRO) => Promise<Result<string>>;
 
   createUser: (user: UserRO) => Promise<Result<User>>;
-  updateUser: (user: UserRO, keycloakId: string) => Promise<Result<User>>;
+  updateUserByKeycloakId: (user: UserRO, keycloakId: string) => Promise<Result<User>>;
 
   getUserByKeycloakId: (payload: string) => Promise<Result<User>>;
 }

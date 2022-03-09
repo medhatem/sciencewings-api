@@ -39,9 +39,6 @@ export class UserService extends BaseService<User> implements IUserService {
   @log()
   @safeGuard()
   async updateUserDetails(payload: UserRO, userId: number): Promise<Result<number>> {
-    // const { phones } = payload;
-    // delete payload.phones;
-
     const userDetail = this.wrapEntity(this.dao.model, {
       email: payload.email,
       firstname: payload.firstname,
@@ -62,12 +59,6 @@ export class UserService extends BaseService<User> implements IUserService {
       ...authedUser,
       ...userDetail,
     };
-
-    // await Promise.all(
-    //   phones.map(async (p: any) => {
-    //     await this.phoneService.createBulkPhoneForUser([p], user);
-    //   }),
-    // );
 
     await this.dao.update(user);
 
@@ -153,15 +144,14 @@ export class UserService extends BaseService<User> implements IUserService {
       const userAddress = user.address;
       const userPhones = user.phones;
 
-      // removing unmanaged entities
-      delete user.address;
-      delete user.phones;
-
-      const createdUser = await this.dao.create(
-        this.wrapEntity(new User(), {
-          ...user,
-        }),
-      );
+      const createdUser = await this.dao.create({
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        dateofbirth: user.dateofbirth,
+        keycloakId: user.keycloakId,
+        user: null,
+      });
 
       createdUser.address = await createdUser.address.init();
       createdUser.phone = await createdUser.phone.init();
@@ -206,7 +196,10 @@ export class UserService extends BaseService<User> implements IUserService {
   @log()
   @safeGuard()
   @validate
-  async updateUser(@validateParam(UpdateUserSchema) user: UserRO, keycloakId: string): Promise<Result<User>> {
+  async updateUserByKeycloakId(
+    @validateParam(UpdateUserSchema) user: UserRO,
+    keycloakId: string,
+  ): Promise<Result<User>> {
     const fetchedUser = (await this.dao.getByCriteria({ keycloakId })) as User;
 
     if (!fetchedUser) {

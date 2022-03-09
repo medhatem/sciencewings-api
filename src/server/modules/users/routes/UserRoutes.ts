@@ -131,7 +131,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Response<CreatedUserDTO>(204, 'User updated Successfully')
   @Response<CreatedUserDTO>(500, 'Internal Server Error')
   public async updateUser(payload: UserRO, @PathParam('keycloakId') keycloakId: string): Promise<CreatedUserDTO> {
-    const result = await this.userService.updateUser(payload, keycloakId);
+    const result = await this.userService.updateUserByKeycloakId(payload, keycloakId);
 
     if (result.isFailure) {
       return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
