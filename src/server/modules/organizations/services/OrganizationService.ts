@@ -95,12 +95,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       name: payload.name,
       email: payload.email,
       type: payload.type,
-      social_facebook: payload.social_facebook,
-      social_instagram: payload.social_instagram,
-      social_youtube: payload.social_youtube,
-      social_github: payload.social_github,
-      social_twitter: payload.social_twitter,
-      social_linkedin: payload.social_linkedin,
+      socialFacebook: payload.socialFacebook,
+      socialInstagram: payload.socialInstagram,
+      socialYoutube: payload.socialYoutube,
+      socialGithub: payload.socialGithub,
+      socialTwitter: payload.socialTwitter,
+      socialLinkedin: payload.socialLinkedin,
       owner: user,
     });
     wrappedOrganization.direction = await direction.getValue();
@@ -118,7 +118,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await organization.phones.init();
     await organization.members.init();
 
-    applyToAll(payload.address, async (address) => {
+    applyToAll(payload.addresses, async (address) => {
       await this.addressService.create({
         city: address.city,
         apartment: address.apartment,
@@ -132,9 +132,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
     });
     applyToAll(payload.phones, async (phone) => {
       this.phoneService.create({
-        label: phone.label,
-        code: phone.code,
-        number: phone.number,
+        phoneLabel: phone.phoneLabel,
+        phoneCode: phone.phoneCode,
+        phoneNumber: phone.phoneNumber,
         organization,
       });
     });
@@ -319,18 +319,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (payload.workPhone) {
       createdMember.workPhone = await this.phoneService.create({
-        label: payload.workPhone.label,
-        code: payload.workPhone.code,
-        number: payload.workPhone.number,
+        phoneLabel: payload.workPhone.phoneLabel,
+        phoneCode: payload.workPhone.phoneCode,
+        phoneNumber: payload.workPhone.phoneNumber,
         member: createdMember,
       });
     }
 
     if (payload.emergencyPhone) {
       createdMember.emergencyPhone = await this.phoneService.create({
-        label: payload.emergencyPhone.label,
-        code: payload.emergencyPhone.code,
-        number: payload.emergencyPhone.number,
+        phoneLabel: payload.emergencyPhone.phoneLabel,
+        phoneCode: payload.emergencyPhone.phoneCode,
+        phoneNumber: payload.emergencyPhone.phoneNumber,
         member: createdMember,
       });
     }

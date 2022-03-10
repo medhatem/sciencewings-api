@@ -16,9 +16,6 @@ export class UserInviteToOrgRO {
 @unique
 export class UserRO {
   @JsonProperty()
-  id?: number;
-
-  @JsonProperty()
   email: string;
 
   @JsonProperty()
@@ -28,7 +25,7 @@ export class UserRO {
   lastname: string;
 
   @JsonProperty()
-  address: Array<AddressRO>;
+  addresses: Array<AddressRO>;
 
   @JsonProperty()
   phones: Array<PhoneRO>;
