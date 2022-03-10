@@ -16,7 +16,7 @@ export class UserInviteToOrgRO {
 @unique
 export class UserRO {
   @JsonProperty()
-  id: number;
+  id?: number;
 
   @JsonProperty()
   email: string;
