@@ -41,7 +41,7 @@ export class UserIdDTO extends BaseBodyDTO {
       return entity.map((el: any) => deserialize(el, AddressDTO));
     },
   })
-  address: Array<AddressDTO>;
+  addresses: Array<AddressDTO>;
 }
 
 @Serializable()

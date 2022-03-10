@@ -39,15 +39,15 @@ export class SeedOrganizations {
             code: faker.address.countryCode(),
             type: AddressType.ORGANIZATION,
             street: faker.address.streetAddress(),
-            apartment: faker.datatype.number(),
+            apartment: faker.datatype.number().toString(),
             city: faker.address.city(),
           }),
         );
         const phone = await this.phoneDAO.create(
           wrap(new Phone()).assign({
-            label: 'personal',
-            code: '+213',
-            number: faker.phone.phoneNumberFormat(3),
+            phoneLabel: 'personal',
+            phoneCode: '+213',
+            phoneNumber: faker.phone.phoneNumberFormat(3),
           }),
         );
         const org: any = {

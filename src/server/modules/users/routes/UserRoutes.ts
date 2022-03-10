@@ -84,7 +84,7 @@ export class UserRoutes extends BaseRoutes<User> {
     return {
       ...user,
       phone: user.phone.toArray(),
-      address: user.address.toArray(),
+      addresses: user.address.toArray(),
     };
   }
 

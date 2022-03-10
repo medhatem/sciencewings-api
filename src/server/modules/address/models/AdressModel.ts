@@ -36,8 +36,8 @@ export class Address extends BaseModel<Address> {
   @Property()
   street: string;
 
-  @Property({nullable: true,})
-  apartment?: number;
+  @Property({ nullable: true })
+  apartment?: string;
 
   @ManyToOne({
     entity: () => Organization,
