@@ -26,8 +26,8 @@ export class BaseRequestDTO {
     return serialize(payload as any);
   }
 
-  deserialize<T extends BaseRequestDTO>(model: T, payload: any): any {
-    return deserialize<T>(payload as any, model as any);
+  deserialize(payload: { [key: string]: any }): this {
+    return deserialize<this>(payload as any, this.constructor as any);
   }
 
   @JsonProperty()
