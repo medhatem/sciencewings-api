@@ -5,7 +5,7 @@ const UserSchema = Joi.object({
   lastname: Joi.string(),
   email: Joi.string(),
   phones: Joi.array(),
-  address: Joi.array(),
+  addresses: Joi.array(),
   dateofbirth: Joi.date(),
   keycloakId: Joi.string(),
 });
@@ -15,7 +15,7 @@ export const CreateUserSchema = UserSchema.keys({
   lastname: Joi.string().required(),
   email: Joi.string().required(),
   phones: Joi.array().required(),
-  address: Joi.array().required(),
+  addresses: Joi.array().required(),
   dateofbirth: Joi.date().required(),
   keycloakId: Joi.string().required(),
 });

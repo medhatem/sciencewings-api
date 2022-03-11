@@ -43,7 +43,7 @@ export class UserService extends BaseService<User> implements IUserService {
       email: payload.email,
       firstname: payload.firstname,
       lastname: payload.lastname,
-      address: payload.address,
+      addresses: payload.addresses,
       phones: payload.phones,
       dateofbirth: payload.dateofbirth,
       signature: payload.signature,
@@ -141,7 +141,7 @@ export class UserService extends BaseService<User> implements IUserService {
   @validate
   async createUser(@validateParam(CreateUserSchema) user: UserRO): Promise<Result<User>> {
     try {
-      const userAddress = user.address;
+      const userAddress = user.addresses;
       const userPhones = user.phones;
 
       const createdUser = await this.dao.create({
@@ -174,9 +174,9 @@ export class UserService extends BaseService<User> implements IUserService {
 
       applyToAll(userPhones, async (phone) => {
         const createdPhone = await this.phoneService.create({
-          label: phone.label,
-          code: phone.code,
-          number: phone.number,
+          phoneLabel: phone.phoneLabel,
+          phoneCode: phone.phoneCode,
+          phoneNumber: phone.phoneNumber,
           user: createdUser,
         });
         if (!createdPhone.isFailure) {

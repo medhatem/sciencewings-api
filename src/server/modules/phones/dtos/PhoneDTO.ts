@@ -9,11 +9,11 @@ export class PhoneDTO {
   id: number;
 
   @JsonProperty()
-  label: string;
+  phoneLabel: string;
 
   @JsonProperty()
-  code: string;
+  phoneCode: string;
 
   @JsonProperty()
-  number: string;
+  phoneNumber: string;
 }
