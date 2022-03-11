@@ -1,19 +1,21 @@
-# manaServices server repo
+# Sciencewings server repo
 
 ![current version](badges/version.svg) ![typescript](https://img.shields.io/badge/built%20with-typescript-3178C6.svg)
 
 - mana core back-end repository
 - mana server and micro-services
 
-## Prerequisites
+## Requirement
 
 - [npm && Node version 14](https://nodejs.org/en/download/)
 
-if you have another version better to install nvm to switch between versions esealy.
+if you have another version better to install nvm to switch between versions easily.
 
 - [Docker](https://www.docker.com/)
 
 if you have windows you can use wsl or dual boot your pc adding linux
+
+- [Docker VSc extenction](https://code.visualstudio.com/docs/containers/overview)
 
 ### Nice to have
 
@@ -38,7 +40,6 @@ enable sort-imports to sort your imports for typescript automaticly
 - [todo tree](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree)
 - [Bracket Pair Colorizer 2](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer-2)
 - [Error lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens)
-- [Docker](https://code.visualstudio.com/docs/containers/overview)
 - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
 
 ## Getting started
@@ -65,5 +66,5 @@ npm run dev
 5. npm run start-local-containers to start postgres and keycloak locally
 6. If succesfull open a new terminal and run npm run devto start the server locally
 
-- checkout server health: http://localhost:3000/health.
-- checkout the swagger docs: http://localhost:3000/api/docs/.
+- checkout server health: /health
+- checkout the swagger docs: api/docs/
