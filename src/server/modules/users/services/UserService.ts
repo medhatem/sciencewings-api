@@ -141,6 +141,12 @@ export class UserService extends BaseService<User> implements IUserService {
   @validate
   async createUser(@validateParam(CreateUserSchema) user: UserRO): Promise<Result<User>> {
     try {
+      const userExistingCheck: User = (await this.dao.getByCriteria({
+        $or: [{ email: user.email }, { keycloakId: user.keycloakId }],
+      })) as User;
+      if (userExistingCheck) {
+        return Result.fail(`user already exists `);
+      }
       const userAddress = user.addresses;
       const userPhones = user.phones;
 
