@@ -45,14 +45,28 @@ export class UserRoutes extends BaseRoutes<User> {
     const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
 
     if (result.isFailure) {
-      return new RegisterUserFromTokenDTO().serialize({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      return deserialize(
+        {
+          error: {
+            statusCode: 500,
+            errorMessage: result.error,
+          },
+        },
+        RegisterUserFromTokenDTO,
+      );
     }
 
-    return new RegisterUserFromTokenDTO().serialize({
-      body: { statusCode: 201, userId: result.getValue() },
-    });
+    const userId = result.getValue();
+
+    return deserialize(
+      {
+        body: {
+          userId,
+          statusCode: 201,
+        },
+      },
+      RegisterUserFromTokenDTO,
+    );
   }
 
   /**
@@ -70,21 +84,35 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.resetPassword(payload);
 
     if (result.isFailure) {
-      return new ResetPasswordDTO().serialize({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      return deserialize(
+        {
+          error: {
+            statusCode: 500,
+            errorMessage: result.error,
+          },
+        },
+        ResetPasswordDTO,
+      );
     }
 
-    return new ResetPasswordDTO().serialize({
-      body: { statusCode: 200, message: result.getValue() },
-    });
+    const message = result.getValue();
+
+    return deserialize(
+      {
+        body: {
+          message,
+          statusCode: 200,
+        },
+      },
+      ResetPasswordDTO,
+    );
   }
 
   public setUserObjectForDeserialize(user: User) {
     return {
       ...user,
       phone: user.phone.toArray(),
-      addresses: user.address.toArray(),
+      address: user.address.toArray(),
     };
   }
 
@@ -103,7 +131,15 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.createUser(payload);
 
     if (result.isFailure) {
-      return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return deserialize(
+        {
+          error: {
+            statusCode: 500,
+            errorMessage: result.error,
+          },
+        },
+        CreatedUserDTO,
+      );
     }
 
     const user: User = result.getValue();
@@ -134,7 +170,15 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.updateUserByKeycloakId(payload, keycloakId);
 
     if (result.isFailure) {
-      return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return deserialize(
+        {
+          error: {
+            statusCode: 500,
+            errorMessage: result.error,
+          },
+        },
+        CreatedUserDTO,
+      );
     }
 
     const user: User = result.getValue();
@@ -165,10 +209,27 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.updateUserDetails(payload, request.userId);
 
     if (result.isFailure) {
-      return new CreatedUserDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return deserialize(
+        {
+          error: {
+            statusCode: 500,
+            errorMessage: result.error,
+          },
+        },
+        CreatedUserDTO,
+      );
     }
 
-    return new CreatedUserDTO().serialize({ body: { user: result.getValue(), statusCode: 204 } });
+    const user = result.getValue();
+    return deserialize(
+      {
+        body: {
+          user,
+          statusCode: 204,
+        },
+      },
+      CreatedUserDTO,
+    );
   }
 
   /**
@@ -183,9 +244,25 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.getUserByKeycloakId(keycloakId);
 
     if (result.isFailure) {
-      return new UserDTO().serialize({ error: { statusCode: 404, errorMessage: result.error } });
+      return deserialize(
+        {
+          error: {
+            statusCode: 404,
+            errorMessage: result.error,
+          },
+        },
+        UserDTO,
+      );
     }
-    const user = result.getValue();
-    return new UserDTO().serialize({ body: { user, statusCode: 200 } });
+    const user: User = result.getValue();
+    return deserialize(
+      {
+        body: {
+          ...this.setUserObjectForDeserialize(user),
+          statusCode: 200,
+        },
+      },
+      UserDTO,
+    );
   }
 }
