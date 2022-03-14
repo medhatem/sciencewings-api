@@ -13,7 +13,6 @@ import { Result } from '@/utils/Result';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { deserialize } from 'typescript-json-serializer';
 
 @provideSingleton()
 @Path('users')
@@ -45,28 +44,19 @@ export class UserRoutes extends BaseRoutes<User> {
     const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
 
     if (result.isFailure) {
-      return deserialize(
-        {
-          error: {
-            statusCode: 500,
-            errorMessage: result.error,
-          },
+      return new RegisterUserFromTokenDTO().deserialize({
+        error: {
+          statusCode: 500,
+          errorMessage: result.error,
         },
-        RegisterUserFromTokenDTO,
-      );
+      });
     }
-
-    const userId = result.getValue();
-
-    return deserialize(
-      {
-        body: {
-          userId,
-          statusCode: 201,
-        },
+    return new RegisterUserFromTokenDTO().deserialize({
+      body: {
+        id: result.getValue,
+        statusCode: 201,
       },
-      RegisterUserFromTokenDTO,
-    );
+    });
   }
 
   /**
@@ -84,35 +74,27 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.resetPassword(payload);
 
     if (result.isFailure) {
-      return deserialize(
-        {
-          error: {
-            statusCode: 500,
-            errorMessage: result.error,
-          },
+      return new ResetPasswordDTO().deserialize({
+        error: {
+          statusCode: 500,
+          errorMessage: result.error,
         },
-        ResetPasswordDTO,
-      );
+      });
     }
 
-    const message = result.getValue();
-
-    return deserialize(
-      {
-        body: {
-          message,
-          statusCode: 200,
-        },
+    return new ResetPasswordDTO().deserialize({
+      body: {
+        massage: result.getValue,
+        statusCode: 200,
       },
-      ResetPasswordDTO,
-    );
+    });
   }
 
   public setUserObjectForDeserialize(user: User) {
     return {
       ...user,
+      addresses: user.address.toArray(),
       phone: user.phone.toArray(),
-      address: user.address.toArray(),
     };
   }
 
@@ -131,28 +113,20 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.createUser(payload);
 
     if (result.isFailure) {
-      return deserialize(
-        {
-          error: {
-            statusCode: 500,
-            errorMessage: result.error,
-          },
+      return new CreatedUserDTO().deserialize({
+        error: {
+          statusCode: 500,
+          errorMessage: result.error,
         },
-        CreatedUserDTO,
-      );
+      });
     }
 
-    const user: User = result.getValue();
-
-    return deserialize(
-      {
-        body: {
-          ...this.setUserObjectForDeserialize(user),
-          statusCode: 201,
-        },
+    return new CreatedUserDTO().deserialize({
+      body: {
+        ...this.setUserObjectForDeserialize(result.getValue()),
+        statusCode: 201,
       },
-      CreatedUserDTO,
-    );
+    });
   }
 
   /**
@@ -170,28 +144,20 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.updateUserByKeycloakId(payload, keycloakId);
 
     if (result.isFailure) {
-      return deserialize(
-        {
-          error: {
-            statusCode: 500,
-            errorMessage: result.error,
-          },
+      return new CreatedUserDTO().deserialize({
+        error: {
+          statusCode: 500,
+          errorMessage: result.error,
         },
-        CreatedUserDTO,
-      );
+      });
     }
 
-    const user: User = result.getValue();
-
-    return deserialize(
-      {
-        body: {
-          ...this.setUserObjectForDeserialize(user),
-          statusCode: 204,
-        },
+    return new CreatedUserDTO().deserialize({
+      body: {
+        ...this.setUserObjectForDeserialize(result.getValue()),
+        statusCode: 204,
       },
-      CreatedUserDTO,
-    );
+    });
   }
 
   /**
@@ -209,27 +175,20 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.updateUserDetails(payload, request.userId);
 
     if (result.isFailure) {
-      return deserialize(
-        {
-          error: {
-            statusCode: 500,
-            errorMessage: result.error,
-          },
+      return new CreatedUserDTO().deserialize({
+        error: {
+          statusCode: 500,
+          errorMessage: result.error,
         },
-        CreatedUserDTO,
-      );
+      });
     }
 
-    const user = result.getValue();
-    return deserialize(
-      {
-        body: {
-          user,
-          statusCode: 204,
-        },
+    return new CreatedUserDTO().deserialize({
+      body: {
+        userId: result.getValue(),
+        statusCode: 204,
       },
-      CreatedUserDTO,
-    );
+    });
   }
 
   /**
@@ -244,25 +203,19 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.getUserByKeycloakId(keycloakId);
 
     if (result.isFailure) {
-      return deserialize(
-        {
-          error: {
-            statusCode: 404,
-            errorMessage: result.error,
-          },
+      return new UserDTO().deserialize({
+        error: {
+          statusCode: 404,
+          errorMessage: result.error,
         },
-        UserDTO,
-      );
+      });
     }
-    const user: User = result.getValue();
-    return deserialize(
-      {
-        body: {
-          ...this.setUserObjectForDeserialize(user),
-          statusCode: 200,
-        },
+
+    return new UserDTO().deserialize({
+      body: {
+        ...this.setUserObjectForDeserialize(result.getValue()),
+        statusCode: 200,
       },
-      UserDTO,
-    );
+    });
   }
 }
