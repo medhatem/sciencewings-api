@@ -143,21 +143,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       this.labelService.createBulkLabel(payload.labels, organization);
     }
 
-    console.log({
-      name: user.firstname + ' ' + user.lastname,
-      user: user.id,
-      active: true,
-      organization: organization.id,
-      memberType: MemberStatusType.ACTIVE,
-    });
-
     const member = await this.memberService.create({
       name: user.firstname + ' ' + user.lastname,
       user,
       active: true,
       organization,
       memberType: MemberStatusType.ACTIVE,
-      resources: [],
     });
 
     if (!member.isFailure) {

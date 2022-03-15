@@ -31,6 +31,7 @@ export class Resource extends BaseModel<Resource> {
   @ManyToMany({
     entity: () => Member,
     mappedBy: (entity) => entity.resources,
+    nullable: true,
   })
   public managers? = new Collection<Member>(this);
 
@@ -52,7 +53,7 @@ export class Resource extends BaseModel<Resource> {
   @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
 
-  @ManyToOne({ entity: () => ResourceCalendar })
+  @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource })
   calendar!: ResourceCalendar;
 
   @Property()

@@ -42,7 +42,6 @@ export class Member extends BaseModel<Member> {
 
   @ManyToMany({
     entity: () => Resource,
-    mappedBy: (entity) => entity.managers,
     nullable: true,
   })
   resources? = new Collection<Resource>(this);

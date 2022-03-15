@@ -30,18 +30,16 @@ export class ResourceCalendarService extends BaseService<ResourceCalendar> {
   public async createResourceCalendar(
     @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
   ): Promise<Result<ResourceCalendar>> {
-    let org = null;
     let organization = null;
     if (payload.organization) {
-      org = await this.organisationService.get(payload.organization);
-      if (!org) {
+      organization = await this.organisationService.get(payload.organization);
+      if (!organization) {
         return Result.fail(`Organization with id ${payload.organization} does not exist.`);
       }
-      organization = await org.getValue();
+      organization = organization.getValue();
     }
 
     const resourceCalendar: ResourceCalendar = {
-      id: null,
       ...payload,
       organization,
     };
