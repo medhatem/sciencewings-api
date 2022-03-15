@@ -6,12 +6,11 @@ const ContractSchema = Joi.object({
   group: Joi.number(),
   job: Joi.number(),
   dateEnd: Joi.date(),
-  trialDateEnd: Joi.date(),
   resourceCalendar: Joi.number(),
   notes: Joi.string(),
   state: Joi.string(),
   kanbanState: Joi.string(),
-  hrResponsible: Joi.number(),
+  supervisor: Joi.number(),
 });
 
 export const CreateContractSchema = ContractSchema.keys({

@@ -6,8 +6,6 @@ import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { User } from '@/modules/users/models/User';
 
-// import { ResPartner } from '@/modules/organisations/models/ResPartner';
-
 @provideSingleton()
 @Entity()
 export class Phone extends BaseModel<Phone> {
