@@ -14,18 +14,20 @@ const ResourceSchema = Joi.object({
   organization: Joi.number(),
   user: Joi.number(),
   timezone: Joi.string(),
+
+  tags: Joi.array(),
 });
 
 export const CreateResourceSchema = ResourceSchema.keys({
   name: Joi.string().required(),
+  description: Joi.string().required(),
   resourceType: Joi.string().required(),
-  timeEfficiency: Joi.number().required(),
   calendar: ResourceCalendarSchema.required(),
 });
 
 export const UpdateResourceSchema = ResourceSchema.keys({
   name: Joi.string(),
+  description: Joi.string(),
   resourceType: Joi.string(),
-  timeEfficiency: Joi.number(),
   calendar: ResourceCalendarSchema,
 });

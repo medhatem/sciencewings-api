@@ -7,6 +7,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
+import { Resource } from '@/modules/resources';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -79,6 +80,9 @@ export class Organization extends BaseModel<Organization> {
     entity: () => User,
   })
   public admin_contact!: User;
+
+  @OneToMany({ entity: () => Resource, nullable: true, mappedBy: (entity) => entity.organization })
+  resources?: Resource;
 
   @ManyToOne({
     entity: () => Organization,

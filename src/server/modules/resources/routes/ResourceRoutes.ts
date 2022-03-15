@@ -3,9 +3,9 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Resource } from '@/modules/resources/models/Resource';
 import { Path, PathParam, POST, PUT, Security, GET } from 'typescript-rest';
-import { CreateResourceRO } from './RequestObject';
+import { ResourceRO } from './RequestObject';
 import { IResourceService } from '@/modules/resources/interfaces';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
+import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { ResourceDTO, CreateResourceDTO, UpdateResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
 import { Response } from 'typescript-rest-swagger';
@@ -33,7 +33,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<CreateResourceDTO>(201, 'Resource created Successfully')
   @Response<CreateResourceDTO>(500, 'Internal Server Error')
   @LoggerStorage()
-  public async createResource(payload: CreateResourceRO): Promise<CreateResourceDTO> {
+  public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
     const result = await this.resourceService.createResource(payload);
 
     if (result.isFailure) {
@@ -55,7 +55,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @LoggerStorage()
   @Response<CreateResourceDTO>(204, 'Resource updated Successfully')
   @Response<CreateResourceDTO>(500, 'Internal Server Error')
-  public async updateResource(payload: CreateResourceRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
+  public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
     const result = await this.resourceService.updateResource(payload, id);
 
     if (result.isFailure) {

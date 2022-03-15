@@ -4,7 +4,14 @@ import { unique } from '@/decorators/unique';
 
 @Serializable()
 @unique
-export class CreateResourceCalendarRO {
+export class ResourceTagRO {
+  @JsonProperty()
+  title!: string;
+}
+
+@Serializable()
+@unique
+export class ResourceCalendarRO {
   @JsonProperty()
   name!: string;
 
@@ -26,9 +33,12 @@ export class CreateResourceCalendarRO {
 
 @Serializable()
 @unique
-export class CreateResourceRO {
+export class ResourceRO {
   @JsonProperty()
   name: string;
+
+  @JsonProperty()
+  description: string;
 
   @JsonProperty()
   active?: boolean;
@@ -43,11 +53,11 @@ export class CreateResourceRO {
   user?: number;
 
   @JsonProperty()
-  timeEfficiency!: number;
-
-  @JsonProperty()
   timezone!: string;
 
   @JsonProperty()
-  calendar!: CreateResourceCalendarRO;
+  calendar!: ResourceCalendarRO;
+
+  @JsonProperty()
+  tags?: ResourceTagRO[];
 }

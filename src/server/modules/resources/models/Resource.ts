@@ -1,10 +1,12 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
 import { User } from '@/modules/users/models/User';
+import { Member } from '@/modules/hr';
+import { ResourceTag } from './ResourceTag';
 
 @provideSingleton()
 @Entity()
@@ -23,6 +25,21 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   name!: string;
 
+  @Property()
+  description!: string;
+
+  @ManyToMany({
+    entity: () => Member,
+    mappedBy: (entity) => entity.resources,
+  })
+  public managers? = new Collection<Member>(this);
+
+  @OneToMany({
+    entity: () => ResourceTag,
+    mappedBy: (entity) => entity.resource,
+  })
+  public tags? = new Collection<ResourceTag>(this);
+
   @Property({ nullable: true })
   active?: boolean;
 
@@ -34,9 +51,6 @@ export class Resource extends BaseModel<Resource> {
 
   @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
-
-  @Property({ columnType: 'float8' })
-  timeEfficiency!: number;
 
   @ManyToOne({ entity: () => ResourceCalendar })
   calendar!: ResourceCalendar;

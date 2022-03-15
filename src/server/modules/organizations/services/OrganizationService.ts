@@ -118,7 +118,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await organization.phones.init();
     await organization.members.init();
 
-    applyToAll(payload.addresses, async (address) => {
+    await applyToAll(payload.addresses, async (address) => {
       await this.addressService.create({
         city: address.city,
         apartment: address.apartment,
@@ -130,8 +130,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
         organization,
       });
     });
-    applyToAll(payload.phones, async (phone) => {
-      this.phoneService.create({
+    await applyToAll(payload.phones, async (phone) => {
+      await this.phoneService.create({
         phoneLabel: phone.phoneLabel,
         phoneCode: phone.phoneCode,
         phoneNumber: phone.phoneNumber,
@@ -143,12 +143,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
       this.labelService.createBulkLabel(payload.labels, organization);
     }
 
+    console.log({
+      name: user.firstname + ' ' + user.lastname,
+      user: user.id,
+      active: true,
+      organization: organization.id,
+      memberType: MemberStatusType.ACTIVE,
+    });
+
     const member = await this.memberService.create({
       name: user.firstname + ' ' + user.lastname,
       user,
       active: true,
       organization,
       memberType: MemberStatusType.ACTIVE,
+      resources: [],
     });
 
     if (!member.isFailure) {
