@@ -24,9 +24,9 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
   private extractFromRO(payload: PhoneRO): Partial<Phone> {
     return {
-      label: payload.label,
-      code: payload.code,
-      number: payload.number,
+      phoneLabel: payload.phoneLabel,
+      phoneCode: payload.phoneCode,
+      phoneNumber: payload.phoneNumber,
     };
   }
 
@@ -38,6 +38,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
         payload.map(async (phone) => {
           const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
           wrappedPhone.user = entity as User;
+          return wrappedPhone;
         }),
       );
 

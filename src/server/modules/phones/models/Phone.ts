@@ -17,13 +17,13 @@ export class Phone extends BaseModel<Phone> {
     return container.get(Phone);
   }
   @Property()
-  label: string;
+  phoneLabel: string;
 
   @Property()
-  code: string;
+  phoneCode: string;
 
   @Property()
-  number: string;
+  phoneNumber: string;
 
   @ManyToOne({ entity: () => User, nullable: true })
   user?: User;

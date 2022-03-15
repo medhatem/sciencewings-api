@@ -1,1 +1,1 @@
-export * from '../routes/PhoneRO';
+export * from './PhoneDTO';

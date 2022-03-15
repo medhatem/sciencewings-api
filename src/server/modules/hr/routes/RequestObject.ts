@@ -5,6 +5,8 @@ import { MemberStatusType } from '@/modules/hr/models/Member';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
+@Serializable()
+@unique
 export class ContractRO {
   @JsonProperty()
   id: number;
@@ -98,7 +100,7 @@ export class JobRO {
 @unique
 export class MemberRO {
   @JsonProperty()
-  id: number;
+  id?: number;
   @JsonProperty()
   resource!: number;
   @JsonProperty()
@@ -177,7 +179,7 @@ export class MemberRO {
 @unique
 export class UpdateMemberRO {
   @JsonProperty()
-  id: number;
+  id?: number;
   @JsonProperty()
   resource?: number;
   @JsonProperty()

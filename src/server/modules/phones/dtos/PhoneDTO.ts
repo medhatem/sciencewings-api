@@ -4,28 +4,16 @@ import { unique } from '@/decorators/unique';
 
 @Serializable()
 @unique
-export class AddressDTO {
+export class PhoneDTO {
   @JsonProperty()
   id: number;
 
   @JsonProperty()
-  country: string;
+  phoneLabel: string;
 
   @JsonProperty()
-  province: string;
+  phoneCode: string;
 
   @JsonProperty()
-  code: string;
-
-  @JsonProperty()
-  type: string;
-
-  @JsonProperty()
-  city: string;
-
-  @JsonProperty()
-  street: string;
-
-  @JsonProperty()
-  apartment?: string;
+  phoneNumber: string;
 }

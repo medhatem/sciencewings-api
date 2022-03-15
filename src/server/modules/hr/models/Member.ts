@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 
 import { Address } from '@/modules/address/models/AdressModel';
@@ -29,11 +29,8 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
-  @PrimaryKey()
-  id!: number;
-
-  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index' })
-  resource!: Resource;
+  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index', nullable: true })
+  resource?: Resource;
 
   @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_member_organization_id_index' })
   organization!: Organization;

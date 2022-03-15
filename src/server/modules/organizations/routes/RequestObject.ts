@@ -20,7 +20,7 @@ export class CreateOrganizationRO {
   type: string;
 
   @JsonProperty()
-  address: AddressRO[];
+  addresses: AddressRO[];
 
   @JsonProperty()
   labels: string[];
@@ -32,17 +32,17 @@ export class CreateOrganizationRO {
   direction: number;
 
   @JsonProperty()
-  social_facebook?: string;
+  socialFacebook?: string;
   @JsonProperty()
-  social_twitter?: string;
+  socialTwitter?: string;
   @JsonProperty()
-  social_github?: string;
+  socialGithub?: string;
   @JsonProperty()
-  social_linkedin?: string;
+  socialLinkedin?: string;
   @JsonProperty()
-  social_youtube?: string;
+  socialYoutube?: string;
   @JsonProperty()
-  social_instagram?: string;
+  socialInstagram?: string;
 
   @JsonProperty()
   adminContact: number;

@@ -5,9 +5,6 @@ import { AddressType } from '@/modules/address/models/AdressModel';
 @Serializable()
 export class AddressRO {
   @JsonProperty()
-  id: number;
-
-  @JsonProperty()
   country: string;
 
   @JsonProperty()
@@ -26,5 +23,11 @@ export class AddressRO {
   street: string;
 
   @JsonProperty()
-  apartment: string;
+  apartment?: string;
+
+  @JsonProperty()
+  user?: number;
+
+  @JsonProperty()
+  organization?: number;
 }

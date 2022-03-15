@@ -28,7 +28,9 @@
   },
   "_moduleAliases": {
     "@/di": "dist/server/di",
+    "@/db": "dist/server/db",
     "@/authenticators": "dist/server/authenticators",
+    "@/configuration": "dist/server/configuration",
     "@types": "dist/server/types",
     "@/errors": "dist/server/errors",
     "@/interface": "dist/server/interface/*",
