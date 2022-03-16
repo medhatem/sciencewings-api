@@ -53,8 +53,8 @@ export class Resource extends BaseModel<Resource> {
   @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
   user?: User;
 
-  @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource })
-  calendar!: ResourceCalendar;
+  @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource, nullable: true })
+  calendar: ResourceCalendar;
 
   @Property()
   timezone!: string;

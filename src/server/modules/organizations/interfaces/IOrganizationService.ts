@@ -1,9 +1,8 @@
 import { Collection } from '@mikro-orm/core';
-import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { ResourceRO } from '@/modules/resources/routes/RequestObject';
 import { Resource } from '@/modules/resources/models/Resource';
 
 import { Result } from '@/utils/Result';

@@ -3,7 +3,7 @@ import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
-import { CreateOrganizationRO, UserInviteToOrgRO } from './RequestObject';
+import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -21,7 +21,6 @@ import {
   UpdateResourceDTO,
 } from '@/modules/resources';
 import { BaseErrorDTO } from '@/modules/base';
-import { ResourceRO } from '@/modules/resources/routes/RequestObject';
 
 @provideSingleton()
 @Path('organization')
@@ -183,6 +182,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     if (result.isFailure) {
       return new ResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
+    console.log({ result: result.getValue() });
 
     return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
   }

@@ -40,7 +40,7 @@ export class ResourceCalendarAttendance extends BaseModel<ResourceCalendarAttend
   hourTo!: number;
 
   @ManyToOne({ entity: () => ResourceCalendar, onDelete: 'cascade' })
-  calendar!: ResourceCalendar;
+  calendar: ResourceCalendar;
 
   @Property()
   dayPeriod!: string;

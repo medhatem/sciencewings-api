@@ -16,18 +16,17 @@ const ResourceSchema = Joi.object({
   timezone: Joi.string(),
   tags: Joi.array(),
   managers: Joi.array(),
+  calendar: Joi.array(),
 });
 
 export const CreateResourceSchema = ResourceSchema.keys({
   name: Joi.string().required(),
   description: Joi.string().required(),
   resourceType: Joi.string().required(),
-  calendar: ResourceCalendarSchema.required(),
 });
 
 export const UpdateResourceSchema = ResourceSchema.keys({
   name: Joi.string(),
   description: Joi.string(),
   resourceType: Joi.string(),
-  calendar: ResourceCalendarSchema,
 });

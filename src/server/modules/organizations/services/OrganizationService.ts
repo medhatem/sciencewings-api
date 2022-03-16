@@ -2,11 +2,10 @@ import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { MemberStatusType } from '@/modules/hr/models/Member';
-import { container, provide } from '@/di/index';
-
+import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Collection } from '@mikro-orm/core';
-import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -34,11 +33,14 @@ import {
   ResourceCalendar,
 } from '@/modules/resources';
 import { IPhoneService } from '@/modules/phones';
-import { CreateResourceSchema, UpdateResourceSchema } from '@/modules/resources/schemas/ResourceSchema';
-import { ResourceRO } from '@/modules/resources/routes/RequestObject';
+import {
+  CreateResourceSchema,
+  ResourceCalendarSchema,
+  UpdateResourceSchema,
+} from '@/modules/resources/schemas/ResourceSchema';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
-@provide(IOrganizationService)
+@provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
@@ -369,8 +371,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!fetchedOrganization) {
       return Result.fail(`Organization with id ${organizationId} does not exist.`);
     }
-    const resources = (await this.resourceService.getByCriteria({ organization: organizationId })) as Resource[];
-    return Result.ok(resources);
+    const resources = await this.resourceService.getByCriteria(
+      {
+        organization: organizationId,
+      },
+      FETCH_STRATEGY.ALL,
+    );
+    return Result.ok(resources as Resource[]);
   }
 
   @log()
@@ -413,7 +420,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    console.log('----------------wrapEntity-----------------');
     const resource = this.resourceService.wrapEntity(
       new Resource(),
       {
@@ -429,36 +435,27 @@ export class OrganizationService extends BaseService<Organization> implements IO
     resource.organization = organization;
     resource.user = user;
 
-    console.log({ resource });
-
-    const createResourceCalendar = await this.resourceCalendarService.createResourceCalendar(payload.calendar);
-    if (createResourceCalendar.isFailure) {
-      return Result.fail<number>(createResourceCalendar.error);
-    }
-    resource.calendar = createResourceCalendar.getValue() as ResourceCalendar;
-
-    resource.user = user;
-
-    console.log({ resource });
-
-    const createdResource = await this.create(resource);
+    console.log('---------------------------resourceService---------------------------');
+    const createdResource = await this.resourceService.create(resource as Resource);
     if (createdResource.isFailure) {
       return Result.fail<number>(createdResource.error);
     }
-
-    console.log({ managers: resource.managers });
 
     resource.managers = await resource.managers.init();
     for (const manager of managers) {
       resource.managers.add(manager);
     }
 
+    console.log('---------------------------resourceTagService---------------------------');
     await applyToAll(payload.tags, async (tag) => {
       await this.resourceTagService.create({
         title: tag.title,
         resource: createdResource.getValue(),
       });
     });
+
+    console.log('---------------------------update---------------------------');
+    await this.resourceService.update(resource);
 
     const id = createdResource.getValue().id;
     return Result.ok<number>(id);
@@ -508,11 +505,34 @@ export class OrganizationService extends BaseService<Organization> implements IO
       ...payload,
     });
 
-    const createdResource = await this.resourceService.create({ ...resource, user, organization });
+    const createdResource = await this.resourceService.update({ ...resource, user, organization });
     if (createdResource.isFailure) {
       return Result.fail<number>(createdResource.error);
     }
     const id = createdResource.getValue().id;
     return Result.ok<number>(id);
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async createResourceCalendar(
+    @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
+  ): Promise<Result<ResourceCalendar>> {
+    let organization = null;
+    if (payload.organization) {
+      organization = await this.dao.get(payload.organization);
+      if (!organization) {
+        return Result.fail(`Organization with id ${payload.organization} does not exist.`);
+      }
+    }
+
+    const resourceCalendar: ResourceCalendar = {
+      ...payload,
+      organization,
+    };
+
+    const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
+    return Result.ok<any>(createdResourceCalendar);
   }
 }
