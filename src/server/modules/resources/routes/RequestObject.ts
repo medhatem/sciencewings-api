@@ -60,4 +60,7 @@ export class ResourceRO {
 
   @JsonProperty()
   tags?: ResourceTagRO[];
+
+  @JsonProperty()
+  managers?: number[];
 }

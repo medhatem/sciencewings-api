@@ -14,8 +14,8 @@ const ResourceSchema = Joi.object({
   organization: Joi.number(),
   user: Joi.number(),
   timezone: Joi.string(),
-
   tags: Joi.array(),
+  managers: Joi.array(),
 });
 
 export const CreateResourceSchema = ResourceSchema.keys({
