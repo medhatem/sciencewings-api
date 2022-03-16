@@ -68,7 +68,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.fail<number>('Organization parent does not exist');
       }
     }
-
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
       return Result.fail<number>(`User with id: ${userId} parent does not exist`);
