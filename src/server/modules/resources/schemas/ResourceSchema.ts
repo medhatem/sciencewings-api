@@ -1,5 +1,11 @@
 import Joi = require('joi');
 
+export const ResourceEventSchema = Joi.object({
+  title: Joi.string().required(),
+  dateFrom: Joi.date().required(),
+  dateTo: Joi.date().required(),
+});
+
 export const ResourceCalendarSchema = Joi.object({
   name: Joi.string().required(),
   active: Joi.boolean(),

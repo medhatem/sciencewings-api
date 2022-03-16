@@ -125,3 +125,16 @@ export class ResourceRO {
   @JsonProperty()
   managers?: number[];
 }
+
+@Serializable()
+@unique
+export class ResourceEventRO {
+  @JsonProperty()
+  title: string;
+
+  @JsonProperty()
+  dateFrom: Date;
+
+  @JsonProperty()
+  dateTo: Date;
+}
