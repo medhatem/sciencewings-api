@@ -22,7 +22,7 @@ function convertAllCollectionsToArray(payload: { [key: string]: any }) {
       payload[key] = payload[key].toJSON();
     } else if (Array.isArray(payload[key])) {
       if (typeof payload[key][0] === 'object') {
-        payload[key].map((k: Object) => convertAllCollectionsToArray(k));
+        payload[key].map((k: { [key: string]: any }) => convertAllCollectionsToArray(k));
       }
     } else if (typeof payload[key] === 'object') {
       convertAllCollectionsToArray(payload[key]);
