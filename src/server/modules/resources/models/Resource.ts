@@ -3,7 +3,6 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
-import { User } from '@/modules/users/models/User';
 import { Member } from '@/modules/hr';
 import { ResourceTag } from './ResourceTag';
 
@@ -47,9 +46,6 @@ export class Resource extends BaseModel<Resource> {
 
   @Property()
   resourceType!: string;
-
-  @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  user?: User;
 
   @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource, nullable: true })
   calendar: ResourceCalendar;
