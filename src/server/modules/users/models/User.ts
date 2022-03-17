@@ -59,6 +59,6 @@ export class User extends BaseModel<User> {
   @Property({ nullable: true })
   share?: boolean;
 
-  @Property({ nullable: false })
+  @Property({ nullable: true })
   status?: userStatus;
 }
