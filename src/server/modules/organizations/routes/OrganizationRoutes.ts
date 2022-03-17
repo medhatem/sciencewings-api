@@ -11,12 +11,9 @@ import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-<<<<<<< HEAD
 import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
-=======
 import { OrganizationMembersDTO } from '../dtos/GetOrganizationsMembersDTO';
->>>>>>> d2e1d689c879644c95481b86bcf4657517d1cacd
 
 @provideSingleton()
 @Path('organization')
@@ -90,13 +87,13 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.resendInvite(payload.userId, payload.orgId);
 
     if (result.isFailure) {
-      return new InviteUserDTO().serialize({
+      return new InviteUserDTO({
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
 
-    return new InviteUserDTO().serialize({
-      body: { statusCode: 201, userId: result.getValue() },
+    return new InviteUserDTO({
+      body: { statusCode: 200, id: result.getValue() },
     });
   }
 
