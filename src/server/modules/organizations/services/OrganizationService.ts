@@ -224,8 +224,41 @@ export class OrganizationService extends BaseService<Organization> implements IO
     };
 
     this.emailService.sendEmail(emailMessage);
-
+    user.status = MemberStatusType.INVITATION_PENDING;
     return Result.ok<number>(savedUser.getValue().id);
+  }
+
+  @log()
+  @safeGuard()
+  async resendInvite(id: number, orgId: number): Promise<Result<number>> {
+    const existingUser = await this.userService.get(id);
+
+    if (!existingUser) {
+      return Result.fail(`user with id ${id} not exist.`);
+    }
+    const user = existingUser.getValue();
+
+    const existingOrg = await this.dao.get(orgId);
+
+    await existingOrg.members.init();
+
+    if (!existingOrg.members) {
+      return Result.fail(`Organization with id ${orgId} does not exist.`);
+    }
+    //if user is member of org ??
+    if (!(user.status = MemberStatusType.INVITATION_PENDING)) {
+      return Result.fail(`user with id ${id} is already reset his password.`);
+    }
+    const emailMessage: EmailMessage = {
+      from: this.emailService.from,
+      to: user.email,
+      text: 'Sciencewings - reset password',
+      html: '<html><body>Reset password</body></html>',
+      subject: ' reset password',
+    };
+
+    this.emailService.sendEmail(emailMessage);
+    return Result.ok<number>(user.getValue().id);
   }
 
   @log()

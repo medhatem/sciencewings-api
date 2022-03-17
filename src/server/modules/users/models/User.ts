@@ -5,6 +5,10 @@ import { Address } from '@/modules/address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Phone } from '@/modules/phones/models/Phone';
 
+export enum MemberStatusType {
+  INVITATION_PENDING = 'INVITATION_PENDING',
+  ACTIVE = 'ACTIVE',
+}
 @provideSingleton()
 @Entity()
 export class User extends BaseModel<User> {
@@ -54,4 +58,7 @@ export class User extends BaseModel<User> {
 
   @Property({ nullable: true })
   share?: boolean;
+
+  @Property({ nullable: false })
+  status?: MemberStatusType;
 }

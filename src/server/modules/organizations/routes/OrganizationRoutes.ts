@@ -3,7 +3,7 @@ import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
 import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
-import { CreateOrganizationRO, UserInviteToOrgRO } from './RequestObject';
+import { CreateOrganizationRO, UserInviteToOrgRO, UserResendPassword } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -11,6 +11,8 @@ import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
+import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
+import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -56,6 +58,32 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
     const result = await this.OrganizationService.inviteUserByEmail(payload.email, payload.organizationId);
+
+    if (result.isFailure) {
+      return new InviteUserDTO().serialize({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new InviteUserDTO().serialize({
+      body: { statusCode: 201, userId: result.getValue() },
+    });
+  }
+
+  /**
+   * resend the reset password email to the invited user
+   *
+   * @param payload
+   *
+   */
+  @POST
+  @Path('resendInvite')
+  @Response<UserIdDTO>(200, 'invite resent successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Security([], KEYCLOAK_TOKEN)
+  @LoggerStorage()
+  public async resendInvite(payload: UserResendPassword): Promise<InviteUserDTO> {
+    const result = await this.OrganizationService.resendInvite(payload.userId, payload.orgId);
 
     if (result.isFailure) {
       return new InviteUserDTO().serialize({

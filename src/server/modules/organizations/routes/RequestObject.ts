@@ -60,3 +60,13 @@ export class UserInviteToOrgRO {
   @JsonProperty()
   email: string;
 }
+
+@Serializable()
+@unique
+export class UserResendPassword {
+  @JsonProperty()
+  userId: number;
+
+  @JsonProperty()
+  orgId: number;
+}
