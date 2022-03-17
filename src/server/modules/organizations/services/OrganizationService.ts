@@ -11,7 +11,7 @@ import { IOrganizationService } from '@/modules/organizations/interfaces/IOrgani
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { Result } from '@/utils/Result';
-import { User } from '@/modules/users/models/User';
+import { userStatus, User } from '@/modules/users/models/User';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { EmailMessage } from '@/types/types';
@@ -223,7 +223,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     };
 
     this.emailService.sendEmail(emailMessage);
-    user.status = MemberStatusType.INVITATION_PENDING;
+    user.status = userStatus.INVITATION_PENDING;
     return Result.ok<number>(savedUser.getValue().id);
   }
 
@@ -245,7 +245,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail(`Organization with id ${orgId} does not exist.`);
     }
     //if user is member of org ??
-    if (!(user.status = MemberStatusType.INVITATION_PENDING)) {
+    if (!(user.status = userStatus.INVITATION_PENDING)) {
       return Result.fail(`user with id ${id} is already reset his password.`);
     }
     const emailMessage: EmailMessage = {

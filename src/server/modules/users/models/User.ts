@@ -5,7 +5,7 @@ import { Address } from '@/modules/address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Phone } from '@/modules/phones/models/Phone';
 
-export enum MemberStatusType {
+export enum userStatus {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
@@ -60,5 +60,5 @@ export class User extends BaseModel<User> {
   share?: boolean;
 
   @Property({ nullable: false })
-  status?: MemberStatusType;
+  status?: userStatus;
 }

@@ -10,7 +10,7 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUserInfo } from '@/types/UserRequest';
 import { Result } from '@/utils/Result';
-import { User, MemberStatusType } from '@/modules/users/models/User';
+import { User, userStatus } from '@/modules/users/models/User';
 import { UserDao } from '@/modules/users/daos/UserDao';
 import { UserRO } from '@/modules/users/routes/RequstObjects';
 import { getConfig } from '@/configuration/Configuration';
@@ -132,7 +132,7 @@ export class UserService extends BaseService<User> implements IUserService {
         value: payload.password,
       },
     });
-    user.status = MemberStatusType.ACTIVE;
+    user.status = userStatus.ACTIVE;
     return Result.ok<string>('Password reset successful');
   }
 
