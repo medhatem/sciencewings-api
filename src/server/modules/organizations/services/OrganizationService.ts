@@ -239,12 +239,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const existingOrg = await this.dao.get(orgId);
 
-    await existingOrg.members.init();
-
-    if (!existingOrg.members) {
+    if (!existingOrg) {
       return Result.fail(`Organization with id ${orgId} does not exist.`);
     }
-    //if user is member of org ??
+
+    if (!this.memberService.get(user.id)) {
+      return Result.fail(`user with id ${orgId} is not member in organisation.`);
+    }
+
     if (!(user.status = userStatus.INVITATION_PENDING)) {
       return Result.fail(`user with id ${id} is already reset his password.`);
     }
@@ -252,7 +254,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       from: this.emailService.from,
       to: user.email,
       text: 'Sciencewings - reset password',
-      html: '<html><body>Reset password</body></html>',
+      html: '<html><body><a href="http://localhost:8080/auth/realms/master/login-actions/required-action?execution=UPDATE_PASSWORD&client_id=account-console&tab_id=l0gMi-ME6Eg">reset password</a></body></html>',
       subject: ' reset password',
     };
 
