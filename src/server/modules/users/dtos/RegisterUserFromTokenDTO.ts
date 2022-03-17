@@ -1,5 +1,5 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable, deserialize } from 'typescript-json-serializer';
+import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
 import { AddressDTO } from '@/modules/address';
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
@@ -37,9 +37,7 @@ export class UserIdDTO extends BaseBodyDTO {
 
   @JsonProperty({
     type: AddressDTO,
-    beforeDeserialize: (entity) => {
-      return entity.map((el: any) => deserialize(el, AddressDTO));
-    },
+    name: 'address',
   })
   addresses: Array<AddressDTO>;
 }
@@ -59,18 +57,18 @@ export class ErrorDTO extends BaseErrorDTO {}
 @unique
 export class RegisterUserFromTokenDTO extends BaseRequestDTO {
   @JsonProperty()
-  body?: UserIdDTO = new UserIdDTO();
+  body?: UserIdDTO;
 
   @JsonProperty()
-  error?: BaseErrorDTO = new ErrorDTO();
+  error?: BaseErrorDTO;
 }
 
 @Serializable()
 @unique
 export class ResetPasswordDTO extends BaseRequestDTO {
   @JsonProperty()
-  body?: ResetDTO = new ResetDTO();
+  body?: ResetDTO;
 
   @JsonProperty()
-  error?: BaseErrorDTO = new ErrorDTO();
+  error?: BaseErrorDTO;
 }

@@ -11,8 +11,12 @@ import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
+<<<<<<< HEAD
 import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
+=======
+import { OrganizationMembersDTO } from '../dtos/GetOrganizationsMembersDTO';
+>>>>>>> d2e1d689c879644c95481b86bcf4657517d1cacd
 
 @provideSingleton()
 @Path('organization')
@@ -38,10 +42,10 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
-      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new OrganizationDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new OrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -60,13 +64,13 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.inviteUserByEmail(payload.email, payload.organizationId);
 
     if (result.isFailure) {
-      return new InviteUserDTO().serialize({
+      return new InviteUserDTO({
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
 
-    return new InviteUserDTO().serialize({
-      body: { statusCode: 201, userId: result.getValue() },
+    return new InviteUserDTO({
+      body: { statusCode: 201, id: result.getValue() },
     });
   }
 
@@ -105,20 +109,20 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('getMembers/:id')
   @Security('', KEYCLOAK_TOKEN)
   @LoggerStorage()
-  @Response<OrganizationDTO>(200, 'Return organization members Successfully')
-  @Response<OrganizationDTO>(500, 'Internal Server Error')
-  public async getUsers(@PathParam('id') payload: number) {
+  @Response<OrganizationMembersDTO>(200, 'Return organization members Successfully')
+  @Response<OrganizationMembersDTO>(500, 'Internal Server Error')
+  public async getUsers(@PathParam('id') payload: number): Promise<OrganizationMembersDTO> {
     const result = await this.OrganizationService.getMembers(payload);
 
     if (result.isFailure) {
-      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new OrganizationMembersDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new OrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 200 } });
+    return new OrganizationMembersDTO({ body: { members: result.getValue(), statusCode: 200 } });
   }
 
   /**
-   * retrieve all the organizations a given user is a member of
+   * retrieve all the organizations owned by a given user
    *
    * @param id: user id
    */
@@ -132,9 +136,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.getUserOrganizations(payload);
 
     if (result.isFailure) {
-      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new OrganizationDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new OrganizationDTO().serialize({ body: { organizations: result.getValue(), statusCode: 200 } });
+    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 200 } });
   }
 }

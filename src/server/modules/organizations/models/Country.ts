@@ -2,17 +2,17 @@ import { Entity, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { ResCurrency } from '@/modules/organizations/models/ResCurrency';
+import { Currency } from '@/modules/organizations/models/Currency';
 
 @provideSingleton()
 @Entity()
-export class ResCountry extends BaseModel<ResCountry> {
+export class Country extends BaseModel<Country> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResCountry {
-    return container.get(ResCountry);
+  static getInstance(): Country {
+    return container.get(Country);
   }
 
   @PrimaryKey()
@@ -32,8 +32,8 @@ export class ResCountry extends BaseModel<ResCountry> {
   @Property({ nullable: true })
   addressViewId?: number;
 
-  @ManyToOne({ entity: () => ResCurrency, onDelete: 'set null', nullable: true })
-  currency?: ResCurrency;
+  @ManyToOne({ entity: () => Currency, onDelete: 'set null', nullable: true })
+  currency?: Currency;
 
   @Property({ nullable: true })
   phoneCode?: number;

@@ -3,32 +3,32 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from './Organization';
-import { ResCurrency } from '@/modules/organizations/models/ResCurrency';
+import { Currency } from '@/modules/organizations/models/Currency';
 
 @provideSingleton()
 @Entity()
-@Unique({ name: 'res_currency_rate_unique_name_per_day', properties: ['name', 'currency', 'organization'] })
-export class ResCurrencyRate extends BaseModel<ResCurrencyRate> {
+@Unique({ name: 'currency_rate_unique_name_per_day', properties: ['name', 'currency', 'organization'] })
+export class CurrencyRate extends BaseModel<CurrencyRate> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResCurrencyRate {
-    return container.get(ResCurrencyRate);
+  static getInstance(): CurrencyRate {
+    return container.get(CurrencyRate);
   }
 
   @PrimaryKey()
   id!: number;
 
-  @Index({ name: 'res_currency_rate_name_index' })
+  @Index({ name: 'currency_rate_name_index' })
   @Property({ columnType: 'date' })
   name!: Date;
 
   @Property({ columnType: 'numeric', nullable: true })
   rate?: number;
 
-  @OneToOne({ entity: () => ResCurrency, onDelete: 'cascade' })
-  currency!: ResCurrency;
+  @OneToOne({ entity: () => Currency, onDelete: 'cascade' })
+  currency!: Currency;
 
   @OneToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
   organization?: Organization;

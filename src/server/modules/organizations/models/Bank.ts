@@ -2,18 +2,18 @@ import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { ResCountry } from '@/modules/organizations/models/ResCountry';
-import { ResCountryState } from '@/modules/organizations/models/ResCountryState';
+import { Country } from '@/modules/organizations/models/Country';
+import { CountryState } from '@/modules/organizations/models/CountryState';
 
 @provideSingleton()
 @Entity()
-export class ResBank extends BaseModel<ResBank> {
+export class Bank extends BaseModel<Bank> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResBank {
-    return container.get(ResBank);
+  static getInstance(): Bank {
+    return container.get(Bank);
   }
 
   @PrimaryKey()
@@ -34,11 +34,11 @@ export class ResBank extends BaseModel<ResBank> {
   @Property({ nullable: true })
   city?: string;
 
-  @ManyToOne({ entity: () => ResCountryState, fieldName: 'state', onDelete: 'set null', nullable: true })
-  state?: ResCountryState;
+  @ManyToOne({ entity: () => CountryState, fieldName: 'state', onDelete: 'set null', nullable: true })
+  state?: CountryState;
 
-  @ManyToOne({ entity: () => ResCountry, fieldName: 'country', onDelete: 'set null', nullable: true })
-  country?: ResCountry;
+  @ManyToOne({ entity: () => Country, fieldName: 'country', onDelete: 'set null', nullable: true })
+  country?: Country;
 
   @Property({ nullable: true })
   email?: string;
@@ -49,7 +49,7 @@ export class ResBank extends BaseModel<ResBank> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @Index({ name: 'res_bank_bic_index' })
+  @Index({ name: 'bank_bic_index' })
   @Property({ nullable: true })
   bic?: string;
 }

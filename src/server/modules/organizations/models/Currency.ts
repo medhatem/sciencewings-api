@@ -5,19 +5,19 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provideSingleton()
 @Entity()
-export class ResCurrency extends BaseModel<ResCurrency> {
+export class Currency extends BaseModel<Currency> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResCurrency {
-    return container.get(ResCurrency);
+  static getInstance(): Currency {
+    return container.get(Currency);
   }
 
   @PrimaryKey()
   id!: number;
 
-  @Unique({ name: 'res_currency_unique_name' })
+  @Unique({ name: 'currency_unique_name' })
   @Property()
   name!: string;
 
