@@ -250,11 +250,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!(user.status = userStatus.INVITATION_PENDING)) {
       return Result.fail(`user with id ${id} is already reset his password.`);
     }
+    const url = process.env.KEYCKLOACK_RESET_PASSWORD;
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
       to: user.email,
       text: 'Sciencewings - reset password',
-      html: '<html><body><a href="http://localhost:8080/auth/realms/master/login-actions/required-action?execution=UPDATE_PASSWORD&client_id=account-console&tab_id=l0gMi-ME6Eg">reset password</a></body></html>',
+      html: `<html><body><a href=${url}>-reset password</a></body></html>`,
       subject: ' reset password',
     };
 
