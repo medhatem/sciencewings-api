@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { container, provideSingleton } from '@/di/index';
 import { Address } from '@/modules/address/models/AdressModel';
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -39,10 +39,9 @@ export class Member extends BaseModel<Member> {
   })
   resourceCalendar?: ResourceCalendar;
 
-  @OneToMany({
+  @ManyToMany({
     entity: () => Resource,
     nullable: true,
-    mappedBy: (entity) => entity.managers,
   })
   resources? = new Collection<Resource>(this);
 

@@ -117,7 +117,7 @@ export class ResourceRO {
   timezone!: string;
 
   @JsonProperty()
-  calendar: ResourceCalendarRO[];
+  calendar?: ResourceCalendarRO[];
 
   @JsonProperty()
   tags?: ResourceTagRO[];

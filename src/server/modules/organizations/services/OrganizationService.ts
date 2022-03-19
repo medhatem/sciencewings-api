@@ -4,7 +4,6 @@ import { IMemberService } from '@/modules/hr/interfaces';
 import { MemberStatusType } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Collection } from '@mikro-orm/core';
 import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
@@ -243,15 +242,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Collection<Member>>> {
+  public async getMembers(orgId: number): Promise<Result<Member[]>> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
       return Result.fail(`Organization with id ${orgId} does not exist.`);
     }
 
-    const members: Collection<Member> = await existingOrg.members.init();
-    return Result.ok<Collection<Member>>(members);
+    return Result.ok<any>(existingOrg.members);
   }
 
   @log()
@@ -385,7 +383,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @validate
   public async createResource(@validateParam(CreateResourceSchema) payload: ResourceRO): Promise<Result<number>> {
     let user: User = null;
-
     if (payload.user) {
       const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
       if (fetchedUser.isFailure || !fetchedUser) {
@@ -403,20 +400,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
       organization = fetchedOrganization;
     }
 
-    const managers = [];
+    const managers: Member[] = [];
     if (payload.managers) {
       for (const manager of payload.managers) {
-        console.log({ manager });
-
-        try {
-          const fetcheManager = await this.memberService.get(manager);
-          if (fetcheManager.isFailure || !fetcheManager.getValue()) {
-            return Result.fail<number>(`Manager with id ${manager} does not exist.`);
-          }
-          managers.push(fetcheManager.getValue());
-        } catch (error) {
-          console.log({ error });
+        const fetcheManager = await this.memberService.get(manager);
+        if (fetcheManager.isFailure || !fetcheManager.getValue()) {
+          return Result.fail<number>(`Manager with id ${manager} does not exist.`);
         }
+        managers.push(fetcheManager.getValue());
       }
     }
 
@@ -435,29 +426,27 @@ export class OrganizationService extends BaseService<Organization> implements IO
     resource.organization = organization;
     resource.user = user;
 
-    console.log('---------------------------resourceService---------------------------');
-    const createdResource = await this.resourceService.create(resource as Resource);
-    if (createdResource.isFailure) {
-      return Result.fail<number>(createdResource.error);
+    const createdResourceResult = await this.resourceService.create(resource);
+    if (createdResourceResult.isFailure) {
+      return Result.fail<number>(createdResourceResult.error);
     }
+    const createdResource = createdResourceResult.getValue();
 
-    resource.managers = await resource.managers.init();
+    await createdResource.managers.init();
     for (const manager of managers) {
-      resource.managers.add(manager);
+      createdResource.managers.add(manager);
     }
 
-    console.log('---------------------------resourceTagService---------------------------');
     await applyToAll(payload.tags, async (tag) => {
       await this.resourceTagService.create({
         title: tag.title,
-        resource: createdResource.getValue(),
+        resource: createdResource,
       });
     });
 
-    console.log('---------------------------update---------------------------');
-    await this.resourceService.update(resource);
+    await this.resourceService.update(createdResource);
 
-    const id = createdResource.getValue().id;
+    const id = createdResource.id;
     return Result.ok<number>(id);
   }
 

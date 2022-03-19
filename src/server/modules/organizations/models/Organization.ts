@@ -60,14 +60,19 @@ export class Organization extends BaseModel<Organization> {
 
   @Property({ nullable: true })
   socialFacebook?: string;
+
   @Property({ nullable: true })
   socialTwitter?: string;
+
   @Property({ nullable: true })
   socialGithub?: string;
+
   @Property({ nullable: true })
   socialLinkedin?: string;
+
   @Property({ nullable: true })
   socialYoutube?: string;
+
   @Property({ nullable: true })
   socialInstagram?: string;
 

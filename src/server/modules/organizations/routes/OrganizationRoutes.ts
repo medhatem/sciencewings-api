@@ -182,7 +182,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     if (result.isFailure) {
       return new ResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
-    console.log({ result: result.getValue() });
 
     return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
   }

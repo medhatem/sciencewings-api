@@ -7,6 +7,9 @@ import { unique } from '@/decorators/unique';
 export class MemberBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
+
+  @JsonProperty()
+  name: string;
 }
 
 @Serializable()

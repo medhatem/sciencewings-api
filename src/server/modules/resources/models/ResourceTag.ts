@@ -1,6 +1,6 @@
 import { container, provide } from '@/di';
 import { BaseModel } from '@/modules/base';
-import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToMany, Property } from '@mikro-orm/core';
 import { Resource } from './Resource';
 
 @provide()
@@ -14,14 +14,11 @@ export class ResourceTag extends BaseModel<ResourceTag> {
     return container.get(ResourceTag);
   }
 
-  @Unique()
   @Property()
   title!: string;
 
-  @ManyToOne({
+  @ManyToMany({
     entity: () => Resource,
-    onDelete: 'cascade',
-    nullable: true,
   })
   resource: Resource;
 }
