@@ -104,7 +104,8 @@ export class Server {
 
   private configureAuthenticator() {
     const keyCloakAuth = container.get(KeyCloakToken);
-    RestServer.registerAuthenticator(keyCloakAuth); // register the default authenticator which will be the keycloak jwt token
+    // register the default authenticator which will be the keycloak jwt token
+    RestServer.registerAuthenticator(keyCloakAuth);
   }
 
   private startKeycloakAdmin() {
