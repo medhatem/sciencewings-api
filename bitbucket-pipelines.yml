@@ -47,6 +47,7 @@ definitions:
     - step: &deploy
         name: deploy to dev
         trigger: manual
+        deployment: Staging
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           - docker-compose -f devops/staging/docker-compose.yml build

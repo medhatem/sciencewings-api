@@ -1,7 +1,6 @@
 import { POST, Path, Security, ContextRequest, PUT, GET, PathParam } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '@/modules/users/models/User';
 import { UserRequest } from '@/types/UserRequest';
@@ -44,7 +43,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('registerUserFromToken')
   @Response<UserIdDTO>(201, 'User Registred Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
     const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
@@ -74,7 +73,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('resetPassword')
   @Response<ResetDTO>(201, 'Password reset successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
     const result = await this.userService.resetPassword(payload);
@@ -103,7 +102,7 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @POST
   @Path('create')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<UserIdDTO>(201, 'User created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -130,7 +129,7 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @PUT
   @Path('updateUser/:keycloakId')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<UserIdDTO>(204, 'User updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -161,7 +160,7 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @PUT
   @Path('updateUserDetail')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<UserIdDTO>(204, 'User updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -191,6 +190,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @GET
   @Path('getUserByKeycloakId/:kcid')
   @LoggerStorage()
+  @Security()
   @Response<UserBaseBodyGetDTO>(200, 'Return User Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async getUserByKeycloakId(@PathParam('kcid') keycloakId: string): Promise<UserDTO> {

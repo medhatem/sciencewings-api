@@ -7,7 +7,6 @@ import { ContractDTO } from '@/modules/hr/dtos/ContractDTO';
 import { UpdateContractDTO } from '@/modules/hr/dtos/ContractDTO';
 import { ContractRO } from './RequestObject';
 import { Response } from 'typescript-rest-swagger';
-import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 @provideSingleton()
 @Path('contracts')

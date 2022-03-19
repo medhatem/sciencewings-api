@@ -2,7 +2,6 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
-
 import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
@@ -12,6 +11,7 @@ import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrgani
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { OrganizationMembersDTO } from '../dtos/GetOrganizationsMembersDTO';
+
 import {
   CreatedResourceBodyDTO,
   CreateResourceDTO,
@@ -110,7 +110,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @LoggerStorage()
   @Response<OrganizationDTO>(200, 'Return Organization that the users belongs to, Successfully')
   @Response<OrganizationDTO>(500, 'Internal Server Error')
-  public async getUserOrganizations(@PathParam('id') payload: number) {
+  public async getUserOrganizations(@PathParam('id') payload: number): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.getUserOrganizations(payload);
 
     if (result.isFailure) {
