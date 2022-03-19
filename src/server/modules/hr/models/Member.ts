@@ -1,5 +1,5 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 import { Address } from '@/modules/address/models/AdressModel';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
@@ -16,7 +16,7 @@ export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
-@provideSingleton()
+@provide()
 @Entity()
 @Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
 export class Member extends BaseModel<Member> {

@@ -51,9 +51,6 @@ export class ResourceBodyDTO extends BaseBodyDTO {
   active: boolean;
 
   @JsonProperty()
-  organization: number;
-
-  @JsonProperty()
   resourceType!: string;
 
   @JsonProperty()

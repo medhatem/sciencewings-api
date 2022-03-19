@@ -402,7 +402,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const managers: Member[] = [];
     if (payload.managers) {
-      for (const manager of payload.managers) {
+      for await (const manager of payload.managers) {
         const fetcheManager = await this.memberService.get(manager);
         if (fetcheManager.isFailure || !fetcheManager.getValue()) {
           return Result.fail<number>(`Manager with id ${manager} does not exist.`);
@@ -411,22 +411,30 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    const resource = this.resourceService.wrapEntity(
-      new Resource(),
-      {
-        name: payload.name,
-        description: payload.description,
-        active: payload.active,
-        resourceType: payload.resourceType,
-        timezone: payload.timezone,
-      },
-      false,
-    );
+    // const resource = this.resourceService.wrapEntity(
+    //   new Resource(),
+    //   {
+    //     name: payload.name,
+    //     description: payload.description,
+    //     active: payload.active,
+    //     resourceType: payload.resourceType,
+    //     timezone: payload.timezone,
+    //   },
+    //   true,
+    // );
 
-    resource.organization = organization;
-    resource.user = user;
+    // resource.organization = organization;
+    // resource.user = user;
 
-    const createdResourceResult = await this.resourceService.create(resource);
+    const createdResourceResult = await this.resourceService.create({
+      name: payload.name,
+      description: payload.description,
+      active: payload.active,
+      resourceType: payload.resourceType,
+      timezone: payload.timezone,
+      organization,
+      user,
+    });
     if (createdResourceResult.isFailure) {
       return Result.fail<number>(createdResourceResult.error);
     }
@@ -437,14 +445,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
       createdResource.managers.add(manager);
     }
 
-    await applyToAll(payload.tags, async (tag) => {
-      await this.resourceTagService.create({
-        title: tag.title,
-        resource: createdResource,
-      });
-    });
+    await applyToAll(
+      payload.tags,
+      async (tag) => {
+        await this.resourceTagService.create({
+          title: tag.title,
+          resource: createdResource,
+        });
+      },
+      true,
+    );
 
     await this.resourceService.update(createdResource);
+    // await this.dao.update(organization);
 
     const id = createdResource.id;
     return Result.ok<number>(id);
