@@ -32,10 +32,10 @@ export class ContractRoutes extends BaseRoutes<Contract> {
     const result = await this.contractService.createContract(payload);
 
     if (result.isFailure) {
-      return new ContractDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new ContractDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new ContractDTO().serialize({ body: { contractId: result.getValue(), statusCode: 201 } });
+    return new ContractDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -51,9 +51,9 @@ export class ContractRoutes extends BaseRoutes<Contract> {
     const result = await this.contractService.updateContract(payload, id);
 
     if (result.isFailure) {
-      return new ContractDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new ContractDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new ContractDTO().serialize({ body: { contractId: result.getValue(), statusCode: 204 } });
+    return new ContractDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }

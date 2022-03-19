@@ -45,12 +45,12 @@ export class BaseRoutes<T extends BaseModel<T>> {
   public async getAll(): Promise<any> {
     const result = await this.service.getAll();
     if (result.isFailure) {
-      return this.getDTOMapper.serialize({
+      return this.getDTOMapper.deserialize({
         error: { statusCode: 500, message: result.error },
       });
     }
-    return this.getDTOMapper.serialize({
-      body: { statusCode: 204, enities: result.getValue() },
+    return this.getDTOMapper.deserialize({
+      body: { statusCode: 204, body: result.getValue() },
     });
   }
 

@@ -34,10 +34,10 @@ export class JobRoutes extends BaseRoutes<Job> {
     const result = await this.jobService.createJob(payload);
 
     if (result.isFailure) {
-      return new JobDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new JobDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new JobDTO().serialize({ body: { jobId: result.getValue(), statusCode: 201 } });
+    return new JobDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -56,9 +56,9 @@ export class JobRoutes extends BaseRoutes<Job> {
     const result = await this.jobService.updateJob(payload, id);
 
     if (result.isFailure) {
-      return new JobDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new JobDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new JobDTO().serialize({ body: { jobId: result.getValue(), statusCode: 204 } });
+    return new JobDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }
