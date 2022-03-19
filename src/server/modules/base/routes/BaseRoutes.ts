@@ -5,7 +5,6 @@ import { Path, GET, PUT, PathParam, DELETE, Security } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
 import { BaseRequestDTO } from '../dtos/BaseDTO';
 import { Logger } from '@/utils/Logger';
-import { KEYCLOAK_TOKEN } from '@/modules/../authenticators/constants';
 
 @provideSingleton()
 export class BaseRoutes<T extends BaseModel<T>> {
@@ -24,7 +23,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
 
   @GET
   @Path('/getById/:id')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @Response(200, 'success')
   public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
     const result = await this.service.get(id);
@@ -40,7 +39,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
 
   @GET
   @Path('/getAll')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @Response(200, 'success')
   @Response(401, 'error')
   public async getAll(): Promise<any> {
@@ -57,7 +56,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
 
   @PUT
   @Path('/:id')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @Response(204, 'success')
   public async update(@PathParam('id') id: number, payload: any): Promise<any> {
     const currentEntity = await this.service.get(id);
@@ -85,7 +84,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
 
   @DELETE
   @Path('/:id')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @Response(201, 'success')
   public async remove(@PathParam('id') id: number): Promise<any> {
     const currentEntity = await this.service.get(id);

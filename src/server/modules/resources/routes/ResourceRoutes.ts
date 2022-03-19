@@ -5,7 +5,6 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { Path, PathParam, POST, PUT, Security, GET } from 'typescript-rest';
 import { CreateResourceRO } from './RequestObject';
 import { IResourceService } from '@/modules/resources/interfaces';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import {
   ResourceDTO,
@@ -37,7 +36,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   @LoggerStorage()
@@ -59,7 +58,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -80,7 +79,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @GET
   @Path('getOgranizationResourcesById/:organizationId')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
