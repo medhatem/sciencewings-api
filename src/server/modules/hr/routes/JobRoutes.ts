@@ -27,7 +27,7 @@ export class JobRoutes extends BaseRoutes<Job> {
    */
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<JobRO>(201, 'Job created Successfully')
   @Response<JobRO>(500, 'Internal Server Error')
@@ -49,7 +49,7 @@ export class JobRoutes extends BaseRoutes<Job> {
    */
   @PUT
   @Path('/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<JobDTO>(204, 'Job updated Successfully')
   @Response<JobDTO>(500, 'Internal Server Error')

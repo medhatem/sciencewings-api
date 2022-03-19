@@ -25,7 +25,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
    */
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<ContractRO>(201, 'Contract created Successfully')
   @Response<ContractRO>(500, 'Internal Server Error')
@@ -44,7 +44,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
    */
   @PUT
   @Path('/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<ContractDTO>(204, 'Contract updated Successfully')
   @Response<ContractDTO>(500, 'Internal Server Error')

@@ -2,7 +2,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
+
 import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
@@ -35,7 +35,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
   @POST
   @Path('createOrganization')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<OrganizationDTO>(201, 'Organization created Successfully')
   @Response<OrganizationDTO>(500, 'Internal Server Error')
@@ -62,7 +62,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('inviteUserToOrganization')
   @Response<InviteUserDTO>(201, 'User Registred Successfully')
   @Response<OrganizationDTO>(500, 'Internal Server Error')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
     const result = await this.OrganizationService.inviteUserByEmail(payload.email, payload.organizationId);
@@ -85,7 +85,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('getMembers/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<OrganizationMembersDTO>(200, 'Return organization members Successfully')
   @Response<OrganizationMembersDTO>(500, 'Internal Server Error')
@@ -106,7 +106,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('getUserOrganizations/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<OrganizationDTO>(200, 'Return Organization that the users belongs to, Successfully')
   @Response<OrganizationDTO>(500, 'Internal Server Error')
@@ -130,7 +130,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @POST
   @Path('resources/create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   @LoggerStorage()
@@ -152,7 +152,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('resources/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -173,7 +173,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('resources/getOgranizationResourcesById/:organizationId')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
