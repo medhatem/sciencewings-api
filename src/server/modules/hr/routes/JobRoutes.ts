@@ -3,7 +3,6 @@ import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Job } from '@/modules/hr/models/Job';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { JobDTO, CreateJobDTO, UpdateJobDTO } from '@/modules/hr/dtos/JobDTO';
-import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { JobRO } from './RequestObject';
 import { IJobService } from '@/modules/hr/interfaces';
@@ -27,7 +26,7 @@ export class JobRoutes extends BaseRoutes<Job> {
    */
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<JobRO>(201, 'Job created Successfully')
   @Response<JobRO>(500, 'Internal Server Error')
@@ -49,7 +48,7 @@ export class JobRoutes extends BaseRoutes<Job> {
    */
   @PUT
   @Path('/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<JobDTO>(204, 'Job updated Successfully')
   @Response<JobDTO>(500, 'Internal Server Error')

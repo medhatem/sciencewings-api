@@ -8,7 +8,6 @@ import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 import { container, provideSingleton } from '@/di';
 
-import { KEYCLOAK_TOKEN } from './authenticators/constants';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { Keycloak } from '@/sdks/keycloak';
 import { RequestHandler } from 'express';
@@ -105,7 +104,7 @@ export class Server {
 
   private configureAuthenticator() {
     const keyCloakAuth = container.get(KeyCloakToken);
-    RestServer.registerAuthenticator(keyCloakAuth, KEYCLOAK_TOKEN);
+    RestServer.registerAuthenticator(keyCloakAuth); // register the default authenticator which will be the keycloak jwt token
   }
 
   private startKeycloakAdmin() {
