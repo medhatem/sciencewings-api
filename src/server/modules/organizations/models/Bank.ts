@@ -1,11 +1,11 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Country } from '@/modules/organizations/models/Country';
 import { CountryState } from '@/modules/organizations/models/CountryState';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Bank extends BaseModel<Bank> {
   constructor() {

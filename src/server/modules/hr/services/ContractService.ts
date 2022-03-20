@@ -141,7 +141,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     const contract = this.wrapEntity(currentContract, {
       ...currentContract,
       ...payload,
-      organization: organization ? organization : currentContract.organization,
+      organization: organization, //? organization : currentContract.organization,
       ...entities,
     });
 

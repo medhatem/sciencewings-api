@@ -98,14 +98,6 @@ export class JobService extends BaseService<Job> implements IJobService {
       return Result.fail(`Job with id ${jobId} does not exist`);
     }
 
-    if (payload.group) {
-      const fetchedGroup = await this.getGroup(payload.group);
-      if (fetchedGroup.isFailure) {
-        return fetchedGroup;
-      }
-      fetchedJob.group = fetchedGroup.getValue();
-    }
-
     if (payload.organization) {
       const fetchedOrganization = await this.getOrganization(payload.group);
       if (fetchedOrganization.isFailure) {

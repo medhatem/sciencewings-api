@@ -154,7 +154,7 @@ export class UserService extends BaseService<User> implements IUserService {
       });
 
       createdUser.address = await createdUser.address.init();
-      createdUser.phone = await createdUser.phone.init();
+      createdUser.phones = await createdUser.phones.init();
 
       applyToAll(userAddress, async (address) => {
         const createdAddress = await this.addressService.create({
@@ -180,7 +180,7 @@ export class UserService extends BaseService<User> implements IUserService {
           user: createdUser,
         });
         if (!createdPhone.isFailure) {
-          createdUser.phone.add(createdPhone.getValue());
+          createdUser.phones.add(createdPhone.getValue());
         }
       });
 

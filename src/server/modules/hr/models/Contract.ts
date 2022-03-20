@@ -1,35 +1,26 @@
-import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
-
-import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
 import { ContractType } from '@/modules/hr/models/ContractType';
 import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-@provideSingleton()
-@Entity()
-export class Contract extends BaseModel<Contract> {
-  constructor() {
-    super();
-  }
 
+@provide()
+@Entity()
+export class Contract {
   static getInstance(): Contract {
     return container.get(Contract);
   }
 
-  @PrimaryKey()
-  id!: number;
+  @ManyToOne({ entity: () => Member, primary: true })
+  member!: Member;
 
   @Property()
   name!: string;
 
   @Property({ nullable: true })
   active?: boolean;
-
-  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
-  member?: Member;
 
   @ManyToOne({ entity: () => Group, onDelete: 'set null', nullable: true })
   group?: Group;
@@ -60,9 +51,6 @@ export class Contract extends BaseModel<Contract> {
 
   @Property({ nullable: true })
   state?: string;
-
-  @ManyToOne({ entity: () => Organization })
-  organization!: Organization;
 
   @ManyToOne({ entity: () => ContractType, onDelete: 'set null', nullable: true })
   contractType?: ContractType;

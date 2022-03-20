@@ -1,10 +1,10 @@
 import { Entity, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Country } from '@/modules/organizations/models/Country';
 
-@provideSingleton()
+@provide()
 @Entity()
 @Unique({ name: 'country_state_name_code_uniq', properties: ['country', 'code'] })
 export class CountryState extends BaseModel<CountryState> {

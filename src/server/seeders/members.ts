@@ -1,4 +1,4 @@
-import { Address, AddressType } from '@/modules/address/models/AdressModel';
+import { Address, AddressType } from '@/modules/address/models/Address';
 
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { Logger } from '@/utils/Logger';
