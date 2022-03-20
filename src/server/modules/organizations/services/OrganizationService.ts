@@ -1,6 +1,6 @@
 import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
-import { IMemberService } from '@/modules/hr/interfaces';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { MemberStatusType } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -16,22 +16,20 @@ import { EmailMessage } from '@/types/types';
 import { Email } from '@/utils/Email';
 import createSchema from '@/modules/organizations/schemas/createOrganizationSchema';
 import { getConfig } from '@/configuration/Configuration';
-import { IUserService } from '@/modules/users/interfaces';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
-import { IAddressService } from '@/modules/address';
+import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { CreateMemberSchema } from '@/modules/hr/schemas/MemberSchema';
 import { MemberRO } from '@/modules/hr/routes/RequestObject';
-import {
-  IResourceCalendarService,
-  IResourceService,
-  IResourceTagService,
-  Resource,
-  ResourceCalendar,
-} from '@/modules/resources';
-import { IPhoneService } from '@/modules/phones';
+import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
+import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
+import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
+import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import {
   CreateResourceSchema,
   ResourceCalendarSchema,

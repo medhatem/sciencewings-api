@@ -10,7 +10,7 @@ import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { OrganizationMembersDTO } from '../dtos/GetOrganizationsMembersDTO';
+import { OrganizationMembersDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 import {
   CreatedResourceBodyDTO,
