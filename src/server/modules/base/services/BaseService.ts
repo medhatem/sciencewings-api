@@ -67,8 +67,15 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   @safeGuard()
-  async getByCriteria(criteria: { [key: string]: any }, fetchStrategy = FETCH_STRATEGY.SINGLE): Promise<T | T[]> {
-    return await this.dao.getByCriteria(criteria, fetchStrategy);
+  async getByCriteria(
+    criteria: { [key: string]: any },
+    fetchStrategy = FETCH_STRATEGY.SINGLE,
+  ): Promise<Result<T | T[]>> {
+    try {
+      return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy));
+    } catch (error) {
+      return Result.fail(error);
+    }
   }
 
   /**
