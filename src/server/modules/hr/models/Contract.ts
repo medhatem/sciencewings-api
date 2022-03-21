@@ -5,10 +5,11 @@ import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { BaseModel } from '@/modules/base';
 
 @provide()
 @Entity()
-export class Contract {
+export class Contract extends BaseModel<Contract> {
   static getInstance(): Contract {
     return container.get(Contract);
   }
