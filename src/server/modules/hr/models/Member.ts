@@ -9,15 +9,23 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
+import { BaseModel } from '../../../modules/base/models/BaseModel';
 
 export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
 
+// const Omit = <T, K extends keyof T>(Class: new () => T, keys: K[]): new () => Omit<T, typeof keys[number]> => Class;
 @provide()
 @Entity()
-export class Member {
+export class Member extends BaseModel<Member> {
+  //Omit(BaseModel, ['id', 'active'] as any) {
+
+  constructor() {
+    super();
+  }
+
   static getInstance(): Member {
     return container.get(Member);
   }

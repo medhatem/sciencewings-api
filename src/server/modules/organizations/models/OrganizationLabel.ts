@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
@@ -13,6 +13,9 @@ export class OrganizationLabel extends BaseModel<OrganizationLabel> {
   static getInstance(): OrganizationLabel {
     return container.get(OrganizationLabel);
   }
+
+  @PrimaryKey()
+  id?: number;
 
   @Unique()
   @Property()

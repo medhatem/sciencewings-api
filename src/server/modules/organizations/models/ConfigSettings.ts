@@ -16,7 +16,7 @@ export class ConfigSettings extends BaseModel<ConfigSettings> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
   organization!: Organization;

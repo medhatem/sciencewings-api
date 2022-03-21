@@ -16,7 +16,7 @@ export class WorkLocation extends BaseModel<WorkLocation> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property({ nullable: true })
   active?: boolean;

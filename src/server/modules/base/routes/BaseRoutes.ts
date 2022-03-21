@@ -7,7 +7,7 @@ import { BaseRequestDTO } from '../dtos/BaseDTO';
 import { Logger } from '@/utils/Logger';
 
 @provideSingleton()
-export class BaseRoutes<T extends BaseModel<T> | any> {
+export class BaseRoutes<T extends BaseModel<T>> {
   private getDTOMapper: BaseRequestDTO;
   private updateDTOMapper: BaseRequestDTO;
   public logger: Logger;

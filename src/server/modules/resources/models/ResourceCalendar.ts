@@ -16,7 +16,7 @@ export class ResourceCalendar extends BaseModel<ResourceCalendar> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

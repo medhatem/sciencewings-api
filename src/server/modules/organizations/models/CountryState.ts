@@ -17,7 +17,7 @@ export class CountryState extends BaseModel<CountryState> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @OneToOne({ entity: () => Country })
   country!: Country;

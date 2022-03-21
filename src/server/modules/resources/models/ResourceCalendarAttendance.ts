@@ -17,7 +17,7 @@ export class ResourceCalendarAttendance extends BaseModel<ResourceCalendarAttend
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

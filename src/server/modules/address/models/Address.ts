@@ -1,4 +1,4 @@
-import { Entity, ManyToMany, Property } from '@mikro-orm/core';
+import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -16,6 +16,9 @@ export class Address extends BaseModel<Address> {
   static getInstance(): Address {
     return container.get(Address);
   }
+
+  @PrimaryKey()
+  id?: number;
 
   @Property()
   country: string;

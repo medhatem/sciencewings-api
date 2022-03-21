@@ -1,4 +1,14 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryKey,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { Address } from '@/modules/address/models/Address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -24,6 +34,10 @@ export class Organization extends BaseModel<Organization> {
   static getInstance(): Organization {
     return container.get(Organization);
   }
+
+  @PrimaryKey()
+  id?: number;
+
   @Unique({ name: 'organization_name_uniq' })
   @Property()
   name!: string;

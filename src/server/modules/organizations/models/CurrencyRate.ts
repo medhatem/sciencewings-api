@@ -18,7 +18,7 @@ export class CurrencyRate extends BaseModel<CurrencyRate> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Index({ name: 'currency_rate_name_index' })
   @Property({ columnType: 'date' })

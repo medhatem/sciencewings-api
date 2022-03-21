@@ -18,7 +18,7 @@ export class Resource extends BaseModel<Resource> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

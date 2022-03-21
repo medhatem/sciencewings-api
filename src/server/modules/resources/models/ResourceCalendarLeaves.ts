@@ -18,7 +18,7 @@ export class ResourceCalendarLeaves extends BaseModel<ResourceCalendarLeaves> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property({ nullable: true })
   name?: string;

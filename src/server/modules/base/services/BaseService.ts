@@ -13,7 +13,7 @@ import { provideSingleton } from '@/di';
 import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IBaseService)
-export class BaseService<T extends BaseModel<T> | any> implements IBaseService<any> {
+export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   public logger: Logger;
   constructor(public dao: BaseDao<T>, public keycloak: Keycloak = Keycloak.getInstance()) {
     this.logger = Logger.getInstance();

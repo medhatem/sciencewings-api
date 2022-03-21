@@ -15,7 +15,7 @@ export class CountryGroup extends BaseModel<CountryGroup> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

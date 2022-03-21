@@ -15,7 +15,7 @@ export class Currency extends BaseModel<Currency> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Unique({ name: 'currency_unique_name' })
   @Property()

@@ -15,7 +15,7 @@ export class ContractType extends BaseModel<ContractType> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

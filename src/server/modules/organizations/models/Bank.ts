@@ -17,7 +17,7 @@ export class Bank extends BaseModel<Bank> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

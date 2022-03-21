@@ -16,7 +16,7 @@ export class ResGroups extends BaseModel<ResGroups> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

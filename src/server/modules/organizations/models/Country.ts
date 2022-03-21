@@ -16,7 +16,7 @@ export class Country extends BaseModel<Country> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Unique({ name: 'res_country_name_uniq' })
   @Property()

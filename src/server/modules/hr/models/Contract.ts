@@ -1,4 +1,4 @@
-import { Entity, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { ContractType } from '@/modules/hr/models/ContractType';
 import { Group } from '@/modules/hr/models/Group';
@@ -12,6 +12,9 @@ export class Contract {
   static getInstance(): Contract {
     return container.get(Contract);
   }
+
+  @PrimaryKey()
+  id?: number;
 
   @ManyToOne({ entity: () => Member, primary: true })
   member!: Member;

@@ -1,4 +1,4 @@
-import { Collection, DateType, Entity, Index, ManyToMany, Property, Unique } from '@mikro-orm/core';
+import { Collection, DateType, Entity, Index, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address';
@@ -16,6 +16,10 @@ export class User extends BaseModel<User> {
   static getInstance(): User {
     return container.get(User);
   }
+
+  @PrimaryKey()
+  id?: number;
+
   @Property()
   firstname: string;
 

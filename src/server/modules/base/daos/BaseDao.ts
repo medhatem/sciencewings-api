@@ -13,7 +13,7 @@ export enum FETCH_STRATEGY {
 }
 
 @provideSingleton()
-export class BaseDao<T extends BaseModel<T> | any> {
+export class BaseDao<T extends BaseModel<T>> {
   public repository: GetRepository<T, EntityRepository<T>>;
   public logger: Logger;
   constructor(public model: T) {
