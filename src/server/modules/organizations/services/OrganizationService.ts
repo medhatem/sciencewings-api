@@ -160,15 +160,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
+  async inviteUserByEmail(orgId: number, email: string): Promise<Result<number>> {
     const existingUser = await this.keycloak
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
+    console.log({ existingUser });
     if (existingUser.length > 0) {
       return Result.fail<number>('The user already exist.');
     }
 
     const existingOrg = await this.dao.get(orgId);
+    console.log({ existingOrg });
 
     if (!existingOrg) {
       return Result.fail<number>('The organization to add the user to does not exist.');
@@ -180,6 +182,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       lastName: '',
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
+    console.log({ createdKeyCloakUser });
 
     //save created keycloak user in the database
     const user = new User();
@@ -189,21 +192,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
     user.keycloakId = createdKeyCloakUser.id;
 
     const savedUser = await this.userService.create(user);
-
     if (savedUser.isFailure) {
       return Result.fail<number>(savedUser.error);
     }
     // create member for the organization
-    const createdMemberResult = await this.memberService.create(
-      this.memberService.wrapEntity(
-        new Member(),
-        {
-          user: savedUser,
-          organization: existingOrg,
-        },
-        false,
-      ),
-    );
+    console.log({ savedUser, existingOrg });
+    const createdMemberResult = await this.memberService.create({
+      user: savedUser.getValue(),
+      organization: existingOrg,
+      memberType: 'regular',
+    });
+    console.log({ createdMemberResult });
+
     if (createdMemberResult.isFailure) {
       return Result.fail<number>(createdMemberResult.error);
     }
