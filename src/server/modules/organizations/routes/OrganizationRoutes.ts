@@ -11,7 +11,6 @@ import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrgani
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { OrganizationMembersDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
-
 import {
   CreatedResourceBodyDTO,
   CreateResourceDTO,
@@ -19,8 +18,8 @@ import {
   ResourceDTO,
   UpdatedResourceBodyDTO,
   UpdateResourceDTO,
-} from '@/modules/resources';
-import { BaseErrorDTO } from '@/modules/base';
+} from '@/modules/resources/dtos/ResourceDTO';
+import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
 @provideSingleton()
 @Path('organization')
