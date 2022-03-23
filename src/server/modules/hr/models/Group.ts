@@ -1,11 +1,11 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules//base/models/BaseModel';
 import { Member } from './Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Group extends BaseModel<Group> {
   constructor() {
@@ -17,7 +17,7 @@ export class Group extends BaseModel<Group> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;
@@ -28,13 +28,12 @@ export class Group extends BaseModel<Group> {
   @Property({ nullable: true })
   active?: boolean;
 
+  //TODO check if managers and members are in this organization
   @ManyToOne({
     entity: () => Organization,
-    onDelete: 'set null',
-    nullable: true,
     index: 'hr_group_organization_id_index',
   })
-  organization?: Organization;
+  organization!: Organization;
 
   @ManyToOne({
     entity: () => Group,

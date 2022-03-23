@@ -1,10 +1,9 @@
 import { Entity, Index, ManyToOne } from '@mikro-orm/core';
-
 import { Organization } from '@/modules/organizations/models/Organization';
 import { User } from '@/modules/users/models/User';
-import { provideSingleton } from '@/di/index';
+import { provide } from '@/di/index';
 
-@provideSingleton()
+@provide()
 @Entity()
 @Index({ name: 'organization_users_rel_user_id_cid_idx', properties: ['cid', 'user'] })
 export class OrganizationUsersRel {

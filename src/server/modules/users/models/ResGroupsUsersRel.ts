@@ -2,9 +2,9 @@ import { Entity, Index, ManyToOne } from '@mikro-orm/core';
 
 import { ResGroups } from '@/modules/users/models/ResGroups';
 import { User } from '@/modules/users/models/User';
-import { provideSingleton } from '@/di/index';
+import { provide } from '@/di/index';
 
-@provideSingleton()
+@provide()
 @Entity()
 @Index({ name: 'res_groups_users_rel_uid_gid_idx', properties: ['gid', 'uid'] })
 export class ResGroupsUsersRel {

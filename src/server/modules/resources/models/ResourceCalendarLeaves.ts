@@ -1,12 +1,12 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class ResourceCalendarLeaves extends BaseModel<ResourceCalendarLeaves> {
   constructor() {
@@ -18,7 +18,7 @@ export class ResourceCalendarLeaves extends BaseModel<ResourceCalendarLeaves> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property({ nullable: true })
   name?: string;

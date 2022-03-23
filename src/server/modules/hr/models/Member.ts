@@ -1,8 +1,5 @@
-import { Entity, ManyToOne, OneToOne, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
-
-import { Address } from '@/modules/address/models/AdressModel';
-import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Entity, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
 import { Contract } from './Contract';
 import { Group } from './Group';
 import { Job } from './Job';
@@ -12,14 +9,15 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
+import { BaseModel } from '../../../modules/base/models/BaseModel';
 
 export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
-@provideSingleton()
+
+@provide()
 @Entity()
-@Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
 export class Member extends BaseModel<Member> {
   constructor() {
     super();
@@ -32,8 +30,18 @@ export class Member extends BaseModel<Member> {
   @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index', nullable: true })
   resource?: Resource;
 
-  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_member_organization_id_index' })
+  @OneToOne({
+    entity: () => Organization,
+    onDelete: 'set null',
+    index: 'hr_member_organization_id_index',
+    primary: true,
+  })
   organization!: Organization;
+
+  @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true, primary: true })
+  user!: User;
+
+  [PrimaryKeyType]?: [Organization, User];
 
   @ManyToOne({
     entity: () => ResourceCalendar,
@@ -65,10 +73,7 @@ export class Member extends BaseModel<Member> {
   workEmail?: string;
 
   @ManyToOne({ entity: () => WorkLocation, onDelete: 'set null', nullable: true })
-  workLocation?: Address;
-
-  @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  user?: User;
+  workLocation?: WorkLocation;
 
   @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
   parent?: Member;

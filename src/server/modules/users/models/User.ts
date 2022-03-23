@@ -1,11 +1,11 @@
-import { Collection, DateType, Entity, Index, OneToMany, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { Collection, DateType, Entity, Index, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Phone } from '@/modules/phones/models/Phone';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class User extends BaseModel<User> {
   user: any;
@@ -16,6 +16,10 @@ export class User extends BaseModel<User> {
   static getInstance(): User {
     return container.get(User);
   }
+
+  @PrimaryKey()
+  id?: number;
+
   @Property()
   firstname: string;
 
@@ -26,18 +30,18 @@ export class User extends BaseModel<User> {
   @Unique()
   email: string;
 
-  @OneToMany({
+  @ManyToMany({
     entity: () => Address,
     mappedBy: (entity) => entity.user,
     nullable: true,
   })
   address? = new Collection<Address>(this);
 
-  @OneToMany({
+  @ManyToMany({
     entity: () => Phone,
     mappedBy: (entity) => entity.user,
   })
-  phone? = new Collection<Phone>(this);
+  phones? = new Collection<Phone>(this);
 
   @Property({ type: DateType, nullable: true })
   dateofbirth = new Date();
