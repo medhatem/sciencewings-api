@@ -1,8 +1,8 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
-import { CreateOrganizationRO, UserInviteToOrgRO } from './RequestObject';
+import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
+import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -10,7 +10,16 @@ import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
 import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { OrganizationMembersDTO } from '../dtos/GetOrganizationsMembersDTO';
+import { OrganizationMembersDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
+import {
+  CreatedResourceBodyDTO,
+  CreateResourceDTO,
+  GetResourceBodyDTO,
+  ResourceDTO,
+  UpdatedResourceBodyDTO,
+  UpdateResourceDTO,
+} from '@/modules/resources/dtos/ResourceDTO';
+import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -108,5 +117,71 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 200 } });
+  }
+
+  // resource routes
+
+  /**
+   * Registers a new resource in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data
+   */
+  @POST
+  @Path('resources/create')
+  @Security()
+  @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @LoggerStorage()
+  public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
+    const result = await this.OrganizationService.createResource(payload);
+
+    if (result.isFailure) {
+      return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
+   * Update a resource in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @PUT
+  @Path('resources/update/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
+    const result = await this.OrganizationService.updateResource(payload, id);
+
+    if (result.isFailure) {
+      return new UpdateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * retrieve all resources of a given organization by id
+   *
+   * @param organizationId organization id
+   */
+  @GET
+  @Path('resources/getOgranizationResourcesById/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceDTO> {
+    const result = await this.OrganizationService.getResourcesOfAGivenOrganizationById(organizationId);
+    if (result.isFailure) {
+      return new ResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
   }
 }

@@ -3,6 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
+import { Resource } from './Resource';
 
 @provide()
 @Entity()
@@ -26,6 +27,9 @@ export class ResourceCalendar extends BaseModel<ResourceCalendar> {
 
   @ManyToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
   organization?: Organization;
+
+  @ManyToOne({ entity: () => Resource, onDelete: 'set null', nullable: true })
+  resource?: Resource;
 
   @Property({ columnType: 'float8', nullable: true })
   hoursPerDay?: number;

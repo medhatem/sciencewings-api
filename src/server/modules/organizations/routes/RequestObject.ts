@@ -6,6 +6,16 @@ import { unique } from '@/decorators/unique';
 
 @Serializable()
 @unique
+export class ResourceManagerRO {
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  user: number;
+}
+
+@Serializable()
+@unique
 export class CreateOrganizationRO {
   @JsonProperty()
   name: string;
@@ -14,19 +24,19 @@ export class CreateOrganizationRO {
   email: string;
 
   @JsonProperty()
-  phones: PhoneRO[];
+  phones: Array<PhoneRO>;
 
   @JsonProperty()
   type: string;
 
   @JsonProperty()
-  addresses: AddressRO[];
+  addresses: Array<AddressRO>;
 
   @JsonProperty()
-  labels: string[];
+  labels: Array<string>;
 
   @JsonProperty()
-  members: number[];
+  members: Array<number>;
 
   @JsonProperty()
   direction: number;
@@ -59,4 +69,82 @@ export class UserInviteToOrgRO {
 
   @JsonProperty()
   email: string;
+}
+
+// resource ROs
+
+@Serializable()
+@unique
+export class ResourceTagRO {
+  @JsonProperty()
+  title!: string;
+}
+
+@Serializable()
+@unique
+export class ResourceCalendarRO {
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  hoursPerDay?: number;
+
+  @JsonProperty()
+  timezone!: string;
+
+  @JsonProperty()
+  twoWeeksCalendar?: boolean;
+}
+
+@Serializable()
+@unique
+export class ResourceRO {
+  @JsonProperty()
+  name: string;
+
+  @JsonProperty()
+  description: string;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  resourceType!: string;
+
+  @JsonProperty()
+  user?: number;
+
+  @JsonProperty()
+  timezone!: string;
+
+  @JsonProperty()
+  calendar?: Array<ResourceCalendarRO>;
+
+  @JsonProperty()
+  tags?: Array<ResourceTagRO>;
+
+  @JsonProperty()
+  managers?: Array<ResourceManagerRO>;
+}
+
+@Serializable()
+@unique
+export class ResourceEventRO {
+  @JsonProperty()
+  title: string;
+
+  @JsonProperty()
+  dateFrom: Date;
+
+  @JsonProperty()
+  dateTo: Date;
 }

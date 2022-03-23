@@ -1,5 +1,5 @@
 import { Job } from '@/modules/hr/models/Job';
-import { IOrganizationService } from '@/modules/organizations/interfaces';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';

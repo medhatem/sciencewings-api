@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { Contract } from './Contract';
 import { Group } from './Group';
@@ -9,7 +9,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
-import { BaseModel } from '../../../modules/base/models/BaseModel';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 
 export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
@@ -50,6 +50,12 @@ export class Member extends BaseModel<Member> {
     index: 'hr_member_resource_calendar_id_index',
   })
   resourceCalendar?: ResourceCalendar;
+
+  @ManyToMany({
+    entity: () => Resource,
+    nullable: true,
+  })
+  resources? = new Collection<Resource>(this);
 
   @Property({ nullable: true })
   name?: string;

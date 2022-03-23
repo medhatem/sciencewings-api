@@ -16,6 +16,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
+import { Resource } from '@/modules/resources';
 import { Job, WorkLocation } from '@/modules/hr';
 
 export enum OrganizationType {
@@ -85,14 +86,19 @@ export class Organization extends BaseModel<Organization> {
 
   @Property({ nullable: true })
   socialFacebook?: string;
+
   @Property({ nullable: true })
   socialTwitter?: string;
+
   @Property({ nullable: true })
   socialGithub?: string;
+
   @Property({ nullable: true })
   socialLinkedin?: string;
+
   @Property({ nullable: true })
   socialYoutube?: string;
+
   @Property({ nullable: true })
   socialInstagram?: string;
 
@@ -105,6 +111,9 @@ export class Organization extends BaseModel<Organization> {
     entity: () => User,
   })
   public admin_contact!: User;
+
+  @OneToMany({ entity: () => Resource, nullable: true, mappedBy: (entity) => entity.organization })
+  resources? = new Collection<Resource>(this);
 
   @ManyToOne({
     entity: () => Organization,
