@@ -43,6 +43,9 @@ export class Organization extends BaseModel<Organization> {
   @Property()
   name!: string;
 
+  @Property({ nullable: true })
+  description!: string;
+
   @Property()
   @Unique()
   email!: string;
@@ -81,7 +84,7 @@ export class Organization extends BaseModel<Organization> {
   })
   public jobs? = new Collection<Job>(this);
 
-  @ManyToMany({ entity: () => Member })
+  @ManyToMany({ entity: () => Member, eager: false })
   members? = new Collection<Member>(this);
 
   @Property({ nullable: true })
@@ -112,7 +115,7 @@ export class Organization extends BaseModel<Organization> {
   })
   public admin_contact!: User;
 
-  @OneToMany({ entity: () => Resource, nullable: true, mappedBy: (entity) => entity.organization })
+  @OneToMany({ entity: () => Resource, nullable: true, mappedBy: (entity) => entity.organization, eager: false })
   resources? = new Collection<Resource>(this);
 
   @ManyToOne({

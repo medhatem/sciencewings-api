@@ -80,7 +80,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
-      return Result.fail<number>(`User with id: ${userId} parent does not exist`);
+      return Result.fail<number>(`User with id: ${userId} does not exist`);
     }
     const user = fetchedUser.getValue();
 
@@ -102,14 +102,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const wrappedOrganization = this.wrapEntity(this.dao.model, {
       name: payload.name,
+      description: payload.description,
       email: payload.email,
       type: payload.type,
-      socialFacebook: payload.socialFacebook,
-      socialInstagram: payload.socialInstagram,
-      socialYoutube: payload.socialYoutube,
-      socialGithub: payload.socialGithub,
-      socialTwitter: payload.socialTwitter,
-      socialLinkedin: payload.socialLinkedin,
+      socialFacebook: payload.socialFacebook || null,
+      socialInstagram: payload.socialInstagram || null,
+      socialYoutube: payload.socialYoutube || null,
+      socialGithub: payload.socialGithub || null,
+      socialTwitter: payload.socialTwitter || null,
+      socialLinkedin: payload.socialLinkedin || null,
       owner: user,
     });
     wrappedOrganization.direction = await direction.getValue();

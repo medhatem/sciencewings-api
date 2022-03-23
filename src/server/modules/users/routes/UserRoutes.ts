@@ -1,4 +1,4 @@
-import { POST, Path, Security, ContextRequest, PUT, GET, PathParam } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT, GET, PathParam, PreProcessor } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Response } from 'typescript-rest-swagger';
@@ -12,6 +12,7 @@ import { Result } from '@/utils/Result';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { validateKeyclockUser } from '@/authenticators/validateKeyclockUser';
 
 @provideSingleton()
 @Path('users')
@@ -37,8 +38,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('registerUserFromToken')
   @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
   @Response<RegisterUserFromTokenDTO>(500, 'Internal Server Error')
-  @Security()
   @LoggerStorage()
+  @PreProcessor(validateKeyclockUser)
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
     const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
 
