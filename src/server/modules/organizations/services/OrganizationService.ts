@@ -527,10 +527,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    const resourceCalendar: ResourceCalendar = {
-      ...payload,
-      organization,
-    };
+    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(
+      new ResourceCalendar(),
+      {
+        ...payload,
+        organization,
+      },
+      false,
+    );
 
     const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
     return Result.ok<any>(createdResourceCalendar);

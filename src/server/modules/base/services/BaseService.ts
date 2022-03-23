@@ -37,32 +37,20 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @log()
   @safeGuard()
   public async create(entry: T): Promise<Result<any>> {
-    try {
-      return Result.ok<any>(await this.dao.create(entry));
-    } catch (error) {
-      return Result.fail(error);
-    }
+    return Result.ok<any>(await this.dao.create(entry));
   }
 
   @log()
   @safeGuard()
   public async update(entry: T): Promise<Result<any>> {
-    try {
-      return Result.ok<any>(this.dao.update(entry));
-    } catch (error) {
-      return Result.fail(error);
-    }
+    return Result.ok<any>(this.dao.update(entry));
   }
 
   @log()
   @safeGuard()
   public async remove(id: number): Promise<Result<number>> {
-    try {
-      const entity = this.wrapEntity(this.dao.model, { id });
-      return Result.ok<any>(await this.dao.remove(entity));
-    } catch (error) {
-      return Result.fail(error);
-    }
+    const entity = this.wrapEntity(this.dao.model, { id });
+    return Result.ok<any>(await this.dao.remove(entity));
   }
 
   @log()
@@ -71,11 +59,7 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
     criteria: { [key: string]: any },
     fetchStrategy = FETCH_STRATEGY.SINGLE,
   ): Promise<Result<T | T[]>> {
-    try {
-      return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy));
-    } catch (error) {
-      return Result.fail(error);
-    }
+    return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy));
   }
 
   /**
