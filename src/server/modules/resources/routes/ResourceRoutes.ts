@@ -6,16 +6,8 @@ import { Path, PathParam, POST, PUT, Security, GET } from 'typescript-rest';
 import { CreateResourceRO } from './RequestObject';
 import { IResourceService } from '@/modules/resources/interfaces';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import {
-  ResourceDTO,
-  CreateResourceDTO,
-  UpdateResourceDTO,
-  CreatedResourceBodyDTO,
-  UpdatedResourceBodyDTO,
-  GetResourceBodyDTO,
-} from '@/modules/resources/dtos/ResourceDTO';
+import { ResourceDTO, CreateResourceDTO, UpdateResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
 import { Response } from 'typescript-rest-swagger';
-import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
 @provideSingleton()
 @Path('resources')
@@ -37,8 +29,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @POST
   @Path('create')
   @Security()
-  @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
+  @Response<CreateResourceDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async createResource(payload: CreateResourceRO): Promise<CreateResourceDTO> {
     const result = await this.resourceService.createResource(payload);
@@ -60,8 +52,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('update/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<UpdateResourceDTO>(204, 'Resource updated Successfully')
+  @Response<UpdateResourceDTO>(500, 'Internal Server Error')
   public async updateResource(payload: CreateResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.resourceService.updateResource(payload, id);
 
@@ -81,8 +73,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('getOgranizationResourcesById/:organizationId')
   @Security()
   @LoggerStorage()
-  @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<ResourceDTO>(200, 'Resource Retrived Successfully')
+  @Response<ResourceDTO>(500, 'Internal Server Error')
   public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceDTO> {
     const result = await this.resourceService.getResourcesOfAGivenOrganizationById(organizationId);
     if (result.isFailure) {
