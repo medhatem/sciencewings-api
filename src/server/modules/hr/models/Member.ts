@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { Contract } from './Contract';
 import { Group } from './Group';
@@ -40,6 +40,8 @@ export class Member extends BaseModel<Member> {
 
   @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true, primary: true })
   user!: User;
+
+  [PrimaryKeyType]?: [Organization, User];
 
   @ManyToOne({
     entity: () => ResourceCalendar,

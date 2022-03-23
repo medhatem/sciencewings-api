@@ -28,7 +28,7 @@ export class Group extends BaseModel<Group> {
   @Property({ nullable: true })
   active?: boolean;
 
-  //TODO check if managers and memebers are in this organization
+  //TODO check if managers and members are in this organization
   @ManyToOne({
     entity: () => Organization,
     index: 'hr_group_organization_id_index',
