@@ -1,9 +1,9 @@
 import { Entity, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class MemberCategory extends BaseModel<MemberCategory> {
   constructor() {
@@ -15,7 +15,7 @@ export class MemberCategory extends BaseModel<MemberCategory> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Unique({ name: 'hr_member_category_name_uniq' })
   @Property()

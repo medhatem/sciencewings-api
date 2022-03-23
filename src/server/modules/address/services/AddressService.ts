@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@/di/index';
 
-import { Address } from '@/modules/address/models/AdressModel';
+import { Address } from '@/modules/address/models/Address';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { BaseService } from '@/modules/base/services/BaseService';

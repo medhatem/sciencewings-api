@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -15,6 +15,9 @@ export class ResourceCalendar extends BaseModel<ResourceCalendar> {
   static getInstance(): ResourceCalendar {
     return container.get(ResourceCalendar);
   }
+
+  @PrimaryKey()
+  id?: number;
 
   @Property()
   name!: string;

@@ -1,8 +1,7 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Member } from '@/modules/hr';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { User } from '@/modules/users';
 
@@ -17,6 +16,9 @@ export class Address extends BaseModel<Address> {
   static getInstance(): Address {
     return container.get(Address);
   }
+
+  @PrimaryKey()
+  id?: number;
 
   @Property()
   country: string;
@@ -39,16 +41,12 @@ export class Address extends BaseModel<Address> {
   @Property({ nullable: true })
   apartment?: string;
 
-  @ManyToOne({
+  @ManyToMany({
     entity: () => Organization,
-    onDelete: 'cascade',
     nullable: true,
   })
   organization?: Organization;
 
-  @ManyToOne({ entity: () => User, onDelete: 'cascade', nullable: true })
+  @ManyToMany({ entity: () => User, nullable: true })
   user?: User;
-
-  @ManyToOne({ entity: () => User, onDelete: 'cascade', nullable: true })
-  member?: Member;
 }

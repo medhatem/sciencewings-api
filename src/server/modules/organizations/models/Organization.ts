@@ -1,13 +1,23 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryKey,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
-import { Address } from '@/modules/address/models/AdressModel';
+import { Address } from '@/modules/address/models/Address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
 import { Resource } from '@/modules/resources';
+import { Job, WorkLocation } from '@/modules/hr';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -25,6 +35,10 @@ export class Organization extends BaseModel<Organization> {
   static getInstance(): Organization {
     return container.get(Organization);
   }
+
+  @PrimaryKey()
+  id?: number;
+
   @Unique({ name: 'organization_name_uniq' })
   @Property()
   name!: string;
@@ -33,7 +47,7 @@ export class Organization extends BaseModel<Organization> {
   @Unique()
   email!: string;
 
-  @OneToMany({
+  @ManyToMany({
     entity: () => Phone,
     mappedBy: (entity) => entity.organization,
   })
@@ -43,7 +57,7 @@ export class Organization extends BaseModel<Organization> {
   @Property()
   type!: OrganizationType;
 
-  @OneToMany({
+  @ManyToMany({
     entity: () => Address,
     mappedBy: (entity) => entity.organization,
   })
@@ -54,6 +68,18 @@ export class Organization extends BaseModel<Organization> {
     mappedBy: (entity) => entity.organization,
   })
   public labels? = new Collection<OrganizationLabel>(this);
+
+  @OneToMany({
+    entity: () => WorkLocation,
+    mappedBy: (entity) => entity.organization,
+  })
+  public worklocations? = new Collection<WorkLocation>(this);
+
+  @OneToMany({
+    entity: () => Job,
+    mappedBy: (entity) => entity.organization,
+  })
+  public jobs? = new Collection<Job>(this);
 
   @ManyToMany({ entity: () => Member })
   members? = new Collection<Member>(this);
