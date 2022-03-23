@@ -100,20 +100,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    console.log({
-      name: payload.name,
-      description: payload.description,
-      email: payload.email,
-      type: payload.type,
-      socialFacebook: payload.socialFacebook || null,
-      socialInstagram: payload.socialInstagram || null,
-      socialYoutube: payload.socialYoutube || null,
-      socialGithub: payload.socialGithub || null,
-      socialTwitter: payload.socialTwitter || null,
-      socialLinkedin: payload.socialLinkedin || null,
-      owner: user,
-    });
-
     const wrappedOrganization = this.wrapEntity(this.dao.model, {
       name: payload.name,
       description: payload.description,
