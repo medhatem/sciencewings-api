@@ -1,7 +1,6 @@
 import { applyToAll } from '@/utils/utilities';
-import { Member } from '@/modules/hr/models/Member';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { MemberStatusType } from '@/modules/hr/models/Member';
+import { Member, MemberStatusType } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
@@ -14,7 +13,7 @@ import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { EmailMessage } from '@/types/types';
 import { Email } from '@/utils/Email';
-import createSchema from '@/modules/organizations/schemas/createOrganizationSchema';
+import { CreateOrganizationSchema } from '@/modules/organizations/schemas/OrganizationSchema';
 import { getConfig } from '@/configuration/Configuration';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
@@ -64,7 +63,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   @validate
   public async createOrganization(
-    @validateParam(createSchema) payload: CreateOrganizationRO,
+    @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<Result<number>> {
     // check if the organization already exist
@@ -400,10 +399,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const managers: Member[] = [];
     if (payload.managers) {
-      for await (const manager of payload.managers) {
-        const fetcheManager = await this.memberService.get(manager);
+      for await (const { organization, user } of payload.managers) {
+        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
         if (fetcheManager.isFailure || !fetcheManager.getValue()) {
-          return Result.fail<number>(`Manager with id ${manager} does not exist.`);
+          return Result.fail<number>(
+            `Manager with user id ${user} in organization with id ${organization} does not exist.`,
+          );
         }
         managers.push(fetcheManager.getValue());
       }
@@ -455,7 +456,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     );
 
     await this.resourceService.update(createdResource);
-    // await this.dao.update(organization);
+    await this.dao.update(organization);
 
     const id = createdResource.id;
     return Result.ok<number>(id);

@@ -1,4 +1,6 @@
-import { IGroupService, IJobService, IMemberService } from '@/modules/hr/interfaces';
+import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
+import { IJobService } from '@/modules/hr/interfaces/IJobService';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';

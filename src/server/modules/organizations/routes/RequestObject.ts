@@ -6,6 +6,16 @@ import { unique } from '@/decorators/unique';
 
 @Serializable()
 @unique
+export class ResourceManagerRO {
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  user: number;
+}
+
+@Serializable()
+@unique
 export class CreateOrganizationRO {
   @JsonProperty()
   name: string;
@@ -14,19 +24,19 @@ export class CreateOrganizationRO {
   email: string;
 
   @JsonProperty()
-  phones: PhoneRO[];
+  phones: Array<PhoneRO>;
 
   @JsonProperty()
   type: string;
 
   @JsonProperty()
-  addresses: AddressRO[];
+  addresses: Array<AddressRO>;
 
   @JsonProperty()
-  labels: string[];
+  labels: Array<string>;
 
   @JsonProperty()
-  members: number[];
+  members: Array<number>;
 
   @JsonProperty()
   direction: number;
@@ -117,13 +127,13 @@ export class ResourceRO {
   timezone!: string;
 
   @JsonProperty()
-  calendar?: ResourceCalendarRO[];
+  calendar?: Array<ResourceCalendarRO>;
 
   @JsonProperty()
-  tags?: ResourceTagRO[];
+  tags?: Array<ResourceTagRO>;
 
   @JsonProperty()
-  managers?: number[];
+  managers?: Array<ResourceManagerRO>;
 }
 
 @Serializable()

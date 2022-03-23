@@ -9,12 +9,13 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
-import { BaseModel } from '../../../modules/base/models/BaseModel';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 
 export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
+
 @provide()
 @Entity()
 export class Member extends BaseModel<Member> {

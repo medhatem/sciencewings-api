@@ -6,7 +6,7 @@ export enum OrganizationType {
   INSTITUT = 'Institut',
 }
 
-export default Joi.object({
+export const CreateOrganizationSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
   phones: Joi.array(),
