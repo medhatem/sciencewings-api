@@ -1,9 +1,8 @@
 import { IUserService } from '../modules/users/interfaces/IUserService';
 import { Result } from '@/utils/Result';
 import { UserRequest } from '../types/UserRequest';
-import fetch from 'node-fetch';
-import { getConfig } from '../configuration/Configuration';
 import { provideSingleton } from '@/di';
+import { fetchKeyclockUserGivenToken } from './fetchKeyclockUserGivenToken';
 
 @provideSingleton()
 export class UserExctractionAndValidation {
@@ -22,25 +21,16 @@ export class UserExctractionAndValidation {
     }
 
     const token = req.headers.authorization as string;
-    const res = await fetch(
-      `${getConfig('keycloak.baseUrl')}/realms/${getConfig(
-        'keycloak.clientValidation.realmName',
-      )}/protocol/openid-connect/userinfo`,
-      {
-        method: 'get',
-        headers: {
-          Authorization: `${token}`,
-        },
-      },
-    );
-    const result = await res.json();
+    const result = await fetchKeyclockUserGivenToken(token);
     if (result.error) {
       return Result.fail('Not Authorized');
     }
     const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });
-    if (criteriaResult.isFailure) {
+    if (criteriaResult.isFailure || criteriaResult.getValue() === null) {
       return Result.fail('Unrecognized user!');
     }
+
+    console.log({ criteriaResult });
 
     let userId = criteriaResult.getValue() ? criteriaResult.getValue().id : null;
     if (!criteriaResult) {
