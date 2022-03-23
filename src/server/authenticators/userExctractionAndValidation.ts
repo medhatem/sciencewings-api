@@ -30,8 +30,6 @@ export class UserExctractionAndValidation {
       return Result.fail('Unrecognized user!');
     }
 
-    console.log({ criteriaResult });
-
     let userId = criteriaResult.getValue() ? criteriaResult.getValue().id : null;
     if (!criteriaResult) {
       const registerUserResult = await this.userService.registerUser(result);

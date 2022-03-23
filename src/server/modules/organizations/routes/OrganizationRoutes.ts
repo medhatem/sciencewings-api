@@ -42,10 +42,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
   ): Promise<OrganizationDTO> {
-    // if (request.userId === null) {
-    //   return new OrganizationDTO({ error: { statusCode: 500, errorMessage: 'This user is not registerd!' } });
-    // }
-
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
