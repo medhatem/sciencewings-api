@@ -150,13 +150,12 @@ export class UserService extends BaseService<User> implements IUserService {
         email: user.email,
         dateofbirth: user.dateofbirth,
         keycloakId: user.keycloakId,
-        user: null,
       });
 
       createdUser.address = await createdUser.address.init();
       createdUser.phones = await createdUser.phones.init();
 
-      applyToAll(userAddress, async (address) => {
+      await applyToAll(userAddress, async (address) => {
         const createdAddress = await this.addressService.create({
           city: address.city,
           apartment: address.apartment,
@@ -172,7 +171,7 @@ export class UserService extends BaseService<User> implements IUserService {
         }
       });
 
-      applyToAll(userPhones, async (phone) => {
+      await applyToAll(userPhones, async (phone) => {
         const createdPhone = await this.phoneService.create({
           phoneLabel: phone.phoneLabel,
           phoneCode: phone.phoneCode,
