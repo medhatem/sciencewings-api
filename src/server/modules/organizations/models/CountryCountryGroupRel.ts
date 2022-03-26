@@ -10,9 +10,19 @@ import { provide } from '@/di/index';
   properties: ['resCountry', 'resCountryGroup'],
 })
 export class CountryCountryGroupRel {
-  @ManyToOne({ entity: () => Country, onDelete: 'cascade', primary: true })
+  @ManyToOne({
+    entity: () => Country,
+    onDelete: 'cascade',
+    primary: true,
+    unique: false,
+  })
   resCountry!: Country;
 
-  @ManyToOne({ entity: () => CountryGroup, onDelete: 'cascade', primary: true })
+  @ManyToOne({
+    entity: () => CountryGroup,
+    onDelete: 'cascade',
+    primary: true,
+    unique: false,
+  })
   resCountryGroup!: CountryGroup;
 }
