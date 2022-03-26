@@ -59,7 +59,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
     const result = await this.OrganizationService.inviteUserByEmail(payload.organizationId, payload.email);
-
+    console.log(result);
     if (result.isFailure) {
       return new InviteUserDTO({
         error: { statusCode: 500, errorMessage: result.error },

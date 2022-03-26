@@ -212,7 +212,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await existingOrg.members.init();
     existingOrg.members.add(createdMemberResult.getValue());
 
-    await this.userService.update(savedUser.getValue());
+    //await this.userService.update(savedUser.getValue());
+    await this.dao.update(existingOrg);
 
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
