@@ -183,13 +183,13 @@ export class UserRoutes extends BaseRoutes<User> {
    * Get user By auth token
    */
   @GET
-  @Path('getUserByKeycloakId/:kcid')
+  @Path('getUserByKeycloakId')
   @LoggerStorage()
   @Security()
   @Response<UserDTO>(200, 'Return User Successfully')
   @Response<UserDTO>(500, 'Internal Server Error')
-  public async getUserByKeycloakId(@PathParam('kcid') keycloakId: string): Promise<UserDTO> {
-    const result = await this.userService.getUserByKeycloakId(keycloakId);
+  public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserDTO> {
+    const result = await this.userService.getUserByKeycloakId(request.keycloakUser.sub);
 
     if (result.isFailure) {
       return new UserDTO({ error: { statusCode: 404, errorMessage: result.error } });
