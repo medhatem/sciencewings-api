@@ -1,10 +1,10 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from './Organization';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class ConfigSettings extends BaseModel<ConfigSettings> {
   constructor() {
@@ -16,7 +16,7 @@ export class ConfigSettings extends BaseModel<ConfigSettings> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
   organization!: Organization;

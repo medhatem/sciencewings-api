@@ -1,9 +1,9 @@
 import { Entity, Index, ManyToOne } from '@mikro-orm/core';
 
 import { ResGroups } from '@/modules/users/models/ResGroups';
-import { provideSingleton } from '@/di/index';
+import { provide } from '@/di/index';
 
-@provideSingleton()
+@provide()
 @Entity()
 @Index({ name: 'res_groups_implied_rel_hid_gid_idx', properties: ['gid', 'hid'] })
 export class ResGroupsImpliedRel {

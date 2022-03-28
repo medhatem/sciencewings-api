@@ -35,7 +35,6 @@ export class SeedResources {
           resourceType: 'resourceType',
           organization: organizations[idx],
           user: users[idx],
-          timeEfficiency: faker.datatype.float(),
           calendar: calendar,
           timezone: tz,
           active: true,

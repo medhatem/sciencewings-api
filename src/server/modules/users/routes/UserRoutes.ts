@@ -1,23 +1,18 @@
-import { POST, Path, Security, ContextRequest, PUT, GET, PathParam } from 'typescript-rest';
+import { POST, Path, Security, ContextRequest, PUT, GET, PathParam, PreProcessor } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Response } from 'typescript-rest-swagger';
 import { User } from '@/modules/users/models/User';
 import { UserRequest } from '@/types/UserRequest';
-import {
-  RegisterUserFromTokenDTO,
-  ResetDTO,
-  ResetPasswordDTO,
-  UserIdDTO,
-} from '@/modules/users/dtos/RegisterUserFromTokenDTO';
-import { UserBaseBodyGetDTO, UserDTO } from '@/modules/users/dtos/UserDTO';
+import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
+import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { ResetPasswordRO, UserRO } from './RequstObjects';
 import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
 import { Result } from '@/utils/Result';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
+import { validateKeyclockUser } from '@/authenticators/validateKeyclockUser';
 
 @provideSingleton()
 @Path('users')
@@ -41,10 +36,10 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @POST
   @Path('registerUserFromToken')
-  @Response<UserIdDTO>(201, 'User Registred Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  @Security()
+  @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
+  @Response<RegisterUserFromTokenDTO>(500, 'Internal Server Error')
   @LoggerStorage()
+  @PreProcessor(validateKeyclockUser)
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
     const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
 
@@ -71,8 +66,8 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @POST
   @Path('resetPassword')
-  @Response<ResetDTO>(201, 'Password reset successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<ResetPasswordDTO>(201, 'Password reset successfully')
+  @Response<ResetPasswordDTO>(500, 'Internal Server Error')
   @Security()
   @LoggerStorage()
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
@@ -104,8 +99,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('create')
   @Security()
   @LoggerStorage()
-  @Response<UserIdDTO>(201, 'User created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<CreatedUserDTO>(201, 'User created Successfully')
+  @Response<CreatedUserDTO>(500, 'Internal Server Error')
   public async createUser(payload: UserRO): Promise<CreatedUserDTO> {
     const result = await this.userService.createUser(payload);
 
@@ -131,8 +126,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('updateUser/:keycloakId')
   @Security()
   @LoggerStorage()
-  @Response<UserIdDTO>(204, 'User updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<CreatedUserDTO>(204, 'User updated Successfully')
+  @Response<CreatedUserDTO>(500, 'Internal Server Error')
   public async updateUser(payload: UserRO, @PathParam('keycloakId') keycloakId: string): Promise<CreatedUserDTO> {
     const result = await this.userService.updateUserByKeycloakId(payload, keycloakId);
 
@@ -162,8 +157,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('updateUserDetail')
   @Security()
   @LoggerStorage()
-  @Response<UserIdDTO>(204, 'User updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<CreatedUserDTO>(204, 'User updated Successfully')
+  @Response<CreatedUserDTO>(500, 'Internal Server Error')
   public async updateUserDetails(payload: UserRO, @ContextRequest request: UserRequest): Promise<CreatedUserDTO> {
     const result = await this.userService.updateUserDetails(payload, request.userId);
 
@@ -191,8 +186,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('getUserByKeycloakId/:kcid')
   @LoggerStorage()
   @Security()
-  @Response<UserBaseBodyGetDTO>(200, 'Return User Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<UserDTO>(200, 'Return User Successfully')
+  @Response<UserDTO>(500, 'Internal Server Error')
   public async getUserByKeycloakId(@PathParam('kcid') keycloakId: string): Promise<UserDTO> {
     const result = await this.userService.getUserByKeycloakId(keycloakId);
 

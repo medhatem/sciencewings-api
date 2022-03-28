@@ -112,6 +112,7 @@
     "eslint": "latest",
     "eslint-config-google": "latest",
     "intern": "latest",
+    "kill-port": "^1.6.1",
     "nodemon": "latest",
     "sinon": "latest",
     "tsconfig-paths": "^3.12.0",
