@@ -1,12 +1,12 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
-
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
-import { User } from '@/modules/users/models/User';
+import { Member } from '@/modules/hr';
+import { ResourceTag } from './ResourceTag';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Resource extends BaseModel<Resource> {
   constructor() {
@@ -18,10 +18,26 @@ export class Resource extends BaseModel<Resource> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;
+
+  @Property()
+  description!: string;
+
+  @ManyToMany({
+    entity: () => Member,
+    nullable: true,
+    mappedBy: (entity) => entity.resources,
+  })
+  public managers? = new Collection<Member>(this);
+
+  @ManyToMany({
+    entity: () => ResourceTag,
+    mappedBy: (entity) => entity.resource,
+  })
+  public tags? = new Collection<ResourceTag>(this);
 
   @Property({ nullable: true })
   active?: boolean;
@@ -32,14 +48,8 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   resourceType!: string;
 
-  @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  user?: User;
-
-  @Property({ columnType: 'float8' })
-  timeEfficiency!: number;
-
-  @ManyToOne({ entity: () => ResourceCalendar })
-  calendar!: ResourceCalendar;
+  @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource, nullable: true })
+  calendar: ResourceCalendar;
 
   @Property()
   timezone!: string;

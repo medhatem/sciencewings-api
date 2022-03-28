@@ -1,5 +1,6 @@
 import { AssignOptions } from '@mikro-orm/core';
 import { Result } from '@/utils/Result';
+import { FETCH_STRATEGY } from '../daos';
 
 export abstract class IBaseService<T> {
   static getInstance: () => any;
@@ -14,7 +15,7 @@ export abstract class IBaseService<T> {
 
   public remove: (id: number) => Promise<Result<number>>;
 
-  getByCriteria: (criteria: { [key: string]: any }) => Promise<T>;
+  getByCriteria: (criteria: { [key: string]: any }, fetchStrategy: FETCH_STRATEGY) => Promise<T>;
 
   public wrapEntity: (entity: T, payload: { [key: string]: any }, options: boolean | AssignOptions) => T;
 }

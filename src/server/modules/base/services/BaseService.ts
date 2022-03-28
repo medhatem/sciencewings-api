@@ -1,16 +1,15 @@
 import { AssignOptions, wrap } from '@mikro-orm/core';
-
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@/sdks/keycloak';
 import { Logger } from '@/modules/../utils/Logger';
-import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Result } from '@/utils/Result';
 import { ServerError } from '@/errors/ServerError';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
 import { safeGuard } from '@/decorators/safeGuard';
+import { FETCH_STRATEGY } from '../daos/BaseDao';
 
 @provideSingleton(IBaseService)
 export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
@@ -38,37 +37,29 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @log()
   @safeGuard()
   public async create(entry: T): Promise<Result<any>> {
-    try {
-      return Result.ok<any>(await this.dao.create(entry));
-    } catch (error) {
-      return Result.fail(error);
-    }
+    return Result.ok<any>(await this.dao.create(entry));
   }
 
   @log()
   @safeGuard()
   public async update(entry: T): Promise<Result<any>> {
-    try {
-      return Result.ok<any>(this.dao.update(entry));
-    } catch (error) {
-      return Result.fail(error);
-    }
+    return Result.ok<any>(this.dao.update(entry));
   }
 
   @log()
   @safeGuard()
   public async remove(id: number): Promise<Result<number>> {
-    try {
-      const entity = this.wrapEntity(this.dao.model, { id });
-      return Result.ok<any>(await this.dao.remove(entity));
-    } catch (error) {
-      return Result.fail(error);
-    }
+    const entity = this.wrapEntity(this.dao.model, { id });
+    return Result.ok<any>(await this.dao.remove(entity));
   }
 
-  @LoggerStorage()
-  async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
-    return await this.getByCriteria(criteria);
+  @log()
+  @safeGuard()
+  async getByCriteria(
+    criteria: { [key: string]: any },
+    fetchStrategy = FETCH_STRATEGY.SINGLE,
+  ): Promise<Result<T | T[]>> {
+    return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy));
   }
 
   /**

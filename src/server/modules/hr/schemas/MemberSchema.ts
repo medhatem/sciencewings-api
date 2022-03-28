@@ -1,5 +1,9 @@
-import { MemberStatusType } from '@/modules/hr/models/Member';
 import Joi = require('joi');
+
+export enum MemberStatusType {
+  INVITATION_PENDING = 'INVITATION_PENDING',
+  ACTIVE = 'ACTIVE',
+}
 
 const MemberSchema = Joi.object({
   resource: Joi.number(),

@@ -1,6 +1,6 @@
 import { JsonProperty, Serializable } from 'typescript-json-serializer';
 
-import { AddressType } from '@/modules/address/models/AdressModel';
+import { AddressType } from '@/modules/address/models/Address';
 
 @Serializable()
 export class AddressRO {

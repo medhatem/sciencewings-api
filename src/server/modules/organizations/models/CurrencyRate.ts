@@ -1,11 +1,11 @@
 import { Entity, Index, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from './Organization';
 import { Currency } from '@/modules/organizations/models/Currency';
 
-@provideSingleton()
+@provide()
 @Entity()
 @Unique({ name: 'currency_rate_unique_name_per_day', properties: ['name', 'currency', 'organization'] })
 export class CurrencyRate extends BaseModel<CurrencyRate> {
@@ -18,7 +18,7 @@ export class CurrencyRate extends BaseModel<CurrencyRate> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Index({ name: 'currency_rate_name_index' })
   @Property({ columnType: 'date' })

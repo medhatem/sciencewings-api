@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
-import { IOrganizationLabelService } from '../interfaces/IOrganizationLabelService';
+import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationLabelDao';
