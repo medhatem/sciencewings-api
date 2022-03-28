@@ -43,7 +43,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
   ): Promise<OrganizationDTO> {
-    console.log({ request });
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
