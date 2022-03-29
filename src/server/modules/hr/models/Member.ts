@@ -15,6 +15,9 @@ export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
+export enum MemberTypeEnum {
+  Regular = 'regular',
+}
 
 @provide()
 @Entity()

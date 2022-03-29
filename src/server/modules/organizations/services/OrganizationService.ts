@@ -1,6 +1,6 @@
 import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { Member, MemberStatusType } from '@/modules/hr/models/Member';
+import { Member, MemberStatusType, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
@@ -208,7 +208,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const createdMemberResult = await this.memberService.create({
       user: savedUser.getValue(),
       organization: existingOrg,
-      memberType: 'regular',
+      memberType: MemberTypeEnum.Regular,
     });
 
     if (createdMemberResult.isFailure) {
@@ -238,7 +238,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   async resendInvite(id: number, orgId: number): Promise<Result<number>> {
     const existingUser = await this.userService.get(id);
 
-    if (!existingUser) {
+    if (existingUser.isFailure || existingUser.getValue() === null) {
       return Result.fail(`user with id ${id} not exist.`);
     }
     const user = existingUser.getValue();
@@ -249,11 +249,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!this.memberService.getByCriteria({ user: id }, FETCH_STRATEGY.SINGLE)) {
-      return Result.fail(`user with id ${orgId} is not member in organisation.`);
+      return Result.fail(`user with id ${id} is not member in organization.`);
     }
 
     if (user.status !== userStatus.INVITATION_PENDING) {
-      return Result.fail(`user with id ${id} is already reset his password.`);
+      return Result.fail(`Cannot resend invite to an active user `);
     }
     const url = process.env.KEYCKLOACK_RESET_PASSWORD;
     const emailMessage: EmailMessage = {
