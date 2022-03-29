@@ -7,9 +7,19 @@ import { provide } from '@/di/index';
 @Entity()
 @Index({ name: 'member_category_rel_category_id_emp_id_idx', properties: ['emp', 'category'] })
 export class MemberCategoryRel {
-  @ManyToOne({ entity: () => Member, onDelete: 'cascade', primary: true })
+  @ManyToOne({
+    entity: () => Member,
+    onDelete: 'cascade',
+    primary: true,
+    unique: false,
+  })
   emp!: Member;
 
-  @ManyToOne({ entity: () => MemberCategory, onDelete: 'cascade', primary: true })
+  @ManyToOne({
+    entity: () => MemberCategory,
+    onDelete: 'cascade',
+    primary: true,
+    unique: false,
+  })
   category!: MemberCategory;
 }
