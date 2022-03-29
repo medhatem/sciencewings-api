@@ -17,7 +17,7 @@ export class Contract extends BaseModel<Contract> {
   @PrimaryKey()
   id?: number;
 
-  @ManyToOne({ entity: () => Member, primary: true })
+  @ManyToOne({ entity: () => Member, primary: true, unique: false })
   member!: Member;
 
   @Property()

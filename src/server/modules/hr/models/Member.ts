@@ -41,7 +41,13 @@ export class Member extends BaseModel<Member> {
   })
   organization!: Organization;
 
-  @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true, primary: true, unique: false })
+  @OneToOne({
+    entity: () => User,
+    onDelete: 'set null',
+    nullable: true,
+    primary: true,
+    unique: false,
+  })
   user!: User;
 
   [PrimaryKeyType]?: [Organization, User];
