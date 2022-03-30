@@ -2,7 +2,12 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
-import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO } from './RequestObject';
+import {
+  CreateOrganizationRO,
+  UserInviteToOrgRO,
+  ResourceRO,
+  ResourcesSettingsReservationGeneralRO,
+} from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -18,6 +23,8 @@ import {
   ResourceDTO,
   UpdatedResourceBodyDTO,
   UpdateResourceDTO,
+  UpdateResourceSettingsReservationGeneralBodyDTO,
+  UpdateResourceSettingsReservationGeneralDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
@@ -183,5 +190,40 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
+  }
+  /**
+   * Update a resource in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  /**
+   * Update a resource reservation settings general in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @PUT
+  @Path('/resources/settings/reservation/general/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceSettingsReservationGeneralBodyDTO>(
+    204,
+    'Resource reservation general settings updated Successfully',
+  )
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResourcesSettingsReservationGeneral(
+    payload: ResourcesSettingsReservationGeneralRO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateResourceSettingsReservationGeneralDTO> {
+    const result = await this.OrganizationService.updateResourceSettingsReservationGeneral(payload, id);
+
+    if (result.isFailure) {
+      return new UpdateResourceSettingsReservationGeneralDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceSettingsReservationGeneralDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }

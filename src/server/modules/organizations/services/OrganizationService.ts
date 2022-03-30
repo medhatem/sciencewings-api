@@ -3,7 +3,13 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { Member, MemberStatusType } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
+import {
+  CreateOrganizationRO,
+  ResourceCalendarRO,
+  ResourceRO,
+  ResourcesSettingsReservationGeneralRO,
+  ResourcesSettingsReservationUnitRO,
+} from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -32,6 +38,8 @@ import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import {
   CreateResourceSchema,
   ResourceCalendarSchema,
+  ResourceSettingsReservationGeneralSchema,
+  ResourceSettingsReservationUnitSchema,
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 
@@ -540,5 +548,52 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
     return Result.ok<any>(createdResourceCalendar);
+  }
+  //Resource settings
+  @log()
+  @safeGuard()
+  @validate
+  public async updateResourceSettingsReservationGeneral(
+    @validateParam(ResourceSettingsReservationGeneralSchema) payload: ResourcesSettingsReservationGeneralRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceValue = fetchedResource.getValue();
+    const resource = this.resourceService.wrapEntity(
+      resourceValue,
+      {
+        ...resourceValue,
+        ...payload,
+      },
+      false,
+    );
+    await this.resourceService.update(resource);
+    return Result.ok<number>(1);
+  }
+  @log()
+  @safeGuard()
+  @validate
+  public async updateResourceSettingsReservationUnits(
+    @validateParam(ResourceSettingsReservationUnitSchema) payload: ResourcesSettingsReservationUnitRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceValue = fetchedResource.getValue();
+    const resource = this.resourceService.wrapEntity(
+      resourceValue,
+      {
+        ...resourceValue,
+        ...payload,
+      },
+      false,
+    );
+    await this.resourceService.update(resource);
+    return Result.ok<number>(1);
   }
 }

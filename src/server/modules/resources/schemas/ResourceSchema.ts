@@ -36,3 +36,19 @@ export const UpdateResourceSchema = ResourceSchema.keys({
   description: Joi.string(),
   resourceType: Joi.string(),
 });
+//Resource Settings
+export const ResourceSettingsReservationGeneralSchema = Joi.object({
+  isEnabled: Joi.boolean(),
+  isLoanable: Joi.boolean(),
+  isReturnTheirOwnLoans: Joi.boolean(),
+  isReservingLoansAtFutureDates: Joi.boolean(),
+  fixedLoanDuration: Joi.string(),
+  overdueNoticeDelay: Joi.string(),
+  recurringReservations: Joi.string(),
+});
+
+export const ResourceSettingsReservationUnitSchema = Joi.object({
+  unitName: Joi.string(),
+  unitLimit: Joi.string(),
+  unites: Joi.number(),
+});

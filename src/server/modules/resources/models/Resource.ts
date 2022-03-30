@@ -53,4 +53,29 @@ export class Resource extends BaseModel<Resource> {
 
   @Property()
   timezone!: string;
+
+  //Resource settings
+  //general
+  @Property()
+  isEnabled: boolean;
+  @Property()
+  isLoanable: boolean;
+  @Property()
+  isReturnTheirOwnLoans: boolean;
+  @Property()
+  isReservingLoansAtFutureDates: boolean;
+  @Property()
+  fixedLoanDuration: string;
+  @Property()
+  overdueNoticeDelay: string;
+  @Property()
+  recurringReservations: string;
+
+  //Unit
+  @Property()
+  unitName: string;
+  @Property()
+  unitLimit: string;
+  @Property()
+  unites: number;
 }

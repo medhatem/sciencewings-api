@@ -151,3 +151,33 @@ export class ResourceEventRO {
   @JsonProperty()
   dateTo: Date;
 }
+//Resource settings
+@Serializable()
+@unique
+export class ResourcesSettingsReservationGeneralRO {
+  @JsonProperty()
+  isEnabled?: boolean;
+  @JsonProperty()
+  isLoanable?: boolean;
+  @JsonProperty()
+  isReturnTheirOwnLoans?: boolean;
+  @JsonProperty()
+  isReservingLoansAtFutureDates?: boolean;
+  @JsonProperty()
+  fixedLoanDuration?: string;
+  @JsonProperty()
+  overdueNoticeDelay?: string;
+  @JsonProperty()
+  recurringReservations?: string;
+}
+
+@Serializable()
+@unique
+export class ResourcesSettingsReservationUnitRO {
+  @JsonProperty()
+  unitName: string;
+  @JsonProperty()
+  unitLimit: string;
+  @JsonProperty()
+  unites: number;
+}
