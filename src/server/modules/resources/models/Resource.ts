@@ -56,46 +56,46 @@ export class Resource extends BaseModel<Resource> {
 
   //Resource settings
   //general
-  @Property()
+  @Property({ nullable: true })
   isEnabled: boolean;
-  @Property()
+  @Property({ nullable: true })
   isLoanable: boolean;
-  @Property()
+  @Property({ nullable: true })
   isReturnTheirOwnLoans: boolean;
-  @Property()
+  @Property({ nullable: true })
   isReservingLoansAtFutureDates: boolean;
-  @Property()
+  @Property({ nullable: true })
   fixedLoanDuration: string;
-  @Property()
+  @Property({ nullable: true })
   overdueNoticeDelay: string;
-  @Property()
+  @Property({ nullable: true })
   recurringReservations: string;
 
   //Unit
-  @Property()
+  @Property({ nullable: true })
   unitName: string;
-  @Property()
+  @Property({ nullable: true })
   unitLimit: string;
-  @Property()
+  @Property({ nullable: true })
   unites: number;
 
   // Time restriction
-  @Property()
+  @Property({ nullable: true })
   isEditingWindowForUsers: boolean;
-  @Property()
+  @Property({ nullable: true })
   isRestrictCreatingNewReservationBeforeTime: boolean;
-  @Property()
+  @Property({ nullable: true })
   isRestrictCreatingNewReservationAfterTime: boolean;
-  @Property()
+  @Property({ nullable: true })
   reservationTimeGranularity: string;
-  @Property()
+  @Property({ nullable: true })
   isAllowUsersToEndReservationEarly: boolean;
-  @Property()
+  @Property({ nullable: true })
   defaultReservationDuration: string;
-  @Property()
+  @Property({ nullable: true })
   reservationDurationMinimum: string;
-  @Property()
+  @Property({ nullable: true })
   reservationDurationMaximum: string;
-  @Property()
+  @Property({ nullable: true })
   bufferTimeBeforeReservation: string;
 }
