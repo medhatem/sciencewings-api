@@ -53,4 +53,24 @@ export class Resource extends BaseModel<Resource> {
 
   @Property()
   timezone!: string;
+
+  // Time restriction
+  @Property()
+  isEditingWindowForUsers: boolean;
+  @Property()
+  isRestrictCreatingNewReservationBeforeTime: boolean;
+  @Property()
+  isRestrictCreatingNewReservationAfterTime: boolean;
+  @Property()
+  reservationTimeGranularity: string;
+  @Property()
+  isAllowUsersToEndReservationEarly: boolean;
+  @Property()
+  defaultReservationDuration: string;
+  @Property()
+  reservationDurationMinimum: string;
+  @Property()
+  reservationDurationMaximum: string;
+  @Property()
+  bufferTimeBeforeReservation: string;
 }

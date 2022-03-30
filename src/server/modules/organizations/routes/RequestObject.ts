@@ -151,3 +151,51 @@ export class ResourceEventRO {
   @JsonProperty()
   dateTo: Date;
 }
+
+@Serializable()
+@unique
+export class ResourceRateRO {
+  @JsonProperty()
+  description: string;
+
+  @JsonProperty()
+  rate: number;
+
+  @JsonProperty()
+  category: string;
+
+  @JsonProperty()
+  isPublic: boolean;
+
+  @JsonProperty()
+  isRequiredAccountNumber: boolean;
+
+  @JsonProperty()
+  duration: number;
+
+  @JsonProperty()
+  resource: number;
+}
+
+@Serializable()
+@unique
+export class ResourceTimerRestrictionRO {
+  @JsonProperty()
+  isEditingWindowForUsers: boolean;
+  @JsonProperty()
+  isRestrictCreatingNewReservationBeforeTime: boolean;
+  @JsonProperty()
+  isRestrictCreatingNewReservationAfterTime: boolean;
+  @JsonProperty()
+  reservationTimeGranularity: string;
+  @JsonProperty()
+  isAllowUsersToEndReservationEarly: boolean;
+  @JsonProperty()
+  defaultReservationDuration: string;
+  @JsonProperty()
+  reservationDurationMinimum: string;
+  @JsonProperty()
+  reservationDurationMaximum: string;
+  @JsonProperty()
+  bufferTimeBeforeReservation: string;
+}
