@@ -1,8 +1,8 @@
 import { IUserService } from '../modules/users/interfaces/IUserService';
 import { Result } from '@/utils/Result';
 import { UserRequest } from '../types/UserRequest';
-import { provideSingleton } from '@/di';
 import { fetchKeyclockUserGivenToken } from './fetchKeyclockUserGivenToken';
+import { provideSingleton } from '@/di';
 
 @provideSingleton()
 export class UserExctractionAndValidation {
@@ -29,14 +29,15 @@ export class UserExctractionAndValidation {
     if (criteriaResult.isFailure || criteriaResult.getValue() === null) {
       return Result.fail('Unrecognized user!');
     }
-
-    let userId = criteriaResult.getValue() ? criteriaResult.getValue().id : null;
-    if (!criteriaResult) {
+    let userId;
+    if (criteriaResult.getValue() === null) {
       const registerUserResult = await this.userService.registerUser(result);
       if (registerUserResult.isFailure) {
         return Result.fail('Unexpected Error!');
       }
       userId = registerUserResult.getValue();
+    } else {
+      userId = criteriaResult.getValue().id;
     }
 
     req.keycloakUser = result;

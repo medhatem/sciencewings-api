@@ -1,4 +1,5 @@
-import { EntityRepository, GetRepository } from '@mikro-orm/core';
+import { EntityManager, EntityRepository, QueryBuilder } from '@mikro-orm/postgresql';
+import { FindOneOptions, FindOptions, GetRepository } from '@mikro-orm/core';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Logger } from '@/utils/Logger';
@@ -9,15 +10,16 @@ import { provideSingleton } from '@/di/index';
 
 export enum FETCH_STRATEGY {
   'ALL' = 'ALL',
-  'SINGLE' = 'SIGNLE',
+  'SINGLE' = 'SINGLE',
 }
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
   public repository: GetRepository<T, EntityRepository<T>>;
+  public builder: QueryBuilder<T>;
   public logger: Logger;
   constructor(public model: T) {
-    this.repository = connection.em.getRepository<T>(model.constructor as new () => T);
+    this.repository = ((connection.em as any) as EntityManager).getRepository<T>(model.constructor as new () => T);
     this.logger = Logger.getInstance();
   }
 
@@ -38,21 +40,18 @@ export class BaseDao<T extends BaseModel<T>> {
    * @param options extra option for search
    */
   @log()
-  async getByCriteria(
+  async getByCriteria<Y extends keyof typeof FETCH_STRATEGY>(
     criteria: { [key: string]: any },
     fetchStrategy = FETCH_STRATEGY.SINGLE,
-    options?: any,
+    options?: Y extends FETCH_STRATEGY.SINGLE ? FindOneOptions<T, never> : FindOptions<T, never>,
   ): Promise<T | T[]> {
     switch (fetchStrategy) {
       case FETCH_STRATEGY.ALL:
-        return (this.repository as any).find(criteria, options);
-        break;
+        return this.repository.find(criteria as any, options);
       case FETCH_STRATEGY.SINGLE:
-        return (this.repository as any).findOne(criteria, options);
-        break;
+        return this.repository.findOne(criteria as any, options);
       default:
         return (this.repository as any).findOne(criteria, options);
-        break;
     }
   }
 

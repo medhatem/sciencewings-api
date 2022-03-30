@@ -1,11 +1,11 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { MemberStatusType } from '@/modules/hr/models/Member';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class ContractRO {
   @JsonProperty()
@@ -54,7 +54,7 @@ export class ContractRO {
   hrResponsible?: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class JobRO {
   @JsonProperty()
@@ -96,7 +96,7 @@ export class JobRO {
   @JsonProperty()
   hrResponsible?: number;
 }
-@Serializable()
+@JsonObject()
 @unique
 export class MemberRO {
   @JsonProperty()
@@ -175,7 +175,7 @@ export class MemberRO {
   status?: MemberStatusType;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class UpdateMemberRO {
   @JsonProperty()

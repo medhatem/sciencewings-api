@@ -1,8 +1,10 @@
-import { BaseBodyDTO, BaseRequestDTO, BaseDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { BaseBodyDTO, BaseDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
+
+import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceCalendarDTO extends BaseBodyDTO {
   @JsonProperty()
@@ -21,21 +23,21 @@ export class ResourceCalendarDTO extends BaseBodyDTO {
   twoWeeksCalendar: boolean;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceMemeberDTO extends BaseDTO {
   @JsonProperty()
   name: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceTagDTO extends BaseDTO {
   @JsonProperty()
   title: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty()
@@ -61,58 +63,62 @@ export class ResourceBodyDTO extends BaseBodyDTO {
 
   @JsonProperty({
     type: ResourceCalendarDTO,
+    beforeDeserialize,
   })
   calendar: Array<ResourceCalendarDTO>;
 
   @JsonProperty({
     type: ResourceTagDTO,
+    beforeDeserialize,
   })
   tags: Array<ResourceTagDTO>;
 
   @JsonProperty({
     type: ResourceMemeberDTO,
+    beforeDeserialize,
   })
   managers: Array<ResourceMemeberDTO>;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class CreatedResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class UpdatedResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class GetResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty({
     type: ResourceBodyDTO,
+    beforeDeserialize,
   })
   resources: Array<ResourceBodyDTO>;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceDTO extends BaseRequestDTO {
   @JsonProperty()
   body: GetResourceBodyDTO;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class CreateResourceDTO extends BaseRequestDTO {
   @JsonProperty()
   body: CreatedResourceBodyDTO;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class UpdateResourceDTO extends BaseRequestDTO {
   @JsonProperty()

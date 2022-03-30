@@ -1,9 +1,10 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
+
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Member } from '@/modules/hr';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
-import { Member } from '@/modules/hr';
 import { ResourceTag } from './ResourceTag';
 
 @provide()
