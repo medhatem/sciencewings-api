@@ -8,6 +8,9 @@ import { unique } from '@/decorators/unique';
 @unique
 export class ResourceManagerRO {
   @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
   organization: number;
 
   @JsonProperty()
@@ -82,6 +85,9 @@ export class UserInviteToOrgRO {
 @unique
 export class ResourceTagRO {
   @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
   title!: string;
 }
 
@@ -154,7 +160,7 @@ export class ResourceEventRO {
   dateTo: Date;
 }
 //Resource settings
-@Serializable()
+@JsonObject()
 @unique
 export class ResourcesSettingsReservationGeneralRO {
   @JsonProperty()
@@ -172,7 +178,7 @@ export class ResourcesSettingsReservationGeneralRO {
   @JsonProperty()
   recurringReservations?: string;
 }
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceRateRO {
   @JsonProperty()
@@ -197,7 +203,7 @@ export class ResourceRateRO {
   resource: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourcesSettingsReservationUnitRO {
   @JsonProperty()
@@ -208,7 +214,7 @@ export class ResourcesSettingsReservationUnitRO {
   unites: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceTimerRestrictionRO {
   @JsonProperty()

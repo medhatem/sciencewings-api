@@ -426,21 +426,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    // const resource = this.resourceService.wrapEntity(
-    //   new Resource(),
-    //   {
-    //     name: payload.name,
-    //     description: payload.description,
-    //     active: payload.active,
-    //     resourceType: payload.resourceType,
-    //     timezone: payload.timezone,
-    //   },
-    //   true,
-    // );
-
-    // resource.organization = organization;
-    // resource.user = user;
-
     const createdResourceResult = await this.resourceService.create({
       name: payload.name,
       description: payload.description,
@@ -485,10 +470,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateResourceSchema) payload: ResourceRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.dao.get(resourceId);
-    if (!fetchedResource) {
+    const fetchedResourceResult = await this.resourceService.get(resourceId);
+    if (fetchedResourceResult.isFailure || fetchedResourceResult.getValue() === null) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
+    const fetchedResource: Resource = fetchedResourceResult.getValue();
 
     let user = null;
     if (payload.user) {
@@ -508,25 +494,71 @@ export class OrganizationService extends BaseService<Organization> implements IO
       organization = fetchedOrganization;
     }
 
-    if (payload.calendar) {
-      delete payload.calendar;
-      const updatedResourceCalendar = await this.resourceCalendarService.update(payload.calendar);
-      if (updatedResourceCalendar.isFailure) {
-        return Result.fail<number>(updatedResourceCalendar.error);
+    const managers: Member[] = [];
+    if (payload.managers) {
+      for await (const { organization, user } of payload.managers) {
+        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
+        if (fetcheManager.isFailure || !fetcheManager.getValue()) {
+          return Result.fail<number>(
+            `Manager with user id ${user} in organization with id ${organization} does not exist.`,
+          );
+        }
+        managers.push(fetcheManager.getValue());
       }
-      payload.calendar = updatedResourceCalendar.getValue();
     }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      ...payload,
-    });
+    console.log({ managers });
 
-    const createdResource = await this.resourceService.update({ ...resource, user, organization });
-    if (createdResource.isFailure) {
-      return Result.fail<number>(createdResource.error);
+    const existingManagers = await fetchedResource.managers.init();
+    for (const manager of managers) {
+      if (!existingManagers.contains(manager)) {
+        fetchedResource.managers.add(manager);
+        existingManagers.remove(manager);
+      }
     }
-    const id = createdResource.getValue().id;
+    for (const manager of existingManagers) {
+      fetchedResource.managers.remove(manager);
+    }
+
+    console.log({ existingManagers });
+
+    const existingTags = await fetchedResource.tags.init();
+    for (const tag of payload.tags) {
+      if (!tag.id) {
+        await this.resourceTagService.create({
+          title: tag.title,
+          resource: fetchedResource,
+        });
+        existingTags.remove((eTag) => eTag.title === tag.title);
+      }
+    }
+    for (const tag of existingTags) {
+      await this.resourceTagService.remove(tag.id);
+    }
+
+    console.log({ existingTags });
+
+    const resource = this.resourceService.wrapEntity(
+      fetchedResource,
+      {
+        name: payload.name,
+        description: payload.description,
+        active: payload.active,
+        resourceType: payload.resourceType,
+        timezone: payload.timezone,
+        user,
+        organization,
+      },
+      false,
+    );
+
+    console.log({ resource });
+
+    const updateResourceResult = await this.resourceService.update(resource);
+    if (updateResourceResult.isFailure) {
+      return Result.fail<number>(updateResourceResult.error);
+    }
+    const id = updateResourceResult.getValue().id;
     return Result.ok<number>(id);
   }
 

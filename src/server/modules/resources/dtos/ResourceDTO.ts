@@ -125,26 +125,26 @@ export class UpdateResourceDTO extends BaseRequestDTO {
   body: UpdatedResourceBodyDTO;
 }
 //Resource settings
-@Serializable()
+@JsonObject()
 @unique
 export class UpdateResourceSettingsReservationGeneralBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
-@Serializable()
+@JsonObject()
 @unique
 export class UpdateResourceSettingsReservationGeneralDTO extends BaseRequestDTO {
   @JsonProperty()
   body: UpdateResourceSettingsReservationGeneralBodyDTO;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class UpdateResourceSettingsReservationUnitBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
-@Serializable()
+@JsonObject()
 @unique
 export class UpdateResourceSettingsReservationUnitDTO extends BaseRequestDTO {
   @JsonProperty()

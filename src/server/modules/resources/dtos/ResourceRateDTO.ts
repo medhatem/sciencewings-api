@@ -1,8 +1,8 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonProperty, JsonObject } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceRateDTO extends BaseBodyDTO {
   @JsonProperty()
@@ -27,7 +27,7 @@ export class ResourceRateDTO extends BaseBodyDTO {
   resource: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class CreateResourceRateDTO extends BaseRequestDTO {
   @JsonProperty()

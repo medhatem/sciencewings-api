@@ -2,6 +2,8 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/B
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
+import { UserDTO } from '@/modules/users';
+import { OrganizationDTO } from '@/modules/organizations';
 
 @JsonObject()
 export class MemberBodyDTO extends BaseBodyDTO {
@@ -10,6 +12,12 @@ export class MemberBodyDTO extends BaseBodyDTO {
 
   @JsonProperty()
   name: string;
+
+  @JsonProperty()
+  user: UserDTO;
+
+  @JsonProperty()
+  organization: OrganizationDTO;
 }
 
 @JsonObject()
