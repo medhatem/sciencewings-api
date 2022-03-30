@@ -7,6 +7,8 @@ import {
   UserInviteToOrgRO,
   ResourceRO,
   ResourcesSettingsReservationGeneralRO,
+  ResourceRateRO,
+  ResourceTimerRestrictionRO,
 } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
@@ -225,5 +227,71 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new UpdateResourceSettingsReservationGeneralDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * register a new resource rate in the database
+   *
+   * @param payload
+   */
+  @POST
+  @Path('resources/settings/reservation/rate/create')
+  @Security()
+  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @LoggerStorage()
+  public async createResourceRate(payload: ResourceRateRO): Promise<CreateResourceDTO> {
+    const result = await this.OrganizationService.createResourceRate(payload);
+
+    if (result.isFailure) {
+      return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
+   * update resource rate in the database
+   *
+   * @param payload
+   */
+  @PUT
+  @Path('resources/settings/reservation/rate/update/:id')
+  @Security()
+  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @LoggerStorage()
+  public async updateResourceRate(payload: ResourceRateRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
+    const result = await this.OrganizationService.updateResourceRate(payload, id);
+
+    if (result.isFailure) {
+      return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
+   * update resource rate in the database
+   *
+   * @param payload
+   */
+  @PUT
+  @Path('resources/settings/reservation/time_restriction/:id')
+  @Security()
+  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @LoggerStorage()
+  public async updateResourceTimerRestriction(
+    payload: ResourceTimerRestrictionRO,
+    @PathParam('id') id: number,
+  ): Promise<CreateResourceDTO> {
+    const result = await this.OrganizationService.updateResourceTimerRestriction(payload, id);
+
+    if (result.isFailure) {
+      return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
 }

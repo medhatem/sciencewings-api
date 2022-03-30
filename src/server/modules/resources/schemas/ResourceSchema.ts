@@ -16,6 +16,7 @@ export const ResourceCalendarSchema = Joi.object({
 });
 
 const ResourceSchema = Joi.object({
+  // base
   active: Joi.boolean(),
   organization: Joi.number(),
   user: Joi.number(),
@@ -23,6 +24,16 @@ const ResourceSchema = Joi.object({
   tags: Joi.array(),
   managers: Joi.array(),
   calendar: Joi.array(),
+  // time restriction
+  isEditingWindowForUsers: Joi.boolean(),
+  isRestrictCreatingNewReservationBeforeTime: Joi.boolean(),
+  isRestrictCreatingNewReservationAfterTime: Joi.boolean(),
+  reservationTimeGranularity: Joi.string(),
+  isAllowUsersToEndReservationEarly: Joi.boolean(),
+  defaultReservationDuration: Joi.string(),
+  reservationDurationMinimum: Joi.string(),
+  reservationDurationMaximum: Joi.string(),
+  bufferTimeBeforeReservation: Joi.string(),
 });
 
 export const CreateResourceSchema = ResourceSchema.keys({

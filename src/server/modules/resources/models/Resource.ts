@@ -78,4 +78,24 @@ export class Resource extends BaseModel<Resource> {
   unitLimit: string;
   @Property()
   unites: number;
+
+  // Time restriction
+  @Property()
+  isEditingWindowForUsers: boolean;
+  @Property()
+  isRestrictCreatingNewReservationBeforeTime: boolean;
+  @Property()
+  isRestrictCreatingNewReservationAfterTime: boolean;
+  @Property()
+  reservationTimeGranularity: string;
+  @Property()
+  isAllowUsersToEndReservationEarly: boolean;
+  @Property()
+  defaultReservationDuration: string;
+  @Property()
+  reservationDurationMinimum: string;
+  @Property()
+  reservationDurationMaximum: string;
+  @Property()
+  bufferTimeBeforeReservation: string;
 }
