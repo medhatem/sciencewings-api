@@ -1,11 +1,12 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressDTO } from '@/modules/address';
 import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class UserIdDTO extends BaseBodyDTO {
   @JsonProperty()
@@ -32,28 +33,29 @@ export class UserIdDTO extends BaseBodyDTO {
   @JsonProperty()
   keycloakId: string;
 
-  @JsonProperty({ type: PhoneDTO })
+  @JsonProperty({ type: PhoneDTO, beforeDeserialize })
   phone: Array<PhoneDTO>;
 
   @JsonProperty({
     type: AddressDTO,
+    beforeDeserialize,
     name: 'address',
   })
   addresses: Array<AddressDTO>;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResetDTO extends BaseBodyDTO {
   @JsonProperty()
   message: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ErrorDTO extends BaseErrorDTO {}
 
-@Serializable()
+@JsonObject()
 @unique
 export class RegisterUserFromTokenDTO extends BaseRequestDTO {
   @JsonProperty()
@@ -63,7 +65,7 @@ export class RegisterUserFromTokenDTO extends BaseRequestDTO {
   error?: BaseErrorDTO;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResetPasswordDTO extends BaseRequestDTO {
   @JsonProperty()

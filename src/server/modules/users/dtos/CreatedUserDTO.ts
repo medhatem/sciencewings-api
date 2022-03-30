@@ -1,11 +1,11 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 import { BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class CreatedUserDTO extends BaseRequestDTO {
   @JsonProperty()

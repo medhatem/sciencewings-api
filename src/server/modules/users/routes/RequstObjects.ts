@@ -1,4 +1,4 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressRO } from '@/modules/address/routes';
 import { PhoneRO } from '../../phones/routes/PhoneRO';
@@ -12,7 +12,7 @@ export class UserInviteToOrgRO {
   email: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class UserRO {
   @JsonProperty()

@@ -1,3 +1,5 @@
+import { Collection } from '@mikro-orm/core';
+
 const wait = async (time: number) => {
   return await new Promise((resolve) => {
     setTimeout(resolve, time);
@@ -37,4 +39,25 @@ export const applyToAll = async <T, G>(
       }),
     );
   }
+};
+
+/**
+ * This is an override to the beforeDeserialization of the package  typescript-json-serializer
+ * it checks if the property to deserialize in a collection
+ * if so then it converts it as a json array
+ * else keep it as is
+ *
+ *
+ * We do this because Mikro-Orm uses collections which acts as an array but are different in type
+ * so in order for typescript-json-serializer to be able to understand and deserialize the property
+ * we need to convert it properly to array
+ *
+ *
+ * @param prop the property to deserialize
+ */
+export const beforeDeserialize: (property: any, currentInstance?: any) => any = (prop: any) => {
+  if (prop instanceof Collection) {
+    return prop.toJSON();
+  }
+  return prop;
 };

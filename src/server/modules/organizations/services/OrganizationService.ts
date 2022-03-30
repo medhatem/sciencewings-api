@@ -372,8 +372,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
         organization: organizationId,
       },
       FETCH_STRATEGY.ALL,
+      { refresh: true },
     );
-    return Result.ok(resources as Resource[]);
+    return Result.ok(resources.getValue());
   }
 
   @log()
