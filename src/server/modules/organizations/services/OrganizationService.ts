@@ -476,26 +476,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const fetchedResource: Resource = fetchedResourceResult.getValue();
 
-    let user = null;
-    if (payload.user) {
-      const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
-      if (fetchedUser.isFailure || !fetchedUser) {
-        return Result.fail<number>(`User with id ${payload.user} does not exist.`);
-      }
-      user = fetchedUser.getValue();
-    }
-
-    let organization = null;
-    if (payload.organization) {
-      const fetchedOrganization = await this.dao.get(payload.organization);
-      if (!fetchedOrganization) {
-        return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
-      }
-      organization = fetchedOrganization;
-    }
-
-    const managers: Member[] = [];
     if (payload.managers) {
+      const managers: Member[] = [];
       for await (const { organization, user } of payload.managers) {
         const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
         if (fetcheManager.isFailure || !fetcheManager.getValue()) {
@@ -505,63 +487,52 @@ export class OrganizationService extends BaseService<Organization> implements IO
         }
         managers.push(fetcheManager.getValue());
       }
-    }
 
-    let existingManagers = fetchedResource.managers.getItems();
+      let existingManagers = fetchedResource.managers.getItems();
 
-    console.log({ existingManagers });
-
-    for (const manager of managers) {
-      if (
-        existingManagers.filter(
-          (eManager) => eManager.user.id === manager.user.id && eManager.organization.id === manager.organization.id,
-        ).length === 0
-      ) {
-        fetchedResource.managers.add(manager);
-        existingManagers = existingManagers.filter(
-          (eManager) => eManager.user.id !== manager.user.id && eManager.organization.id !== manager.organization.id,
-        );
+      for (const manager of managers) {
+        if (
+          existingManagers.filter(
+            (eManager) => eManager.user.id === manager.user.id && eManager.organization.id === manager.organization.id,
+          ).length === 0
+        ) {
+          fetchedResource.managers.add(manager);
+          existingManagers = existingManagers.filter(
+            (eManager) => eManager.user.id !== manager.user.id && eManager.organization.id !== manager.organization.id,
+          );
+        }
+      }
+      for (const manager of existingManagers) {
+        fetchedResource.managers.remove(manager);
       }
     }
-    for (const manager of existingManagers) {
-      fetchedResource.managers.remove(manager);
-    }
 
-    console.log({ existingManagers });
-
-    const existingTags = await fetchedResource.tags.init();
-    for (const tag of payload.tags) {
-      if (!tag.id) {
-        await this.resourceTagService.create({
-          title: tag.title,
-          resource: fetchedResource,
-        });
-        existingTags.remove((eTag) => eTag.title === tag.title);
+    if (payload.tags) {
+      const existingTags = await fetchedResource.tags.init();
+      for (const tag of payload.tags) {
+        if (!tag.id) {
+          await this.resourceTagService.create({
+            title: tag.title,
+            resource: fetchedResource,
+          });
+          existingTags.remove((eTag) => eTag.title === tag.title);
+        }
       }
+      for (const tag of existingTags) {
+        await this.resourceTagService.remove(tag.id);
+      }
+      console.log({ existingTags });
     }
-    for (const tag of existingTags) {
-      await this.resourceTagService.remove(tag.id);
-    }
 
-    console.log({ existingTags });
+    console.log({
+      ...fetchedResource,
+      ...payload,
+    });
 
-    const resource = this.resourceService.wrapEntity(
-      fetchedResource,
-      {
-        name: payload.name,
-        description: payload.description,
-        active: payload.active,
-        resourceType: payload.resourceType,
-        timezone: payload.timezone,
-        user,
-        organization,
-      },
-      false,
-    );
-
-    console.log({ resource });
-
-    const updateResourceResult = await this.resourceService.update(resource);
+    const updateResourceResult = await this.resourceService.update({
+      ...fetchedResource,
+      ...payload,
+    });
     if (updateResourceResult.isFailure) {
       return Result.fail<number>(updateResourceResult.error);
     }

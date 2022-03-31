@@ -146,7 +146,7 @@ export class GetResourceBodyDTO extends BaseBodyDTO {
     type: ResourceBodyDTO,
     beforeDeserialize,
   })
-  resources: Array<ResourceBodyDTO>;
+  data: Array<ResourceBodyDTO>;
 }
 
 @JsonObject()

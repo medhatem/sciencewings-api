@@ -226,6 +226,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new UpdateResourceSettingsReservationGeneralDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
+
   /**
    * Update a resource reservation settings units in the database
    *

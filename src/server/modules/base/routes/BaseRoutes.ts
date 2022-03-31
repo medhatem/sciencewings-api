@@ -28,14 +28,16 @@ export class BaseRoutes<T extends BaseModel<T>> {
   public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
     const result = await this.service.get(id);
     if (result.isFailure) {
-      return this.getDTOMapper.serialize({
+      return this.getDTOMapper.deserialize({
         error: { statusCode: 500, message: result.error },
       });
     }
-    console.log({ result: result.getValue() });
+    console.log({
+      body: { statusCode: 204, data: [result.getValue()] },
+    });
 
-    return this.getDTOMapper.serialize({
-      body: { statusCode: 204, ...result.getValue() },
+    return this.getDTOMapper.deserialize({
+      body: { statusCode: 204, data: [result.getValue()] },
     });
   }
 
