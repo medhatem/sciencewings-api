@@ -507,13 +507,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    console.log({ managers });
+    let existingManagers = fetchedResource.managers.getItems();
 
-    const existingManagers = await fetchedResource.managers.init();
+    console.log({ existingManagers });
+
     for (const manager of managers) {
-      if (!existingManagers.contains(manager)) {
+      if (
+        existingManagers.filter(
+          (eManager) => eManager.user.id === manager.user.id && eManager.organization.id === manager.organization.id,
+        ).length === 0
+      ) {
         fetchedResource.managers.add(manager);
-        existingManagers.remove(manager);
+        existingManagers = existingManagers.filter(
+          (eManager) => eManager.user.id !== manager.user.id && eManager.organization.id !== manager.organization.id,
+        );
       }
     }
     for (const manager of existingManagers) {
