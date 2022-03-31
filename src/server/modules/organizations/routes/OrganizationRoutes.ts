@@ -193,12 +193,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
   }
-  /**
-   * Update a resource in the database
-   *
-   * @param payload
-   * Should container Resource data that include Resource data with its id
-   */
+
   /**
    * Update a resource reservation settings general in the database
    *
@@ -235,13 +230,13 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * @param payload
    */
   @POST
-  @Path('resources/settings/reservation/rate/create')
+  @Path('resources/settings/reservation/rate/create/id')
   @Security()
   @Response<CreateResourceDTO>(201, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   @LoggerStorage()
-  public async createResourceRate(payload: ResourceRateRO): Promise<CreateResourceDTO> {
-    const result = await this.OrganizationService.createResourceRate(payload);
+  public async createResourceRate(payload: ResourceRateRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
+    const result = await this.OrganizationService.createResourceRate(payload, id);
 
     if (result.isFailure) {
       return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });

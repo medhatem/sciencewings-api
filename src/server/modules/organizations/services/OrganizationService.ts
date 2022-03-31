@@ -652,11 +652,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @validate
   public async createResourceRate(
     @validateParam(CreateResourceRateSchema) payload: ResourceRateRO,
+    resourceId: number,
   ): Promise<Result<number>> {
     let resource: Resource = null;
-    const fetchedResource = await this.resourceService.get(payload.resource);
+    const fetchedResource = await this.resourceService.get(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${payload.resource} does not exist.`);
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     resource = fetchedResource.getValue();
 

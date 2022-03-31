@@ -22,9 +22,6 @@ export class ResourceRateDTO extends BaseBodyDTO {
 
   @JsonProperty()
   duration: number;
-
-  @JsonProperty()
-  resource: number;
 }
 
 @JsonObject()

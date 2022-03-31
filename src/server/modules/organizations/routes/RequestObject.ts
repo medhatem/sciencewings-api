@@ -159,6 +159,7 @@ export class ResourceEventRO {
   @JsonProperty()
   dateTo: Date;
 }
+
 //Resource settings
 @JsonObject()
 @unique
@@ -178,6 +179,7 @@ export class ResourcesSettingsReservationGeneralRO {
   @JsonProperty()
   recurringReservations?: string;
 }
+
 @JsonObject()
 @unique
 export class ResourceRateRO {
@@ -198,9 +200,6 @@ export class ResourceRateRO {
 
   @JsonProperty()
   duration: number;
-
-  @JsonProperty()
-  resource: number;
 }
 
 @JsonObject()

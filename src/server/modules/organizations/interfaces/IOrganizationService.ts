@@ -31,7 +31,7 @@ export abstract class IOrganizationService extends IBaseService<any> {
     resourceId: number,
   ) => Promise<Result<number>>;
 
-  createResourceRate: (payload: ResourceRateRO) => Promise<Result<number>>;
+  createResourceRate: (payload: ResourceRateRO, resourceId: number) => Promise<Result<number>>;
   updateResourceRate: (payload: ResourceRateRO, resourceRateId: number) => Promise<Result<number>>;
 
   updateResourceTimerRestriction: (

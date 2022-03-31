@@ -7,7 +7,6 @@ export const ResourceRateSchema = Joi.object({
   isPublic: Joi.boolean(),
   isRequiredAccountNumber: Joi.boolean(),
   duration: Joi.number(),
-  resource: Joi.number(),
 });
 
 export const CreateResourceRateSchema = Joi.object({
@@ -17,5 +16,4 @@ export const CreateResourceRateSchema = Joi.object({
   isPublic: Joi.boolean().required(),
   isRequiredAccountNumber: Joi.boolean().required(),
   duration: Joi.number().required(),
-  resource: Joi.number().required(),
 });
