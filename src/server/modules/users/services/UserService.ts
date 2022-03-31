@@ -69,23 +69,20 @@ export class UserService extends BaseService<User> implements IUserService {
   @safeGuard()
   async registerUser(userInfo: KeycloakUserInfo): Promise<Result<number>> {
     // get the userKeyCloakId
-    const users = await this.keycloak.getAdminClient().users.find({ email: userInfo.email, realm: 'sciencewings-web' });
+    const users = await this.keycloak
+      .getAdminClient()
+      .users.find({ email: userInfo.email, realm: getConfig('keycloak.clientValidation.realmName') });
 
     if (!users || !users.length) {
       return Result.fail<number>('No user found');
     }
-    const user = this.dao.model;
+    const user = new User();
     user.firstname = userInfo.given_name;
     user.lastname = userInfo.family_name;
     user.email = userInfo.email;
     user.keycloakId = users[0].id;
     let createdUser: { [key: string]: any } = { id: null };
-    try {
-      createdUser = await this.dao.create(user);
-      //TODO send email
-    } catch (error) {
-      return Result.fail(error);
-    }
+    createdUser = await this.dao.create(user);
 
     return Result.ok<number>(createdUser.id);
   }
@@ -141,6 +138,12 @@ export class UserService extends BaseService<User> implements IUserService {
   @validate
   async createUser(@validateParam(CreateUserSchema) user: UserRO): Promise<Result<User>> {
     try {
+      const userExistingCheck: User = (await this.dao.getByCriteria({
+        $or: [{ email: user.email }, { keycloakId: user.keycloakId }],
+      })) as User;
+      if (userExistingCheck) {
+        return Result.fail(`user already exists `);
+      }
       const userAddress = user.addresses;
       const userPhones = user.phones;
 

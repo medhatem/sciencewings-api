@@ -14,7 +14,7 @@ export class Job extends BaseModel<Job> {
   @PrimaryKey()
   name!: string;
 
-  @ManyToOne({ entity: () => Organization, primary: true })
+  @ManyToOne({ entity: () => Organization, primary: true, unique: false })
   organization!: Organization;
 
   @Property({ columnType: 'text', nullable: true })
