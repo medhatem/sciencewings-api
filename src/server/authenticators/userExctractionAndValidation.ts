@@ -26,19 +26,15 @@ export class UserExctractionAndValidation {
       return Result.fail('Not Authorized');
     }
 
-    const { originalUrl } = req;
-    if (originalUrl !== '/users/create') {
-      const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });
-      if (criteriaResult.isFailure || criteriaResult.getValue() === null) {
-        return Result.fail('Unrecognized user!');
-      }
-      const userId = criteriaResult.getValue().id;
-
-      req.keycloakUser = result;
-      req.userId = userId;
-      return Result.ok({ keycloakUser: result, userId });
+    const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });
+    if (criteriaResult.isFailure || criteriaResult.getValue() === null) {
+      return Result.fail('Unrecognized user!');
     }
+    const userId = criteriaResult.getValue().id;
 
-    return Result.ok({ keycloakUser: result });
+    req.keycloakUser = result;
+    req.userId = userId;
+
+    return Result.ok({ keycloakUser: result, userId });
   };
 }
