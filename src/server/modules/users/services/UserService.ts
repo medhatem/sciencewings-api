@@ -73,7 +73,7 @@ export class UserService extends BaseService<User> implements IUserService {
       .getAdminClient()
       .users.find({ email: userInfo.email, realm: getConfig('keycloak.clientValidation.realmName') });
 
-    if (!users || !users.length) {
+    if (!users?.length) {
       return Result.fail<number>('No user found');
     }
     const user = new User();
