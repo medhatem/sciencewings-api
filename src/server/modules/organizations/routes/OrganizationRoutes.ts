@@ -9,6 +9,7 @@ import {
   ResourcesSettingsReservationGeneralRO,
   ResourceRateRO,
   ResourceTimerRestrictionRO,
+  ResourcesSettingsReservationUnitRO,
 } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
@@ -27,6 +28,8 @@ import {
   UpdateResourceDTO,
   UpdateResourceSettingsReservationGeneralBodyDTO,
   UpdateResourceSettingsReservationGeneralDTO,
+  UpdateResourceSettingsReservationUnitBodyDTO,
+  UpdateResourceSettingsReservationUnitDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
@@ -193,12 +196,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
   }
-  /**
-   * Update a resource in the database
-   *
-   * @param payload
-   * Should container Resource data that include Resource data with its id
-   */
+
   /**
    * Update a resource reservation settings general in the database
    *
@@ -227,6 +225,35 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new UpdateResourceSettingsReservationGeneralDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+  /**
+   * Update a resource reservation settings units in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @PUT
+  @Path('/resources/settings/reservation/unit/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceSettingsReservationUnitBodyDTO>(
+    204,
+    'Resource reservation unit settings updated Successfully',
+  )
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResourcesSettingsReservationUnit(
+    payload: ResourcesSettingsReservationUnitRO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateResourceSettingsReservationUnitDTO> {
+    const result = await this.OrganizationService.updateResourceSettingsReservationUnits(payload, id);
+
+    if (result.isFailure) {
+      return new UpdateResourceSettingsReservationUnitDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceSettingsReservationUnitDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**
