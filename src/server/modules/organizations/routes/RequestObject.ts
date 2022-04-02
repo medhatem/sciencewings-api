@@ -1,10 +1,10 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceManagerRO {
   @JsonProperty()
@@ -14,7 +14,7 @@ export class ResourceManagerRO {
   user: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class CreateOrganizationRO {
   @JsonProperty()
@@ -26,7 +26,9 @@ export class CreateOrganizationRO {
   @JsonProperty()
   email: string;
 
-  @JsonProperty()
+  @JsonProperty({
+    type: PhoneRO,
+  })
   phones: Array<PhoneRO>;
 
   @JsonProperty()
@@ -64,7 +66,7 @@ export class CreateOrganizationRO {
   parentId?: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class UserInviteToOrgRO {
   @JsonProperty()
@@ -85,14 +87,14 @@ export class UserResendPassword {
 }
 // resource ROs
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceTagRO {
   @JsonProperty()
   title!: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceCalendarRO {
   @JsonProperty()
@@ -114,7 +116,7 @@ export class ResourceCalendarRO {
   twoWeeksCalendar?: boolean;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceRO {
   @JsonProperty()
@@ -148,7 +150,7 @@ export class ResourceRO {
   managers?: Array<ResourceManagerRO>;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ResourceEventRO {
   @JsonProperty()
