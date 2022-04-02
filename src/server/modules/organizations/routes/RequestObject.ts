@@ -75,8 +75,7 @@ export class UserInviteToOrgRO {
   @JsonProperty()
   email: string;
 }
-
-@Serializable()
+@JsonObject()
 @unique
 export class UserResendPassword {
   @JsonProperty()
