@@ -1,4 +1,14 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  BooleanType,
+  Collection,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryKey,
+  Property,
+  StringType,
+} from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -57,46 +67,46 @@ export class Resource extends BaseModel<Resource> {
 
   //Resource settings
   //general
-  @Property({ nullable: true })
-  isEnabled: boolean;
-  @Property({ nullable: true })
-  isLoanable: boolean;
-  @Property({ nullable: true })
-  isReturnTheirOwnLoans: boolean;
-  @Property({ nullable: true })
-  isReservingLoansAtFutureDates: boolean;
-  @Property({ nullable: true })
-  fixedLoanDuration: string;
-  @Property({ nullable: true })
-  overdueNoticeDelay: string;
-  @Property({ nullable: true })
-  recurringReservations: string;
+  @Property({ type: BooleanType })
+  isEnabled = true;
+  @Property({ type: BooleanType })
+  isLoanable = false;
+  @Property({ type: BooleanType })
+  isReturnTheirOwnLoans = false;
+  @Property({ type: BooleanType })
+  isReservingLoansAtFutureDates = false;
+  @Property({ type: StringType })
+  fixedLoanDuration = '0 days';
+  @Property({ type: StringType })
+  overdueNoticeDelay = '0 days';
+  @Property({ type: StringType })
+  recurringReservations = '0 days';
 
   //Unit
-  @Property({ nullable: true })
-  unitName: string;
-  @Property({ nullable: true })
-  unitLimit: string;
-  @Property({ nullable: true })
-  unites: number;
+  @Property({ type: StringType })
+  unitName = '';
+  @Property({ type: Number })
+  unitLimit = 0;
+  @Property({ type: Number })
+  unites = 0;
 
   // Time restriction
-  @Property({ nullable: true })
-  isEditingWindowForUsers: boolean;
-  @Property({ nullable: true })
-  isRestrictCreatingNewReservationBeforeTime: boolean;
-  @Property({ nullable: true })
-  isRestrictCreatingNewReservationAfterTime: boolean;
-  @Property({ nullable: true })
-  reservationTimeGranularity: string;
-  @Property({ nullable: true })
-  isAllowUsersToEndReservationEarly: boolean;
-  @Property({ nullable: true })
-  defaultReservationDuration: string;
-  @Property({ nullable: true })
-  reservationDurationMinimum: string;
-  @Property({ nullable: true })
-  reservationDurationMaximum: string;
-  @Property({ nullable: true })
-  bufferTimeBeforeReservation: string;
+  @Property({ type: BooleanType })
+  isEditingWindowForUsers = false;
+  @Property({ type: BooleanType })
+  isRestrictCreatingNewReservationBeforeTime = false;
+  @Property({ type: BooleanType })
+  isRestrictCreatingNewReservationAfterTime = false;
+  @Property({ type: StringType })
+  reservationTimeGranularity = '';
+  @Property({ type: BooleanType })
+  isAllowUsersToEndReservationEarly = false;
+  @Property({ type: StringType })
+  defaultReservationDuration = '';
+  @Property({ type: StringType })
+  reservationDurationMinimum = '';
+  @Property({ type: StringType })
+  reservationDurationMaximum = '';
+  @Property({ type: StringType })
+  bufferTimeBeforeReservation = '';
 }

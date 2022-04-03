@@ -529,10 +529,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
       ...payload,
     });
 
-    const updateResourceResult = await this.resourceService.update({
-      ...fetchedResource,
-      ...payload,
-    });
+    const resource = this.resourceService.wrapEntity(
+      fetchedResource,
+      {
+        ...payload,
+      },
+      false,
+    );
+
+    const updateResourceResult = await this.resourceService.update(resource);
     if (updateResourceResult.isFailure) {
       return Result.fail<number>(updateResourceResult.error);
     }
@@ -703,5 +708,49 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const id = updatedResource.getValue().id;
     return Result.ok<number>(id);
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceSettingsReservationGeneral(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceSettingsReservationGeneral(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource.getValue());
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceUnites(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceUnites(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource.getValue());
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceRate(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceRate = await this.resourceRateService.getByCriteria(
+      { resource: fetchedResource.getValue() },
+      FETCH_STRATEGY.ALL,
+    );
+    return Result.ok(resourceRate.getValue());
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceTimerRestriction(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceTimerRestriction(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource.getValue());
   }
 }

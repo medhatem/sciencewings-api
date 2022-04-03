@@ -22,6 +22,7 @@ export abstract class IOrganizationService extends IBaseService<any> {
   createResource: (payload: ResourceRO) => Promise<Result<number>>;
   updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
 
+  getResourceSettingsReservationGeneral: (resourceId: number) => Promise<Result<any>>;
   updateResourceSettingsReservationGeneral: (
     payload: ResourcesSettingsReservationGeneralRO,
     resourceId: number,
@@ -31,9 +32,13 @@ export abstract class IOrganizationService extends IBaseService<any> {
     resourceId: number,
   ) => Promise<Result<number>>;
 
+  getResourceUnites: (resourceId: number) => Promise<Result<any>>;
+
+  getResourceRate: (resourceId: number) => Promise<Result<any>>;
   createResourceRate: (payload: ResourceRateRO, resourceId: number) => Promise<Result<number>>;
   updateResourceRate: (payload: ResourceRateRO, resourceRateId: number) => Promise<Result<number>>;
 
+  getResourceTimerRestriction: (resourceId: number) => Promise<Result<any>>;
   updateResourceTimerRestriction: (
     payload: ResourceTimerRestrictionRO,
     resourceRateId: number,
