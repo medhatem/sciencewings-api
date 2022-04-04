@@ -5,6 +5,7 @@ import {
   ResourcesSettingsReservationUnitRO,
   ResourceRateRO,
   ResourceTimerRestrictionRO,
+  ResourceReservationVisibilityRO,
 } from '@/modules/organizations/routes/RequestObject';
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Member } from '@/modules/hr/models/Member';
@@ -42,5 +43,11 @@ export abstract class IOrganizationService extends IBaseService<any> {
   updateResourceReservationTimerRestriction: (
     payload: ResourceTimerRestrictionRO,
     resourceRateId: number,
+  ) => Promise<Result<number>>;
+
+  getResourceReservationVisibility: (resourceId: number) => Promise<Result<any>>;
+  updateResourceReservationVisibility: (
+    payload: ResourceReservationVisibilityRO,
+    resourceId: number,
   ) => Promise<Result<number>>;
 }

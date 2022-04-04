@@ -71,4 +71,17 @@ export class ResourceService extends BaseService<Resource> {
     }
     return Result.ok(fetchedResource);
   }
+
+  @log()
+  @safeGuard()
+  public async getResourceReservationVisibility(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.dao.repository
+      .createQueryBuilder()
+      .select(['isReservationDetailsVisibilityToNonModerators'])
+      .execute('get', true);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource);
+  }
 }

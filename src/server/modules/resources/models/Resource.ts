@@ -109,4 +109,10 @@ export class Resource extends BaseModel<Resource> {
   reservationDurationMaximum = '';
   @Property({ type: StringType })
   bufferTimeBeforeReservation = '';
+
+  // Group
+
+  // visibility
+  @Property({ type: StringType })
+  isReservationDetailsVisibilityToNonModerators = '';
 }

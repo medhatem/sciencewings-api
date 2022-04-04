@@ -235,3 +235,10 @@ export class ResourceTimerRestrictionRO {
   @JsonProperty()
   bufferTimeBeforeReservation: string;
 }
+
+@JsonObject()
+@unique
+export class ResourceReservationVisibilityRO {
+  @JsonProperty()
+  isReservationDetailsVisibilityToNonModerators = '';
+}
