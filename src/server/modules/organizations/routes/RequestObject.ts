@@ -240,5 +240,5 @@ export class ResourceTimerRestrictionRO {
 @unique
 export class ResourceReservationVisibilityRO {
   @JsonProperty()
-  isReservationDetailsVisibilityToNonModerators = '';
+  isReservationDetailsVisibilityToNonModerators: string;
 }
