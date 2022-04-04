@@ -48,7 +48,7 @@ export const UpdateResourceSchema = ResourceSchema.keys({
   resourceType: Joi.string(),
 });
 //Resource Settings
-export const ResourceSettingsReservationGeneralSchema = Joi.object({
+export const ResourceReservationGeneralSchema = Joi.object({
   isEnabled: Joi.boolean(),
   isLoanable: Joi.boolean(),
   isReturnTheirOwnLoans: Joi.boolean(),
@@ -58,7 +58,7 @@ export const ResourceSettingsReservationGeneralSchema = Joi.object({
   recurringReservations: Joi.string(),
 });
 
-export const ResourceSettingsReservationUnitSchema = Joi.object({
+export const ResourceReservationUnitSchema = Joi.object({
   unitName: Joi.string(),
   unitLimit: Joi.number(),
   unites: Joi.number(),

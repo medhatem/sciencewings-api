@@ -40,8 +40,8 @@ import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import {
   CreateResourceSchema,
   ResourceCalendarSchema,
-  ResourceSettingsReservationGeneralSchema,
-  ResourceSettingsReservationUnitSchema,
+  ResourceReservationGeneralSchema,
+  ResourceReservationUnitSchema,
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { CreateResourceRateSchema, UpdateResourceRateSchema } from '@/modules/resources/schemas/ResourceRateSchema';
@@ -570,8 +570,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   @validate
-  public async updateResourceSettingsReservationGeneral(
-    @validateParam(ResourceSettingsReservationGeneralSchema) payload: ResourcesSettingsReservationGeneralRO,
+  public async updateResourceReservationGeneral(
+    @validateParam(ResourceReservationGeneralSchema) payload: ResourcesSettingsReservationGeneralRO,
     resourceId: number,
   ): Promise<Result<number>> {
     const fetchedResource = await this.resourceService.get(resourceId);
@@ -595,8 +595,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   @validate
-  public async updateResourceSettingsReservationUnits(
-    @validateParam(ResourceSettingsReservationUnitSchema) payload: ResourcesSettingsReservationUnitRO,
+  public async updateResourceReservationUnits(
+    @validateParam(ResourceReservationUnitSchema) payload: ResourcesSettingsReservationUnitRO,
     resourceId: number,
   ): Promise<Result<number>> {
     const fetchedResource = await this.resourceService.get(resourceId);
@@ -676,7 +676,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   @validate
-  public async updateResourceTimerRestriction(
+  public async updateResourceReservationTimerRestriction(
     @validateParam(UpdateResourceSchema) payload: ResourceTimerRestrictionRO,
     resourceId: number,
   ): Promise<Result<number>> {
@@ -706,8 +706,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getResourceSettingsReservationGeneral(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.resourceService.getResourceSettingsReservationGeneral(resourceId);
+  public async getResourceReservationGeneral(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceReservationGeneral(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
@@ -716,8 +716,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getResourceUnites(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.resourceService.getResourceUnites(resourceId);
+  public async getResourceReservationUnites(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceReservationUnites(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
@@ -726,7 +726,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getResourceRate(resourceId: number): Promise<Result<any>> {
+  public async getResourceReservationRate(resourceId: number): Promise<Result<any>> {
     const fetchedResource = await this.resourceService.get(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
@@ -740,8 +740,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getResourceTimerRestriction(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.resourceService.getResourceTimerRestriction(resourceId);
+  public async getResourceReservationTimerRestriction(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceReservationTimerRestriction(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource.getValue());
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceReservationVisibility(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceReservationVisibility(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }

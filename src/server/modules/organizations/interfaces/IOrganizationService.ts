@@ -22,24 +22,24 @@ export abstract class IOrganizationService extends IBaseService<any> {
   createResource: (payload: ResourceRO) => Promise<Result<number>>;
   updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
 
-  getResourceSettingsReservationGeneral: (resourceId: number) => Promise<Result<any>>;
-  updateResourceSettingsReservationGeneral: (
+  getResourceReservationGeneral: (resourceId: number) => Promise<Result<any>>;
+  updateResourceReservationGeneral: (
     payload: ResourcesSettingsReservationGeneralRO,
     resourceId: number,
   ) => Promise<Result<number>>;
-  updateResourceSettingsReservationUnits: (
+  updateResourceReservationUnits: (
     payload: ResourcesSettingsReservationUnitRO,
     resourceId: number,
   ) => Promise<Result<number>>;
 
-  getResourceUnites: (resourceId: number) => Promise<Result<any>>;
+  getResourceReservationUnites: (resourceId: number) => Promise<Result<any>>;
 
-  getResourceRate: (resourceId: number) => Promise<Result<any>>;
+  getResourceReservationRate: (resourceId: number) => Promise<Result<any>>;
   createResourceRate: (payload: ResourceRateRO, resourceId: number) => Promise<Result<number>>;
   updateResourceRate: (payload: ResourceRateRO, resourceRateId: number) => Promise<Result<number>>;
 
-  getResourceTimerRestriction: (resourceId: number) => Promise<Result<any>>;
-  updateResourceTimerRestriction: (
+  getResourceReservationTimerRestriction: (resourceId: number) => Promise<Result<any>>;
+  updateResourceReservationTimerRestriction: (
     payload: ResourceTimerRestrictionRO,
     resourceRateId: number,
   ) => Promise<Result<number>>;

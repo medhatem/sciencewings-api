@@ -19,7 +19,7 @@ export class ResourceService extends BaseService<Resource> {
 
   @log()
   @safeGuard()
-  public async getResourceSettingsReservationGeneral(resourceId: number): Promise<Result<any>> {
+  public async getResourceReservationGeneral(resourceId: number): Promise<Result<any>> {
     const fetchedResource = await this.dao.repository
       .createQueryBuilder()
       .select([
@@ -39,7 +39,7 @@ export class ResourceService extends BaseService<Resource> {
   }
   @log()
   @safeGuard()
-  public async getResourceUnites(resourceId: number): Promise<Result<any>> {
+  public async getResourceReservationUnites(resourceId: number): Promise<Result<any>> {
     const fetchedResource = await this.dao.repository
       .createQueryBuilder()
       .select(['unitName', 'unitLimit', 'unites'])
@@ -51,7 +51,7 @@ export class ResourceService extends BaseService<Resource> {
   }
   @log()
   @safeGuard()
-  public async getResourceTimerRestriction(resourceId: number): Promise<Result<any>> {
+  public async getResourceReservationTimerRestriction(resourceId: number): Promise<Result<any>> {
     const fetchedResource = await this.dao.repository
       .createQueryBuilder()
       .select([

@@ -89,13 +89,6 @@ export class CreatedResourceBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class UpdatedResourceBodyDTO extends BaseBodyDTO {
-  @JsonProperty()
-  id: number;
-}
-
-@JsonObject()
-@unique
 export class GetResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty({
     type: ResourceBodyDTO,
@@ -118,17 +111,10 @@ export class CreateResourceDTO extends BaseRequestDTO {
   body: CreatedResourceBodyDTO;
 }
 
-@JsonObject()
-@unique
-export class UpdateResourceDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: UpdatedResourceBodyDTO;
-}
-
 //Resource settings
 @JsonObject()
 @unique
-export class GetResourceSettingsReservationGeneralBodyDTO extends BaseBodyDTO {
+export class GetResourceReservationGeneralBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   isEnabled: boolean;
   @JsonProperty()
@@ -147,28 +133,14 @@ export class GetResourceSettingsReservationGeneralBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class UpdateResourceSettingsReservationGeneralBodyDTO extends BaseBodyDTO {
+export class GetResourceReservationGeneralDTO extends BaseRequestDTO {
   @JsonProperty()
-  id: number;
+  body: GetResourceReservationGeneralBodyDTO;
 }
 
 @JsonObject()
 @unique
-export class GetResourceSettingsReservationGeneralDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: GetResourceSettingsReservationGeneralBodyDTO;
-}
-
-@JsonObject()
-@unique
-export class UpdateResourceSettingsReservationGeneralDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: UpdateResourceSettingsReservationGeneralBodyDTO;
-}
-
-@JsonObject()
-@unique
-export class GetResourceSettingsReservationUnitBodyDTO extends BaseBodyDTO {
+export class GetResourceReservationUnitBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   unitName: string;
   @JsonProperty()
@@ -179,28 +151,14 @@ export class GetResourceSettingsReservationUnitBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class GetResourceSettingsReservationUnitDTO extends BaseRequestDTO {
+export class GetResourceReservationUnitDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: GetResourceSettingsReservationUnitBodyDTO;
+  body: GetResourceReservationUnitBodyDTO;
 }
 
 @JsonObject()
 @unique
-export class UpdateResourceSettingsReservationUnitBodyDTO extends BaseBodyDTO {
-  @JsonProperty()
-  id: number;
-}
-
-@JsonObject()
-@unique
-export class UpdateResourceSettingsReservationUnitDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: UpdateResourceSettingsReservationUnitBodyDTO;
-}
-
-@JsonObject()
-@unique
-export class GetResourceSettingsReservationTimeRestrictionBodyDTO extends BaseBodyDTO {
+export class GetResourceReservationTimeRestrictionBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   isEditingWindowForUsers: boolean;
   @JsonProperty()
@@ -223,21 +181,35 @@ export class GetResourceSettingsReservationTimeRestrictionBodyDTO extends BaseBo
 
 @JsonObject()
 @unique
-export class GetResourceSettingsReservationTimeRestrictionDTO extends BaseRequestDTO {
+export class GetResourceReservationTimeRestrictionDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: GetResourceSettingsReservationTimeRestrictionBodyDTO;
+  body: GetResourceReservationTimeRestrictionBodyDTO;
 }
 
 @JsonObject()
 @unique
-export class UpdateResourceSettingsReservationTimeRestrictionBodyDTO extends BaseBodyDTO {
+export class GetResourceReservationVisibilityBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  isReservationDetailsVisibilityToNonModerators: string;
+}
+
+@JsonObject()
+@unique
+export class GetResourceReservationVisibilityDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceReservationVisibilityBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
 
 @JsonObject()
 @unique
-export class UpdateResourceSettingsReservationTimeRestrictionDTO extends BaseRequestDTO {
+export class UpdateResourceDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: UpdateResourceSettingsReservationTimeRestrictionBodyDTO;
+  body: UpdateResourceBodyDTO;
 }

@@ -24,18 +24,14 @@ import {
   CreateResourceDTO,
   GetResourceBodyDTO,
   ResourceDTO,
-  UpdatedResourceBodyDTO,
+  UpdateResourceBodyDTO,
   UpdateResourceDTO,
-  GetResourceSettingsReservationGeneralDTO,
-  GetResourceSettingsReservationGeneralBodyDTO,
-  UpdateResourceSettingsReservationGeneralBodyDTO,
-  UpdateResourceSettingsReservationGeneralDTO,
-  GetResourceSettingsReservationUnitDTO,
-  GetResourceSettingsReservationUnitBodyDTO,
-  UpdateResourceSettingsReservationUnitBodyDTO,
-  UpdateResourceSettingsReservationUnitDTO,
-  GetResourceSettingsReservationTimeRestrictionDTO,
-  GetResourceSettingsReservationTimeRestrictionBodyDTO,
+  GetResourceReservationGeneralDTO,
+  GetResourceReservationGeneralBodyDTO,
+  GetResourceReservationUnitDTO,
+  GetResourceReservationUnitBodyDTO,
+  GetResourceReservationTimeRestrictionDTO,
+  GetResourceReservationTimeRestrictionBodyDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources';
@@ -172,7 +168,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('resources/update/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
+  @Response<UpdateResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.OrganizationService.updateResource(payload, id);
@@ -214,23 +210,18 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('/resources/settings/reservation/general/:id')
   @Security()
   @LoggerStorage()
-  @Response<GetResourceSettingsReservationGeneralBodyDTO>(
-    204,
-    'Resource reservation general settings updated Successfully',
-  )
+  @Response<GetResourceReservationGeneralBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  public async getResourceSettingsReservationGeneral(
-    @PathParam('id') id: number,
-  ): Promise<GetResourceSettingsReservationGeneralDTO> {
-    const result = await this.OrganizationService.getResourceSettingsReservationGeneral(id);
+  public async getResourceReservationGeneral(@PathParam('id') id: number): Promise<GetResourceReservationGeneralDTO> {
+    const result = await this.OrganizationService.getResourceReservationGeneral(id);
 
     if (result.isFailure) {
-      return new GetResourceSettingsReservationGeneralDTO({
+      return new GetResourceReservationGeneralDTO({
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
 
-    return new GetResourceSettingsReservationGeneralDTO({ body: { ...result.getValue(), statusCode: 204 } });
+    return new GetResourceReservationGeneralDTO({ body: { ...result.getValue(), statusCode: 204 } });
   }
 
   /**
@@ -243,24 +234,21 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('/resources/settings/reservation/general/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdateResourceSettingsReservationGeneralBodyDTO>(
-    204,
-    'Resource reservation general settings updated Successfully',
-  )
+  @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateResourcesSettingsReservationGeneral(
     payload: ResourcesSettingsReservationGeneralRO,
     @PathParam('id') id: number,
-  ): Promise<UpdateResourceSettingsReservationGeneralDTO> {
-    const result = await this.OrganizationService.updateResourceSettingsReservationGeneral(payload, id);
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.OrganizationService.updateResourceReservationGeneral(payload, id);
 
     if (result.isFailure) {
-      return new UpdateResourceSettingsReservationGeneralDTO({
+      return new UpdateResourceDTO({
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
 
-    return new UpdateResourceSettingsReservationGeneralDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**
@@ -273,20 +261,20 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('/resources/settings/reservation/unit/:id')
   @Security()
   @LoggerStorage()
-  @Response<GetResourceSettingsReservationUnitBodyDTO>(204, 'Resource reservation unit settings updated Successfully')
+  @Response<GetResourceReservationUnitBodyDTO>(204, 'Resource reservation unit settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async getResourcesSettingsReservationUnit(
     @PathParam('id') id: number,
-  ): Promise<GetResourceSettingsReservationUnitDTO> {
-    const result = await this.OrganizationService.getResourceUnites(id);
+  ): Promise<GetResourceReservationUnitDTO> {
+    const result = await this.OrganizationService.getResourceReservationUnites(id);
 
     if (result.isFailure) {
-      return new GetResourceSettingsReservationUnitDTO({
+      return new GetResourceReservationUnitDTO({
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
 
-    return new GetResourceSettingsReservationUnitDTO({ body: { ...result.getValue(), statusCode: 204 } });
+    return new GetResourceReservationUnitDTO({ body: { ...result.getValue(), statusCode: 204 } });
   }
 
   /**
@@ -299,24 +287,21 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('/resources/settings/reservation/unit/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdateResourceSettingsReservationUnitBodyDTO>(
-    204,
-    'Resource reservation unit settings updated Successfully',
-  )
+  @Response<UpdateResourceBodyDTO>(204, 'Resource reservation unit settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateResourcesSettingsReservationUnit(
     payload: ResourcesSettingsReservationUnitRO,
     @PathParam('id') id: number,
-  ): Promise<UpdateResourceSettingsReservationUnitDTO> {
-    const result = await this.OrganizationService.updateResourceSettingsReservationUnits(payload, id);
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.OrganizationService.updateResourceReservationUnits(payload, id);
 
     if (result.isFailure) {
-      return new UpdateResourceSettingsReservationUnitDTO({
+      return new UpdateResourceDTO({
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
 
-    return new UpdateResourceSettingsReservationUnitDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**
@@ -331,7 +316,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async getResourceRate(@PathParam('id') id: number): Promise<GetResourceRateDTO> {
-    const result = await this.OrganizationService.getResourceRate(id);
+    const result = await this.OrganizationService.getResourceReservationRate(id);
 
     if (result.isFailure) {
       return new GetResourceRateDTO({ error: { statusCode: 500, errorMessage: result.error } });
@@ -390,21 +375,21 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @GET
   @Path('resources/settings/reservation/time_restriction/:id')
   @Security()
-  @Response<GetResourceSettingsReservationTimeRestrictionBodyDTO>(201, 'Resource created Successfully')
+  @Response<GetResourceReservationTimeRestrictionBodyDTO>(201, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async getResourceTimerRestriction(
     @PathParam('id') id: number,
-  ): Promise<GetResourceSettingsReservationTimeRestrictionDTO> {
-    const result = await this.OrganizationService.getResourceTimerRestriction(id);
+  ): Promise<GetResourceReservationTimeRestrictionDTO> {
+    const result = await this.OrganizationService.getResourceReservationTimerRestriction(id);
 
     if (result.isFailure) {
-      return new GetResourceSettingsReservationTimeRestrictionDTO({
+      return new GetResourceReservationTimeRestrictionDTO({
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
 
-    return new GetResourceSettingsReservationTimeRestrictionDTO({ body: { ...result.getValue(), statusCode: 201 } });
+    return new GetResourceReservationTimeRestrictionDTO({ body: { ...result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -422,7 +407,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     payload: ResourceTimerRestrictionRO,
     @PathParam('id') id: number,
   ): Promise<CreateResourceDTO> {
-    const result = await this.OrganizationService.updateResourceTimerRestriction(payload, id);
+    const result = await this.OrganizationService.updateResourceReservationTimerRestriction(payload, id);
 
     if (result.isFailure) {
       return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
