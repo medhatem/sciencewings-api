@@ -161,3 +161,36 @@ export class ResourceEventRO {
   @JsonProperty()
   dateTo: Date;
 }
+
+@JsonObject()
+@unique
+export class ResourceSettingsStatusRO {
+  @JsonProperty()
+  statusType: string;
+  @JsonProperty()
+  statusDescription: string;
+}
+
+@JsonObject()
+@unique
+export class ResourceSettingsVisibilityRO {
+  @JsonProperty()
+  visibility: boolean;
+  @JsonProperty()
+  isUnlistedOnSitePage: boolean;
+  @JsonProperty()
+  isUnlistedToUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isFullyHiddentoUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isPromotedOnSitePageAsALargeButtonAboveOtherResources: boolean;
+  @JsonProperty()
+  isHideAvailabilityonSitePage: boolean;
+}
+
+@JsonObject()
+@unique
+export class ResourceSettingsPropertiesRO {
+  @JsonProperty()
+  accessToResource: string;
+}

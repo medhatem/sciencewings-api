@@ -2,7 +2,14 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
-import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO, UserResendPassword } from './RequestObject';
+import {
+  CreateOrganizationRO,
+  UserInviteToOrgRO,
+  ResourceRO,
+  UserResendPassword,
+  ResourceSettingsVisibilityRO,
+  ResourceSettingsPropertiesRO,
+} from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -19,6 +26,18 @@ import {
   ResourceDTO,
   UpdatedResourceBodyDTO,
   UpdateResourceDTO,
+  GetResourceSettingsGeneralStatusBodyDTO,
+  GetResourceSettingsGeneralStatusDTO,
+  UpdateResourceSettingsGeneralStatusBodyDTO,
+  UpdateResourceSettingsGeneralStatusDTO,
+  GetResourceSettingsGeneralVisilityBodyDTO,
+  GetResourceSettingsGeneralVisilityDTO,
+  UpdateResourceSettingsGeneralVisiblityBodyDTO,
+  UpdateResourceSettingsReservationVisiblityDTO,
+  GetResourceSettingsGeneralPropertiesBodyDTO,
+  GetResourceSettingsGeneralPropertiesDTO,
+  UpdateResourceSettingsGeneralPropertiesBodyDTO,
+  UpdateResourceSettingsGeneralPropertiesDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
@@ -209,5 +228,179 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
+  }
+
+  /**
+   * Get resource genral status settings general in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @GET
+  @Path('/resources/settings/reservation/status/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<GetResourceSettingsGeneralStatusBodyDTO>(204, 'Resource reservation general settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async getResourceSettingsReservationGeneral(
+    @PathParam('id') id: number,
+  ): Promise<GetResourceSettingsGeneralStatusDTO> {
+    const result = await this.OrganizationService.getResourceSettingsGeneralStatus(id);
+
+    if (result.isFailure) {
+      return new GetResourceSettingsGeneralStatusDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new GetResourceSettingsGeneralStatusDTO({ body: { ...result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * Update a resource general status settings general in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @PUT
+  @Path('/resources/settings/reservation/status/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceSettingsGeneralStatusBodyDTO>(
+    204,
+    'Resource reservation general settings updated Successfully',
+  )
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResourcesSettingsReservationGeneral(
+    payload: UpdateResourceSettingsGeneralStatusDTO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateResourceSettingsGeneralStatusDTO> {
+    const result = await this.OrganizationService.updateResourceSettingsGeneral(payload, id);
+
+    if (result.isFailure) {
+      return new UpdateResourceSettingsGeneralStatusDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceSettingsGeneralStatusDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * Get a resource general visiblity settings general in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @GET
+  @Path('/resources/settings/general/visibility/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<GetResourceSettingsGeneralVisilityBodyDTO>(
+    204,
+    'Resource reservation general settings updated Successfully',
+  )
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async getResourceSettingsGeneralVisbility(
+    @PathParam('id') id: number,
+  ): Promise<GetResourceSettingsGeneralVisilityDTO> {
+    const result = await this.OrganizationService.getResourceSettingsReservationGeneral(id);
+
+    if (result.isFailure) {
+      return new GetResourceSettingsGeneralVisilityDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new GetResourceSettingsGeneralVisilityDTO({ body: { ...result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * Update a resource general visibility settings general in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @PUT
+  @Path('/resources/settings/general/visibility/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceSettingsGeneralVisiblityBodyDTO>(
+    204,
+    'Resource reservation general settings updated Successfully',
+  )
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResourcesSettingsGeneralVisibility(
+    payload: ResourceSettingsVisibilityRO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateResourceSettingsReservationVisiblityDTO> {
+    const result = await this.OrganizationService.updateResourceSettingsReservationGeneral(payload, id);
+
+    if (result.isFailure) {
+      return new UpdateResourceSettingsReservationVisiblityDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceSettingsReservationVisiblityDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * Get a resource general properties settings general in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @GET
+  @Path('/resources/settings/general/properties/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<GetResourceSettingsGeneralPropertiesBodyDTO>(
+    204,
+    'Resource reservation general settings updated Successfully',
+  )
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async getResourceSettingsGeneralProperties(
+    @PathParam('id') id: number,
+  ): Promise<GetResourceSettingsGeneralPropertiesDTO> {
+    const result = await this.OrganizationService.getResourceSettingsReservationGeneral(id);
+
+    if (result.isFailure) {
+      return new GetResourceSettingsGeneralPropertiesDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new GetResourceSettingsGeneralPropertiesDTO({ body: { ...result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * Update a resource general properties settings general in the database
+   *
+   * @param payload
+   * Should container Resource data that include Resource data with its id
+   */
+  @PUT
+  @Path('/resources/settings/general/properties/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceSettingsGeneralPropertiesBodyDTO>(
+    204,
+    'Resource reservation general settings updated Successfully',
+  )
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResourcesSettingsnGeneralProperties(
+    payload: ResourceSettingsPropertiesRO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateResourceSettingsGeneralPropertiesDTO> {
+    const result = await this.OrganizationService.updateResourceSettingsReservationGeneral(payload, id);
+
+    if (result.isFailure) {
+      return new UpdateResourceSettingsGeneralPropertiesDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceSettingsGeneralPropertiesDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }

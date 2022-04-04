@@ -16,4 +16,6 @@ export abstract class IOrganizationService extends IBaseService<any> {
   getResourcesOfAGivenOrganizationById: (organizationId: number) => Promise<Result<Resource[]>>;
   createResource: (payload: ResourceRO) => Promise<Result<number>>;
   updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
+
+  getResourceSettingsGeneralStatus;
 }

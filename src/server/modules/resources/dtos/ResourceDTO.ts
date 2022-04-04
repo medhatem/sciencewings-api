@@ -124,3 +124,100 @@ export class UpdateResourceDTO extends BaseRequestDTO {
   @JsonProperty()
   body: UpdatedResourceBodyDTO;
 }
+
+//Resource settings
+@JsonObject()
+@unique
+export class GetResourceSettingsGeneralStatusBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  statusType: string;
+  @JsonProperty()
+  statusDescription: string;
+}
+
+@JsonObject()
+@unique
+export class GetResourceSettingsGeneralStatusDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceSettingsGeneralStatusBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceSettingsGeneralStatusBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceSettingsGeneralStatusDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: UpdateResourceSettingsGeneralStatusBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class GetResourceSettingsGeneralVisilityBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  visibility: boolean;
+  @JsonProperty()
+  isUnlistedOnSitePage: boolean;
+  @JsonProperty()
+  isUnlistedToUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isFullyHiddentoUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isPromotedOnSitePageAsALargeButtonAboveOtherResources: boolean;
+  @JsonProperty()
+  isHideAvailabilityonSitePage: boolean;
+}
+
+@JsonObject()
+@unique
+export class GetResourceSettingsGeneralVisilityDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceSettingsGeneralVisilityBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceSettingsGeneralVisiblityBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceSettingsReservationVisiblityDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: UpdateResourceSettingsGeneralVisiblityBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class GetResourceSettingsGeneralPropertiesBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  accessToResource: string;
+}
+
+@JsonObject()
+@unique
+export class GetResourceSettingsGeneralPropertiesDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceSettingsGeneralPropertiesBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceSettingsGeneralPropertiesBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceSettingsGeneralPropertiesDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: UpdateResourceSettingsGeneralPropertiesBodyDTO;
+}
