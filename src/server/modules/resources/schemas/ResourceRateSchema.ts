@@ -1,6 +1,6 @@
 import Joi = require('joi');
 
-export const ResourceRateSchema = Joi.object({
+export const UpdateResourceRateSchema = Joi.object({
   description: Joi.string(),
   rate: Joi.number(),
   category: Joi.string(),

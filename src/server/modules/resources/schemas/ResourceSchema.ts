@@ -60,6 +60,6 @@ export const ResourceSettingsReservationGeneralSchema = Joi.object({
 
 export const ResourceSettingsReservationUnitSchema = Joi.object({
   unitName: Joi.string(),
-  unitLimit: Joi.string(),
+  unitLimit: Joi.number(),
   unites: Joi.number(),
 });

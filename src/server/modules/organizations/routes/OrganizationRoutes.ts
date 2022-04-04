@@ -369,7 +369,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @PUT
   @Path('resources/settings/reservation/rate/:id')
   @Security()
-  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
+  @Response<CreateResourceDTO>(204, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async updateResourceRate(payload: ResourceRateRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
@@ -379,7 +379,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**
@@ -415,7 +415,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @PUT
   @Path('resources/settings/reservation/time_restriction/:id')
   @Security()
-  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
+  @Response<CreateResourceDTO>(204, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   @LoggerStorage()
   public async updateResourceTimerRestriction(
@@ -428,6 +428,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }

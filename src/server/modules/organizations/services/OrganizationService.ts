@@ -44,7 +44,7 @@ import {
   ResourceSettingsReservationUnitSchema,
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
-import { CreateResourceRateSchema } from '@/modules/resources/schemas/ResourceRateSchema';
+import { CreateResourceRateSchema, UpdateResourceRateSchema } from '@/modules/resources/schemas/ResourceRateSchema';
 import { IResourceRateService, ResourceRate } from '@/modules/resources';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
@@ -521,13 +521,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       for (const tag of existingTags) {
         await this.resourceTagService.remove(tag.id);
       }
-      console.log({ existingTags });
     }
-
-    console.log({
-      ...fetchedResource,
-      ...payload,
-    });
 
     const resource = this.resourceService.wrapEntity(
       fetchedResource,
@@ -652,7 +646,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   @validate
   public async updateResourceRate(
-    @validateParam(UpdateResourceSchema) payload: ResourceRateRO,
+    @validateParam(UpdateResourceRateSchema) payload: ResourceRateRO,
     resourceRateId: number,
   ): Promise<Result<number>> {
     let resourceRate: ResourceRate = null;
@@ -706,7 +700,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (updatedResourceResult.isFailure) {
       return Result.fail<number>(updatedResourceResult.error);
     }
-    const id = updatedResource.getValue().id;
+    const id = updatedResourceResult.getValue().id;
     return Result.ok<number>(id);
   }
 

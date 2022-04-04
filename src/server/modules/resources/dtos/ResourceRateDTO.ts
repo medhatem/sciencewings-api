@@ -7,6 +7,9 @@ import { beforeDeserialize } from '@/utils/utilities';
 @unique
 export class ResourceRateDTO extends BaseBodyDTO {
   @JsonProperty()
+  id: number;
+
+  @JsonProperty()
   description: string;
 
   @JsonProperty()

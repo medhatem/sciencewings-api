@@ -208,7 +208,7 @@ export class ResourcesSettingsReservationUnitRO {
   @JsonProperty()
   unitName: string;
   @JsonProperty()
-  unitLimit: string;
+  unitLimit: number;
   @JsonProperty()
   unites: number;
 }

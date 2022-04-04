@@ -32,7 +32,6 @@ export class BaseRoutes<T extends BaseModel<T>> {
         error: { statusCode: 500, message: result.error },
       });
     }
-    console.log({ result: result.getValue() });
 
     return this.getDTOMapper.deserialize({
       body: { statusCode: 204, data: [result.getValue()] },

@@ -172,7 +172,7 @@ export class GetResourceSettingsReservationUnitBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   unitName: string;
   @JsonProperty()
-  unitLimit: string;
+  unitLimit: number;
   @JsonProperty()
   unites: number;
 }
