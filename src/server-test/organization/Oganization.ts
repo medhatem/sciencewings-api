@@ -1,21 +1,21 @@
-import { Configuration } from './../../server/configuration/Configuration';
+// import { Configuration } from './../../server/configuration/Configuration';
 import intern from 'intern';
-import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
-const { suite, test, before, beforeEach, afterEach } = intern.getPlugin('interface.tdd');
+import { createStubInstance } from 'sinon';
+const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import { Organization } from '@/modules/organizations/models/Organization';
+// import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
-import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { AddressType } from '@/modules/address';
+import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+// import { AddressType } from '@/modules/address';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organisationService: OrganizationService;
-  before((): void => {
-    Configuration.getInstance().init();
-  });
 
   test('should create the organization', async () => {
     organisationService = createStubInstance<OrganizationService>(OrganizationService);
+    console.log({ organisationService });
+
     const organization: CreateOrganizationRO = {
       name: 'testingground2',
       email: 'testingground1@gmail.com',
@@ -44,6 +44,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       ],
       description: '',
     };
+
     const result = await organisationService.createOrganization(organization, 1);
     expect(result.isSuccess).to.be.equal(true);
   });
