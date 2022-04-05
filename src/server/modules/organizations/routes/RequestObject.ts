@@ -78,7 +78,15 @@ export class UserInviteToOrgRO {
   @JsonProperty()
   email: string;
 }
+@JsonObject()
+@unique
+export class UserResendPassword {
+  @JsonProperty()
+  userId: number;
 
+  @JsonProperty()
+  orgId: number;
+}
 // resource ROs
 
 @JsonObject()
