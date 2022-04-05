@@ -3,7 +3,13 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { Member, MemberStatusType, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
+import {
+  CreateOrganizationRO,
+  ResourceRO,
+  ResourceSettingsGeneralPropertiesRO,
+  ResourceSettingsGeneralStatusRO,
+  ResourceSettingsGeneralVisibilityRO,
+} from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -27,11 +33,12 @@ import { IResourceCalendarService } from '@/modules/resources/interfaces/IResour
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
 import { Resource } from '@/modules/resources/models/Resource';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import {
   CreateResourceSchema,
-  ResourceCalendarSchema,
+  ResourceGeneralPropertiesSchema,
+  ResourceGeneralStatusSchema,
+  ResourceGeneralVisibilitySchema,
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
@@ -461,6 +468,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       description: payload.description,
       active: payload.active,
       resourceType: payload.resourceType,
+      resourceClass: payload.resourceClass,
       timezone: payload.timezone,
       organization,
       user,
@@ -548,27 +556,105 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   @validate
-  public async createResourceCalendar(
-    @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
-  ): Promise<Result<ResourceCalendar>> {
-    let organization = null;
-    if (payload.organization) {
-      organization = await this.dao.get(payload.organization);
-      if (!organization) {
-        return Result.fail(`Organization with id ${payload.organization} does not exist.`);
-      }
+  public async updateResourcesSettingsGeneralStatus(
+    @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
-
-    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(
-      new ResourceCalendar(),
+    const resourceValue = fetchedResource.getValue();
+    const resource = this.resourceService.wrapEntity(
+      resourceValue,
       {
+        ...resourceValue,
         ...payload,
-        organization,
       },
       false,
     );
 
-    const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
-    return Result.ok<any>(createdResourceCalendar);
+    await this.resourceService.update(resource);
+    return Result.ok<number>(1);
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourcesSettingsGeneralStatus(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourcesSettingsGeneralStatus(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource.getValue());
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async updateResourcesSettingsGeneralVisibility(
+    @validateParam(ResourceGeneralVisibilitySchema) payload: ResourceSettingsGeneralVisibilityRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceValue = fetchedResource.getValue();
+    const resource = this.resourceService.wrapEntity(
+      resourceValue,
+      {
+        ...resourceValue,
+        ...payload,
+      },
+      false,
+    );
+
+    await this.resourceService.update(resource);
+    return Result.ok<number>(1);
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceSettingsGeneralVisbility(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceSettingsGeneralVisbility(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource.getValue());
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async updateResourcesSettingsnGeneralProperties(
+    @validateParam(ResourceGeneralPropertiesSchema) payload: ResourceSettingsGeneralPropertiesRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceValue = fetchedResource.getValue();
+    const resource = this.resourceService.wrapEntity(
+      resourceValue,
+      {
+        ...resourceValue,
+        ...payload,
+      },
+      false,
+    );
+
+    await this.resourceService.update(resource);
+    return Result.ok<number>(1);
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceSettingsGeneralProperties(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.getResourceSettingsGeneralProperties(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    return Result.ok(fetchedResource.getValue());
   }
 }

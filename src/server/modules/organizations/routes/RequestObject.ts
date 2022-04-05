@@ -134,6 +134,9 @@ export class ResourceRO {
   resourceType!: string;
 
   @JsonProperty()
+  resourceClass!: string;
+
+  @JsonProperty()
   user?: number;
 
   @JsonProperty()
@@ -164,7 +167,7 @@ export class ResourceEventRO {
 
 @JsonObject()
 @unique
-export class ResourceSettingsStatusRO {
+export class ResourceSettingsGeneralStatusRO {
   @JsonProperty()
   statusType: string;
   @JsonProperty()
@@ -173,7 +176,7 @@ export class ResourceSettingsStatusRO {
 
 @JsonObject()
 @unique
-export class ResourceSettingsVisibilityRO {
+export class ResourceSettingsGeneralVisibilityRO {
   @JsonProperty()
   visibility: boolean;
   @JsonProperty()
@@ -190,7 +193,7 @@ export class ResourceSettingsVisibilityRO {
 
 @JsonObject()
 @unique
-export class ResourceSettingsPropertiesRO {
+export class ResourceSettingsGeneralPropertiesRO {
   @JsonProperty()
   accessToResource: string;
 }

@@ -7,8 +7,9 @@ import {
   UserInviteToOrgRO,
   ResourceRO,
   UserResendPassword,
-  ResourceSettingsVisibilityRO,
-  ResourceSettingsPropertiesRO,
+  ResourceSettingsGeneralVisibilityRO,
+  ResourceSettingsGeneralPropertiesRO,
+  ResourceSettingsGeneralStatusRO,
 } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
@@ -237,15 +238,15 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Should container Resource data that include Resource data with its id
    */
   @GET
-  @Path('/resources/settings/reservation/status/:id')
+  @Path('/resources/settings/general/status/:id')
   @Security()
   @LoggerStorage()
   @Response<GetResourceSettingsGeneralStatusBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  public async getResourceSettingsReservationGeneral(
+  public async getResourcesSettingsGeneralStatus(
     @PathParam('id') id: number,
   ): Promise<GetResourceSettingsGeneralStatusDTO> {
-    const result = await this.OrganizationService.getResourceSettingsGeneralStatus(id);
+    const result = await this.OrganizationService.getResourcesSettingsGeneralStatus(id);
 
     if (result.isFailure) {
       return new GetResourceSettingsGeneralStatusDTO({
@@ -263,7 +264,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Should container Resource data that include Resource data with its id
    */
   @PUT
-  @Path('/resources/settings/reservation/status/:id')
+  @Path('/resources/settings/general/status/:id')
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceSettingsGeneralStatusBodyDTO>(
@@ -271,11 +272,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     'Resource reservation general settings updated Successfully',
   )
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  public async updateResourcesSettingsReservationGeneral(
-    payload: UpdateResourceSettingsGeneralStatusDTO,
+  public async updateResourcesSettingsGeneralStatus(
+    payload: ResourceSettingsGeneralStatusRO,
     @PathParam('id') id: number,
   ): Promise<UpdateResourceSettingsGeneralStatusDTO> {
-    const result = await this.OrganizationService.updateResourceSettingsGeneral(payload, id);
+    const result = await this.OrganizationService.updateResourcesSettingsGeneralStatus(payload, id);
 
     if (result.isFailure) {
       return new UpdateResourceSettingsGeneralStatusDTO({
@@ -304,7 +305,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async getResourceSettingsGeneralVisbility(
     @PathParam('id') id: number,
   ): Promise<GetResourceSettingsGeneralVisilityDTO> {
-    const result = await this.OrganizationService.getResourceSettingsReservationGeneral(id);
+    const result = await this.OrganizationService.getResourceSettingsGeneralVisbility(id);
 
     if (result.isFailure) {
       return new GetResourceSettingsGeneralVisilityDTO({
@@ -331,10 +332,10 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   )
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateResourcesSettingsGeneralVisibility(
-    payload: ResourceSettingsVisibilityRO,
+    payload: ResourceSettingsGeneralVisibilityRO,
     @PathParam('id') id: number,
   ): Promise<UpdateResourceSettingsReservationVisiblityDTO> {
-    const result = await this.OrganizationService.updateResourceSettingsReservationGeneral(payload, id);
+    const result = await this.OrganizationService.updateResourcesSettingsGeneralVisibility(payload, id);
 
     if (result.isFailure) {
       return new UpdateResourceSettingsReservationVisiblityDTO({
@@ -363,7 +364,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async getResourceSettingsGeneralProperties(
     @PathParam('id') id: number,
   ): Promise<GetResourceSettingsGeneralPropertiesDTO> {
-    const result = await this.OrganizationService.getResourceSettingsReservationGeneral(id);
+    const result = await this.OrganizationService.getResourceSettingsGeneralProperties(id);
 
     if (result.isFailure) {
       return new GetResourceSettingsGeneralPropertiesDTO({
@@ -390,10 +391,10 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   )
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateResourcesSettingsnGeneralProperties(
-    payload: ResourceSettingsPropertiesRO,
+    payload: ResourceSettingsGeneralPropertiesRO,
     @PathParam('id') id: number,
   ): Promise<UpdateResourceSettingsGeneralPropertiesDTO> {
-    const result = await this.OrganizationService.updateResourceSettingsReservationGeneral(payload, id);
+    const result = await this.OrganizationService.updateResourcesSettingsnGeneralProperties(payload, id);
 
     if (result.isFailure) {
       return new UpdateResourceSettingsGeneralPropertiesDTO({

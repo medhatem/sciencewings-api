@@ -56,6 +56,9 @@ export class ResourceBodyDTO extends BaseBodyDTO {
   resourceType!: string;
 
   @JsonProperty()
+  resourceClass!: string;
+
+  @JsonProperty()
   user: number;
 
   @JsonProperty()
