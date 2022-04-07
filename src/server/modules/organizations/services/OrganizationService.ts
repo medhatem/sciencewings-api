@@ -76,12 +76,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.parentId) {
       const org = await this.dao.getByCriteria({ id: payload.parentId });
       if (!org) {
-        return Result.fail<number>('Organization parent does not exist');
+        return Result.notFound<number>('Organization parent does not exist');
       }
     }
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
-      return Result.fail<number>(`User with id: ${userId} does not exist`);
+      return Result.notFound<number>(`User with id: ${userId} does not exist`);
     }
     const user = fetchedUser.getValue();
 
@@ -89,7 +89,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.adminContact) {
       adminContact = await this.userService.get(payload.adminContact);
       if (adminContact.isFailure || adminContact.getValue() === null) {
-        return Result.fail<number>(`User with id: ${payload.adminContact} does not exist.`);
+        return Result.notFound<number>(`User with id: ${payload.adminContact} does not exist.`);
       }
     }
 
@@ -97,7 +97,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
       if (direction.isFailure || direction.getValue() === null) {
-        return Result.fail<number>(`User with id: ${payload.direction} does not exist.`);
+        return Result.notFound<number>(`User with id: ${payload.direction} does not exist.`);
       }
     }
 
@@ -120,7 +120,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const createdOrg = await this.create(wrappedOrganization);
 
     if (createdOrg.isFailure) {
-      return Result.fail<number>(createdOrg.error);
+      return Result.fail<number>(createdOrg.error as string);
     }
 
     const organization = await createdOrg.getValue();
@@ -183,7 +183,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>('The organization to add the user to does not exist.');
+      return Result.notFound<number>('The organization to add the user to does not exist.');
     }
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
@@ -202,7 +202,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const savedUser = await this.userService.create(user);
     if (savedUser.isFailure) {
-      return Result.fail<number>(savedUser.error);
+      return Result.fail<number>(savedUser.error as string);
     }
     // create member for the organization
     const createdMemberResult = await this.memberService.create({
@@ -212,7 +212,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     });
 
     if (createdMemberResult.isFailure) {
-      return Result.fail<number>(createdMemberResult.error);
+      return Result.fail<number>(createdMemberResult.error as string);
     }
 
     existingOrg.members.add(createdMemberResult.getValue());
@@ -312,7 +312,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (resource) {
       currentRes = await this.resourceService.get(resource);
       if (currentRes.isFailure || currentRes.getValue() === null) {
-        return Result.fail(`Resource with id ${resource} does not exist.`);
+        return Result.notFound(`Resource with id ${resource} does not exist.`);
       }
     }
     return Result.ok({ currentOrg, currentRes: currentRes.getValue() });
@@ -326,7 +326,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   ): Promise<Result<number | string>> {
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
     if (existence.isFailure) {
-      return Result.fail(existence.error);
+      return Result.notFound(existence.error as string);
     }
     const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
 
@@ -466,7 +466,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       user,
     });
     if (createdResourceResult.isFailure) {
-      return Result.fail<number>(createdResourceResult.error);
+      return Result.fail<number>(createdResourceResult.error as string);
     }
     const createdResource = createdResourceResult.getValue();
 
@@ -509,7 +509,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.user) {
       const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
       if (fetchedUser.isFailure || !fetchedUser) {
-        return Result.fail<number>(`User with id ${payload.user} does not exist.`);
+        return Result.notFound<number>(`User with id ${payload.user} does not exist.`);
       }
       user = fetchedUser.getValue();
     }
@@ -518,7 +518,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.organization) {
       const fetchedOrganization = await this.dao.get(payload.organization);
       if (!fetchedOrganization) {
-        return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
+        return Result.notFound<number>(`Organization with id ${payload.organization} does not exist.`);
       }
       organization = fetchedOrganization;
     }
@@ -527,7 +527,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       delete payload.calendar;
       const updatedResourceCalendar = await this.resourceCalendarService.update(payload.calendar);
       if (updatedResourceCalendar.isFailure) {
-        return Result.fail<number>(updatedResourceCalendar.error);
+        return Result.fail<number>(updatedResourceCalendar.error as string);
       }
       payload.calendar = updatedResourceCalendar.getValue();
     }
@@ -539,7 +539,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const createdResource = await this.resourceService.update({ ...resource, user, organization });
     if (createdResource.isFailure) {
-      return Result.fail<number>(createdResource.error);
+      return Result.fail<number>(createdResource.error as string);
     }
     const id = createdResource.getValue().id;
     return Result.ok<number>(id);

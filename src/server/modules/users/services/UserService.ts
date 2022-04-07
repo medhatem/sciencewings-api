@@ -52,7 +52,7 @@ export class UserService extends BaseService<User> implements IUserService {
     });
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
-      return Result.fail<number>(`User with id ${userId} does not exist`);
+      return Result.notFound<number>(`User with id ${userId} does not exist`);
     }
 
     const user: User = {
@@ -74,7 +74,7 @@ export class UserService extends BaseService<User> implements IUserService {
       .users.find({ email: userInfo.email, realm: getConfig('keycloak.clientValidation.realmName') });
 
     if (!users || !users.length) {
-      return Result.fail<number>('No user found');
+      return Result.notFound<number>('No user found');
     }
     const user = new User();
     user.firstname = userInfo.given_name;
@@ -117,7 +117,7 @@ export class UserService extends BaseService<User> implements IUserService {
     const user = (await this.dao.getByCriteria({ email: payload.email })) as User;
 
     if (!user) {
-      return Result.fail<string>(`user with email: ${payload.email} does not exist.`);
+      return Result.notFound<string>(`user with email: ${payload.email} does not exist.`);
     }
 
     await this.keycloak.getAdminClient().users.resetPassword({
@@ -206,7 +206,7 @@ export class UserService extends BaseService<User> implements IUserService {
     const fetchedUser = (await this.dao.getByCriteria({ keycloakId })) as User;
 
     if (!fetchedUser) {
-      return Result.fail(`User with KCID ${keycloakId} does not exist.`);
+      return Result.notFound(`User with KCID ${keycloakId} does not exist.`);
     }
     try {
       const updateUser = await this.dao.update(
@@ -226,7 +226,7 @@ export class UserService extends BaseService<User> implements IUserService {
   async getUserByKeycloakId(payload: string): Promise<Result<User>> {
     const user = (await this.dao.getByCriteria({ keycloakId: payload })) as User;
     if (!user) {
-      return Result.fail(`User with KCID ${payload} does not exist.`);
+      return Result.notFound(`User with KCID ${payload} does not exist.`);
     }
     return Result.ok<User>(user);
   }
