@@ -12,11 +12,11 @@ import {
 export class Result<T> {
   public isSuccess: boolean;
   public isFailure: boolean;
-  public error: string | HttpError;
+  public error: HttpError;
   private _value: T;
   public logger: Logger;
 
-  private constructor(isSuccess: boolean, error?: string | HttpError, value?: T) {
+  private constructor(isSuccess: boolean, error?: HttpError, value?: T) {
     if (isSuccess && error) {
       throw new Error(`InvalidOperation: A result cannot be 
           successful and contain an error`);
@@ -27,7 +27,7 @@ export class Result<T> {
     }
     if (!isSuccess && error) {
       //log the error
-      Logger.getInstance().error(error as string);
+      Logger.getInstance().error(error.message);
     }
 
     this.isSuccess = isSuccess;
