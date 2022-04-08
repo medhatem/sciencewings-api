@@ -56,7 +56,7 @@ export class JobRoutes extends BaseRoutes<Job> {
     const result = await this.jobService.updateJob(payload, id);
 
     if (result.isFailure) {
-      return new JobDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     return new JobDTO({ body: { id: result.getValue(), statusCode: 204 } });

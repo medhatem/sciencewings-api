@@ -44,12 +44,7 @@ export class UserRoutes extends BaseRoutes<User> {
     const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
 
     if (result.isFailure) {
-      return new RegisterUserFromTokenDTO({
-        error: {
-          statusCode: 500,
-          errorMessage: result.error,
-        },
-      });
+      throw result.error;
     }
     return new RegisterUserFromTokenDTO({
       body: {
@@ -74,12 +69,7 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.resetPassword(payload);
 
     if (result.isFailure) {
-      return new ResetPasswordDTO({
-        error: {
-          statusCode: 500,
-          errorMessage: result.error,
-        },
-      });
+      throw result.error;
     }
 
     return new ResetPasswordDTO({
@@ -105,7 +95,7 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.createUser(payload);
 
     if (result.isFailure) {
-      return new CreatedUserDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     const user: User = result.getValue();
@@ -132,12 +122,7 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.updateUserByKeycloakId(payload, keycloakId);
 
     if (result.isFailure) {
-      return new CreatedUserDTO({
-        error: {
-          statusCode: 500,
-          errorMessage: result.error,
-        },
-      });
+      throw result.error;
     }
 
     return new CreatedUserDTO({
@@ -163,12 +148,7 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.updateUserDetails(payload, request.userId);
 
     if (result.isFailure) {
-      return new CreatedUserDTO({
-        error: {
-          statusCode: 500,
-          errorMessage: result.error,
-        },
-      });
+      throw result.error;
     }
 
     return new CreatedUserDTO({
@@ -192,7 +172,7 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.getUserByKeycloakId(request.keycloakUser.sub);
 
     if (result.isFailure) {
-      return new UserDTO({ error: { statusCode: 404, errorMessage: result.error } });
+      throw result.error;
     }
     const user = result.getValue();
     return new UserDTO({ body: { ...user, statusCode: 200 } });
