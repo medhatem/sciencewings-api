@@ -13,6 +13,7 @@ import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { validateKeyclockUser } from '@/authenticators/validateKeyclockUser';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 
 @provideSingleton()
 @Path('users')
@@ -37,7 +38,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @POST
   @Path('registerUserFromToken')
   @Response<RegisterUserFromTokenDTO>(201, 'User Registred Successfully')
-  @Response<RegisterUserFromTokenDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @LoggerStorage()
   @PreProcessor(validateKeyclockUser)
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
@@ -62,7 +64,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @POST
   @Path('resetPassword')
   @Response<ResetPasswordDTO>(201, 'Password reset successfully')
-  @Response<ResetPasswordDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @Security()
   @LoggerStorage()
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
@@ -90,7 +93,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Security()
   @LoggerStorage()
   @Response<CreatedUserDTO>(201, 'User created Successfully')
-  @Response<CreatedUserDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async createUser(payload: UserRO): Promise<CreatedUserDTO> {
     const result = await this.userService.createUser(payload);
 
@@ -117,7 +121,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Security()
   @LoggerStorage()
   @Response<CreatedUserDTO>(204, 'User updated Successfully')
-  @Response<CreatedUserDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateUser(payload: UserRO, @PathParam('keycloakId') keycloakId: string): Promise<CreatedUserDTO> {
     const result = await this.userService.updateUserByKeycloakId(payload, keycloakId);
 
@@ -143,7 +148,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @Security()
   @LoggerStorage()
   @Response<CreatedUserDTO>(204, 'User updated Successfully')
-  @Response<CreatedUserDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateUserDetails(payload: UserRO, @ContextRequest request: UserRequest): Promise<CreatedUserDTO> {
     const result = await this.userService.updateUserDetails(payload, request.userId);
 
@@ -167,7 +173,8 @@ export class UserRoutes extends BaseRoutes<User> {
   @LoggerStorage()
   @Security()
   @Response<UserDTO>(200, 'Return User Successfully')
-  @Response<UserDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserDTO> {
     const result = await this.userService.getUserByKeycloakId(request.keycloakUser.sub);
 

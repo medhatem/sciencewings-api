@@ -38,7 +38,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<OrganizationDTO>(201, 'Organization created Successfully')
-  @Response<InternalServerError | NotFoundError>(500 | 404, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
@@ -61,7 +62,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @POST
   @Path('inviteUserToOrganization')
   @Response<InviteUserDTO>(201, 'User Registred Successfully')
-  @Response<InternalServerError | NotFoundError>(500 | 404, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @Security()
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
@@ -84,7 +86,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @POST
   @Path('resendInvite')
   @Response<UserIdDTO>(200, 'invite resent successfully')
-  @Response<InternalServerError | NotFoundError>(500 | 404, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @Security()
   @LoggerStorage()
   public async resendInvite(payload: UserResendPassword): Promise<InviteUserDTO> {
@@ -130,6 +133,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @LoggerStorage()
   @Response<OrganizationDTO>(200, 'Return Organization that the users belongs to, Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async getUserOrganizations(@PathParam('id') payload: number): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.getUserOrganizations(payload);
 
@@ -152,6 +156,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('resources/create')
   @Security()
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   @LoggerStorage()
   public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
@@ -174,6 +179,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.OrganizationService.updateResource(payload, id);
@@ -195,7 +201,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
-  @Response<InternalServerError | NotFoundError>(500 | 404, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceDTO> {
     const result = await this.OrganizationService.getResourcesOfAGivenOrganizationById(organizationId);
     if (result.isFailure) {

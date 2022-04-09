@@ -7,6 +7,7 @@ import { LoggerStorage } from '@/decorators/loggerStorage';
 import { JobRO } from './RequestObject';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { Response } from 'typescript-rest-swagger';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 
 @provideSingleton()
 @Path('jobs')
@@ -51,7 +52,8 @@ export class JobRoutes extends BaseRoutes<Job> {
   @Security()
   @LoggerStorage()
   @Response<JobDTO>(204, 'Job updated Successfully')
-  @Response<JobDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateJob(payload: JobRO, @PathParam('id') id: number): Promise<JobDTO> {
     const result = await this.jobService.updateJob(payload, id);
 

@@ -8,6 +8,7 @@ import { UpdateContractDTO } from '@/modules/hr/dtos/ContractDTO';
 import { ContractRO } from './RequestObject';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 @provideSingleton()
 @Path('contracts')
 export class ContractRoutes extends BaseRoutes<Contract> {
@@ -27,7 +28,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   @Security()
   @LoggerStorage()
   @Response<ContractRO>(201, 'Contract created Successfully')
-  @Response<ContractRO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
   public async createContract(payload: ContractRO): Promise<ContractDTO> {
     const result = await this.contractService.createContract(payload);
 
@@ -46,7 +47,8 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   @Security()
   @LoggerStorage()
   @Response<ContractDTO>(204, 'Contract updated Successfully')
-  @Response<ContractDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async createUpdateContract(payload: ContractRO, @PathParam('id') id: number): Promise<ContractDTO> {
     const result = await this.contractService.updateContract(payload, id);
 
