@@ -52,7 +52,7 @@ export class UserService extends BaseService<User> implements IUserService {
     });
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
-      return Result.notFound<number>(`User with id ${userId} does not exist`);
+      return Result.notFound(`User with id ${userId} does not exist`);
     }
 
     const user: User = {

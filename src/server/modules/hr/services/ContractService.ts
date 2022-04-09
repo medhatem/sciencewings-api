@@ -66,13 +66,13 @@ export class ContractService extends BaseService<Contract> implements IContractS
     if (payload.resourceCalendar) {
       resourceCalendar = await this.resourceCalendarSerivce.get(payload.resourceCalendar);
       if (member.isFailure || member.getValue() === null)
-        return Result.notFound<number>(`Resource Calendar with id ${payload.resourceCalendar} does not exist.`);
+        return Result.notFound(`Resource Calendar with id ${payload.resourceCalendar} does not exist.`);
       resourceCalendar = await resourceCalendar.getValue();
     }
     if (payload.hrResponsible) {
       hrResponsible = await this.userService.get(payload.hrResponsible);
       if (hrResponsible.isFailure || hrResponsible.getValue() === null)
-        return Result.notFound<number>(`HR Responsible with id ${payload.hrResponsible} does not exist.`);
+        return Result.notFound(`HR Responsible with id ${payload.hrResponsible} does not exist.`);
       hrResponsible = await hrResponsible.getValue();
     }
     return Result.ok({ member, group, job, resourceCalendar, hrResponsible });
@@ -87,7 +87,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
   public async createContract(@validateParam(CreateContractSchema) payload: ContractRO): Promise<Result<number>> {
     const organization = await this.origaniaztionService.get(payload.organization);
     if (organization.isFailure || organization.getValue() === null) {
-      return Result.notFound<number>(`Organization with id ${payload.organization} does not exist.`);
+      return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
     }
 
     const resEntities = await this.checkForOptionalPropertiesInContract(payload);
@@ -122,14 +122,14 @@ export class ContractService extends BaseService<Contract> implements IContractS
   ): Promise<Result<number>> {
     const currentContract = await this.dao.get(id);
     if (currentContract === null) {
-      return Result.notFound<number>(`Contract with id ${id} does not exist.`);
+      return Result.notFound(`Contract with id ${id} does not exist.`);
     }
 
     let organization;
     if (payload.organization) {
       organization = await this.origaniaztionService.get(payload.organization);
       if (organization.isFailure || organization.getValue() === null) {
-        return Result.notFound<number>(`Organization with id ${payload.organization} does not exist.`);
+        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
       organization = await organization.getValue();
     }
