@@ -1,6 +1,6 @@
 import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { Member, MemberStatusType } from '@/modules/hr/models/Member';
+import { Member, MemberStatusType, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
@@ -8,7 +8,7 @@ import { IOrganizationService } from '@/modules/organizations/interfaces/IOrgani
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { Result } from '@/utils/Result';
-import { User } from '@/modules/users/models/User';
+import { userStatus, User } from '@/modules/users/models/User';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { EmailMessage } from '@/types/types';
@@ -34,6 +34,7 @@ import {
   ResourceCalendarSchema,
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
+import { Collection } from '@mikro-orm/core';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 @provideSingleton(IOrganizationService)
@@ -200,31 +201,23 @@ export class OrganizationService extends BaseService<Organization> implements IO
     user.keycloakId = createdKeyCloakUser.id;
 
     const savedUser = await this.userService.create(user);
-
     if (savedUser.isFailure) {
       return Result.fail<number>(savedUser.error);
     }
     // create member for the organization
-    const createdMemberResult = await this.memberService.create(
-      this.memberService.wrapEntity(
-        new Member(),
-        {
-          user: savedUser,
-          organization: existingOrg,
-        },
-        false,
-      ),
-    );
+    const createdMemberResult = await this.memberService.create({
+      user: savedUser.getValue(),
+      organization: existingOrg,
+      memberType: MemberTypeEnum.Regular,
+    });
+
     if (createdMemberResult.isFailure) {
       return Result.fail<number>(createdMemberResult.error);
     }
 
-    // add the invited user to the organization
-    await existingOrg.members.init();
     existingOrg.members.add(createdMemberResult.getValue());
 
-    await this.userService.update(savedUser.getValue());
-
+    await this.dao.update(existingOrg);
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
       to: email,
@@ -234,13 +227,49 @@ export class OrganizationService extends BaseService<Organization> implements IO
     };
 
     this.emailService.sendEmail(emailMessage);
+    user.status = userStatus.INVITATION_PENDING;
+    await this.userService.update(user);
 
     return Result.ok<number>(savedUser.getValue().id);
   }
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Member[]>> {
+  async resendInvite(id: number, orgId: number): Promise<Result<number>> {
+    const existingUser = await this.userService.get(id);
+
+    if (existingUser.isFailure || existingUser.getValue() === null) {
+      return Result.fail(`user with id ${id} not exist.`);
+    }
+    const user = existingUser.getValue();
+    const existingOrg = await this.dao.get(orgId);
+
+    if (!existingOrg) {
+      return Result.fail(`Organization with id ${orgId} does not exist.`);
+    }
+
+    if (!this.memberService.getByCriteria({ user: id }, FETCH_STRATEGY.SINGLE)) {
+      return Result.fail(`user with id ${id} is not member in organization.`);
+    }
+
+    if (user.status !== userStatus.INVITATION_PENDING) {
+      return Result.fail(`Cannot resend invite to an active user `);
+    }
+    const url = process.env.KEYCKLOACK_RESET_PASSWORD;
+    const emailMessage: EmailMessage = {
+      from: this.emailService.from,
+      to: user.email,
+      text: 'Sciencewings - reset password',
+      html: `<html><body><a href=${url}>-reset password</a></body></html>`,
+      subject: 'reset password',
+    };
+    this.emailService.sendEmail(emailMessage);
+    return Result.ok<number>(user.id);
+  }
+
+  @log()
+  @safeGuard()
+  public async getMembers(orgId: number): Promise<Result<Collection<Member>>> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {

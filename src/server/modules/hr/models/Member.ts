@@ -15,6 +15,9 @@ export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
+export enum MemberTypeEnum {
+  Regular = 'regular',
+}
 
 @provide()
 @Entity()
@@ -33,7 +36,6 @@ export class Member extends BaseModel<Member> {
   @OneToOne({
     entity: () => Organization,
     onDelete: 'set null',
-    index: 'hr_member_organization_id_index',
     primary: true,
     unique: false,
   })
