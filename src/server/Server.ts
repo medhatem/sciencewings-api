@@ -102,7 +102,6 @@ export class Server {
     this.expressApp.use('/swagger', express.static(__dirname));
     RestServer.buildServices(this.expressApp);
     this.expressApp.use((err: Error, req: any, res: any, next: any) => {
-      console.log(err);
       if (err instanceof HttpError) {
         if (res.headersSent) {
           // important to allow default error handler to close connection if headers already sent
