@@ -15,7 +15,7 @@ export class UserExctractionAndValidation {
    *
    * @param req express request
    */
-  userExctractionAndValidation = async (req: UserRequest): Promise<Result<{ keycloakUser: any; userId: any }>> => {
+  userExctractionAndValidation = async (req: UserRequest): Promise<Result<{ keycloakUser: any; userId?: any }>> => {
     if (!req.headers || !req.headers.authorization) {
       return Result.fail('Not Authorized');
     }
@@ -25,20 +25,12 @@ export class UserExctractionAndValidation {
     if (result.error) {
       return Result.fail('Not Authorized');
     }
+
     const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });
     if (criteriaResult.isFailure || criteriaResult.getValue() === null) {
       return Result.fail('Unrecognized user!');
     }
-    let userId;
-    if (criteriaResult.getValue() === null) {
-      const registerUserResult = await this.userService.registerUser(result);
-      if (registerUserResult.isFailure) {
-        return Result.fail('Unexpected Error!');
-      }
-      userId = registerUserResult.getValue();
-    } else {
-      userId = criteriaResult.getValue().id;
-    }
+    const userId = criteriaResult.getValue().id;
 
     req.keycloakUser = result;
     req.userId = userId;
