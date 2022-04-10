@@ -5,10 +5,13 @@ import { Address } from '@/modules/address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Phone } from '@/modules/phones/models/Phone';
 
+export enum userStatus {
+  INVITATION_PENDING = 'INVITATION_PENDING',
+  ACTIVE = 'ACTIVE',
+}
 @provide()
 @Entity()
 export class User extends BaseModel<User> {
-  user: any;
   constructor() {
     super();
   }
@@ -32,14 +35,14 @@ export class User extends BaseModel<User> {
 
   @ManyToMany({
     entity: () => Address,
-    mappedBy: (entity) => entity.user,
+    mappedBy: (entity: Address) => entity.user,
     nullable: true,
   })
   address? = new Collection<Address>(this);
 
   @ManyToMany({
     entity: () => Phone,
-    mappedBy: (entity) => entity.user,
+    mappedBy: (entity: Phone) => entity.user,
   })
   phones? = new Collection<Phone>(this);
 
@@ -58,4 +61,7 @@ export class User extends BaseModel<User> {
 
   @Property({ nullable: true })
   share?: boolean;
+
+  @Property({ nullable: true })
+  status?: userStatus;
 }

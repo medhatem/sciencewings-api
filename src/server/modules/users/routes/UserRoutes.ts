@@ -97,10 +97,10 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @POST
   @Path('create')
-  @Security()
   @LoggerStorage()
   @Response<CreatedUserDTO>(201, 'User created Successfully')
   @Response<CreatedUserDTO>(500, 'Internal Server Error')
+  @PreProcessor(validateKeyclockUser)
   public async createUser(payload: UserRO): Promise<CreatedUserDTO> {
     const result = await this.userService.createUser(payload);
 

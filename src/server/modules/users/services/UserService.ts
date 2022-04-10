@@ -10,7 +10,7 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUserInfo } from '@/types/UserRequest';
 import { Result } from '@/utils/Result';
-import { User } from '@/modules/users/models/User';
+import { User, userStatus } from '@/modules/users/models/User';
 import { UserDao } from '@/modules/users/daos/UserDao';
 import { UserRO } from '@/modules/users/routes/RequstObjects';
 import { getConfig } from '@/configuration/Configuration';
@@ -73,7 +73,7 @@ export class UserService extends BaseService<User> implements IUserService {
       .getAdminClient()
       .users.find({ email: userInfo.email, realm: getConfig('keycloak.clientValidation.realmName') });
 
-    if (!users || !users.length) {
+    if (!users?.length) {
       return Result.fail<number>('No user found');
     }
     const user = new User();
@@ -129,7 +129,7 @@ export class UserService extends BaseService<User> implements IUserService {
         value: payload.password,
       },
     });
-
+    user.status = userStatus.ACTIVE;
     return Result.ok<string>('Password reset successful');
   }
 
@@ -153,13 +153,12 @@ export class UserService extends BaseService<User> implements IUserService {
         email: user.email,
         dateofbirth: user.dateofbirth,
         keycloakId: user.keycloakId,
-        user: null,
       });
 
       createdUser.address = await createdUser.address.init();
       createdUser.phones = await createdUser.phones.init();
 
-      applyToAll(userAddress, async (address) => {
+      await applyToAll(userAddress, async (address) => {
         const createdAddress = await this.addressService.create({
           city: address.city,
           apartment: address.apartment,
@@ -175,7 +174,7 @@ export class UserService extends BaseService<User> implements IUserService {
         }
       });
 
-      applyToAll(userPhones, async (phone) => {
+      await applyToAll(userPhones, async (phone) => {
         const createdPhone = await this.phoneService.create({
           phoneLabel: phone.phoneLabel,
           phoneCode: phone.phoneCode,
