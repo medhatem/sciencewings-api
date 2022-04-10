@@ -89,19 +89,12 @@ export class CreatedResourceBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class UpdatedResourceBodyDTO extends BaseBodyDTO {
-  @JsonProperty()
-  id: number;
-}
-
-@JsonObject()
-@unique
 export class GetResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty({
     type: ResourceBodyDTO,
     beforeDeserialize,
   })
-  resources: Array<ResourceBodyDTO>;
+  data: Array<ResourceBodyDTO>;
 }
 
 @JsonObject()
@@ -118,35 +111,105 @@ export class CreateResourceDTO extends BaseRequestDTO {
   body: CreatedResourceBodyDTO;
 }
 
-@JsonObject()
-@unique
-export class UpdateResourceDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: UpdatedResourceBodyDTO;
-}
 //Resource settings
 @JsonObject()
 @unique
-export class UpdateResourceSettingsReservationGeneralBodyDTO extends BaseBodyDTO {
+export class GetResourceReservationGeneralBodyDTO extends BaseBodyDTO {
   @JsonProperty()
-  id: number;
-}
-@JsonObject()
-@unique
-export class UpdateResourceSettingsReservationGeneralDTO extends BaseRequestDTO {
+  isEnabled: boolean;
   @JsonProperty()
-  body: UpdateResourceSettingsReservationGeneralBodyDTO;
+  isLoanable: boolean;
+  @JsonProperty()
+  isReturnTheirOwnLoans: boolean;
+  @JsonProperty()
+  isReservingLoansAtFutureDates: boolean;
+  @JsonProperty()
+  fixedLoanDuration: string;
+  @JsonProperty()
+  overdueNoticeDelay: string;
+  @JsonProperty()
+  recurringReservations: string;
 }
 
 @JsonObject()
 @unique
-export class UpdateResourceSettingsReservationUnitBodyDTO extends BaseBodyDTO {
+export class GetResourceReservationGeneralDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceReservationGeneralBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class GetResourceReservationUnitBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  unitName: string;
+  @JsonProperty()
+  unitLimit: number;
+  @JsonProperty()
+  unites: number;
+}
+
+@JsonObject()
+@unique
+export class GetResourceReservationUnitDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceReservationUnitBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class GetResourceReservationTimeRestrictionBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  isEditingWindowForUsers: boolean;
+  @JsonProperty()
+  isRestrictCreatingNewReservationBeforeTime: boolean;
+  @JsonProperty()
+  isRestrictCreatingNewReservationAfterTime: boolean;
+  @JsonProperty()
+  reservationTimeGranularity: string;
+  @JsonProperty()
+  isAllowUsersToEndReservationEarly: boolean;
+  @JsonProperty()
+  defaultReservationDuration: string;
+  @JsonProperty()
+  reservationDurationMinimum: string;
+  @JsonProperty()
+  reservationDurationMaximum: string;
+  @JsonProperty()
+  bufferTimeBeforeReservation: string;
+}
+
+@JsonObject()
+@unique
+export class GetResourceReservationTimeRestrictionDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceReservationTimeRestrictionBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class GetResourceReservationVisibilityBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  isReservationDetailsVisibilityToNonModerators: string;
+}
+
+@JsonObject()
+@unique
+export class GetResourceReservationVisibilityDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourceReservationVisibilityBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class UpdateResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
+
 @JsonObject()
 @unique
-export class UpdateResourceSettingsReservationUnitDTO extends BaseRequestDTO {
+export class UpdateResourceDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: UpdateResourceSettingsReservationUnitBodyDTO;
+  body: UpdateResourceBodyDTO;
 }

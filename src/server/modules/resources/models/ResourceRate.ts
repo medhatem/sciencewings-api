@@ -21,7 +21,7 @@ export class ResourceRate extends BaseModel<ResourceRate> {
   description: string;
 
   @Property()
-  rate: string;
+  rate: number;
 
   @Property()
   category: string;
@@ -33,7 +33,7 @@ export class ResourceRate extends BaseModel<ResourceRate> {
   isRequiredAccountNumber: boolean;
 
   @Property()
-  duration: string;
+  duration: number;
 
   @ManyToMany({
     entity: () => Resource,

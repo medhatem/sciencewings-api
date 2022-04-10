@@ -1,21 +1,19 @@
 import Joi = require('joi');
 
-export const ResourceRateSchema = Joi.object({
+export const UpdateResourceRateSchema = Joi.object({
   description: Joi.string(),
   rate: Joi.number(),
   category: Joi.string(),
   isPublic: Joi.boolean(),
   isRequiredAccountNumber: Joi.boolean(),
   duration: Joi.number(),
-  resource: Joi.number(),
 });
 
 export const CreateResourceRateSchema = Joi.object({
   description: Joi.string().required(),
-  rate: Joi.date().required(),
-  category: Joi.date().required(),
+  rate: Joi.number().required(),
+  category: Joi.string().required(),
   isPublic: Joi.boolean().required(),
   isRequiredAccountNumber: Joi.boolean().required(),
   duration: Joi.number().required(),
-  resource: Joi.number().required(),
 });
