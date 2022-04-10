@@ -1,4 +1,5 @@
 export * from './Resource';
+export * from './ResourceSettings';
 export * from './ResourceRate';
 export * from './ResourceTag';
 export * from './ResourceCalendar';

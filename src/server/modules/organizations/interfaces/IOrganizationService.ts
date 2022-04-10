@@ -24,31 +24,29 @@ export abstract class IOrganizationService extends IBaseService<any> {
   createResource: (payload: ResourceRO) => Promise<Result<number>>;
   updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
 
-  getResourceReservationGeneral: (resourceId: number) => Promise<Result<any>>;
   updateResourceReservationGeneral: (
     payload: ResourcesSettingsReservationGeneralRO,
     resourceId: number,
   ) => Promise<Result<number>>;
+
   updateResourceReservationUnits: (
     payload: ResourcesSettingsReservationUnitRO,
     resourceId: number,
   ) => Promise<Result<number>>;
 
-  getResourceReservationUnites: (resourceId: number) => Promise<Result<any>>;
-
-  getResourceReservationRate: (resourceId: number) => Promise<Result<any>>;
   createResourceRate: (payload: ResourceRateRO, resourceId: number) => Promise<Result<number>>;
+
   updateResourceRate: (payload: ResourceRateRO, resourceRateId: number) => Promise<Result<number>>;
 
-  getResourceReservationTimerRestriction: (resourceId: number) => Promise<Result<any>>;
   updateResourceReservationTimerRestriction: (
     payload: ResourceTimerRestrictionRO,
     resourceRateId: number,
   ) => Promise<Result<number>>;
 
-  getResourceReservationVisibility: (resourceId: number) => Promise<Result<any>>;
   updateResourceReservationVisibility: (
     payload: ResourceReservationVisibilityRO,
     resourceId: number,
   ) => Promise<Result<number>>;
+
+  getResourceSettings: (resourceId: number) => Promise<Result<any>>;
 }
