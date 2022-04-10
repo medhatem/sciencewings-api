@@ -70,18 +70,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
     // check if the organization already exist
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
-      return Result.fail<number>(`Organization ${payload.name} already exist.`);
+      return Result.fail(`Organization ${payload.name} already exist.`);
     }
 
     if (payload.parentId) {
       const org = await this.dao.getByCriteria({ id: payload.parentId });
       if (!org) {
-        return Result.notFound<number>('Organization parent does not exist');
+        return Result.notFound('Organization parent does not exist');
       }
     }
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
-      return Result.notFound<number>(`User with id: ${userId} does not exist`);
+      return Result.notFound(`User with id: ${userId} does not exist`);
     }
     const user = fetchedUser.getValue();
 
@@ -89,7 +89,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.adminContact) {
       adminContact = await this.userService.get(payload.adminContact);
       if (adminContact.isFailure || adminContact.getValue() === null) {
-        return Result.notFound<number>(`User with id: ${payload.adminContact} does not exist.`);
+        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
       }
     }
 
@@ -97,7 +97,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
       if (direction.isFailure || direction.getValue() === null) {
-        return Result.notFound<number>(`User with id: ${payload.direction} does not exist.`);
+        return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
     }
 
@@ -177,13 +177,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exist.');
+      return Result.fail('The user already exist.');
     }
 
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.notFound<number>('The organization to add the user to does not exist.');
+      return Result.notFound('The organization to add the user to does not exist.');
     }
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
