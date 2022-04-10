@@ -31,8 +31,7 @@
       "./src/server/modules/users/dtos/index.ts",
       "./src/server/modules/users/routes/index.ts",
       "./src/server/modules/users/models/index.ts",
-      "./src/server/modules/users/interfaces/index.ts",
-      "node_modules/typescript-rest/dist/server/model/errors.d.ts"
+      "./src/server/modules/users/interfaces/index.ts"
     ],
     "securityDefinitions": {
       "default": {
