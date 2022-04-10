@@ -107,6 +107,7 @@ export class Server {
           // important to allow default error handler to close connection if headers already sent
           return next(err);
         }
+        console.error(err.stack);
         res.set('Content-Type', 'application/json');
         res.status(err.statusCode);
         res.json({ error: err.message, statusCode: err.statusCode });
