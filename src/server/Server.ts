@@ -75,6 +75,7 @@ export class Server {
     this.addRoutes();
     this.startKeycloakAdmin();
     // handleRequests();
+    //this.generateDeffaultResourceSettings();
   }
 
   /**
@@ -141,4 +142,58 @@ export class Server {
       console.log('error connecting to database', error);
     }
   }
+  /**
+   * Generate default resource settings
+   */
+  /*
+  private async generateDeffaultResourceSettings(): Promise<void> {
+    const resourceSettings = await this.resourceSettingsService.create({
+      //Resource settings
+      //general
+      isEnabled: true,
+      isLoanable: false,
+      isReturnTheirOwnLoans: false,
+      isReservingLoansAtFutureDates: false,
+      fixedLoanDuration: '0 days',
+      overdueNoticeDelay: '0 days',
+      recurringReservations: '0 days',
+
+      //Unit
+      unitName: '',
+      unitLimit: 0,
+      unites: 0,
+
+      // Time restriction
+      isEditingWindowForUsers: false,
+      isRestrictCreatingNewReservationBeforeTime: false,
+      isRestrictCreatingNewReservationAfterTime: false,
+      reservationTimeGranularity: '',
+      isAllowUsersToEndReservationEarly: false,
+      defaultReservationDuration: '',
+      reservationDurationMinimum: '',
+      reservationDurationMaximum: '',
+      bufferTimeBeforeReservation: '',
+
+      // Group
+      // visibility
+      reservationDetailsVisibilityToNonModerators: '',
+
+      // General
+      // general
+      // status
+      statusType: '',
+      statusDescription: '',
+
+      // visibility
+      visibility: true,
+      isUnlistedOnSitePage: false,
+      isUnlistedToUsersWhoCannotReserve: true,
+      isFullyHiddentoUsersWhoCannotReserve: true,
+      isPromotedOnSitePageAsALargeButtonAboveOtherResources: false,
+      isHideAvailabilityonSitePage: false,
+
+      // Properties
+      accessToResource: '',
+    });
+  }*/
 }
