@@ -180,7 +180,7 @@ export class ResourceSettingsGeneralVisibilityRO {
   @JsonProperty()
   visibility: boolean;
   @JsonProperty()
-  isUnlistedOnSitePage: boolean;
+  isUnlistedOnOrganizationPage: boolean;
   @JsonProperty()
   isUnlistedToUsersWhoCannotReserve: boolean;
   @JsonProperty()

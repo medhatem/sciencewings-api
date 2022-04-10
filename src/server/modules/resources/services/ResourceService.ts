@@ -37,7 +37,7 @@ export class ResourceService extends BaseService<Resource> {
       .createQueryBuilder()
       .select([
         'visibility',
-        'isUnlistedOnSitePage',
+        'isUnlistedOnOrganizationPage',
         'isUnlistedToUsersWhoCannotReserve',
         'isFullyHiddentoUsersWhoCannotReserve',
         'isPromotedOnSitePageAsALargeButtonAboveOtherResources',

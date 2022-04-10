@@ -46,7 +46,7 @@ export const ResourceGeneralStatusSchema = ResourceSchema.keys({
 
 export const ResourceGeneralVisibilitySchema = ResourceSchema.keys({
   visibility: Joi.boolean().required(),
-  isUnlistedOnSitePage: Joi.boolean().required(),
+  isUnlistedOnOrganizationPage: Joi.boolean().required(),
   isUnlistedToUsersWhoCannotReserve: Joi.boolean().required(),
   isFullyHiddentoUsersWhoCannotReserve: Joi.boolean().required(),
   isPromotedOnSitePageAsALargeButtonAboveOtherResources: Joi.boolean().required(),

@@ -23,19 +23,18 @@ export abstract class IOrganizationService extends IBaseService<any> {
   createResource: (payload: ResourceRO) => Promise<Result<number>>;
   updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
 
-  getResourcesSettingsGeneralStatus: (resourceId: number) => Promise<Result<any>>;
   updateResourcesSettingsGeneralStatus: (
     payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
   ) => Promise<Result<number>>;
-  getResourceSettingsGeneralVisbility: (resourceId: number) => Promise<Result<any>>;
   updateResourcesSettingsGeneralVisibility: (
     payload: ResourceSettingsGeneralVisibilityRO,
     resourceId: number,
   ) => Promise<Result<number>>;
-  getResourceSettingsGeneralProperties: (resourceId: number) => Promise<Result<any>>;
   updateResourcesSettingsnGeneralProperties: (
     payload: ResourceSettingsGeneralPropertiesRO,
     resourceId: number,
   ) => Promise<Result<number>>;
+
+  getResourceSettings: (resourceId: number) => Promise<Result<any>>;
 }

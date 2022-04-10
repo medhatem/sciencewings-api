@@ -42,6 +42,7 @@ import {
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
+import { IResourceSettingsService, ResourceSettings } from '@/modules/resources';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 @provideSingleton(IOrganizationService)
@@ -52,6 +53,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public labelService: IOrganizationLabelService,
     public memberService: IMemberService,
     public resourceService: IResourceService,
+    public resourceSettingsService: IResourceSettingsService,
     public resourceCalendarService: IResourceCalendarService,
     public resourceTagService: IResourceTagService,
     public addressService: IAddressService,
@@ -555,6 +557,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
+  public async getResourceSettings(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+
+    return Result.ok(fetchedResource.getValue().settings);
+  }
+
+  @log()
+  @safeGuard()
   @validate
   public async updateResourcesSettingsGeneralStatus(
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
@@ -565,27 +578,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
+    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        ...payload,
+        settings: resourceSettings,
       },
       false,
     );
 
     await this.resourceService.update(resource);
     return Result.ok<number>(1);
-  }
-
-  @log()
-  @safeGuard()
-  public async getResourcesSettingsGeneralStatus(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.resourceService.getResourcesSettingsGeneralStatus(resourceId);
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-    return Result.ok(fetchedResource.getValue());
   }
 
   @log()
@@ -600,27 +604,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
+    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        ...payload,
+        settings: resourceSettings,
       },
       false,
     );
 
     await this.resourceService.update(resource);
     return Result.ok<number>(1);
-  }
-
-  @log()
-  @safeGuard()
-  public async getResourceSettingsGeneralVisbility(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.resourceService.getResourceSettingsGeneralVisbility(resourceId);
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-    return Result.ok(fetchedResource.getValue());
   }
 
   @log()
@@ -634,27 +629,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!fetchedResource) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
+
     const resourceValue = fetchedResource.getValue();
+    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        ...payload,
+        settings: resourceSettings,
       },
       false,
     );
 
     await this.resourceService.update(resource);
     return Result.ok<number>(1);
-  }
-
-  @log()
-  @safeGuard()
-  public async getResourceSettingsGeneralProperties(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.resourceService.getResourceSettingsGeneralProperties(resourceId);
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-    return Result.ok(fetchedResource.getValue());
   }
 }

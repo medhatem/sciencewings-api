@@ -117,27 +117,15 @@ export class CreateResourceDTO extends BaseRequestDTO {
 //Resource settings
 @JsonObject()
 @unique
-export class GetResourceSettingsGeneralStatusBodyDTO extends BaseBodyDTO {
+export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   statusType: string;
   @JsonProperty()
   statusDescription: string;
-}
-
-@JsonObject()
-@unique
-export class GetResourceSettingsGeneralStatusDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: GetResourceSettingsGeneralStatusBodyDTO;
-}
-
-@JsonObject()
-@unique
-export class GetResourceSettingsGeneralVisilityBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   visibility: boolean;
   @JsonProperty()
-  isUnlistedOnSitePage: boolean;
+  isUnlistedOnOrganizationPage: boolean;
   @JsonProperty()
   isUnlistedToUsersWhoCannotReserve: boolean;
   @JsonProperty()
@@ -146,27 +134,15 @@ export class GetResourceSettingsGeneralVisilityBodyDTO extends BaseBodyDTO {
   isPromotedOnSitePageAsALargeButtonAboveOtherResources: boolean;
   @JsonProperty()
   isHideAvailabilityonSitePage: boolean;
-}
-
-@JsonObject()
-@unique
-export class GetResourceSettingsGeneralVisilityDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: GetResourceSettingsGeneralVisilityBodyDTO;
-}
-
-@JsonObject()
-@unique
-export class GetResourceSettingsGeneralPropertiesBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   accessToResource: string;
 }
 
 @JsonObject()
 @unique
-export class GetResourceSettingsGeneralPropertiesDTO extends BaseRequestDTO {
+export class GetResourceSettingsDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: GetResourceSettingsGeneralPropertiesBodyDTO;
+  body: GetResourceSettingsBodyDTO;
 }
 
 @JsonObject()
