@@ -90,7 +90,6 @@ export class UserRoutes extends BaseRoutes<User> {
    */
   @POST
   @Path('create')
-  @Security()
   @LoggerStorage()
   @Response<CreatedUserDTO>(201, 'User created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
