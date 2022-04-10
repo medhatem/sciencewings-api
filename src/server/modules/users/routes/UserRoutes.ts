@@ -94,7 +94,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @LoggerStorage()
   @Response<CreatedUserDTO>(201, 'User created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
+  @Response<NotFoundError>(404, 'Not Found Error ')
   public async createUser(payload: UserRO): Promise<CreatedUserDTO> {
     const result = await this.userService.createUser(payload);
 
