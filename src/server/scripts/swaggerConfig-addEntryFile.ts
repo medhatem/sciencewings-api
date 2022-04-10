@@ -25,7 +25,7 @@ const SERVER_MODULES_FOLDER = 'src/server/modules';
 const SWAGGER_CONFIG_FILE = 'swaggerConfig.json';
 
 const namespaces = ['dtos', 'routes', 'models', 'interfaces'];
-const staticFiles = ['node_modules/typescript-rest/dist/server/model/errors.d.ts'];
+const staticFiles = ['node_modules/typescript-rest/src/server/model/errors.ts'];
 
 enum STATUS_ENUM {
   'success' = 'success',
