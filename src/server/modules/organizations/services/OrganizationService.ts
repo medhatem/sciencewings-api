@@ -42,7 +42,7 @@ import {
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
-import { IResourceSettingsService, ResourceSettings } from '@/modules/resources';
+import { IResourceSettingsService } from '@/modules/resources';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 @provideSingleton(IOrganizationService)
@@ -449,21 +449,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         managers.push(fetcheManager.getValue());
       }
     }
-
-    // const resource = this.resourceService.wrapEntity(
-    //   new Resource(),
-    //   {
-    //     name: payload.name,
-    //     description: payload.description,
-    //     active: payload.active,
-    //     resourceType: payload.resourceType,
-    //     timezone: payload.timezone,
-    //   },
-    //   true,
-    // );
-
-    // resource.organization = organization;
-    // resource.user = user;
+    const resourceSetting = await this.resourceSettingsService.create({});
 
     const createdResourceResult = await this.resourceService.create({
       name: payload.name,
@@ -474,6 +460,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       timezone: payload.timezone,
       organization,
       user,
+      settings: resourceSetting.getValue(),
     });
     if (createdResourceResult.isFailure) {
       return Result.fail<number>(createdResourceResult.error);
@@ -578,12 +565,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
-    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
+
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        settings: resourceSettings,
+        settings: { ...resourceValue.settings, ...payload },
       },
       false,
     );
@@ -604,12 +591,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
-    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
+
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        settings: resourceSettings,
+        settings: { ...resourceValue.settings, ...payload },
       },
       false,
     );
@@ -631,12 +618,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     const resourceValue = fetchedResource.getValue();
-    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
+
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        settings: resourceSettings,
+        settings: { ...resourceValue.settings, ...payload },
       },
       false,
     );
