@@ -1,0 +1,128 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    {
+      "name": "Attach by Process ID",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+    {
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--detectOpenHandles --runInBand"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "port": 9229
+    },
+    {
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "request": "attach",
+      "type": "pwa-chrome",
+      "webRoot": "${workspaceFolder}"
+    },
+      {
+        "name": "Attach by Process ID",
+        "processId": "${command:PickProcess}",
+        "request": "attach",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+        "type": "pwa-node"
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Local | Watch & Debug",
+        "runtimeExecutable": " npm",
+        "runtimeArgs": ["run", "watch"],
+        "restart": true,
+        "smartStep": true,
+        "outFiles": [
+          "../dist/**/*.js"
+        ],
+        "protocol": "inspector",
+        "port": 9229,
+        "timeout": 60000,
+        "preLaunchTask": "build:watch",
+        "console": "integratedTerminal"
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Dev | Watch & Debug",
+        "runtimeExecutable": " npm",
+        "runtimeArgs": ["run", "watch:dev"],
+        "restart": true,
+        "smartStep": true,
+        "outFiles": [
+          "../dist/**/*.js"
+        ],
+        "protocol": "inspector",
+        "port": 9229,
+        "preLaunchTask": "build:watch",
+        "console": "integratedTerminal"
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Staging | watch & Debug",
+        "runtimeExecutable": " npm",
+        "runtimeArgs": ["run", "watch:staging"],
+        "restart": true,
+        "smartStep": true,
+        "outFiles": [
+          "../dist/**/*.js"
+        ],
+        "protocol": "inspector",
+        "port": 9229,
+        "timeout": 60000,
+        "preLaunchTask": "build:watch",
+        "console": "integratedTerminal"
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Demo | watch & Debug",
+        "runtimeExecutable": " npm",
+        "runtimeArgs": ["run", "watch:demo"],
+        "restart": true,
+        "smartStep": true,
+        "outFiles": [
+          "../dist/**/*.js"
+        ],
+        "protocol": "inspector",
+        "port": 9229,
+        "timeout": 60000,
+        "preLaunchTask": "build:watch",
+        "console": "integratedTerminal"
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "❗❗❗ PRODUCTION ❗❗❗",
+        "runtimeExecutable": " npm",
+        "runtimeArgs": ["run", "watch:production"],
+        "restart": true,
+        "smartStep": true,
+        "outFiles": [
+          "../dist/**/*.js"
+        ],
+        "protocol": "inspector",
+        "port": 9229,
+        "timeout": 60000,
+        "preLaunchTask": "build:watch",
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+  
