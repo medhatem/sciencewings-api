@@ -323,6 +323,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       });
     }
 
-    return new GetResourceSettingsDTO({ body: { ...result.getValue(), statusCode: 204 } });
+    return new GetResourceSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
   }
 }
