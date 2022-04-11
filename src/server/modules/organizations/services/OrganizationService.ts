@@ -46,7 +46,7 @@ import {
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { CreateResourceRateSchema, UpdateResourceRateSchema } from '@/modules/resources/schemas/ResourceRateSchema';
-import { IResourceRateService, IResourceSettingsService, ResourceRate, ResourceSettings } from '@/modules/resources';
+import { IResourceRateService, IResourceSettingsService, ResourceRate } from '@/modules/resources';
 import { Collection } from '@mikro-orm/core';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
@@ -457,14 +457,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
+    const resourceSetting = await this.resourceSettingsService.create({});
+
     const createdResourceResult = await this.resourceService.create({
       name: payload.name,
       description: payload.description,
       active: payload.active,
       resourceType: payload.resourceType,
+      resourceClass: payload.resourceClass,
       timezone: payload.timezone,
       organization,
       user,
+      settings: resourceSetting.getValue(),
     });
     if (createdResourceResult.isFailure) {
       return Result.fail<number>(createdResourceResult.error);
@@ -610,12 +614,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
-    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
+
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        settings: resourceSettings,
+        settings: { ...resourceValue.settings, ...payload },
       },
       false,
     );
@@ -640,12 +644,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
-    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
+
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        settings: resourceSettings,
+        settings: { ...resourceValue.settings, ...payload },
       },
       false,
     );
@@ -670,12 +674,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
-    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
+
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        settings: resourceSettings,
+        settings: { ...resourceValue.settings, ...payload },
       },
       false,
     );
@@ -755,12 +759,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
-    const resourceSettings = this.resourceSettingsService.wrapEntity(new ResourceSettings(), payload, false);
+
     const resource = this.resourceService.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
-        settings: resourceSettings,
+        settings: { ...resourceValue.settings, ...payload },
       },
       false,
     );

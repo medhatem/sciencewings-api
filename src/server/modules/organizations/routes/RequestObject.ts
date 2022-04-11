@@ -140,6 +140,9 @@ export class ResourceRO {
   resourceType!: string;
 
   @JsonProperty()
+  resourceClass!: string;
+
+  @JsonProperty()
   user?: number;
 
   @JsonProperty()

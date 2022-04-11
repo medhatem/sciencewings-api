@@ -10,10 +10,7 @@ import {
   ResourceRateRO,
   ResourceTimerRestrictionRO,
   ResourcesSettingsReservationUnitRO,
-<<<<<<< HEAD
-=======
   ResourceReservationVisibilityRO,
->>>>>>> 7f47657deebd619e18e3f3578a57c50d79d86834
   UserResendPassword,
 } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';

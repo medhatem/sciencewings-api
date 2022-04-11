@@ -59,6 +59,9 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   resourceType!: string;
 
+  @Property()
+  resourceClass!: string;
+
   @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource, nullable: true })
   calendar: ResourceCalendar;
 
