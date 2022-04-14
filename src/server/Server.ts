@@ -74,8 +74,6 @@ export class Server {
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
-    // handleRequests();
-    //this.generateDefaultResourceSettings();
   }
 
   /**
@@ -142,11 +140,4 @@ export class Server {
       console.log('error connecting to database', error);
     }
   }
-
-  /**
-   * Generate default resource settings
-   */
-  //private async generateDefaultResourceSettings(): Promise<void> {
-  // const resourceSettings = await this.resourceSettingsService.create({});
-  //}
 }

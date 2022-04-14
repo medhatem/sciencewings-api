@@ -2,17 +2,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
-import {
-  CreateOrganizationRO,
-  UserInviteToOrgRO,
-  ResourceRO,
-  ResourcesSettingsReservationGeneralRO,
-  ResourceRateRO,
-  ResourceTimerRestrictionRO,
-  ResourcesSettingsReservationUnitRO,
-  ResourceReservationVisibilityRO,
-  UserResendPassword,
-} from './RequestObject';
+import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO, UserResendPassword } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -29,8 +19,6 @@ import {
   ResourceDTO,
   UpdateResourceBodyDTO,
   UpdateResourceDTO,
-  GetResourceSettingsBodyDTO,
-  GetResourceSettingsDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 
@@ -163,7 +151,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Registers a new resource in the database
    *
    * @param payload
-   * Should container Resource data that include Resource data
+   * Should contain Resource data that include Resource data
    */
   @POST
   @Path('resources/create')
@@ -185,7 +173,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Update a resource in the database
    *
    * @param payload
-   * Should container Resource data that include Resource data with its id
+   * Should contain Resource data that include Resource data with its id
    */
   @PUT
   @Path('resources/update/:id')
@@ -221,173 +209,5 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new ResourceDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
-  }
-
-  /**
-   * Update a resource reservation settings general in the database
-   *
-   * @param payload
-   * Should container Resource data that include Resource data with its id
-   */
-  @PUT
-  @Path('/resources/settings/reservation/general/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  public async updateResourcesSettingsReservationGeneral(
-    payload: ResourcesSettingsReservationGeneralRO,
-    @PathParam('id') id: number,
-  ): Promise<UpdateResourceDTO> {
-    const result = await this.OrganizationService.updateResourceReservationGeneral(payload, id);
-
-    if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-
-  /**
-   * Update a resource reservation settings units in the database
-   *
-   * @param payload
-   * Should container Resource data that include Resource data with its id
-   */
-  @PUT
-  @Path('/resources/settings/reservation/unit/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<UpdateResourceBodyDTO>(204, 'Resource reservation unit settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  public async updateResourcesSettingsReservationUnit(
-    payload: ResourcesSettingsReservationUnitRO,
-    @PathParam('id') id: number,
-  ): Promise<UpdateResourceDTO> {
-    const result = await this.OrganizationService.updateResourceReservationUnits(payload, id);
-
-    if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-
-  /**
-   * register a new resource rate in the database
-   *
-   * @param payload
-   */
-  @POST
-  @Path('resources/settings/reservation/rate/:id')
-  @Security()
-  @Response<CreateResourceDTO>(201, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  @LoggerStorage()
-  public async createResourceRate(payload: ResourceRateRO, @PathParam('id') id: number): Promise<CreateResourceDTO> {
-    const result = await this.OrganizationService.createResourceRate(payload, id);
-
-    if (result.isFailure) {
-      return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
-    }
-
-    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
-  }
-
-  /**
-   * update resource rate in the database
-   *
-   * @param payload
-   */
-  @PUT
-  @Path('resources/settings/reservation/rate/:id')
-  @Security()
-  @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  @LoggerStorage()
-  public async updateResourceRate(payload: ResourceRateRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
-    const result = await this.OrganizationService.updateResourceRate(payload, id);
-
-    if (result.isFailure) {
-      return new UpdateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-
-  /**
-   * update resource time restriction in the database
-   *
-   * @param payload
-   */
-  @PUT
-  @Path('resources/settings/reservation/time_restriction/:id')
-  @Security()
-  @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  @LoggerStorage()
-  public async updateResourceTimerRestriction(
-    payload: ResourceTimerRestrictionRO,
-    @PathParam('id') id: number,
-  ): Promise<UpdateResourceDTO> {
-    const result = await this.OrganizationService.updateResourceReservationTimerRestriction(payload, id);
-
-    if (result.isFailure) {
-      return new UpdateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-
-  /**
-   * update resource time restriction in the database
-   *
-   * @param payload
-   */
-  @PUT
-  @Path('resources/settings/reservation/visibility/:id')
-  @Security()
-  @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  @LoggerStorage()
-  public async updateResourceRestrictionVisibility(
-    payload: ResourceReservationVisibilityRO,
-    @PathParam('id') id: number,
-  ): Promise<UpdateResourceDTO> {
-    const result = await this.OrganizationService.updateResourceReservationVisibility(payload, id);
-
-    if (result.isFailure) {
-      return new UpdateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-
-  /**
-   * Get a resource settings in the database
-   *
-   * @param payload
-   * Should container Resource data that include Resource data with its id
-   */
-  @GET
-  @Path('/resources/settings/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  public async getResourceSettings(@PathParam('id') id: number): Promise<GetResourceSettingsDTO> {
-    const result = await this.OrganizationService.getResourceSettings(id);
-
-    if (result.isFailure) {
-      return new GetResourceSettingsDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
-    }
-
-    return new GetResourceSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
   }
 }

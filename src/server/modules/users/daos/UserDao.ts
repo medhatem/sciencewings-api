@@ -5,7 +5,7 @@ import { User } from '@/modules/users/models/User';
 
 @provideSingleton()
 export class UserDao extends BaseDao<User> {
-  private constructor(public model: User = User.getInstance()) {
+  private constructor(public model: User) {
     super(model);
   }
 

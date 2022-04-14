@@ -5,7 +5,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 
 @provideSingleton()
 export class ResourceDao extends BaseDao<Resource> {
-  private constructor(public model: Resource = Resource.getInstance()) {
+  private constructor(public model: Resource) {
     super(model);
   }
 
