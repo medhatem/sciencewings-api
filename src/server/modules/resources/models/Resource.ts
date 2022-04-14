@@ -1,20 +1,11 @@
-import {
-  BooleanType,
-  Collection,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryKey,
-  Property,
-  StringType,
-} from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
 import { ResourceTag } from './ResourceTag';
+import { ResourceSettings } from './ResourceSettings';
 
 @provide()
 @Entity()
@@ -67,54 +58,6 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   timezone!: string;
 
-  //Resource settings
-  //general
-  @Property({ type: BooleanType })
-  isEnabled = true;
-  @Property({ type: BooleanType })
-  isLoanable = false;
-  @Property({ type: BooleanType })
-  isReturnTheirOwnLoans = false;
-  @Property({ type: BooleanType })
-  isReservingLoansAtFutureDates = false;
-  @Property({ type: StringType })
-  fixedLoanDuration = '0 days';
-  @Property({ type: StringType })
-  overdueNoticeDelay = '0 days';
-  @Property({ type: StringType })
-  recurringReservations = '0 days';
-
-  //Unit
-  @Property({ type: StringType })
-  unitName = '';
-  @Property({ type: Number })
-  unitLimit = 0;
-  @Property({ type: Number })
-  unites = 0;
-
-  // Time restriction
-  @Property({ type: BooleanType })
-  isEditingWindowForUsers = false;
-  @Property({ type: BooleanType })
-  isRestrictCreatingNewReservationBeforeTime = false;
-  @Property({ type: BooleanType })
-  isRestrictCreatingNewReservationAfterTime = false;
-  @Property({ type: StringType })
-  reservationTimeGranularity = '';
-  @Property({ type: BooleanType })
-  isAllowUsersToEndReservationEarly = false;
-  @Property({ type: StringType })
-  defaultReservationDuration = '';
-  @Property({ type: StringType })
-  reservationDurationMinimum = '';
-  @Property({ type: StringType })
-  reservationDurationMaximum = '';
-  @Property({ type: StringType })
-  bufferTimeBeforeReservation = '';
-
-  // Group
-
-  // visibility
-  @Property({ type: StringType })
-  isReservationDetailsVisibilityToNonModerators = '';
+  @OneToOne({ entity: () => ResourceSettings, nullable: true })
+  settings: ResourceSettings;
 }
