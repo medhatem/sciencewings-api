@@ -36,70 +36,14 @@ export class ResourceService extends BaseService<Resource> {
 
   @log()
   @safeGuard()
-  public async getResourceReservationGeneral(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.dao.repository
-      .createQueryBuilder()
-      .select([
-        'isEnabled',
-        'isLoanable',
-        'isReturnTheirOwnLoans',
-        'isReservingLoansAtFutureDates',
-        'overdueNoticeDelay',
-        'recurringReservations',
-      ])
-      .execute('get', true);
-    if (!fetchedResource) {
+  public async getResourceSettings(resourceId: number): Promise<Result<any>> {
+    const fetchedResource = await this.get(resourceId);
+
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
 
-    return Result.ok(fetchedResource);
-  }
-  @log()
-  @safeGuard()
-  public async getResourceReservationUnites(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.dao.repository
-      .createQueryBuilder()
-      .select(['unitName', 'unitLimit', 'unites'])
-      .execute('get', true);
-    if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-    return Result.ok(fetchedResource);
-  }
-  @log()
-  @safeGuard()
-  public async getResourceReservationTimerRestriction(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.dao.repository
-      .createQueryBuilder()
-      .select([
-        'isEditingWindowForUsers',
-        'isRestrictCreatingNewReservationBeforeTime',
-        'isRestrictCreatingNewReservationAfterTime',
-        'reservationTimeGranularity',
-        'isAllowUsersToEndReservationEarly',
-        'defaultReservationDuration',
-        'reservationDurationMinimum',
-        'reservationDurationMaximum',
-        'bufferTimeBeforeReservation',
-      ])
-      .execute('get', true);
-    if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-    return Result.ok(fetchedResource);
-  }
-
-  @log()
-  @safeGuard()
-  public async getResourceReservationVisibility(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.dao.repository
-      .createQueryBuilder()
-      .select(['isReservationDetailsVisibilityToNonModerators'])
-      .execute('get', true);
-    if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-    return Result.ok(fetchedResource);
+    return Result.ok(fetchedResource.getValue().settings);
   }
 
   //Resource settings
@@ -275,16 +219,5 @@ export class ResourceService extends BaseService<Resource> {
       return updatedResourceResult;
     }
     return Result.ok<number>(updatedResourceResult.getValue().id);
-  }
-
-  @log()
-  @safeGuard()
-  public async getResourceSettings(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.get(resourceId);
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-
-    return Result.ok(fetchedResource.getValue().settings);
   }
 }
