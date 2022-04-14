@@ -21,7 +21,7 @@ import {
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
-  constructor(public dao: ResourceDao, public resourceService: IResourceService) {
+  constructor(public dao: ResourceDao) {
     super(dao);
   }
 
@@ -32,7 +32,7 @@ export class ResourceService extends BaseService<Resource> {
   @log()
   @safeGuard()
   public async getResourceSettings(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.resourceService.get(resourceId);
+    const fetchedResource = await this.get(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
@@ -47,13 +47,13 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.resourceService.get(resourceId);
+    const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
-    const resource = this.resourceService.wrapEntity(
+    const resource = this.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
@@ -62,7 +62,7 @@ export class ResourceService extends BaseService<Resource> {
       false,
     );
 
-    const updatedResource = await this.resourceService.update(resource);
+    const updatedResource = await this.update(resource);
     return Result.ok<number>(updatedResource.getValue().id);
   }
 
@@ -73,13 +73,13 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceGeneralVisibilitySchema) payload: ResourceSettingsGeneralVisibilityRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.resourceService.get(resourceId);
+    const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
-    const resource = this.resourceService.wrapEntity(
+    const resource = this.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
@@ -88,7 +88,7 @@ export class ResourceService extends BaseService<Resource> {
       false,
     );
 
-    const updatedResource = await this.resourceService.update(resource);
+    const updatedResource = await this.update(resource);
     return Result.ok<number>(updatedResource.getValue().id);
   }
 
@@ -105,14 +105,14 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceGeneralPropertiesSchema) payload: ResourceSettingsGeneralPropertiesRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.resourceService.get(resourceId);
+    const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
 
     const resourceValue = fetchedResource.getValue();
 
-    const resource = this.resourceService.wrapEntity(
+    const resource = this.wrapEntity(
       resourceValue,
       {
         ...resourceValue,
@@ -121,7 +121,7 @@ export class ResourceService extends BaseService<Resource> {
       false,
     );
 
-    const updatedResource = await this.resourceService.update(resource);
+    const updatedResource = await this.update(resource);
     return Result.ok<number>(updatedResource.getValue().id);
   }
 }

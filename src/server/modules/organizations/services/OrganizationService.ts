@@ -30,7 +30,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { CreateResourceSchema, UpdateResourceSchema } from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
-import { IResourceSettingsService } from '@/modules/resources';
+import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 @provideSingleton(IOrganizationService)
