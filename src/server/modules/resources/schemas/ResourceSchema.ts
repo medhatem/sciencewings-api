@@ -40,12 +40,14 @@ export const CreateResourceSchema = ResourceSchema.keys({
   name: Joi.string().required(),
   description: Joi.string().required(),
   resourceType: Joi.string().required(),
+  resourceClass: Joi.string().required(),
 });
 
 export const UpdateResourceSchema = ResourceSchema.keys({
   name: Joi.string(),
   description: Joi.string(),
   resourceType: Joi.string(),
+  resourceClass: Joi.string(),
 });
 //Resource Settings
 export const ResourceReservationGeneralSchema = Joi.object({

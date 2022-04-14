@@ -22,7 +22,7 @@ import { CreateResourceRateSchema, UpdateResourceRateSchema } from '@/modules/re
 import { ResourceRate } from '@/modules/resources';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
-import { IResourceRateService } from '../interfaces';
+import { IResourceRateService } from '@/modules/resources/interfaces/IResourceRateService';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {

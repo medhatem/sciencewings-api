@@ -219,7 +219,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
-
+    console.log({ result: result.getValue() });
     return new GetResourceSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
   }
 }
