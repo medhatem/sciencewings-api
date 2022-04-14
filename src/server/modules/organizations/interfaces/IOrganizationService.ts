@@ -1,10 +1,4 @@
-import {
-  CreateOrganizationRO,
-  ResourceRO,
-  ResourceSettingsGeneralPropertiesRO,
-  ResourceSettingsGeneralStatusRO,
-  ResourceSettingsGeneralVisibilityRO,
-} from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
@@ -22,19 +16,4 @@ export abstract class IOrganizationService extends IBaseService<any> {
   getResourcesOfAGivenOrganizationById: (organizationId: number) => Promise<Result<Resource[]>>;
   createResource: (payload: ResourceRO) => Promise<Result<number>>;
   updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
-
-  updateResourcesSettingsGeneralStatus: (
-    payload: ResourceSettingsGeneralStatusRO,
-    resourceId: number,
-  ) => Promise<Result<number>>;
-  updateResourcesSettingsGeneralVisibility: (
-    payload: ResourceSettingsGeneralVisibilityRO,
-    resourceId: number,
-  ) => Promise<Result<number>>;
-  updateResourcesSettingsnGeneralProperties: (
-    payload: ResourceSettingsGeneralPropertiesRO,
-    resourceId: number,
-  ) => Promise<Result<number>>;
-
-  getResourceSettings: (resourceId: number) => Promise<Result<any>>;
 }
