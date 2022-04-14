@@ -19,7 +19,7 @@ import {
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { CreateResourceRateSchema, UpdateResourceRateSchema } from '@/modules/resources/schemas/ResourceRateSchema';
-import { ResourceRate } from '@/modules/resources';
+import { ResourceRate } from '@/modules/resources/models/ResourceRate';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 import { IResourceRateService } from '@/modules/resources/interfaces/IResourceRateService';
