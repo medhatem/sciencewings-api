@@ -8,15 +8,12 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 export class ResourceSettings extends BaseModel<ResourceSettings> {
   @PrimaryKey()
   id?: number;
-  //Resource settings
-  // General
-  // general
-  // status
+
   @Property({ type: StringType })
   statusType = '';
   @Property({ type: StringType })
   statusDescription = '';
-  // visibility
+
   @Property({ type: BooleanType })
   visibility = true;
   @Property({ type: BooleanType })
@@ -29,7 +26,7 @@ export class ResourceSettings extends BaseModel<ResourceSettings> {
   isPromotedOnSitePageAsALargeButtonAboveOtherResources = false;
   @Property({ type: BooleanType })
   isHideAvailabilityonSitePage = false;
-  // Properties
+
   @Property({ type: StringType })
   accessToResource = '';
 }
