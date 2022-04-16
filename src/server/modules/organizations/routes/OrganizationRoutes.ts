@@ -17,7 +17,7 @@ import {
   CreateResourceDTO,
   GetResourceBodyDTO,
   ResourceDTO,
-  UpdatedResourceBodyDTO,
+  UpdateResourceBodyDTO,
   UpdateResourceDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
@@ -151,7 +151,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Registers a new resource in the database
    *
    * @param payload
-   * Should container Resource data that include Resource data
+   * Should contain Resource data that include Resource data
    */
   @POST
   @Path('resources/create')
@@ -173,13 +173,15 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Update a resource in the database
    *
    * @param payload
-   * Should container Resource data that include Resource data with its id
+   * Should contain Resource data that include Resource data with its id
+   * @param id
+   * id of the requested resource
    */
   @PUT
   @Path('resources/update/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
+  @Response<UpdateResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.OrganizationService.updateResource(payload, id);

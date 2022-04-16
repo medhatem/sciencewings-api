@@ -33,7 +33,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
       });
     }
     return this.getDTOMapper.serialize({
-      body: { statusCode: 204, ...result.getValue() },
+      body: { statusCode: 200, ...result.getValue() },
     });
   }
 
@@ -50,7 +50,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
       });
     }
     return this.getDTOMapper.deserialize({
-      body: { statusCode: 204, body: result.getValue() },
+      body: { statusCode: 200, body: result.getValue() },
     });
   }
 
