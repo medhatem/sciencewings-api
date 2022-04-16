@@ -69,3 +69,21 @@ export const ResourceReservationUnitSchema = Joi.object({
 export const ResourceReservationVisivilitySchema = Joi.object({
   isReservationDetailsVisibilityToNonModerators: Joi.boolean().required(),
 });
+
+export const ResourceGeneralStatusSchema = ResourceSchema.keys({
+  statusType: Joi.string().required(),
+  statusDescription: Joi.string().required(),
+});
+
+export const ResourceGeneralVisibilitySchema = ResourceSchema.keys({
+  visibility: Joi.boolean().required(),
+  isUnlistedOnOrganizationPage: Joi.boolean().required(),
+  isUnlistedToUsersWhoCannotReserve: Joi.boolean().required(),
+  isFullyHiddentoUsersWhoCannotReserve: Joi.boolean().required(),
+  isPromotedOnSitePageAsALargeButtonAboveOtherResources: Joi.boolean().required(),
+  isHideAvailabilityonSitePage: Joi.boolean().required(),
+});
+
+export const ResourceGeneralPropertiesSchema = ResourceSchema.keys({
+  accessToResource: Joi.string().required(),
+});

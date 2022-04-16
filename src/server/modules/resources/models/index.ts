@@ -6,3 +6,4 @@ export * from './ResourceCalendar';
 export * from './ResourceCalendarAttendance';
 export * from './ResourceCalendarLeaves';
 export * from './ResourceEvent';
+export * from './ResourceSettings';

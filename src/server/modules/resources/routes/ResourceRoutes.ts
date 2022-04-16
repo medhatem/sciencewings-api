@@ -1,14 +1,10 @@
-import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { Resource } from '@/modules/resources/models/Resource';
-import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { container, provideSingleton } from '@/di/index';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Path, POST, Security, GET, PathParam, PUT } from 'typescript-rest';
 import {
-  ResourcesSettingsReservationGeneralRO,
-  ResourceRateRO,
-  ResourceTimerRestrictionRO,
-  ResourcesSettingsReservationUnitRO,
-  ResourceReservationVisibilityRO,
+  ResourceSettingsGeneralVisibilityRO,
+  ResourceSettingsGeneralPropertiesRO,
+  ResourceSettingsGeneralStatusRO,
 } from './RequestObject';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
@@ -21,6 +17,15 @@ import {
   GetResourceSettingsDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
+import { Resource } from '@/modules/resources/models/Resource';
+import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
+import {
+  ResourcesSettingsReservationGeneralRO,
+  ResourceRateRO,
+  ResourceTimerRestrictionRO,
+  ResourcesSettingsReservationUnitRO,
+  ResourceReservationVisibilityRO,
+} from './RequestObject';
 
 @provideSingleton()
 @Path('resources')
@@ -52,6 +57,20 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     @PathParam('resourceId') resourceId: number,
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationGeneral(payload, resourceId);
+    if (result.isFailure) {
+      return new UpdateResourceDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  public async updateResourcesSettingsGeneralStatus(
+    payload: ResourceSettingsGeneralStatusRO,
+    @PathParam('resourceId') resourceId: number,
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.ResourceService.updateResourcesSettingsGeneralStatus(payload, resourceId);
 
     if (result.isFailure) {
       return new UpdateResourceDTO({
@@ -81,6 +100,33 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     @PathParam('resourceId') resourceId: number,
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationUnits(payload, resourceId);
+    if (result.isFailure) {
+      return new UpdateResourceDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /* Update a resource settings, section general visibility
+   *
+   * @param payload
+   * Should contain Resource Settings for the section general visibility
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('settings/general/visibility/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResourcesSettingsGeneralVisibility(
+    payload: ResourceSettingsGeneralVisibilityRO,
+    @PathParam('resourceId') resourceId: number,
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.ResourceService.updateResourcesSettingsGeneralVisibility(payload, resourceId);
 
     if (result.isFailure) {
       return new UpdateResourceDTO({
@@ -193,7 +239,37 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.updateResourceReservationVisibility(payload, resourceId);
 
     if (result.isFailure) {
-      return new UpdateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      return new UpdateResourceDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /* Update a resource settings, section general general
+   *
+   * @param payload
+   * Should contain Resource Settings for the section general general
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('settings/general/properties/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateResourcesSettingsnGeneralProperties(
+    payload: ResourceSettingsGeneralPropertiesRO,
+    @PathParam('resourceId') resourceId: number,
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.ResourceService.updateResourcesSettingsnGeneralProperties(payload, resourceId);
+
+    if (result.isFailure) {
+      return new UpdateResourceDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -219,7 +295,6 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
         error: { statusCode: 500, errorMessage: result.error },
       });
     }
-    console.log({ result: result.getValue() });
     return new GetResourceSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
   }
 }

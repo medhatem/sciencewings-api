@@ -174,6 +174,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    *
    * @param payload
    * Should contain Resource data that include Resource data with its id
+   * @param id
+   * id of the requested resource
    */
   @PUT
   @Path('resources/update/:id')

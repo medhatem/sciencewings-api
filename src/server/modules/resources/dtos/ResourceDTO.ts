@@ -56,6 +56,9 @@ export class ResourceBodyDTO extends BaseBodyDTO {
   resourceType!: string;
 
   @JsonProperty()
+  resourceClass!: string;
+
+  @JsonProperty()
   user: number;
 
   @JsonProperty()
@@ -113,6 +116,13 @@ export class CreateResourceDTO extends BaseRequestDTO {
 
 @JsonObject()
 @unique
+export class UpdateResourceBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
+
+@JsonObject()
+@unique
 export class GetResourceReservationVisibilityBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   isReservationDetailsVisibilityToNonModerators: string;
@@ -127,13 +137,6 @@ export class GetResourceReservationVisibilityDTO extends BaseRequestDTO {
 
 @JsonObject()
 @unique
-export class UpdateResourceBodyDTO extends BaseBodyDTO {
-  @JsonProperty()
-  id: number;
-}
-
-@JsonObject()
-@unique
 export class UpdateResourceDTO extends BaseRequestDTO {
   @JsonProperty()
   body: UpdateResourceBodyDTO;
@@ -143,8 +146,27 @@ export class UpdateResourceDTO extends BaseRequestDTO {
 @JsonObject()
 @unique
 export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
-  // reservation
-  // general
+  @JsonProperty()
+  statusType: string;
+  @JsonProperty()
+  statusDescription: string;
+
+  @JsonProperty()
+  visibility: boolean;
+  @JsonProperty()
+  isUnlistedOnOrganizationPage: boolean;
+  @JsonProperty()
+  isUnlistedToUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isFullyHiddentoUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isPromotedOnSitePageAsALargeButtonAboveOtherResources: boolean;
+  @JsonProperty()
+  isHideAvailabilityonSitePage: boolean;
+
+  @JsonProperty()
+  accessToResource: string;
+
   @JsonProperty()
   isEnabled: boolean;
   @JsonProperty()
@@ -160,7 +182,6 @@ export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   recurringReservations: string;
 
-  // unit
   @JsonProperty()
   unitName: string;
   @JsonProperty()
@@ -168,7 +189,6 @@ export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   unites: number;
 
-  // time restriction
   @JsonProperty()
   isEditingWindowForUsers: boolean;
   @JsonProperty()

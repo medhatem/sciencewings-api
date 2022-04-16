@@ -56,6 +56,15 @@ export class ResourcesSettingsReservationUnitRO {
 
 @JsonObject()
 @unique
+export class ResourceSettingsGeneralStatusRO {
+  @JsonProperty()
+  statusType: string;
+  @JsonProperty()
+  statusDescription: string;
+}
+
+@JsonObject()
+@unique
 export class ResourceTimerRestrictionRO {
   @JsonProperty()
   isEditingWindowForUsers: boolean;
@@ -77,9 +86,29 @@ export class ResourceTimerRestrictionRO {
   bufferTimeBeforeReservation: string;
 }
 
+export class ResourceSettingsGeneralVisibilityRO {
+  @JsonProperty()
+  visibility: boolean;
+  @JsonProperty()
+  isUnlistedOnOrganizationPage: boolean;
+  @JsonProperty()
+  isUnlistedToUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isFullyHiddentoUsersWhoCannotReserve: boolean;
+  @JsonProperty()
+  isPromotedOnSitePageAsALargeButtonAboveOtherResources: boolean;
+  @JsonProperty()
+  isHideAvailabilityonSitePage: boolean;
+}
+
 @JsonObject()
 @unique
 export class ResourceReservationVisibilityRO {
   @JsonProperty()
   isReservationDetailsVisibilityToNonModerators: string;
+}
+
+export class ResourceSettingsGeneralPropertiesRO {
+  @JsonProperty()
+  accessToResource: string;
 }

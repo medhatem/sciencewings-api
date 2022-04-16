@@ -4,7 +4,6 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { safeGuard } from '@/decorators/safeGuard';
-import { log } from '@/decorators/log';
 import { Result } from '@/utils/Result';
 import {
   ResourcesSettingsReservationGeneralRO,
@@ -23,6 +22,17 @@ import { ResourceRate } from '@/modules/resources/models/ResourceRate';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 import { IResourceRateService } from '@/modules/resources/interfaces/IResourceRateService';
+import {
+  ResourceSettingsGeneralPropertiesRO,
+  ResourceSettingsGeneralStatusRO,
+  ResourceSettingsGeneralVisibilityRO,
+} from '@/modules/resources/routes/RequestObject';
+import {
+  ResourceGeneralPropertiesSchema,
+  ResourceGeneralStatusSchema,
+  ResourceGeneralVisibilitySchema,
+} from '@/modules/resources/schemas/ResourceSchema';
+import { log } from '@/decorators/log';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
@@ -74,7 +84,37 @@ export class ResourceService extends BaseService<Resource> {
       return updatedResourceResult;
     }
 
-    return Result.ok<number>(1);
+    return Result.ok<number>(updatedResourceResult.getValue().id);
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async updateResourcesSettingsGeneralStatus(
+    @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceValue = fetchedResource.getValue();
+
+    const resource = this.wrapEntity(
+      resourceValue,
+      {
+        ...resourceValue,
+        settings: { ...resourceValue.settings, ...payload },
+      },
+      false,
+    );
+
+    const updatedResourceResult = await this.update(resource);
+    if (updatedResourceResult.isFailure) {
+      return updatedResourceResult;
+    }
+
+    return Result.ok<number>(updatedResourceResult.getValue().id);
   }
 
   @log()
@@ -104,7 +144,33 @@ export class ResourceService extends BaseService<Resource> {
       return updatedResourceResult;
     }
 
-    return Result.ok<number>(1);
+    return Result.ok<number>(updatedResourceResult.getValue().id);
+  }
+
+  public async updateResourcesSettingsGeneralVisibility(
+    @validateParam(ResourceGeneralVisibilitySchema) payload: ResourceSettingsGeneralVisibilityRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceValue = fetchedResource.getValue();
+
+    const resource = this.wrapEntity(
+      resourceValue,
+      {
+        ...resourceValue,
+        settings: { ...resourceValue.settings, ...payload },
+      },
+      false,
+    );
+
+    const updatedResourceResult = await this.update(resource);
+    if (updatedResourceResult.isFailure) {
+      return updatedResourceResult;
+    }
+    return Result.ok<number>(updatedResourceResult.getValue().id);
   }
 
   @log()
@@ -133,7 +199,43 @@ export class ResourceService extends BaseService<Resource> {
     if (updatedResourceResult.isFailure) {
       return updatedResourceResult;
     }
-    return Result.ok<number>(1);
+
+    return Result.ok<number>(updatedResourceResult.getValue().id);
+  }
+
+  /**
+   * updating only the specifed section of a resource settings
+   * @param payload Resource Settings section General Properties payload
+   * @param resourceId
+   * @returns
+   */
+  @log()
+  @safeGuard()
+  @validate
+  public async updateResourcesSettingsnGeneralProperties(
+    @validateParam(ResourceGeneralPropertiesSchema) payload: ResourceSettingsGeneralPropertiesRO,
+    resourceId: number,
+  ): Promise<Result<number>> {
+    const fetchedResource = await this.get(resourceId);
+    if (!fetchedResource) {
+      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+    }
+    const resourceValue = fetchedResource.getValue();
+
+    const resource = this.wrapEntity(
+      resourceValue,
+      {
+        ...resourceValue,
+        settings: { ...resourceValue.settings, ...payload },
+      },
+      false,
+    );
+
+    const updatedResourceResult = await this.update(resource);
+    if (updatedResourceResult.isFailure) {
+      return updatedResourceResult;
+    }
+    return Result.ok<number>(updatedResourceResult.getValue().id);
   }
 
   @log()
@@ -203,6 +305,7 @@ export class ResourceService extends BaseService<Resource> {
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
+
     const resourceValue = fetchedResource.getValue();
 
     const resource = this.wrapEntity(

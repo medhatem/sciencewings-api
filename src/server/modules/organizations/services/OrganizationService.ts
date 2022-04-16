@@ -3,7 +3,7 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { Member, MemberStatusType, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -27,15 +27,11 @@ import { IResourceCalendarService } from '@/modules/resources/interfaces/IResour
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
 import { Resource } from '@/modules/resources/models/Resource';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import {
-  CreateResourceSchema,
-  ResourceCalendarSchema,
-  UpdateResourceSchema,
-} from '@/modules/resources/schemas/ResourceSchema';
-import { IResourceRateService, IResourceSettingsService } from '@/modules/resources';
+import { CreateResourceSchema, UpdateResourceSchema } from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
+import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
+import { IResourceRateService } from '@/modules/resources';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 
@@ -444,8 +440,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
         managers.push(fetcheManager.getValue());
       }
     }
-
     const resourceSetting = await this.resourceSettingsService.create({});
+    if (resourceSetting.isFailure) {
+      return resourceSetting;
+    }
 
     const createdResourceResult = await this.resourceService.create({
       name: payload.name,
@@ -459,7 +457,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       settings: resourceSetting.getValue(),
     });
     if (createdResourceResult.isFailure) {
-      return Result.fail<number>(createdResourceResult.error);
+      return createdResourceResult;
     }
     const createdResource = createdResourceResult.getValue();
 
@@ -560,32 +558,5 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const id = updateResourceResult.getValue().id;
     return Result.ok<number>(id);
-  }
-
-  @log()
-  @safeGuard()
-  @validate
-  public async createResourceCalendar(
-    @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
-  ): Promise<Result<ResourceCalendar>> {
-    let organization = null;
-    if (payload.organization) {
-      organization = await this.dao.get(payload.organization);
-      if (!organization) {
-        return Result.fail(`Organization with id ${payload.organization} does not exist.`);
-      }
-    }
-
-    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(
-      new ResourceCalendar(),
-      {
-        ...payload,
-        organization,
-      },
-      false,
-    );
-
-    const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
-    return Result.ok<any>(createdResourceCalendar);
   }
 }

@@ -6,6 +6,9 @@ import {
   ResourceRateRO,
   ResourceTimerRestrictionRO,
   ResourceReservationVisibilityRO,
+  ResourceSettingsGeneralPropertiesRO,
+  ResourceSettingsGeneralStatusRO,
+  ResourceSettingsGeneralVisibilityRO,
 } from '@/modules/resources/routes/RequestObject';
 
 export abstract class IResourceService extends IBaseService<any> {
@@ -35,6 +38,19 @@ export abstract class IResourceService extends IBaseService<any> {
 
   updateResourceReservationVisibility: (
     payload: ResourceReservationVisibilityRO,
+    resourceRateId: number,
+  ) => Promise<Result<number>>;
+
+  updateResourcesSettingsGeneralStatus: (
+    payload: ResourceSettingsGeneralStatusRO,
+    resourceId: number,
+  ) => Promise<Result<number>>;
+  updateResourcesSettingsGeneralVisibility: (
+    payload: ResourceSettingsGeneralVisibilityRO,
+    resourceId: number,
+  ) => Promise<Result<number>>;
+  updateResourcesSettingsnGeneralProperties: (
+    payload: ResourceSettingsGeneralPropertiesRO,
     resourceId: number,
   ) => Promise<Result<number>>;
 
