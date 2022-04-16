@@ -21,7 +21,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"testingground1\",\n    \"email\": \"testingground1@gmail.com\",\n    \"phones\": [\n        {\n            \"phoneLabel\": \"personal\",\n            \"phoneCode\": \"+213\",\n            \"phoneNumber\": \"541110222\"\n        }\n    ],\n    \"type\": \"Public\",\n    \"labels\": [\"x\",\"y\",\"z\"],\n    \"members\": [],\n    \"social\": [],\n    \"direction\": 1,\n    \"adminContact\": 1,\n    \"addresses\": [\n        {\n            \"country\": \"Canada\",\n            \"province\": \"Ontario\",\n            \"code\": \"5L8 G9S\",\n            \"type\": \"ORGANIZATION\",\n            \"street\": \"487 Yardley Cres\",\n            \"appartement\": \"12\",\n            \"city\": \"Ontario\"\n        }\n    ]\n}",
+							"raw": "{\n    \"name\": \"testingground2\",\n    \"email\": \"testingground1@gmail.com\",\n    \"phones\": [\n        {\n            \"phoneLabel\": \"personal\",\n            \"phoneCode\": \"+213\",\n            \"phoneNumber\": \"541110222\"\n        }\n    ],\n    \"type\": \"Public\",\n    \"labels\": [\"x\",\"y\",\"z\"],\n    \"members\": [],\n    \"social\": [],\n    \"direction\": 1,\n    \"adminContact\": 1,\n    \"addresses\": [\n        {\n            \"country\": \"Canada\",\n            \"province\": \"Ontario\",\n            \"code\": \"5L8 G9S\",\n            \"type\": \"ORGANIZATION\",\n            \"street\": \"487 Yardley Cres\",\n            \"appartement\": \"12\",\n            \"city\": \"Ontario\"\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -74,16 +74,6 @@
 				{
 					"name": "GET ORG ALL",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJEcTZnYnRweUxfOHhUVHZwY3gwbUdxWC1xemJjR1kzN1dBTnA2Z3RLWlJFIn0.eyJleHAiOjE2NDc0NTM5NzgsImlhdCI6MTY0NzQxNzk3OCwianRpIjoiZjFmMDE5YjgtYjhhNy00ODc4LTkzYzAtODFhYTFjZjQzZmM2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNWZkMzVkYzQtNTg3MC00M2JjLTg0M2EtMjM3NTJlZGE3N2FhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiMzdmMmRjYTEtNjNlZS00MWVmLWFmYjUtYmFkODllYTFhNWViIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiIzN2YyZGNhMS02M2VlLTQxZWYtYWZiNS1iYWQ4OWVhMWE1ZWIiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJRU0QgQVpFIiwicHJlZmVycmVkX3VzZXJuYW1lIjoicXNkQGF6ZS5jb20iLCJnaXZlbl9uYW1lIjoiUVNEIiwiZmFtaWx5X25hbWUiOiJBWkUiLCJlbWFpbCI6InFzZEBhemUuY29tIn0.d4vRC75hWl60O2usiYDTcz4BkoiQ5AeJfZPjZogGJz7kyQZwKHeIHKPj7qYEdX-fPcyGa4pXIrg5Finb1VnzuLmgpdsT4HYKWZbEXaJkp5MVDZSHB62C-dxyaW9TiaZqvW0SN8wrM4gikPMm3MCqqdJLO64Id-OfGImbagcYbDq8Wand0Sc59HNSadQbZd2IuNeYBDsT7OWKf7kld64V9jSMA_7nbU9Aj7kLE63tGtxryAMe47njJ5Htci22zmr4_Rd0SvzKXEU9ONmod9iaIzBg2yt-LLK0kYRlljidyIZcWHqN49Lq3aqdDuZkOgEdftgPJPG2nOafo_U5E0Gf_Q",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
@@ -246,9 +236,176 @@
 					"response": []
 				},
 				{
-					"name": "CreateResource",
+					"name": "GetAllOrgResources",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/getOgranizationResourcesById/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"getOgranizationResourcesById",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RESOURCE EVENT",
+			"item": [
+				{
+					"name": "CreateResourceEvent",
 					"request": {
 						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"event title\",\n    \"description\": \"event desc\",\n    \"start\": \"2022-04-13T15:02:50.773Z\",\n    \"end\": \"2022-04-19T15:02:50.773Z\",\n    \"reservedBy\": 1,\n    \"reservedFor\": 1,\n    \"location\": \"hellheim\",\n    \"timezone\": \"gmt+1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/event/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceEvent",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"event title up\",\n    \"description\": \"event desc up\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/event/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetResourceEventById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/event/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCelndarResourceEvents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/calendar/events/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"calendar",
+								"events",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteResourceEvent",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/event/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RESOURCE",
+			"item": [
+				{
+					"name": "GetResource",
+					"request": {
+						"method": "GET",
 						"header": [
 							{
 								"key": "x-access-token",
@@ -257,9 +414,30 @@
 								"disabled": true
 							}
 						],
+						"url": {
+							"raw": "http://localhost:3000/resources/getById/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resources",
+								"getById",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateResourceV2",
+					"request": {
+						"method": "POST",
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"resource_dash_tres\",\n    \"resourceType\": \"USER\",\n    \"description\": \"test description\",\n    \"timezone\": \"gggg\",\n    \"active\": true,\n    \"organization\": 1,\n    \"user\": 1,\n    \"tags\": [\n        {\n            \"title\": \"axe\"\n        },\n        {\n            \"title\": \"sax\"\n        }\n    ],\n    \"managers\": [\n        {\n            \"organization\": 1,\n            \"user\": 1\n        }\n    ]\n}",
+							"raw": "{\n    \"name\": \"resource_dash_tres\",\n    \"resourceType\": \"reservable\",\n    \"description\": \"test description\",\n    \"timezone\": \"gggg\",\n    \"active\": true,\n    \"organization\": 1,\n    \"user\": 1,\n    \"tags\": [\n        {\n            \"title\": \"axe\"\n        },\n        {\n            \"title\": \"sax\"\n        }\n    ],\n    \"managers\": [\n        {\n            \"organization\": 1,\n            \"user\": 1\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -283,23 +461,20 @@
 					"response": []
 				},
 				{
-					"name": "CreateResourceV2",
+					"name": "CreateResource",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJEcTZnYnRweUxfOHhUVHZwY3gwbUdxWC1xemJjR1kzN1dBTnA2Z3RLWlJFIn0.eyJleHAiOjE2NDc0ODIyOTksImlhdCI6MTY0NzQ0NjI5OSwianRpIjoiNzhkMDY1MjctMjAzZC00MGMwLThlNzQtNmJmMTc2MjlkMTQ4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNWZkMzVkYzQtNTg3MC00M2JjLTg0M2EtMjM3NTJlZGE3N2FhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiYmM0YTY3NmQtZmRiZC00ZTY1LWFhZjYtZGYzYWFhODVjNjI0IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiJiYzRhNjc2ZC1mZGJkLTRlNjUtYWFmNi1kZjNhYWE4NWM2MjQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJRU0QgQVpFIiwicHJlZmVycmVkX3VzZXJuYW1lIjoicXNkQGF6ZS5jb20iLCJnaXZlbl9uYW1lIjoiUVNEIiwiZmFtaWx5X25hbWUiOiJBWkUiLCJlbWFpbCI6InFzZEBhemUuY29tIn0.Q_b6I7rI0d7YKQhk-eEZGrQwI_9mZV02D_XFyi5TGO9LJvcBhatoj28NLj3Y2PWWbl30tuQnkJjoOy4TNuoX90m6NfY0Z14sqhZ2MYvFgwGYES4EOqMjdNylwC0Gajc2QLOZ4V7Oss1GInQMao8h4IZhYeNz1UZy-xQLMRC1vIm5xxgMKVK-v0d1jj4ub4MJtxdGo8UOvykNTrHs-7WYaj2w3UctVBHtGzpJcCxV4d-vqPea7gCkBh1bq8fSoN6cLUUxg331OL20GaW3pK-n_Gtc1nEulz2zzF4DUtdZzabCS2NaHrxMwJUpC6tep0cY54wptgRppsWD3nsijzpfEQ",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"test name\",\n    \"description\": \"test description\",\n    \"timezone\": \"gggg\",\n    \"active\": true,\n    \"organization\": 1,\n    \"user\": 1,\n    \"resourceType\": \"USER\",\n    \"calendar\": {\n        \"name\": \"calendar name\",\n        \"timezone\": \"GMT+0100\"\n    },\n    \"tags\": [\n        {\n            \"title\": \"axe\"\n        },\n        {\n            \"title\": \"sax\"\n        }\n    ],\n    \"managers\": [\n        1\n    ]\n}",
+							"raw": "{\n    \"name\": \"resource_dash_tres\",\n    \"resourceType\": \"reservable\",\n    \"resourceClass\": \"equipement\",\n    \"description\": \"test description\",\n    \"timezone\": \"gggg\",\n    \"active\": true,\n    \"organization\": 1,\n    \"user\": 1,\n    \"tags\": [\n        {\n            \"title\": \"axe\"\n        },\n        {\n            \"title\": \"sax\"\n        }\n    ],\n    \"managers\": [\n        {\n            \"organization\": 1,\n            \"user\": 1\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -360,104 +535,11 @@
 					"response": []
 				},
 				{
-					"name": "GetAllOrgResources",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-access-token",
-								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"resource_dash_one\",\n    \"resourceType\": \"USER\",\n    \"timeEfficiency\": 10,\n    \"calendar\": {\"name\":\"meet\", \"timezone\":\"gmt+1\"},\n    \"timezone\":\"gmt+1\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/organization/resources/getOgranizationResourcesById/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"organization",
-								"resources",
-								"getOgranizationResourcesById",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "RESOURCE",
-			"item": [
-				{
-					"name": "GetResource",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJEcTZnYnRweUxfOHhUVHZwY3gwbUdxWC1xemJjR1kzN1dBTnA2Z3RLWlJFIn0.eyJleHAiOjE2NDcyOTMzMjUsImlhdCI6MTY0NzI5MzAyNSwianRpIjoiNTBmNDQyNGMtNmUzNi00Y2VmLWFkZTEtODRhZDEwNzZiYWY4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNWZkMzVkYzQtNTg3MC00M2JjLTg0M2EtMjM3NTJlZGE3N2FhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNWMyOTdmMGEtZGZjZC00OGEwLWJkNzctYzQ2NTNlZGExMjM0IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI1YzI5N2YwYS1kZmNkLTQ4YTAtYmQ3Ny1jNDY1M2VkYTEyMzQiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJRU0QgQVpFIiwicHJlZmVycmVkX3VzZXJuYW1lIjoicXNkQGF6ZS5jb20iLCJnaXZlbl9uYW1lIjoiUVNEIiwiZmFtaWx5X25hbWUiOiJBWkUiLCJlbWFpbCI6InFzZEBhemUuY29tIn0.M2ffcmBPO1G-LZX4GzqU5vdp7aZbUr4XwfQ0w4w0Nc9es5mpwbSAJp59d2lyrCnL6Ud6PQ8bGH8GIq9BMwGWKmz_TL1jUDynfhuasqkA4Hb_391REsQU1HmjFKSr4F_6hFNi4HhkuXgh7sQ1z3fSZxlR0eNTWl2w4aZ798B7kEaEjEdcXLW0bGFcUv3jkG3fwuSUlgtKMX4A8d0h9elJPQTvHpgKd61IW5Tk4W1dpSXKZImXsZAuM6R-gZfKD3GOra5OKWo05iD-W6F8hs1z1djFW9KtqGCGda4d-L2TMTsb9ayVyQHO5obU0ntvvbSC_1uzm3un6OJUG7sWAxUoQA",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-access-token",
-								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
-								"type": "text",
-								"disabled": true
-							}
-						],
-						"url": {
-							"raw": "http://localhost:3000/resources/getById/4",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"resources",
-								"getById",
-								"4"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "GetAllResource",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJEcTZnYnRweUxfOHhUVHZwY3gwbUdxWC1xemJjR1kzN1dBTnA2Z3RLWlJFIn0.eyJleHAiOjE2NDc0NTM5NzgsImlhdCI6MTY0NzQxNzk3OCwianRpIjoiZjFmMDE5YjgtYjhhNy00ODc4LTkzYzAtODFhYTFjZjQzZmM2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNWZkMzVkYzQtNTg3MC00M2JjLTg0M2EtMjM3NTJlZGE3N2FhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiMzdmMmRjYTEtNjNlZS00MWVmLWFmYjUtYmFkODllYTFhNWViIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiIzN2YyZGNhMS02M2VlLTQxZWYtYWZiNS1iYWQ4OWVhMWE1ZWIiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJRU0QgQVpFIiwicHJlZmVycmVkX3VzZXJuYW1lIjoicXNkQGF6ZS5jb20iLCJnaXZlbl9uYW1lIjoiUVNEIiwiZmFtaWx5X25hbWUiOiJBWkUiLCJlbWFpbCI6InFzZEBhemUuY29tIn0.d4vRC75hWl60O2usiYDTcz4BkoiQ5AeJfZPjZogGJz7kyQZwKHeIHKPj7qYEdX-fPcyGa4pXIrg5Finb1VnzuLmgpdsT4HYKWZbEXaJkp5MVDZSHB62C-dxyaW9TiaZqvW0SN8wrM4gikPMm3MCqqdJLO64Id-OfGImbagcYbDq8Wand0Sc59HNSadQbZd2IuNeYBDsT7OWKf7kld64V9jSMA_7nbU9Aj7kLE63tGtxryAMe47njJ5Htci22zmr4_Rd0SvzKXEU9ONmod9iaIzBg2yt-LLK0kYRlljidyIZcWHqN49Lq3aqdDuZkOgEdftgPJPG2nOafo_U5E0Gf_Q",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [
 							{
@@ -521,6 +603,421 @@
 							"path": [
 								"resources",
 								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateResourceRate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"resource rate desc\",\n    \"rate\": 12,\n    \"category\": \"cat\",\n    \"isPublic\": true,\n    \"isRequiredAccountNumber\": true,\n    \"duration\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/settings/reservation/rate/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"settings",
+								"reservation",
+								"rate",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getResourceRate",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/resources/settings/reservation/rate/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resources",
+								"settings",
+								"reservation",
+								"rate",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceRate",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"\",\n    \"rate\": 12,\n    \"category\": \"cat\",\n    \"isPublic\": true,\n    \"isRequiredAccountNumber\": true,\n    \"duration\": 5,\n    \"resource\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/settings/reservation/rate/update/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"settings",
+								"reservation",
+								"rate",
+								"update",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getResourceSettings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/resources/settings/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resources",
+								"settings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceGeneral",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isEnabled\": true,\n    \"isLoanable\": true,\n    \"isReturnTheirOwnLoans\": true,\n    \"isReservingLoansAtFutureDates\": true,\n    \"fixedLoanDuration\": \"one day\",\n    \"overdueNoticeDelay\": \"one day\",\n    \"recurringReservations\": \"one day\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/resources/settings/reservation/general/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resources",
+								"settings",
+								"reservation",
+								"general",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceGeneralStatus",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"statusType\": \"true\",\n    \"statusDescription\": \"true\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/resources/settings/general/status/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resources",
+								"settings",
+								"general",
+								"status",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceGeneralVisibility",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isEditingWindowForUsers\": true,\n    \"isRestrictCreatingNewReservationBeforeTime\": true,\n    \"isRestrictCreatingNewReservationAfterTime\": true,\n    \"reservationTimeGranularity\": \"string\",\n    \"isAllowUsersToEndReservationEarly\": true,\n    \"defaultReservationDuration\": \"string\",\n    \"reservationDurationMinimum\": \"string\",\n    \"reservationDurationMaximum\": \"string\",\n    \"bufferTimeBeforeReservation\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/settings/general/visibility/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"settings",
+								"general",
+								"visibility",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceGeneralProperties",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isEditingWindowForUsers\": true,\n    \"isRestrictCreatingNewReservationBeforeTime\": true,\n    \"isRestrictCreatingNewReservationAfterTime\": true,\n    \"reservationTimeGranularity\": \"string\",\n    \"isAllowUsersToEndReservationEarly\": true,\n    \"defaultReservationDuration\": \"string\",\n    \"reservationDurationMinimum\": \"string\",\n    \"reservationDurationMaximum\": \"string\",\n    \"bufferTimeBeforeReservation\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/settings/general/properties/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"settings",
+								"general",
+								"properties",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceVisibility",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isEditingWindowForUsers\": true,\n    \"isRestrictCreatingNewReservationBeforeTime\": true,\n    \"isRestrictCreatingNewReservationAfterTime\": true,\n    \"reservationTimeGranularity\": \"string\",\n    \"isAllowUsersToEndReservationEarly\": true,\n    \"defaultReservationDuration\": \"string\",\n    \"reservationDurationMinimum\": \"string\",\n    \"reservationDurationMaximum\": \"string\",\n    \"bufferTimeBeforeReservation\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/resources/settings/reservation/visibility/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resources",
+								"settings",
+								"reservation",
+								"visibility",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceTimeRestriction",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"isEditingWindowForUsers\": true,\n    \"isRestrictCreatingNewReservationBeforeTime\": true,\n    \"isRestrictCreatingNewReservationAfterTime\": true,\n    \"reservationTimeGranularity\": \"string\",\n    \"isAllowUsersToEndReservationEarly\": true,\n    \"defaultReservationDuration\": \"string\",\n    \"reservationDurationMinimum\": \"string\",\n    \"reservationDurationMaximum\": \"string\",\n    \"bufferTimeBeforeReservation\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/organization/resources/settings/reservation/time_restriction/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"organization",
+								"resources",
+								"settings",
+								"reservation",
+								"time_restriction",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateResourceUnite",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5RGM1UjNMcGRPRGFfTVhVR0NyXzBqOXVxQjg5QU9SZDIyZmM4UEZhdnBnIn0.eyJleHAiOjE2NDQ4NDk0NzMsImlhdCI6MTY0NDg0OTE3MywianRpIjoiYTk1YzQyZTAtYzRmYS00MmM1LTk0NzQtYjUxNmM5MDRlZTFmIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiOTlkYTg3MjAtZjZiYS00ZjQ2LThmN2EtMDY2OGQxODMyYjg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNGUxODRjNjUtNTU4OS00MmQ1LTgzMTktNWUzZmFkMTBhNzU5IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI0ZTE4NGM2NS01NTg5LTQyZDUtODMxOS01ZTNmYWQxMGE3NTkiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.MEI_r842jug27biv0dy43oJjCGHBSkw_X2O5PiFBle19subCsfsYIagC55b_eJNUAf_ALanL10_bWLRaKWUtYSku8qlX5BbsaX1siKyB1vEurQSKQXGbViHqyIEqQuEfRZCX0XmWt6D0y8j7Pw7Lgg0O-kw9Z15ON5ybI6UqDlxxxc5YD1W7opikMrgFlG8RC2JmCI2q1axvH7Rduy7ruMJnqMmOBzG7EkaI9sUGy78eQJfOJeNiigU_DQmvUSjdhtY9xnuV-_6-hJALUTLoVh6jzm6RtLzxmCx5wS6g_6sqckFjDft64jRTMuRZukdaX1yJH_Gw9NY_Bon4hQs7Jg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"unitName\": \"true\",\n    \"unitLimit\": 250,\n    \"unites\": 50\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/resources/settings/reservation/unit/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"resources",
+								"settings",
+								"reservation",
+								"unit",
+								"1"
 							]
 						}
 					},
@@ -720,6 +1217,16 @@
 						"disableBodyPruning": true
 					},
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWdoWGdGUmdpc05XRjFndGt2MnVsOWlNVEUwVGpDcy0ybjFIY196NlNVIn0.eyJleHAiOjE2NDgwMTI4ODQsImlhdCI6MTY0Nzk3Njg4NCwianRpIjoiOGUyMWIwMGItMWU1Ny00ZDhmLWI2NGYtODEzOTc0MmIzNzgzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMDdhMjllZWUtYWJhYy00YTc5LWE4NDMtODg5ZjkyOTU5NjVhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiZmU4OTcyMmQtNDRiZC00NjRhLThlNGItYjVhMzEzMmU3YjBkIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiJmZTg5NzIyZC00NGJkLTQ2NGEtOGU0Yi1iNWEzMTMyZTdiMGQiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.RClrycpHOiBNfNOqZqomkOS666RfOhP6Zf3JkslkzFRYoLedO6Bjvg3M_4GUnLwG8vS7RCEIH4pxByzDL_GdVWPdzZ_eDAXkl7Z5_KcTEa6FKBMNz-YYi_QUfJVrSyF36ESqpPk64qqGrEogAdynAl8Mbz1Q2OHNzDNJGBE66CWDyNNvs6u11fO__Tgz8ifsHgW3iLicpF3uM7PFif3WbPtcW3td5ARa7phHqll6J_QSVQR1i_8LJAcJ1XH5H3Jk3lntiotU_pLIaLe9spux2FESWyGuj4BXA8kTLiBO_A9ZQEzRcDW3xKHZx1H-WmQFxuDi5v6SuiFpC-rkUQOorQ",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -788,6 +1295,31 @@
 				},
 				{
 					"name": "RegisterUser",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ3Nk5RV3pVcFBOVTV2WmxWSmI1TnFROFRSX05sWjVjRU1nN0xiLXVsaVJRIn0.eyJleHAiOjE2NDY4NDc3MzQsImlhdCI6MTY0Njg0NzQzNCwianRpIjoiNTQwMjIxNjEtMGE3MC00ZGZlLWI4ZGYtZmUxMDgyYjY5OGM1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiNDdlMmQ5MGQtMWQ3Ny00ODhlLWIwMTEtODA3MzVlMjk1NmNlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNzQ2OGZlMDktYTgwMS00NGI2LTg4ZTUtMmM4NzVhMjdhY2Y0IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI3NDY4ZmUwOS1hODAxLTQ0YjYtODhlNS0yYzg3NWEyN2FjZjQiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.SiLIF72Kyk5OwzHuNj3mk01XVB0A-1UehllIj79rtiEuzuxucRGKnhmGfGVW3ABwBoy8BsSmG3m9D4jNMDqhhAMN0OjN6wh8NRPX7yuCtQeSurtChDIvqRe4Dq34hMzhMrtMzw-RPU-hnkUmCJr9cAMpEAJc6QJBGAibTsossWhM0FodyC27X3cBsDL96KnGDe__McqAsbB0ZeElrZWBajnh8AS86MvxUfqonjE8Cf4P76lCR7Vdl6ecGmx4UOoa8nadDDcm4yz9rx0xUsfMDz66D8QCtLWN4nkfxecn9JfyhjOsogZmaJyEwU_ici-DTYr4cuq2y7g2HH5uxiF5og",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/users/registerUserFromToken",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"registerUserFromToken"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RegisterUserNG",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -1732,7 +2264,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxUWdoWGdGUmdpc05XRjFndGt2MnVsOWlNVEUwVGpDcy0ybjFIY196NlNVIn0.eyJleHAiOjE2NDgwNjI5OTUsImlhdCI6MTY0ODAyNjk5NSwianRpIjoiMzFmODBlZDYtMGU4MS00YTY0LThjODMtMzQ5Y2YwNzA4MjQzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMDdhMjllZWUtYWJhYy00YTc5LWE4NDMtODg5ZjkyOTU5NjVhIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiNTcxZDNlN2MtZDc4Yi00NjhkLWJhZDUtMmEzMGMxZGRjMGY3IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI1NzFkM2U3Yy1kNzhiLTQ2OGQtYmFkNS0yYTMwYzFkZGMwZjciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.WPmof1J2Kh0E6-VmywQ-i0ddRXHyHRjmouKO2yQo83wOHD5mhOz6cfSakSE66j8oPf4dy9bnde6MJqV-EVVqaQEY77Asmxao97ON9B_-thIqwavNoa8yBcCCnrEHjgGs8ThPVcywno5vTk8NHZ737_n9KsgnXi7xO5JRVmgIiGwQT_-fmU9UJdsLkNTNd490PLZkb-VPqLPPjtZ8mkEa7s3e1PeIhRq5pULsIqnDIHqcCE8KAKuHnOWyvN-bmqz6wPGpdrVyGUqY421MxXAAz3g514bQlNc4BYEroIf3W241RAQiwT3TYFeMjvDrSLbOegpLZ8sQr4u0XniFOKGf9w",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICItOWl4elh3SENldW5LRmZsT2UxNDFmNjhtdEg1dE9mVTBnaWFrN1QxRERjIn0.eyJleHAiOjE2NTAxNDQzNDQsImlhdCI6MTY1MDE0MDc0NCwianRpIjoiYTM0YTlmN2UtZTZjYS00ZDY3LTgyM2MtOGNiMTE1ZGQzODM1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2F1dGgvcmVhbG1zL3NjaWVuY2V3aW5ncy13ZWIiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiYWNlMDRlNDktOWRkMi00N2M3LWIzNmQtYzIxMDExMDdmMjRkIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2NpZW5jZXdpbmdzLXdlYi1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiZGMyZTc4MTYtMjU5Yi00ZjVmLTk5MGItYzcwMDgzYmY1M2MxIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjQyMDAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXNjaWVuY2V3aW5ncy13ZWIiXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiJkYzJlNzgxNi0yNTliLTRmNWYtOTkwYi1jNzAwODNiZjUzYzEiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlFTRCBBWkUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJxc2RAYXplLmNvbSIsImdpdmVuX25hbWUiOiJRU0QiLCJmYW1pbHlfbmFtZSI6IkFaRSIsImVtYWlsIjoicXNkQGF6ZS5jb20ifQ.HQPrCoJrJq7Ya6qNxAsLSQ6IDaQE6y8klLg88wLNQDBThb6YOLeb0lKj_61PZDyEVBI5p5bDPFHg4zd1cu2y0atp4KBqx4ScS6QiuuqfhwluKMIWIPg45tUTDRRWnKBSlqyec3H9cWeZzp052ZFC2F213Sb_z8FKdR_u3cCLZybZqch9uxYVoCgZxPbGbuSvPkF0mBHYeWL4fp2bJSW2gzTiP-FCSRP_eFTYvWMP8x27yHUsKeDFwqw9LZvVDaCGZ1EzpZ7Y31wd6nDIe70kYxzgg6qz5IrtvEOgXCkUlt4cv1nSlthvWIkSuHlXxVAeixP8q8vCAa-OCvwZ5xkQOw",
 				"type": "string"
 			}
 		]

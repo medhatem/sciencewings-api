@@ -47,7 +47,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * Requested resource id
    */
   @PUT
-  @Path('/settings/reservation/general/:resourceId')
+  @Path('settings/reservation/general/:resourceId')
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
@@ -66,6 +66,20 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
+  /**
+   * Update a resource settings, section general status
+   *
+   * @param payload
+   * Should container resource settings data
+   * @param resourceId
+   * Requested resource id
+   */
+  @PUT
+  @Path('settings/general/status/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateResourcesSettingsGeneralStatus(
     payload: ResourceSettingsGeneralStatusRO,
     @PathParam('resourceId') resourceId: number,
@@ -90,7 +104,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * Requested resource id
    */
   @PUT
-  @Path('/settings/reservation/unit/:resourceId')
+  @Path('settings/reservation/unit/:resourceId')
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation unit settings updated Successfully')
@@ -146,7 +160,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * Requested resource id
    */
   @POST
-  @Path('resources/settings/reservation/rate/:resourceId')
+  @Path('settings/reservation/rate/:resourceId')
   @Security()
   @Response<CreateResourceDTO>(201, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -173,7 +187,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * Requested resrvation rate id
    */
   @PUT
-  @Path('resources/settings/reservation/rate/:resourceRateId')
+  @Path('settings/reservation/rate/:resourceRateId')
   @Security()
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -200,7 +214,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * Requested resource id
    */
   @PUT
-  @Path('resources/settings/reservation/time_restriction/:resourceId')
+  @Path('settings/reservation/time_restriction/:resourceId')
   @Security()
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -227,7 +241,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * Requested resource id
    */
   @PUT
-  @Path('resources/settings/reservation/visibility/:resourceId')
+  @Path('settings/reservation/visibility/:resourceId')
   @Security()
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
@@ -282,7 +296,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * Requested resource id
    */
   @GET
-  @Path('/settings/:resourceId')
+  @Path('settings/:resourceId')
   @Security()
   @LoggerStorage()
   @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
