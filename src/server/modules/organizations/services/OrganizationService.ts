@@ -31,8 +31,10 @@ import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { CreateResourceSchema, UpdateResourceSchema } from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
+import { IResourceRateService } from '@/modules/resources';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
+
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
@@ -42,6 +44,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public memberService: IMemberService,
     public resourceService: IResourceService,
     public resourceSettingsService: IResourceSettingsService,
+    public resourceRateService: IResourceRateService,
     public resourceCalendarService: IResourceCalendarService,
     public resourceTagService: IResourceTagService,
     public addressService: IAddressService,
@@ -488,48 +491,72 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateResourceSchema) payload: ResourceRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.dao.get(resourceId);
-    if (!fetchedResource) {
+    const fetchedResourceResult = await this.resourceService.get(resourceId);
+    if (fetchedResourceResult.isFailure || fetchedResourceResult.getValue() === null) {
       return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
     }
+    const fetchedResource: Resource = fetchedResourceResult.getValue();
 
-    let user = null;
-    if (payload.user) {
-      const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
-      if (fetchedUser.isFailure || !fetchedUser) {
-        return Result.fail<number>(`User with id ${payload.user} does not exist.`);
+    if (payload.managers) {
+      const managers: Member[] = [];
+      for await (const { organization, user } of payload.managers) {
+        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
+        if (fetcheManager.isFailure || !fetcheManager.getValue()) {
+          return Result.fail<number>(
+            `Manager with user id ${user} in organization with id ${organization} does not exist.`,
+          );
+        }
+        managers.push(fetcheManager.getValue());
       }
-      user = fetchedUser.getValue();
-    }
 
-    let organization = null;
-    if (payload.organization) {
-      const fetchedOrganization = await this.dao.get(payload.organization);
-      if (!fetchedOrganization) {
-        return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
+      let existingManagers = fetchedResource.managers.getItems();
+
+      for (const manager of managers) {
+        if (
+          existingManagers.filter(
+            (eManager) => eManager.user.id === manager.user.id && eManager.organization.id === manager.organization.id,
+          ).length === 0
+        ) {
+          fetchedResource.managers.add(manager);
+          existingManagers = existingManagers.filter(
+            (eManager) => eManager.user.id !== manager.user.id && eManager.organization.id !== manager.organization.id,
+          );
+        }
       }
-      organization = fetchedOrganization;
-    }
-
-    if (payload.calendar) {
-      delete payload.calendar;
-      const updatedResourceCalendar = await this.resourceCalendarService.update(payload.calendar);
-      if (updatedResourceCalendar.isFailure) {
-        return Result.fail<number>(updatedResourceCalendar.error);
+      for (const manager of existingManagers) {
+        fetchedResource.managers.remove(manager);
       }
-      payload.calendar = updatedResourceCalendar.getValue();
     }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      ...payload,
-    });
-
-    const createdResource = await this.resourceService.update({ ...resource, user, organization });
-    if (createdResource.isFailure) {
-      return Result.fail<number>(createdResource.error);
+    if (payload.tags) {
+      const existingTags = await fetchedResource.tags.init();
+      for (const tag of payload.tags) {
+        if (!tag.id) {
+          await this.resourceTagService.create({
+            title: tag.title,
+            resource: fetchedResource,
+          });
+          existingTags.remove((eTag) => eTag.title === tag.title);
+        }
+      }
+      for (const tag of existingTags) {
+        await this.resourceTagService.remove(tag.id);
+      }
     }
-    const id = createdResource.getValue().id;
+
+    const resource = this.resourceService.wrapEntity(
+      fetchedResource,
+      {
+        ...payload,
+      },
+      false,
+    );
+
+    const updateResourceResult = await this.resourceService.update(resource);
+    if (updateResourceResult.isFailure) {
+      return Result.fail<number>(updateResourceResult.error);
+    }
+    const id = updateResourceResult.getValue().id;
     return Result.ok<number>(id);
   }
 }

@@ -3,7 +3,6 @@ import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Resource } from '@/modules/resources/models/Resource';
-
 import { Result } from '@/utils/Result';
 import { Collection } from '@mikro-orm/core';
 

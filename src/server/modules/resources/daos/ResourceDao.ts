@@ -1,5 +1,4 @@
 import { container, provideSingleton } from '@/di/index';
-
 import { BaseDao } from '@/modules/base/daos/BaseDao';
 import { Resource } from '@/modules/resources/models/Resource';
 

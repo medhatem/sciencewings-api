@@ -1,0 +1,51 @@
+// import { Configuration } from './../../server/configuration/Configuration';
+import intern from 'intern';
+import { createStubInstance } from 'sinon';
+const { suite, test } = intern.getPlugin('interface.tdd');
+const { expect } = intern.getPlugin('chai');
+// import { Organization } from '@/modules/organizations/models/Organization';
+import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
+import { AddressType } from '@/modules/address';
+import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+// import { AddressType } from '@/modules/address';
+
+suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
+  let organisationService: OrganizationService;
+
+  test('should create the organization', async () => {
+    organisationService = createStubInstance<OrganizationService>(OrganizationService);
+    console.log({ organisationService });
+
+    const organization: CreateOrganizationRO = {
+      name: 'testingground2',
+      email: 'testingground1@gmail.com',
+      phones: [
+        {
+          phoneLabel: 'personal',
+          phoneCode: '+213',
+          phoneNumber: '541110222',
+        },
+      ],
+      type: 'Public',
+      labels: ['x', 'y', 'z'],
+      members: [] as any,
+      direction: 1,
+      adminContact: 1,
+      addresses: [
+        {
+          country: 'Canada',
+          province: 'Ontario',
+          code: '5L8 G9S',
+          type: AddressType.ORGANIZATION,
+          street: '487 Yardley Cres',
+          apartment: '12',
+          city: 'Ontario',
+        },
+      ],
+      description: '',
+    };
+
+    const result = await organisationService.createOrganization(organization, 1);
+    expect(result.isSuccess).to.be.equal(true);
+  });
+});

@@ -1,12 +1,46 @@
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { Result } from '@/utils/Result';
 import {
+  ResourcesSettingsReservationGeneralRO,
+  ResourcesSettingsReservationUnitRO,
+  ResourceRateRO,
+  ResourceTimerRestrictionRO,
+  ResourceReservationVisibilityRO,
   ResourceSettingsGeneralPropertiesRO,
   ResourceSettingsGeneralStatusRO,
   ResourceSettingsGeneralVisibilityRO,
 } from '@/modules/resources/routes/RequestObject';
-import { Result } from '@/utils/Result';
 
 export abstract class IResourceService extends IBaseService<any> {
+  getResourceReservationGeneral: (resourceId: number) => Promise<Result<any>>;
+  getResourceReservationUnites: (resourceId: number) => Promise<Result<any>>;
+  getResourceReservationTimerRestriction: (resourceId: number) => Promise<Result<any>>;
+  getResourceReservationVisibility: (resourceId: number) => Promise<Result<any>>;
+
+  updateResourceReservationGeneral: (
+    payload: ResourcesSettingsReservationGeneralRO,
+    resourceId: number,
+  ) => Promise<Result<number>>;
+
+  updateResourceReservationUnits: (
+    payload: ResourcesSettingsReservationUnitRO,
+    resourceId: number,
+  ) => Promise<Result<number>>;
+
+  createResourceRate: (payload: ResourceRateRO, resourceId: number) => Promise<Result<number>>;
+
+  updateResourceRate: (payload: ResourceRateRO, resourceRateId: number) => Promise<Result<number>>;
+
+  updateResourceReservationTimerRestriction: (
+    payload: ResourceTimerRestrictionRO,
+    resourceRateId: number,
+  ) => Promise<Result<number>>;
+
+  updateResourceReservationVisibility: (
+    payload: ResourceReservationVisibilityRO,
+    resourceRateId: number,
+  ) => Promise<Result<number>>;
+
   updateResourcesSettingsGeneralStatus: (
     payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,

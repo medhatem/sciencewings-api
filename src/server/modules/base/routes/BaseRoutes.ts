@@ -24,16 +24,17 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @GET
   @Path('/getById/:id')
   @Security()
-  @Response(200, 'success')
+  @Response<BaseRequestDTO>(200, 'success')
   public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
     const result = await this.service.get(id);
     if (result.isFailure) {
-      return this.getDTOMapper.serialize({
+      return this.getDTOMapper.deserialize({
         error: { statusCode: 500, message: result.error },
       });
     }
-    return this.getDTOMapper.serialize({
-      body: { statusCode: 200, ...result.getValue() },
+
+    return this.getDTOMapper.deserialize({
+      body: { statusCode: 200, data: [result.getValue()] },
     });
   }
 
@@ -45,11 +46,11 @@ export class BaseRoutes<T extends BaseModel<T>> {
   public async getAll(): Promise<any> {
     const result = await this.service.getAll();
     if (result.isFailure) {
-      return this.getDTOMapper.deserialize({
+      return this.getDTOMapper.serialize({
         error: { statusCode: 500, message: result.error },
       });
     }
-    return this.getDTOMapper.deserialize({
+    return this.getDTOMapper.serialize({
       body: { statusCode: 200, body: result.getValue() },
     });
   }

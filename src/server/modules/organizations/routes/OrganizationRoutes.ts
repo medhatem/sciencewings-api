@@ -210,6 +210,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       return new ResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
+    return new ResourceDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
   }
 }
