@@ -17,13 +17,18 @@ import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLa
 import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
 import { Resource } from '@/modules/resources';
-import { Job } from '@/modules/hr/models/Job';
-import { WorkLocation } from '@/modules/hr/models/WorkLocation';
+import { Job, WorkLocation } from '@/modules/hr';
+import { OrganizationSettings } from './OrganizationSettings';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
   SERVICE = 'Service',
   INSTITUT = 'Institut',
+}
+
+export enum OrganizationCategory {
+  PODUCTION = 'Production',
+  CONSTRUCTION = 'Construction',
 }
 
 @provide()
@@ -130,4 +135,19 @@ export class Organization extends BaseModel<Organization> {
     mappedBy: 'parent',
   })
   public children? = new Collection<Organization>(this);
+
+  @Property({ nullable: true })
+  website: string;
+
+  @Property({ nullable: true })
+  identificationNumber: Number;
+
+  @Property({ nullable: true })
+  category: OrganizationCategory;
+
+  @Property({ nullable: true })
+  activity: string;
+
+  @OneToOne({ entity: () => OrganizationSettings, nullable: true })
+  settings: OrganizationSettings;
 }
