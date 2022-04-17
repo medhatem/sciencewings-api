@@ -3,7 +3,14 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { Member, MemberStatusType, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { CreateOrganizationRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
+import {
+  CreateOrganizationRO,
+  OrganizationAccessSettingsRO,
+  OrganizationGeneralSettingsRO,
+  OrganizationInvoicesSettingsRO,
+  OrganizationReservationSettingsRO,
+  ResourceRO,
+} from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -558,5 +565,74 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const id = updateResourceResult.getValue().id;
     return Result.ok<number>(id);
+  }
+
+  //Organization settings
+
+  @log()
+  @safeGuard()
+  public async getOrganizationSettingsById(organizationId: number): Promise<Result<any>> {
+    const fetchedOrganization = await this.get(organizationId);
+
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+      return Result.fail<number>(`Organization with id ${organizationId} does not exist.`);
+    }
+
+    return Result.ok(fetchedOrganization.getValue().settings);
+  }
+  @log()
+  @safeGuard()
+  @validate
+  public async updateOrganizationsSettingsnGeneralProperties(
+    payload: OrganizationGeneralSettingsRO,
+    OrganizationId: number,
+  ): Promise<Result<any>> {
+    const fetchedOrganization = await this.get(OrganizationId);
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+      return Result.fail<number>(`Organization with id ${OrganizationId} does not exist.`);
+    }
+    const organizationValue = fetchedOrganization.getValue();
+    const organization = this.wrapEntity(
+      organizationValue,
+      {
+        ...organizationValue,
+        ...payload,
+      },
+      false,
+    );
+    const updatedOrganizationResult = await this.update(organization);
+    if (updatedOrganizationResult.isFailure) {
+      return updatedOrganizationResult;
+    }
+
+    return Result.ok<number>(OrganizationId);
+  }
+  @log()
+  @safeGuard()
+  @validate
+  public async updateOrganizationsSettingsProperties(
+    payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
+    OrganizationId: number,
+  ): Promise<Result<any>> {
+    const fetchedOrganization = await this.get(OrganizationId);
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+      return Result.fail<number>(`Organization with id ${OrganizationId} does not exist.`);
+    }
+    const organizationValue = fetchedOrganization.getValue();
+
+    const organization = this.wrapEntity(
+      organizationValue,
+      {
+        ...organizationValue,
+        settings: { ...organizationValue.settings, ...payload },
+      },
+      false,
+    );
+    const updatedOrganizationResult = await this.update(organization);
+    if (updatedOrganizationResult.isFailure) {
+      return updatedOrganizationResult;
+    }
+
+    return Result.ok<number>(OrganizationId);
   }
 }

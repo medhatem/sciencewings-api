@@ -2,7 +2,16 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
-import { CreateOrganizationRO, UserInviteToOrgRO, ResourceRO, UserResendPassword } from './RequestObject';
+import {
+  CreateOrganizationRO,
+  UserInviteToOrgRO,
+  ResourceRO,
+  UserResendPassword,
+  OrganizationGeneralSettingsRO,
+  OrganizationReservationSettingsRO,
+  OrganizationInvoicesSettingsRO,
+  OrganizationAccessSettingsRO,
+} from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -21,6 +30,12 @@ import {
   UpdateResourceDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
+import {
+  GetOrganizationSettingsBodyDTO,
+  GetOrganizationSettingsDTO,
+  UpdateOrganizationSettingsBodyDTO,
+  UpdateOrganizationSettingsDTO,
+} from '../dtos/OrganizationSettingsDto';
 
 @provideSingleton()
 @Path('organization')
@@ -211,5 +226,136 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new ResourceDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+  }
+
+  //Organization settings routes
+
+  /**
+   * retrieve Organization settings route by organization id
+   *
+   * @param organizationId organization id
+   */
+  @GET
+  @Path('settings/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetOrganizationSettingsBodyDTO>(200, 'Organization Settings Retrived Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async getOgranizationSettings(
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<GetOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.getOrganizationSettingsById(organizationId);
+    if (result.isFailure) {
+      return new GetOrganizationSettingsDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new GetOrganizationSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
+  }
+  /* Update a organization settings, section general
+   *
+   * @param payload
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('settings/general/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization general settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateOrganizationsSettingsnGeneralProperties(
+    payload: OrganizationGeneralSettingsRO,
+    @PathParam('OrganizationId') OrganizationId: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationsSettingsnGeneralProperties(
+      payload,
+      OrganizationId,
+    );
+
+    if (result.isFailure) {
+      return new UpdateOrganizationSettingsDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+  /* Update a organization settings, section reservation
+   *
+   * @param payload
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('settings/reservation/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateOrganizationsSettingsnReservationProperties(
+    payload: OrganizationReservationSettingsRO,
+    @PathParam('OrganizationId') OrganizationId: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, OrganizationId);
+
+    if (result.isFailure) {
+      return new UpdateOrganizationSettingsDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+  /* Update a organization settings, section invoices
+   *
+   * @param payload
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('settings/invoices/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization invoices settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateOrganizationsSettingsnInvoicesProperties(
+    payload: OrganizationInvoicesSettingsRO,
+    @PathParam('OrganizationId') OrganizationId: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, OrganizationId);
+
+    if (result.isFailure) {
+      return new UpdateOrganizationSettingsDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+  /* Update a organization settings, section access
+   *
+   * @param payload
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('settings/access/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization access  settings updated Successfully')
+  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  public async updateOrganizationsSettingsnAccessProperties(
+    payload: OrganizationAccessSettingsRO,
+    @PathParam('OrganizationId') OrganizationId: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, OrganizationId);
+
+    if (result.isFailure) {
+      return new UpdateOrganizationSettingsDTO({
+        error: { statusCode: 500, errorMessage: result.error },
+      });
+    }
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }

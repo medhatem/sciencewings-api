@@ -174,6 +174,38 @@ export class ResourceEventRO {
 
 @JsonObject()
 @unique
+export class OrganizationGeneralSettingsRO {
+  @JsonProperty()
+  name?: string;
+  @JsonProperty()
+  phoneNumber?: number;
+  @JsonProperty()
+  emailAdress?: string;
+  @JsonProperty()
+  createdAt?: string;
+  @JsonProperty()
+  identificationNumber?: number;
+  @JsonProperty()
+  category?: string;
+  @JsonProperty()
+  activity?: string;
+  @JsonProperty()
+  direction?: number;
+  @JsonProperty()
+  manager?: number[];
+  @JsonProperty()
+  socialLinkedin?: string;
+  @JsonProperty()
+  socialTwitter?: string;
+  @JsonProperty()
+  socialFacebook?: string;
+  @JsonProperty()
+  website?: string;
+  @JsonProperty()
+  description?: string;
+}
+@JsonObject()
+@unique
 export class OrganizationReservationSettingsRO {
   @JsonProperty()
   approversCanEditReservations?: boolean;
