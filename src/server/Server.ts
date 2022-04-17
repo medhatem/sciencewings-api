@@ -18,7 +18,6 @@ import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
-import { DateUnit } from './modules/organizations/models/OrganizationSettings';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -40,7 +39,6 @@ export class Server {
   private expressCors: ExpressCors;
   private expressRouter: ExpressRouter;
   private serverHealthStatus = true;
-  organizationSettingsService: any;
   constructor(
     config: Configuration,
     app: express.Application = express(),
@@ -76,8 +74,6 @@ export class Server {
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
-    // handleRequests();
-    this.generateDeffaultOrganizationSettings();
   }
 
   /**
@@ -143,18 +139,5 @@ export class Server {
     } catch (error) {
       console.log('error connecting to database', error);
     }
-  }
-  /**
-   * Generate default resource settings
-   */
-  private async generateDeffaultOrganizationSettings(): Promise<void> {
-    await this.organizationSettingsService.create({
-      //Reservation Settings
-      emailAddressToReceiveReservationReplyMessages: [''],
-
-      //Invoices Settings
-      defaultInvoiceDueDateUnit: DateUnit.DAYS,
-      defaultInvoiceDueDate: 21,
-    });
   }
 }

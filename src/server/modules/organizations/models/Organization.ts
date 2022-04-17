@@ -17,8 +17,9 @@ import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLa
 import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
 import { Resource } from '@/modules/resources';
-import { Job, WorkLocation } from '@/modules/hr';
+import { Job } from '@/modules/hr/models/Job';
 import { OrganizationSettings } from './OrganizationSettings';
+import { WorkLocation } from '@/modules/hr/models/WorkLocation';
 
 export enum OrganizationType {
   PUBLIC = 'Public',

@@ -39,6 +39,7 @@ import { CreateResourceSchema, UpdateResourceSchema } from '@/modules/resources/
 import { Collection } from '@mikro-orm/core';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
 import { IResourceRateService } from '@/modules/resources';
+import { OrganizationSettings } from '../models';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 
@@ -567,26 +568,36 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return Result.ok<number>(id);
   }
 
-  //Organization settings
-
+  //Organization Settings Services
+  /* Get all the settings of an organization ,
+   *
+   * @param id of the requested organization
+   *
+   */
   @log()
   @safeGuard()
-  public async getOrganizationSettingsById(organizationId: number): Promise<Result<any>> {
+  public async getOrganizationSettingsById(organizationId: number): Promise<Result<OrganizationSettings>> {
     const fetchedOrganization = await this.get(organizationId);
 
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.fail<number>(`Organization with id ${organizationId} does not exist.`);
+      return Result.fail(`Organization with id ${organizationId} does not exist.`);
     }
 
     return Result.ok(fetchedOrganization.getValue().settings);
   }
+  /* Update the general settings of an organization ,
+   *
+   * @param payload
+   * @param id of the requested organization
+   *
+   */
   @log()
   @safeGuard()
   @validate
   public async updateOrganizationsSettingsnGeneralProperties(
     payload: OrganizationGeneralSettingsRO,
     OrganizationId: number,
-  ): Promise<Result<any>> {
+  ): Promise<Result<number>> {
     const fetchedOrganization = await this.get(OrganizationId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
       return Result.fail<number>(`Organization with id ${OrganizationId} does not exist.`);
@@ -607,13 +618,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     return Result.ok<number>(OrganizationId);
   }
+  /* Update the reservation, invoices or access settings of an organization ,
+   *
+   * @param payload
+   * @param id of the requested organization
+   *
+   */
   @log()
   @safeGuard()
   @validate
   public async updateOrganizationsSettingsProperties(
     payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
     OrganizationId: number,
-  ): Promise<Result<any>> {
+  ): Promise<Result<number>> {
     const fetchedOrganization = await this.get(OrganizationId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
       return Result.fail<number>(`Organization with id ${OrganizationId} does not exist.`);

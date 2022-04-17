@@ -1,18 +1,6 @@
 import Joi = require('joi');
-
-export enum OrganizationType {
-  PUBLIC = 'Public',
-  SERVICE = 'Service',
-  INSTITUT = 'Institut',
-}
-
-export enum DateUnit {
-  YEARS = 'Year',
-  MOUNTHS = 'Mounth',
-  DAYS = 'Day',
-  HOURS = 'Hour',
-  MINUTES = 'Minute',
-}
+import { OrganizationType } from '../models/Organization';
+import { DateUnit } from '../models/OrganizationSettings';
 
 export const CreateOrganizationSchema = Joi.object({
   name: Joi.string().required(),

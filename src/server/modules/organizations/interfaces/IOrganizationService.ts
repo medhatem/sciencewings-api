@@ -12,7 +12,7 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { Resource } from '@/modules/resources/models/Resource';
 import { Result } from '@/utils/Result';
 import { Collection } from '@mikro-orm/core';
-import { OrganizationSettings } from '../models';
+import { OrganizationSettings } from '../models/OrganizationSettings';
 
 export abstract class IOrganizationService extends IBaseService<any> {
   createOrganization: (payload: CreateOrganizationRO, userId: number) => Promise<Result<number>>;

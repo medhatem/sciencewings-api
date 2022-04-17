@@ -236,15 +236,13 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * @param organizationId organization id
    */
   @GET
-  @Path('settings/:organizationId')
+  @Path('settings/:id')
   @Security()
   @LoggerStorage()
   @Response<GetOrganizationSettingsBodyDTO>(200, 'Organization Settings Retrived Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
-  public async getOgranizationSettings(
-    @PathParam('organizationId') organizationId: number,
-  ): Promise<GetOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.getOrganizationSettingsById(organizationId);
+  public async getOgranizationSettings(@PathParam('id') id: number): Promise<GetOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.getOrganizationSettingsById(id);
     if (result.isFailure) {
       return new GetOrganizationSettingsDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
@@ -254,23 +252,20 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section general
    *
    * @param payload
-   * @param id
-   * id of the requested resource
+   * @param id of the requested resource
+   *
    */
   @PUT
-  @Path('settings/general/:organizationId')
+  @Path('settings/general/:id')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization general settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateOrganizationsSettingsnGeneralProperties(
     payload: OrganizationGeneralSettingsRO,
-    @PathParam('OrganizationId') OrganizationId: number,
+    @PathParam('id') id: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsnGeneralProperties(
-      payload,
-      OrganizationId,
-    );
+    const result = await this.OrganizationService.updateOrganizationsSettingsnGeneralProperties(payload, id);
 
     if (result.isFailure) {
       return new UpdateOrganizationSettingsDTO({
@@ -283,20 +278,20 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section reservation
    *
    * @param payload
-   * @param id
-   * id of the requested resource
+   * @param id of the requested resource
+   *
    */
   @PUT
-  @Path('settings/reservation/:organizationId')
+  @Path('settings/reservation/:id')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateOrganizationsSettingsnReservationProperties(
     payload: OrganizationReservationSettingsRO,
-    @PathParam('OrganizationId') OrganizationId: number,
+    @PathParam('id') id: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, OrganizationId);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
     if (result.isFailure) {
       return new UpdateOrganizationSettingsDTO({
@@ -309,20 +304,20 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section invoices
    *
    * @param payload
-   * @param id
-   * id of the requested resource
+   * @param id of the requested organization
+   *
    */
   @PUT
-  @Path('settings/invoices/:organizationId')
+  @Path('settings/invoices/:id')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization invoices settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateOrganizationsSettingsnInvoicesProperties(
     payload: OrganizationInvoicesSettingsRO,
-    @PathParam('OrganizationId') OrganizationId: number,
+    @PathParam('id') id: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, OrganizationId);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
     if (result.isFailure) {
       return new UpdateOrganizationSettingsDTO({
@@ -339,16 +334,16 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * id of the requested resource
    */
   @PUT
-  @Path('settings/access/:organizationId')
+  @Path('settings/access/:id')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization access  settings updated Successfully')
   @Response<BaseErrorDTO>(500, 'Internal Server Error')
   public async updateOrganizationsSettingsnAccessProperties(
     payload: OrganizationAccessSettingsRO,
-    @PathParam('OrganizationId') OrganizationId: number,
+    @PathParam('id') id: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, OrganizationId);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
     if (result.isFailure) {
       return new UpdateOrganizationSettingsDTO({

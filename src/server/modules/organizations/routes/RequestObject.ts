@@ -3,7 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
-import { DateUnit } from '../models';
+import { DateUnit } from '../models/OrganizationSettings';
 
 @JsonObject()
 @unique
