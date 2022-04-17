@@ -6,6 +6,14 @@ export enum OrganizationType {
   INSTITUT = 'Institut',
 }
 
+export enum DateUnit {
+  YEARS = 'Year',
+  MOUNTHS = 'Mounth',
+  DAYS = 'Day',
+  HOURS = 'Hour',
+  MINUTES = 'Minute',
+}
+
 export const CreateOrganizationSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().allow(''),
@@ -25,4 +33,33 @@ export const CreateOrganizationSchema = Joi.object({
   direction: Joi.number().required(),
   adminContact: Joi.number().required(),
   parentId: Joi.number().allow(null),
+});
+
+export const OrganizationReservationSettingsSchema = Joi.object({
+  approversCanEditReservations: Joi.boolean(),
+  requireReasonWhenEditingReservation: Joi.boolean(),
+  hideOrganizationCalendar: Joi.boolean(),
+  hideAccountNumberWhenMakingReservation: Joi.boolean(),
+  showResourceImagesInReservation: Joi.boolean(),
+  confirmationEmailWhenMakingReservation: Joi.string().allow(''),
+  attachedIcsCalendarFeeds: Joi.boolean(),
+  emailAddressToReceiveReservationReplyMessages: Joi.array(),
+});
+
+export const OrganizationInvoicesSettingsSchema = Joi.object({
+  membersCanEditBillingAddress: Joi.boolean(),
+  defaultInvoiceDueDateUnit: Joi.valid(...Object.values(DateUnit)),
+  defaultInvoiceDueDate: Joi.number(),
+  roundTaxOnPerItemBasisInsteadOfOnceOnSubtotal: Joi.boolean(),
+  lockInvoicedReservationsAndRequests: Joi.boolean(),
+});
+
+export const OrganizationAccessSettingsSchema = Joi.object({
+  anyMemberCanJoinYourOrganizationAndAccessResourceSchedules: Joi.boolean(),
+  memberShouldAccessByJoinCode: Joi.boolean(),
+  joinCode: Joi.string(),
+  yourOrganizationWillNeverAppearInSearchResults: Joi.boolean(),
+  notifyAdministratorsWhenMembersJoinOrganization: Joi.boolean(),
+  listResourceToNonMembers: Joi.boolean(),
+  messageSentToNewMembers: Joi.string(),
 });
