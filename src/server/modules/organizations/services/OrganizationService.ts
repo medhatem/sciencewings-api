@@ -575,6 +575,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   //Organization Settings Services
+
   /* Get all the settings of an organization ,
    *
    * @param id of the requested organization
@@ -586,7 +587,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const fetchedOrganization = await this.get(organizationId);
 
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.fail(`Organization with id ${organizationId} does not exist.`);
+      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
 
     return Result.ok(fetchedOrganization.getValue().settings);
@@ -606,7 +607,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   ): Promise<Result<number>> {
     const fetchedOrganization = await this.get(OrganizationId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.fail<number>(`Organization with id ${OrganizationId} does not exist.`);
+      return Result.notFound(`Organization with id ${OrganizationId} does not exist.`);
     }
     const organizationValue = fetchedOrganization.getValue();
     const organization = this.wrapEntity(
@@ -639,7 +640,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   ): Promise<Result<number>> {
     const fetchedOrganization = await this.get(OrganizationId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.fail<number>(`Organization with id ${OrganizationId} does not exist.`);
+      return Result.notFound(`Organization with id ${OrganizationId} does not exist.`);
     }
     const organizationValue = fetchedOrganization.getValue();
 

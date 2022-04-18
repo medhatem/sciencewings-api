@@ -29,7 +29,6 @@ import {
   UpdateResourceBodyDTO,
   UpdateResourceDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
-import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 import {
   GetOrganizationSettingsBodyDTO,
   GetOrganizationSettingsDTO,
@@ -242,11 +241,12 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<GetOrganizationSettingsBodyDTO>(200, 'Organization Settings Retrived Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async getOgranizationSettings(@PathParam('id') id: number): Promise<GetOrganizationSettingsDTO> {
     const result = await this.OrganizationService.getOrganizationSettingsById(id);
     if (result.isFailure) {
-      return new GetOrganizationSettingsDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     return new GetOrganizationSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
@@ -262,7 +262,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnGeneralProperties(
     payload: OrganizationGeneralSettingsRO,
     @PathParam('id') id: number,
@@ -270,9 +271,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.updateOrganizationsSettingsnGeneralProperties(payload, id);
 
     if (result.isFailure) {
-      return new UpdateOrganizationSettingsDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -288,7 +287,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnReservationProperties(
     payload: OrganizationReservationSettingsRO,
     @PathParam('id') id: number,
@@ -296,9 +296,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
     if (result.isFailure) {
-      return new UpdateOrganizationSettingsDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -314,7 +312,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization invoices settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnInvoicesProperties(
     payload: OrganizationInvoicesSettingsRO,
     @PathParam('id') id: number,
@@ -322,9 +321,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
     if (result.isFailure) {
-      return new UpdateOrganizationSettingsDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -340,7 +337,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization access  settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnAccessProperties(
     payload: OrganizationAccessSettingsRO,
     @PathParam('id') id: number,
@@ -348,9 +346,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
     if (result.isFailure) {
-      return new UpdateOrganizationSettingsDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
