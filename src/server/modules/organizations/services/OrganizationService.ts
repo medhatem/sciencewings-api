@@ -4,13 +4,12 @@ import { Member, MemberStatusType, MemberTypeEnum } from '@/modules/hr/models/Me
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
-  CreateOrganizationRO,
   OrganizationAccessSettingsRO,
   OrganizationGeneralSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationReservationSettingsRO,
-  ResourceRO,
 } from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, ResourceCalendarRO, ResourceRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -35,10 +34,14 @@ import { IResourceService } from '@/modules/resources/interfaces/IResourceServic
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
 import { Resource } from '@/modules/resources/models/Resource';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { CreateResourceSchema, UpdateResourceSchema } from '@/modules/resources/schemas/ResourceSchema';
+import {
+  CreateResourceSchema,
+  ResourceCalendarSchema,
+  UpdateResourceSchema,
+} from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
-import { IResourceRateService } from '@/modules/resources';
+import { IResourceRateService, ResourceCalendar } from '@/modules/resources';
 import { OrganizationSettings } from '../models';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
@@ -78,18 +81,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
     // check if the organization already exist
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
-      return Result.fail<number>(`Organization ${payload.name} already exist.`);
+      return Result.fail(`Organization ${payload.name} already exist.`);
     }
 
     if (payload.parentId) {
       const org = await this.dao.getByCriteria({ id: payload.parentId });
       if (!org) {
-        return Result.fail<number>('Organization parent does not exist');
+        return Result.notFound('Organization parent does not exist');
       }
     }
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
-      return Result.fail<number>(`User with id: ${userId} does not exist`);
+      return Result.notFound(`User with id: ${userId} does not exist`);
     }
     const user = fetchedUser.getValue();
 
@@ -97,7 +100,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.adminContact) {
       adminContact = await this.userService.get(payload.adminContact);
       if (adminContact.isFailure || adminContact.getValue() === null) {
-        return Result.fail<number>(`User with id: ${payload.adminContact} does not exist.`);
+        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
       }
     }
 
@@ -105,7 +108,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
       if (direction.isFailure || direction.getValue() === null) {
-        return Result.fail<number>(`User with id: ${payload.direction} does not exist.`);
+        return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
     }
 
@@ -128,7 +131,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const createdOrg = await this.create(wrappedOrganization);
 
     if (createdOrg.isFailure) {
-      return Result.fail<number>(createdOrg.error);
+      return createdOrg;
     }
 
     const organization = await createdOrg.getValue();
@@ -185,13 +188,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exist.');
+      return Result.fail('The user already exist.');
     }
 
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail<number>('The organization to add the user to does not exist.');
+      return Result.notFound('The organization to add the user to does not exist.');
     }
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
@@ -210,7 +213,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const savedUser = await this.userService.create(user);
     if (savedUser.isFailure) {
-      return Result.fail<number>(savedUser.error);
+      return savedUser;
     }
     // create member for the organization
     const createdMemberResult = await this.memberService.create({
@@ -220,7 +223,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     });
 
     if (createdMemberResult.isFailure) {
-      return Result.fail<number>(createdMemberResult.error);
+      return createdMemberResult;
     }
 
     existingOrg.members.add(createdMemberResult.getValue());
@@ -247,7 +250,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const existingUser = await this.userService.get(id);
 
     if (existingUser.isFailure || existingUser.getValue() === null) {
-      return Result.fail(`user with id ${id} not exist.`);
+      return Result.notFound(`user with id ${id} not exist.`);
     }
     const user = existingUser.getValue();
     const existingOrg = await this.dao.get(orgId);
@@ -257,7 +260,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!this.memberService.getByCriteria({ user: id }, FETCH_STRATEGY.SINGLE)) {
-      return Result.fail(`user with id ${id} is not member in organization.`);
+      return Result.notFound(`user with id ${id} is not member in organization.`);
     }
 
     if (user.status !== userStatus.INVITATION_PENDING) {
@@ -281,7 +284,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
-      return Result.fail(`Organization with id ${orgId} does not exist.`);
+      return Result.notFound(`Organization with id ${orgId} does not exist.`);
     }
 
     return Result.ok<any>(existingOrg.members);
@@ -308,19 +311,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
   private async checkEntitiesExistence(
     organization: number,
     resource: number,
-  ): Promise<Result<OrganizationAndResource | string>> {
+  ): Promise<Result<OrganizationAndResource>> {
     let currentOrg;
     let currentRes;
     if (organization) {
       currentOrg = await this.dao.get(organization);
       if (currentOrg === null) {
-        return Result.fail(`Organization with id ${organization} does not exist.`);
+        return Result.notFound(`Organization with id ${organization} does not exist.`);
       }
     }
     if (resource) {
       currentRes = await this.resourceService.get(resource);
       if (currentRes.isFailure || currentRes.getValue() === null) {
-        return Result.fail(`Resource with id ${resource} does not exist.`);
+        return Result.notFound(`Resource with id ${resource} does not exist.`);
       }
     }
     return Result.ok({ currentOrg, currentRes: currentRes.getValue() });
@@ -331,10 +334,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @validate
   public async addMemberToOrganization(
     @validateParam(CreateMemberSchema) payload: MemberRO,
-  ): Promise<Result<number | string>> {
+  ): Promise<Result<number | OrganizationAndResource>> {
     const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
     if (existence.isFailure) {
-      return Result.fail(existence.error);
+      return existence;
     }
     const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
 
@@ -402,7 +405,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const fetchedOrganization = await this.dao.get(organizationId);
     if (!fetchedOrganization) {
-      return Result.fail(`Organization with id ${organizationId} does not exist.`);
+      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     const resources = await this.resourceService.getByCriteria(
       {
@@ -422,7 +425,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.user) {
       const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
       if (fetchedUser.isFailure || !fetchedUser) {
-        return Result.fail<number>(`User with id ${payload.user} does not exist.`);
+        return Result.notFound(`User with id ${payload.user} does not exist.`);
       }
       user = fetchedUser.getValue();
     }
@@ -431,7 +434,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.organization) {
       const fetchedOrganization = await this.dao.get(payload.organization);
       if (!fetchedOrganization) {
-        return Result.fail<number>(`Organization with id ${payload.organization} does not exist.`);
+        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
       organization = fetchedOrganization;
     }
@@ -441,7 +444,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       for await (const { organization, user } of payload.managers) {
         const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
         if (fetcheManager.isFailure || !fetcheManager.getValue()) {
-          return Result.fail<number>(
+          return Result.notFound(
             `Manager with user id ${user} in organization with id ${organization} does not exist.`,
           );
         }
@@ -499,73 +502,76 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateResourceSchema) payload: ResourceRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResourceResult = await this.resourceService.get(resourceId);
-    if (fetchedResourceResult.isFailure || fetchedResourceResult.getValue() === null) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
-    }
-    const fetchedResource: Resource = fetchedResourceResult.getValue();
-
-    if (payload.managers) {
-      const managers: Member[] = [];
-      for await (const { organization, user } of payload.managers) {
-        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-        if (fetcheManager.isFailure || !fetcheManager.getValue()) {
-          return Result.fail<number>(
-            `Manager with user id ${user} in organization with id ${organization} does not exist.`,
-          );
-        }
-        managers.push(fetcheManager.getValue());
-      }
-
-      let existingManagers = fetchedResource.managers.getItems();
-
-      for (const manager of managers) {
-        if (
-          existingManagers.filter(
-            (eManager) => eManager.user.id === manager.user.id && eManager.organization.id === manager.organization.id,
-          ).length === 0
-        ) {
-          fetchedResource.managers.add(manager);
-          existingManagers = existingManagers.filter(
-            (eManager) => eManager.user.id !== manager.user.id && eManager.organization.id !== manager.organization.id,
-          );
-        }
-      }
-      for (const manager of existingManagers) {
-        fetchedResource.managers.remove(manager);
-      }
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    if (payload.tags) {
-      const existingTags = await fetchedResource.tags.init();
-      for (const tag of payload.tags) {
-        if (!tag.id) {
-          await this.resourceTagService.create({
-            title: tag.title,
-            resource: fetchedResource,
-          });
-          existingTags.remove((eTag) => eTag.title === tag.title);
-        }
+    let user = null;
+    if (payload.user) {
+      const fetchedUser = await this.userService.getUserByCriteria({ id: payload.user });
+      if (fetchedUser.isFailure || !fetchedUser) {
+        return Result.notFound(`User with id ${payload.user} does not exist.`);
       }
-      for (const tag of existingTags) {
-        await this.resourceTagService.remove(tag.id);
+      user = fetchedUser.getValue();
+    }
+
+    let organization = null;
+    if (payload.organization) {
+      const fetchedOrganization = await this.dao.get(payload.organization);
+      if (!fetchedOrganization) {
+        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+      }
+      organization = fetchedOrganization;
+    }
+
+    if (payload.calendar) {
+      delete payload.calendar;
+      const updatedResourceCalendar = await this.resourceCalendarService.update(payload.calendar);
+      if (updatedResourceCalendar.isFailure) {
+        return updatedResourceCalendar;
+      }
+      payload.calendar = updatedResourceCalendar.getValue();
+    }
+
+    const resource = this.wrapEntity(fetchedResource, {
+      ...fetchedResource,
+      ...payload,
+    });
+
+    const createdResource = await this.resourceService.update({ ...resource, user, organization });
+    if (createdResource.isFailure) {
+      return createdResource;
+    }
+    const id = createdResource.getValue().id;
+    return Result.ok<number>(id);
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async createResourceCalendar(
+    @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
+  ): Promise<Result<ResourceCalendar>> {
+    let organization = null;
+    if (payload.organization) {
+      organization = await this.dao.get(payload.organization);
+      if (!organization) {
+        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
     }
 
-    const resource = this.resourceService.wrapEntity(
-      fetchedResource,
+    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(
+      new ResourceCalendar(),
       {
         ...payload,
+        organization,
       },
       false,
     );
 
-    const updateResourceResult = await this.resourceService.update(resource);
-    if (updateResourceResult.isFailure) {
-      return Result.fail<number>(updateResourceResult.error);
-    }
-    const id = updateResourceResult.getValue().id;
-    return Result.ok<number>(id);
+    const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
+    return Result.ok<any>(createdResourceCalendar);
   }
 
   //Organization Settings Services

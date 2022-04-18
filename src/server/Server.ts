@@ -18,6 +18,7 @@ import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
+import { HttpError } from 'typescript-rest/dist/server/model/errors';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -99,6 +100,20 @@ export class Server {
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
     this.expressApp.use('/swagger', express.static(__dirname));
     RestServer.buildServices(this.expressApp);
+    this.expressApp.use((err: Error, req: any, res: any, next: any) => {
+      if (err instanceof HttpError) {
+        if (res.headersSent) {
+          // important to allow default error handler to close connection if headers already sent
+          return next(err);
+        }
+        console.error(err.stack);
+        res.set('Content-Type', 'application/json');
+        res.status(err.statusCode);
+        res.json({ error: err.message, statusCode: err.statusCode });
+      } else {
+        res.status(500).json({ error: err.message, statusCode: 500 });
+      }
+    });
   }
 
   private configureAuthenticator() {
