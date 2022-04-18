@@ -257,7 +257,7 @@ export class ResourceService extends BaseService<Resource> {
       resource,
     });
     if (createdResourceRateResult.isFailure) {
-      return Result.fail<number>(createdResourceRateResult.error);
+      return createdResourceRateResult;
     }
     const createdResourceRate = createdResourceRateResult.getValue();
     return Result.ok<number>(createdResourceRate.id);
@@ -288,7 +288,7 @@ export class ResourceService extends BaseService<Resource> {
 
     const updatedResourceRateResult = await this.resourceRateService.update(updatedResourceRate);
     if (updatedResourceRateResult.isFailure) {
-      return Result.fail<number>(updatedResourceRateResult.error);
+      return updatedResourceRateResult;
     }
     const id = updatedResourceRateResult.getValue().id;
     return Result.ok<number>(id);
