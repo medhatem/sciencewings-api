@@ -8,6 +8,9 @@ import { unique } from '@/decorators/unique';
 @unique
 export class ResourceManagerRO {
   @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
   organization: number;
 
   @JsonProperty()
@@ -90,6 +93,9 @@ export class UserResendPassword {
 @unique
 export class ResourceTagRO {
   @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
   title!: string;
 }
 
@@ -132,6 +138,9 @@ export class ResourceRO {
 
   @JsonProperty()
   resourceType!: string;
+
+  @JsonProperty()
+  resourceClass!: string;
 
   @JsonProperty()
   user?: number;

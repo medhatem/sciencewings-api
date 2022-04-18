@@ -75,7 +75,6 @@ export class Server {
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
-    // handleRequests();
   }
 
   /**

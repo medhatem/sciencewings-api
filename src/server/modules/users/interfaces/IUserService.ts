@@ -2,7 +2,7 @@ import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { KeycloakUserInfo } from '@/types/UserRequest';
 import { ResetPasswordRO } from '@/modules/users/routes/RequstObjects';
 import { Result } from '@/utils/Result';
-import { User } from '@/modules/users/models';
+import { User } from '@/modules/users/models/User';
 import { UserRO } from '@/modules/users/routes/RequstObjects';
 
 export abstract class IUserService extends IBaseService<any> {

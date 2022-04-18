@@ -1,5 +1,6 @@
 export * from '@/modules/users';
 export * from '@/modules/resources';
+export * from '@/modules/organizations';
 export * from '@/modules/hr';
 export * from '@/modules/base';
 export * from '@/modules/address';

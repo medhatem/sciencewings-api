@@ -1,11 +1,11 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Member } from '@/modules/hr';
+import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
 import { ResourceTag } from './ResourceTag';
+import { ResourceSettings } from './ResourceSettings';
 
 @provide()
 @Entity()
@@ -49,9 +49,15 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   resourceType!: string;
 
+  @Property()
+  resourceClass!: string;
+
   @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource, nullable: true })
   calendar: ResourceCalendar;
 
   @Property()
   timezone!: string;
+
+  @OneToOne({ entity: () => ResourceSettings, nullable: true })
+  settings: ResourceSettings;
 }

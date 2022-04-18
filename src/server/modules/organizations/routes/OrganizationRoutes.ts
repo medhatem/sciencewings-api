@@ -17,7 +17,7 @@ import {
   CreateResourceDTO,
   GetResourceBodyDTO,
   ResourceDTO,
-  UpdatedResourceBodyDTO,
+  UpdateResourceBodyDTO,
   UpdateResourceDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { HttpError, InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
@@ -150,7 +150,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Registers a new resource in the database
    *
    * @param payload
-   * Should container Resource data that include Resource data
+   * Should contain Resource data that include Resource data
    */
   @POST
   @Path('resources/create')
@@ -172,13 +172,15 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * Update a resource in the database
    *
    * @param payload
-   * Should container Resource data that include Resource data with its id
+   * Should contain Resource data that include Resource data with its id
+   * @param id
+   * id of the requested resource
    */
   @PUT
   @Path('resources/update/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdatedResourceBodyDTO>(204, 'Resource updated Successfully')
+  @Response<UpdateResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
@@ -209,6 +211,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       throw result.error;
     }
 
-    return new ResourceDTO({ body: { resources: result.getValue(), statusCode: 200 } });
+    return new ResourceDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
   }
 }

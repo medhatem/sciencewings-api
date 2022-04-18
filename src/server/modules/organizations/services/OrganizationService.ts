@@ -27,7 +27,6 @@ import { IResourceCalendarService } from '@/modules/resources/interfaces/IResour
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
 import { Resource } from '@/modules/resources/models/Resource';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import {
   CreateResourceSchema,
@@ -35,8 +34,11 @@ import {
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { Collection } from '@mikro-orm/core';
+import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
+import { IResourceRateService, ResourceCalendar } from '@/modules/resources';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
+
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
@@ -45,6 +47,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public labelService: IOrganizationLabelService,
     public memberService: IMemberService,
     public resourceService: IResourceService,
+    public resourceSettingsService: IResourceSettingsService,
+    public resourceRateService: IResourceRateService,
     public resourceCalendarService: IResourceCalendarService,
     public resourceTagService: IResourceTagService,
     public addressService: IAddressService,
@@ -440,30 +444,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
         managers.push(fetcheManager.getValue());
       }
     }
-
-    // const resource = this.resourceService.wrapEntity(
-    //   new Resource(),
-    //   {
-    //     name: payload.name,
-    //     description: payload.description,
-    //     active: payload.active,
-    //     resourceType: payload.resourceType,
-    //     timezone: payload.timezone,
-    //   },
-    //   true,
-    // );
-
-    // resource.organization = organization;
-    // resource.user = user;
+    const resourceSetting = await this.resourceSettingsService.create({});
+    if (resourceSetting.isFailure) {
+      return resourceSetting;
+    }
 
     const createdResourceResult = await this.resourceService.create({
       name: payload.name,
       description: payload.description,
       active: payload.active,
       resourceType: payload.resourceType,
+      resourceClass: payload.resourceClass,
       timezone: payload.timezone,
       organization,
       user,
+      settings: resourceSetting.getValue(),
     });
     if (createdResourceResult.isFailure) {
       return createdResourceResult;
