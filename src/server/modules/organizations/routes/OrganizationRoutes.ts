@@ -268,7 +268,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     payload: OrganizationGeneralSettingsRO,
     @PathParam('id') id: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsnGeneralProperties(payload, id);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
     if (result.isFailure) {
       throw result.error;

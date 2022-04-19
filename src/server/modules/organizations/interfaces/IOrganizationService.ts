@@ -25,12 +25,12 @@ export abstract class IOrganizationService extends IBaseService<any> {
   updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
   //organization settings
   getOrganizationSettingsById: (organizationId: number) => Promise<Result<OrganizationSettings>>;
-  updateOrganizationsSettingsnGeneralProperties: (
-    payload: OrganizationGeneralSettingsRO,
-    OrganizationId: number,
-  ) => Promise<Result<number>>;
   updateOrganizationsSettingsProperties: (
-    payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
+    payload:
+      | OrganizationReservationSettingsRO
+      | OrganizationInvoicesSettingsRO
+      | OrganizationAccessSettingsRO
+      | OrganizationGeneralSettingsRO,
     OrganizationId: number,
   ) => Promise<Result<number>>;
 }

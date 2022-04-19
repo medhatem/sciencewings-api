@@ -592,39 +592,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     return Result.ok(fetchedOrganization.getValue().settings);
   }
-  /* Update the general settings of an organization ,
-   *
-   * @param payload
-   * @param id of the requested organization
-   *
-   */
-  @log()
-  @safeGuard()
-  @validate
-  public async updateOrganizationsSettingsnGeneralProperties(
-    payload: OrganizationGeneralSettingsRO,
-    OrganizationId: number,
-  ): Promise<Result<number>> {
-    const fetchedOrganization = await this.get(OrganizationId);
-    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`Organization with id ${OrganizationId} does not exist.`);
-    }
-    const organizationValue = fetchedOrganization.getValue();
-    const organization = this.wrapEntity(
-      organizationValue,
-      {
-        ...organizationValue,
-        ...payload,
-      },
-      false,
-    );
-    const updatedOrganizationResult = await this.update(organization);
-    if (updatedOrganizationResult.isFailure) {
-      return updatedOrganizationResult;
-    }
 
-    return Result.ok<number>(OrganizationId);
-  }
   /* Update the reservation, invoices or access settings of an organization ,
    *
    * @param payload
@@ -635,7 +603,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   @validate
   public async updateOrganizationsSettingsProperties(
-    payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
+    payload:
+      | OrganizationReservationSettingsRO
+      | OrganizationInvoicesSettingsRO
+      | OrganizationAccessSettingsRO
+      | OrganizationGeneralSettingsRO,
     OrganizationId: number,
   ): Promise<Result<number>> {
     const fetchedOrganization = await this.get(OrganizationId);
@@ -644,11 +616,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const organizationValue = fetchedOrganization.getValue();
 
+    let setting;
+    setting = { settings: { ...organizationValue.settings, ...payload } };
+
+    if (payload instanceof OrganizationGeneralSettingsRO) {
+      setting = { ...payload };
+    }
     const organization = this.wrapEntity(
       organizationValue,
       {
         ...organizationValue,
-        settings: { ...organizationValue.settings, ...payload },
+        setting,
       },
       false,
     );

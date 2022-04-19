@@ -192,7 +192,7 @@ export class OrganizationGeneralSettingsRO {
   @JsonProperty()
   direction?: number;
   @JsonProperty()
-  manager?: number[];
+  admin_contact?: number;
   @JsonProperty()
   socialLinkedin?: string;
   @JsonProperty()
