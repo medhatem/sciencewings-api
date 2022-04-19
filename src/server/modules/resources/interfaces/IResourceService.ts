@@ -10,12 +10,13 @@ import {
   ResourceSettingsGeneralStatusRO,
   ResourceSettingsGeneralVisibilityRO,
 } from '@/modules/resources/routes/RequestObject';
+import { ResourceRO } from '@/modules/resources/routes/RequestObject';
+import { Resource } from '@/modules/resources/models/Resource';
 
 export abstract class IResourceService extends IBaseService<any> {
-  getResourceReservationGeneral: (resourceId: number) => Promise<Result<any>>;
-  getResourceReservationUnites: (resourceId: number) => Promise<Result<any>>;
-  getResourceReservationTimerRestriction: (resourceId: number) => Promise<Result<any>>;
-  getResourceReservationVisibility: (resourceId: number) => Promise<Result<any>>;
+  getResourcesOfAGivenOrganizationById: (organizationId: number) => Promise<Result<Resource[]>>;
+  createResource: (payload: ResourceRO) => Promise<Result<number>>;
+  updateResource: (payload: ResourceRO, resourceId: number) => Promise<Result<number>>;
 
   updateResourceReservationGeneral: (
     payload: ResourcesSettingsReservationGeneralRO,
