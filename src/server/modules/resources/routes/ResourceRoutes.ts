@@ -16,7 +16,6 @@ import {
   GetResourceSettingsBodyDTO,
   GetResourceSettingsDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
-import { BaseErrorDTO } from '@/modules/base/dtos/BaseDTO';
 import { Resource } from '@/modules/resources/models/Resource';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import {
@@ -26,6 +25,7 @@ import {
   ResourcesSettingsReservationUnitRO,
   ResourceReservationVisibilityRO,
 } from './RequestObject';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 
 @provideSingleton()
 @Path('resources')
@@ -51,16 +51,15 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResourcesSettingsReservationGeneral(
     payload: ResourcesSettingsReservationGeneralRO,
     @PathParam('resourceId') resourceId: number,
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationGeneral(payload, resourceId);
     if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -79,7 +78,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResourcesSettingsGeneralStatus(
     payload: ResourceSettingsGeneralStatusRO,
     @PathParam('resourceId') resourceId: number,
@@ -87,9 +87,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.updateResourcesSettingsGeneralStatus(payload, resourceId);
 
     if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -108,16 +106,15 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation unit settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResourcesSettingsReservationUnit(
     payload: ResourcesSettingsReservationUnitRO,
     @PathParam('resourceId') resourceId: number,
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationUnits(payload, resourceId);
     if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -135,7 +132,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResourcesSettingsGeneralVisibility(
     payload: ResourceSettingsGeneralVisibilityRO,
     @PathParam('resourceId') resourceId: number,
@@ -143,9 +141,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.updateResourcesSettingsGeneralVisibility(payload, resourceId);
 
     if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -163,7 +159,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('settings/reservation/rate/:resourceId')
   @Security()
   @Response<CreateResourceDTO>(201, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @LoggerStorage()
   public async createResourceRate(
     payload: ResourceRateRO,
@@ -172,7 +169,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.createResourceRate(payload, resourceId);
 
     if (result.isFailure) {
-      return new CreateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
@@ -190,7 +187,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('settings/reservation/rate/:resourceRateId')
   @Security()
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @LoggerStorage()
   public async updateResourceRate(
     payload: ResourceRateRO,
@@ -199,7 +197,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.updateResourceRate(payload, resourceRateId);
 
     if (result.isFailure) {
-      return new UpdateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -217,7 +215,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('settings/reservation/time_restriction/:resourceId')
   @Security()
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @LoggerStorage()
   public async updateResourceTimerRestriction(
     payload: ResourceTimerRestrictionRO,
@@ -226,7 +225,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.updateResourceReservationTimerRestriction(payload, resourceId);
 
     if (result.isFailure) {
-      return new UpdateResourceDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -244,7 +243,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('settings/reservation/visibility/:resourceId')
   @Security()
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   @LoggerStorage()
   public async updateResourceRestrictionVisibility(
     payload: ResourceReservationVisibilityRO,
@@ -253,9 +253,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.updateResourceReservationVisibility(payload, resourceId);
 
     if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -273,7 +271,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResourcesSettingsnGeneralProperties(
     payload: ResourceSettingsGeneralPropertiesRO,
     @PathParam('resourceId') resourceId: number,
@@ -281,9 +280,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.updateResourcesSettingsnGeneralProperties(payload, resourceId);
 
     if (result.isFailure) {
-      return new UpdateResourceDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
@@ -300,14 +297,13 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Security()
   @LoggerStorage()
   @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
-  @Response<BaseErrorDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async getResourceSettings(@PathParam('resourceId') resourceId: number): Promise<GetResourceSettingsDTO> {
     const result = await this.ResourceService.getResourceSettings(resourceId);
 
     if (result.isFailure) {
-      return new GetResourceSettingsDTO({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
     return new GetResourceSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
   }

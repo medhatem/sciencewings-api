@@ -50,7 +50,7 @@ export class ResourceService extends BaseService<Resource> {
     const fetchedResource = await this.get(resourceId);
 
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
     return Result.ok(fetchedResource.getValue().settings);
@@ -66,7 +66,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
@@ -96,7 +96,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
@@ -126,7 +126,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
@@ -153,7 +153,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
@@ -182,7 +182,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
@@ -218,7 +218,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
     const resourceValue = fetchedResource.getValue();
 
@@ -248,7 +248,7 @@ export class ResourceService extends BaseService<Resource> {
     let resource: Resource = null;
     const fetchedResource = await this.get(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
     resource = fetchedResource.getValue();
 
@@ -273,7 +273,7 @@ export class ResourceService extends BaseService<Resource> {
     let resourceRate: ResourceRate = null;
     const fetchedResourceRate = await this.resourceRateService.get(resourceRateId);
     if (fetchedResourceRate.isFailure || fetchedResourceRate.getValue() === null) {
-      return Result.fail<number>(`Resource Rate with id ${resourceRateId} does not exist.`);
+      return Result.notFound(`Resource Rate with id ${resourceRateId} does not exist.`);
     }
     resourceRate = fetchedResourceRate.getValue();
 
@@ -303,7 +303,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
     if (fetchedResource.isFailure || !fetchedResource.getValue()) {
-      return Result.fail<number>(`Resource with id ${resourceId} does not exist.`);
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
     const resourceValue = fetchedResource.getValue();
