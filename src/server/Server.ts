@@ -19,6 +19,8 @@ import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
 import { HttpError } from 'typescript-rest/dist/server/model/errors';
+import MemberEvent from '@/modules/hr/events/MemberEvent';
+import { EventEmitter } from 'stream';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -75,6 +77,10 @@ export class Server {
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
+
+    const eventEmitter = new EventEmitter();
+    eventEmitter.on('', () => console.log('catch all event triggered'));
+    new MemberEvent();
   }
 
   /**

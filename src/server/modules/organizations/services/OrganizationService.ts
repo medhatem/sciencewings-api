@@ -19,6 +19,7 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
+import { EventEmitter } from 'events';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -104,9 +105,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const organization = await createdOrg.getValue();
 
-    await organization.address.init();
-    await organization.phones.init();
-    await organization.members.init();
+    console.log('-----------------------EventEmitter-------------------------');
+    const eventEmitter = new EventEmitter();
+    eventEmitter.emit('create-member', { user, organization });
+    console.log('------------------------------------------------------------');
 
     await applyToAll(payload.addresses, async (address) => {
       await this.addressService.create({
@@ -130,10 +132,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
     });
 
     if (payload.labels?.length) {
-      this.labelService.createBulkLabel(payload.labels, organization);
+      await this.labelService.createBulkLabel(payload.labels, organization);
     }
 
-    await this.update(organization);
     return Result.ok<number>(organization.id);
   }
 

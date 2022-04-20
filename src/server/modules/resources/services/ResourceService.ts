@@ -53,7 +53,6 @@ export class ResourceService extends BaseService<Resource> {
     public dao: ResourceDao,
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
-    public resourceService: IResourceService,
     public resourceSettingsService: IResourceSettingsService,
     public resourceRateService: IResourceRateService,
     public resourceCalendarService: IResourceCalendarService,
