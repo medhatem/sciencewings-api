@@ -18,6 +18,8 @@ export function safeGuard<T>(
         }
         return originalFunction.apply(this, args);
       } catch (error) {
+        console.log('safeGuard', error);
+
         return Result.fail<T>(error.message);
       }
     };

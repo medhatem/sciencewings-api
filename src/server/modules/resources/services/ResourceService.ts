@@ -102,7 +102,7 @@ export class ResourceService extends BaseService<Resource> {
       if (!fetchedOrganization) {
         return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
-      organization = fetchedOrganization;
+      organization = fetchedOrganization.getValue();
     }
 
     const managers: Member[] = [];

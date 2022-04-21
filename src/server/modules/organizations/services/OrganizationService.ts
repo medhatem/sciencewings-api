@@ -19,7 +19,7 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
-import { EventEmitter } from 'events';
+import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -105,10 +105,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const organization = await createdOrg.getValue();
 
-    console.log('-----------------------EventEmitter-------------------------');
-    const eventEmitter = new EventEmitter();
-    eventEmitter.emit('create-member', { user, organization });
-    console.log('------------------------------------------------------------');
+    // eventEmitter.emit('create-member', { user, organization });
+    const memberEvent = new MemberEvent();
+    memberEvent.createMember(user, organization);
 
     await applyToAll(payload.addresses, async (address) => {
       await this.addressService.create({
