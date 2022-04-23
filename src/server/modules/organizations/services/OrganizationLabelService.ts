@@ -32,7 +32,6 @@ export class OrganisationLabelService extends BaseService<OrganizationLabel> imp
     const labels = payload.map((name: string) => {
       return { name, organization } as OrganizationLabel;
     });
-    console.log({ labels });
 
     this.dao.repository.persistAndFlush(labels);
     return Result.ok<number>(200);
