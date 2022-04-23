@@ -5,7 +5,6 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
   OrganizationAccessSettingsRO,
-  OrganizationGeneralSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationReservationSettingsRO,
 } from '@/modules/organizations/routes/RequestObject';
@@ -42,7 +41,8 @@ import {
 import { Collection } from '@mikro-orm/core';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
 import { IResourceRateService, ResourceCalendar } from '@/modules/resources';
-import { OrganizationSettings } from '../models';
+import { OrganizationSettings } from '../models/OrganizationSettings';
+import { IOrganizationSettingsService } from '../interfaces/IOrganizationSettingsService';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 
@@ -50,6 +50,7 @@ type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource 
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
+    public OrganizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public memberService: IMemberService,
@@ -601,13 +602,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
    */
   @log()
   @safeGuard()
-  @validate
   public async updateOrganizationsSettingsProperties(
-    payload:
-      | OrganizationReservationSettingsRO
-      | OrganizationInvoicesSettingsRO
-      | OrganizationAccessSettingsRO
-      | OrganizationGeneralSettingsRO,
+    payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
     OrganizationId: number,
   ): Promise<Result<number>> {
     const fetchedOrganization = await this.get(OrganizationId);
@@ -615,25 +611,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${OrganizationId} does not exist.`);
     }
     const organizationValue = fetchedOrganization.getValue();
-
-    let setting;
-    setting = { settings: { ...organizationValue.settings, ...payload } };
-
-    if (payload instanceof OrganizationGeneralSettingsRO) {
-      setting = { ...payload };
-    }
-    const organization = this.wrapEntity(
-      organizationValue,
+    organizationValue.settings.init();
+    const oldSetting = organizationValue.settings;
+    const newSettings = this.OrganizationSettingsService.wrapEntity(
+      oldSetting,
       {
-        ...organizationValue,
-        setting,
+        ...oldSetting,
+        ...payload,
       },
       false,
     );
-    const updatedOrganizationResult = await this.update(organization);
-    if (updatedOrganizationResult.isFailure) {
-      return updatedOrganizationResult;
-    }
+
+    organizationValue.settings.add(newSettings);
+
+    await this.OrganizationSettingsService.update(newSettings);
+    await this.update(organizationValue);
 
     return Result.ok<number>(OrganizationId);
   }

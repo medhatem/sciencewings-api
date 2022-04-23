@@ -60,7 +60,7 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   @Property({ nullable: true })
   memberShouldAccessByJoinCode: boolean;
   @Property({ nullable: true })
-  joinCode: '';
+  joinCode: string;
   @Property({ nullable: true })
   yourOrganizationWillNeverAppearInSearchResults: boolean;
   @Property({ nullable: true })

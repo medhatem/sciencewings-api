@@ -36,7 +36,7 @@ export const OrganizationReservationSettingsSchema = Joi.object({
 
 export const OrganizationInvoicesSettingsSchema = Joi.object({
   membersCanEditBillingAddress: Joi.boolean(),
-  defaultInvoiceDueDateUnit: Joi.valid(...Object.values(DateUnit)),
+  defaultInvoiceDueDateUnit: Joi.string().valid(...Object.values(DateUnit)),
   defaultInvoiceDueDate: Joi.number(),
   roundTaxOnPerItemBasisInsteadOfOnceOnSubtotal: Joi.boolean(),
   lockInvoicedReservationsAndRequests: Joi.boolean(),

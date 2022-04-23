@@ -1,7 +1,6 @@
 import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
-  OrganizationGeneralSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationReservationSettingsRO,
   ResourceRO,
@@ -26,11 +25,7 @@ export abstract class IOrganizationService extends IBaseService<any> {
   //organization settings
   getOrganizationSettingsById: (organizationId: number) => Promise<Result<OrganizationSettings>>;
   updateOrganizationsSettingsProperties: (
-    payload:
-      | OrganizationReservationSettingsRO
-      | OrganizationInvoicesSettingsRO
-      | OrganizationAccessSettingsRO
-      | OrganizationGeneralSettingsRO,
+    payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
     OrganizationId: number,
   ) => Promise<Result<number>>;
 }

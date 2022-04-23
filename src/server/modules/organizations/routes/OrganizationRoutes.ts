@@ -7,7 +7,6 @@ import {
   UserInviteToOrgRO,
   ResourceRO,
   UserResendPassword,
-  OrganizationGeneralSettingsRO,
   OrganizationReservationSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationAccessSettingsRO,
@@ -232,7 +231,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   //Organization settings routes
 
   /**
-   * retrieve Organization settings route by organization id
+   * retrieve Organization settings by organization id
    *
    * @param organizationId organization id
    */
@@ -251,31 +250,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new GetOrganizationSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
   }
-  /* Update a organization settings, section general
-   *
-   * @param payload
-   * @param id of the requested resource
-   *
-   */
-  @PUT
-  @Path('settings/general/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization general settings updated Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateOrganizationsSettingsnGeneralProperties(
-    payload: OrganizationGeneralSettingsRO,
-    @PathParam('id') id: number,
-  ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
   /* Update a organization settings, section reservation
    *
    * @param payload
