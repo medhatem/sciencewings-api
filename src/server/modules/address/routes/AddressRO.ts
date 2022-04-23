@@ -31,3 +31,39 @@ export class AddressRO {
   @JsonProperty()
   organization?: number;
 }
+@JsonObject()
+export class UpdateAddressRO {
+  @JsonProperty()
+  id!: number;
+
+  @JsonProperty()
+  country?: string;
+
+  @JsonProperty()
+  province?: string;
+
+  @JsonProperty()
+  code?: string;
+
+  @JsonProperty()
+  type?: AddressType;
+
+  @JsonProperty()
+  city?: string;
+
+  @JsonProperty()
+  street?: string;
+
+  @JsonProperty()
+  apartment?: string;
+
+  @JsonProperty()
+  user?: number;
+
+  @JsonProperty()
+  organization?: number;
+}
+export class DeletedAddressRO {
+  @JsonProperty()
+  id!: number;
+}

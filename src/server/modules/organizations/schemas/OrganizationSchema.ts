@@ -26,3 +26,21 @@ export const CreateOrganizationSchema = Joi.object({
   adminContact: Joi.number().required(),
   parentId: Joi.number().allow(null),
 });
+export const UpdateOrganizationSchema = Joi.object({
+  name: Joi.string(),
+  description: Joi.string().allow(''),
+  email: Joi.string().email(),
+  labels: Joi.array(),
+  type: Joi.string().valid(...Object.values(OrganizationType)),
+  socialFacebook: Joi.string().allow(''),
+  socialInstagram: Joi.string().allow(''),
+  socialYoutube: Joi.string().allow(''),
+  socialGithub: Joi.string().allow(''),
+  socialTwitter: Joi.string().allow(''),
+  socialLinkedin: Joi.string().allow(''),
+  members: Joi.array(),
+  social: Joi.array(),
+  direction: Joi.number(),
+  adminContact: Joi.number(),
+  parentId: Joi.number().allow(null),
+});

@@ -32,13 +32,14 @@ export class CreateOrganizationRO {
   @JsonProperty({
     type: PhoneRO,
   })
-  phones: Array<PhoneRO>;
-
+  phones?: Array<PhoneRO>;
   @JsonProperty()
   type: string;
 
-  @JsonProperty()
-  addresses: Array<AddressRO>;
+  @JsonProperty({
+    type: AddressRO,
+  })
+  addresses?: Array<AddressRO>;
 
   @JsonProperty()
   labels: Array<string>;
@@ -67,6 +68,47 @@ export class CreateOrganizationRO {
 
   @JsonProperty()
   parentId?: string;
+}
+
+@JsonObject()
+@unique
+export class UpdateOrganizationRO {
+  @JsonProperty()
+  name?: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  email?: string;
+
+  @JsonProperty()
+  type?: string;
+
+  @JsonProperty()
+  labels?: Array<string>;
+
+  @JsonProperty()
+  direction?: number;
+
+  @JsonProperty()
+  socialFacebook?: string;
+  @JsonProperty()
+  socialTwitter?: string;
+  @JsonProperty()
+  socialGithub?: string;
+  @JsonProperty()
+  socialLinkedin?: string;
+  @JsonProperty()
+  socialYoutube?: string;
+  @JsonProperty()
+  socialInstagram?: string;
+
+  @JsonProperty()
+  admin_contact?: number;
+
+  /*  @JsonProperty()
+  parent?: number;*/
 }
 
 @JsonObject()
