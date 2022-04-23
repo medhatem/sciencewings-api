@@ -78,9 +78,6 @@ export class Server {
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
-
-    // const eventEmitter = new EventEmitter();
-    // eventEmitter.on('', () => console.log('catch all event triggered'));
     new MemberEvent();
   }
 
