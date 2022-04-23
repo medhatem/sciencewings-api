@@ -622,8 +622,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       false,
     );
 
-    organizationValue.settings.add(newSettings);
-
     await this.OrganizationSettingsService.update(newSettings);
     await this.update(organizationValue);
 

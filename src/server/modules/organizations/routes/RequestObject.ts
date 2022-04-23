@@ -68,9 +68,6 @@ export class CreateOrganizationRO {
 
   @JsonProperty()
   parentId?: string;
-
-  @JsonProperty()
-  settings?: string;
 }
 
 @JsonObject()
