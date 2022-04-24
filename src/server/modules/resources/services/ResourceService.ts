@@ -163,7 +163,7 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(UpdateResourceSchema) payload: ResourceRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.organizationService.get(resourceId);
+    const fetchedResource = await this.get(resourceId);
     if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
@@ -174,15 +174,17 @@ export class ResourceService extends BaseService<Resource> {
       if (!fetchedOrganization) {
         return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
-      organization = fetchedOrganization;
+      organization = fetchedOrganization.getValue();
     }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
+    const fetchedResourceValue = fetchedResource.getValue();
+    const resource = this.wrapEntity(fetchedResourceValue, {
+      ...fetchedResourceValue,
       ...payload,
+      organization,
     });
 
-    const createdResource = await this.dao.update({ ...resource, organization });
+    const createdResource = await this.dao.update(resource);
 
     const id = createdResource.id;
     return Result.ok<number>(id);
@@ -407,6 +409,24 @@ export class ResourceService extends BaseService<Resource> {
       return updatedResourceResult;
     }
     return Result.ok<number>(updatedResourceResult.getValue().id);
+  }
+
+  @log()
+  @safeGuard()
+  public async getResourceRate(resourceId: number): Promise<Result<any>> {
+    let resource: Resource = null;
+    const fetchedResource = await this.get(resourceId);
+    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+    }
+    resource = fetchedResource.getValue();
+
+    const getResourceRateResult = await this.resourceRateService.getByCriteria({ resource }, FETCH_STRATEGY.ALL);
+    if (getResourceRateResult.isFailure) {
+      return getResourceRateResult;
+    }
+    const getResourceRate = getResourceRateResult.getValue();
+    return Result.ok<any>(getResourceRate);
   }
 
   @log()

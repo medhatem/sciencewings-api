@@ -12,6 +12,7 @@ import {
 } from '@/modules/resources/routes/RequestObject';
 import { ResourceRO } from '@/modules/resources/routes/RequestObject';
 import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceRate } from '@/modules/resources/models/ResourceRate';
 
 export abstract class IResourceService extends IBaseService<any> {
   getResourcesOfAGivenOrganizationById: (organizationId: number) => Promise<Result<Resource[]>>;
@@ -27,6 +28,8 @@ export abstract class IResourceService extends IBaseService<any> {
     payload: ResourcesSettingsReservationUnitRO,
     resourceId: number,
   ) => Promise<Result<number>>;
+
+  getResourceRate: (resourceId: number) => Promise<Result<ResourceRate>>;
 
   createResourceRate: (payload: ResourceRateRO, resourceId: number) => Promise<Result<number>>;
 

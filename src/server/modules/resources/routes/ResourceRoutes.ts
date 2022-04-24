@@ -29,6 +29,7 @@ import {
   ResourceReservationVisibilityRO,
 } from './RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dtos/ResourceRateDTO';
 
 @provideSingleton()
 @Path('resources')
@@ -216,6 +217,29 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * get resource reservation rate
+   *
+   * @param resourceId
+   * Requested resource id
+   */
+  @GET
+  @Path('settings/reservation/rate/:resourceId')
+  @Security()
+  @Response<ResourceRateBodyDTO>(201, 'Resource created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  @LoggerStorage()
+  public async getResourceRate(@PathParam('resourceId') resourceId: number): Promise<GetResourceRateDTO> {
+    const result = await this.ResourceService.getResourceRate(resourceId);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new GetResourceRateDTO({ body: { data: result.getValue(), statusCode: 201 } });
   }
 
   /**
