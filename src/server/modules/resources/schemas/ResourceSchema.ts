@@ -65,7 +65,7 @@ export const ResourceReservationUnitSchema = Joi.object({
   unites: Joi.number(),
 });
 
-export const ResourceReservationVisivilitySchema = Joi.object({
+export const ResourceReservationVisibilitySchema = Joi.object({
   isReservationDetailsVisibilityToNonModerators: Joi.boolean().required(),
 });
 

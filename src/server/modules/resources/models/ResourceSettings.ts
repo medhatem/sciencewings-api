@@ -56,8 +56,8 @@ export class ResourceSettings extends BaseModel<ResourceSettings> {
   // Group
 
   // visibility
-  @Property({ type: StringType })
-  isReservationDetailsVisibilityToNonModerators = '';
+  @Property({ type: BooleanType })
+  isReservationDetailsVisibilityToNonModerators = false;
 
   @Property({ type: StringType })
   statusType = '';

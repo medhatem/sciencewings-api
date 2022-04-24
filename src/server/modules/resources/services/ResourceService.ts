@@ -17,6 +17,7 @@ import {
   ResourceCalendarSchema,
   ResourceReservationGeneralSchema,
   ResourceReservationUnitSchema,
+  ResourceReservationVisibilitySchema,
   UpdateResourceSchema,
 } from '@/modules/resources/schemas/ResourceSchema';
 import { CreateResourceRateSchema, UpdateResourceRateSchema } from '@/modules/resources/schemas/ResourceRateSchema';
@@ -350,7 +351,7 @@ export class ResourceService extends BaseService<Resource> {
   @safeGuard()
   @validate
   public async updateResourceReservationVisibility(
-    @validateParam(ResourceReservationUnitSchema) payload: ResourceReservationVisibilityRO,
+    @validateParam(ResourceReservationVisibilitySchema) payload: ResourceReservationVisibilityRO,
     resourceId: number,
   ): Promise<Result<number>> {
     const fetchedResource = await this.get(resourceId);
