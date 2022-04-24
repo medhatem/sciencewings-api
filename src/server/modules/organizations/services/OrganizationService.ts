@@ -105,7 +105,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const organization = await createdOrg.getValue();
 
-    // eventEmitter.emit('create-member', { user, organization });
     const memberEvent = new MemberEvent();
     memberEvent.createMember(user, organization);
 

@@ -177,15 +177,6 @@ export class ResourceService extends BaseService<Resource> {
       organization = fetchedOrganization;
     }
 
-    if (payload.calendar) {
-      delete payload.calendar;
-      const updatedResourceCalendar = await this.resourceCalendarService.update(payload.calendar);
-      if (updatedResourceCalendar.isFailure) {
-        return updatedResourceCalendar;
-      }
-      payload.calendar = updatedResourceCalendar.getValue();
-    }
-
     const resource = this.wrapEntity(fetchedResource, {
       ...fetchedResource,
       ...payload,

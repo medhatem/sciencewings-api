@@ -23,7 +23,6 @@ const ResourceSchema = Joi.object({
   timezone: Joi.string(),
   tags: Joi.array(),
   managers: Joi.array(),
-  calendar: Joi.array(),
   // time restriction
   isEditingWindowForUsers: Joi.boolean(),
   isRestrictCreatingNewReservationBeforeTime: Joi.boolean(),
