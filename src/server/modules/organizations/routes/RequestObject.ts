@@ -105,10 +105,10 @@ export class UpdateOrganizationRO {
   socialInstagram?: string;
 
   @JsonProperty()
-  admin_contact?: number;
+  adminContact?: number;
 
-  /*  @JsonProperty()
-  parent?: number;*/
+  @JsonProperty()
+  parent?: number;
 }
 
 @JsonObject()

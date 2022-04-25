@@ -41,13 +41,10 @@ import {
 import { Collection } from '@mikro-orm/core';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
 import { IResourceRateService, ResourceCalendar } from '@/modules/resources';
-import { createOrganizationPhoneRO, DeletedPhoneRO, PhoneRO } from '@/modules/phones/routes/PhoneRO';
-import { CreateOrganizationPhoneSchema, UpdatePhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
-import { AddressRO, DeletedAddressRO, UpdateAddressRO } from '@/modules/address/routes/AddressRO';
-import {
-  CreateOrganizationAddressSchema,
-  UpdateOrganizationAddressSchema,
-} from '@/modules/address/schemas/AddressSchema';
+import { createPhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 
 type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
 
@@ -88,12 +85,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
     }
-
+    let parent = null;
     if (payload.parentId) {
       const org = await this.dao.getByCriteria({ id: payload.parentId });
       if (!org) {
-        return Result.notFound('Organization parent does not exist');
+        return Result.notFound(`Organization parent id ${payload.parentId} does not exist`);
       }
+      parent = org;
     }
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
@@ -129,6 +127,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
       owner: user,
+      parent,
     });
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();
@@ -186,7 +185,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return Result.ok<number>(organization.id);
   }
 
-  //Update General properties of organization
+  //Update General(unit) properties of organization like name description
   @log()
   @safeGuard()
   @validate
@@ -199,14 +198,39 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`organization with id ${orgId} does not exist.`);
     }
 
+    let direction;
+    if (payload.direction) {
+      direction = await this.userService.get(payload.direction);
+      if (direction.isFailure || direction.getValue() === null) {
+        return Result.notFound(`User with id: ${payload.direction} does not exist.`);
+      }
+    }
+
+    let adminContact;
+    if (payload.adminContact) {
+      adminContact = await this.userService.get(payload.adminContact);
+      if (adminContact.isFailure || adminContact.getValue() === null) {
+        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
+      }
+    }
+
+    let parent;
+    if (payload.parent) {
+      parent = await this.userService.get(payload.parent);
+      if (parent.isFailure || parent.getValue() === null) {
+        return Result.notFound(`User with id: ${payload.parent} does not exist.`);
+      }
+    }
     const organization = this.wrapEntity(fetchedorganization, {
       ...fetchedorganization,
       ...payload,
+      direction,
+      admin_contact: adminContact,
+      parent,
     });
 
-    const updatedOrganization = await this.dao.update(organization);
-    const id = updatedOrganization.id;
-    return Result.ok<number>(id);
+    await this.dao.update(organization);
+    return Result.ok<number>(orgId);
   }
 
   //Organization Phones Services
@@ -215,8 +239,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   @validate
-  public async createOrganizationPhone(
-    @validateParam(CreateOrganizationPhoneSchema) payload: createOrganizationPhoneRO,
+  public async addPhoneToOrganization(
+    @validateParam(CreateOrganizationPhoneSchema) payload: createPhoneRO,
     orgId: number,
   ): Promise<Result<number>> {
     const fetchedorganization = await this.dao.get(orgId);
@@ -229,69 +253,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       phoneNumber: payload.phoneNumber,
       Organization: fetchedorganization,
     });
+
+    console.log(newPhone);
     if (newPhone.isFailure) {
       return Result.fail(`fail to create new phone.`);
     }
 
-    fetchedorganization.phones.add(newPhone.getValue());
-
-    await this.dao.update(fetchedorganization);
     const id = newPhone.getValue().id;
-    return Result.ok<number>(id);
-  }
-  //Update organization phone
-  @log()
-  @safeGuard()
-  @validate
-  public async updateOrganizationPhone(
-    @validateParam(UpdatePhoneSchema) payload: PhoneRO,
-    orgId: number,
-  ): Promise<Result<number>> {
-    const fetchedorganization = await this.dao.get(orgId);
-    if (!fetchedorganization) {
-      return Result.notFound(`organization with id ${orgId} does not exist.`);
-    }
-
-    const fetchedphone = await this.phoneService.get(payload.id);
-    if (fetchedphone.isFailure || !fetchedphone.getValue()) {
-      return Result.fail(`can not update the phone with id ${payload.id}.`);
-    }
-
-    const oldPhone = fetchedphone.getValue();
-
-    const newPhone = this.phoneService.wrapEntity(
-      oldPhone,
-      {
-        ...oldPhone,
-        ...payload,
-      },
-      false,
-    );
-    fetchedorganization.phones.add(newPhone);
-
-    await this.phoneService.update(newPhone);
-    await this.update(fetchedorganization);
-
-    const id = newPhone.id;
-
-    return Result.ok<number>(id);
-  }
-
-  //Delete Organization Phone
-  @log()
-  @safeGuard()
-  public async removeOrganizationPhone(payload: DeletedPhoneRO, orgId: number): Promise<Result<number>> {
-    const fetchedorganization = await this.dao.get(orgId);
-    if (!fetchedorganization) {
-      return Result.notFound(`organization with id ${orgId} does not exist.`);
-    }
-    const removedPhone = await this.phoneService.remove(payload.id);
-    if (removedPhone.isFailure) {
-      return Result.fail(`phone with id ${orgId} can not be removed.`);
-    }
-
-    await this.dao.update(fetchedorganization);
-    const id = removedPhone.getValue();
     return Result.ok<number>(id);
   }
 
@@ -301,7 +269,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   @validate
-  public async createOrganizationAdress(
+  public async addAddressToOrganization(
     @validateParam(CreateOrganizationAddressSchema) payload: AddressRO,
     orgId: number,
   ): Promise<Result<number>> {
@@ -327,62 +295,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     await this.dao.update(fetchedorganization);
     const id = newAddress.getValue().id;
-    return Result.ok<number>(id);
-  }
-
-  //Update organization address
-  @log()
-  @safeGuard()
-  @validate
-  public async updateOrganizationAddress(
-    @validateParam(UpdateOrganizationAddressSchema) payload: UpdateAddressRO,
-    orgId: number,
-  ): Promise<Result<number>> {
-    const fetchedorganization = await this.dao.get(orgId);
-    if (!fetchedorganization) {
-      return Result.notFound(`organization with id ${orgId} does not exist.`);
-    }
-
-    const fetchedAddress = await this.addressService.get(payload.id);
-    if (fetchedAddress.isFailure) {
-      return Result.notFound(`address with id ${payload.id} does not exist.`);
-    }
-
-    const oldAddress = fetchedAddress.getValue();
-
-    const newAddress = this.addressService.wrapEntity(
-      oldAddress,
-      {
-        ...oldAddress,
-        ...payload,
-      },
-      false,
-    );
-    fetchedorganization.address.add(newAddress);
-
-    await this.addressService.update(newAddress);
-    await this.update(fetchedorganization);
-
-    const id = newAddress.id;
-
-    return Result.ok<number>(id);
-  }
-
-  //Delete Organization Address
-  @log()
-  @safeGuard()
-  public async removeOrganizationAddress(payload: DeletedAddressRO, orgId: number): Promise<Result<number>> {
-    const fetchedorganization = await this.dao.get(orgId);
-    if (!fetchedorganization) {
-      return Result.notFound(`organization with id ${orgId} does not exist.`);
-    }
-    const removedAddress = await this.addressService.remove(payload.id);
-    if (removedAddress.isFailure) {
-      return Result.fail(`Address with id ${orgId} can not be removed.`);
-    }
-
-    await this.dao.update(fetchedorganization);
-    const id = removedAddress.getValue();
     return Result.ok<number>(id);
   }
 

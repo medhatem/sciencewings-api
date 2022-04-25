@@ -1,7 +1,7 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 
 @JsonObject()
 @unique
@@ -39,10 +39,13 @@ export class AddressBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class AddressOrgDTO extends BaseRequestDTO {
+export class AddressBaseDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: AddressBodyDTO;
-
+}
+@JsonObject()
+@unique
+export class UpdatedAddressDTO extends BaseRequestDTO {
   @JsonProperty()
-  public error?: BaseErrorDTO;
+  public body?: AddressBodyDTO;
 }

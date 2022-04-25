@@ -48,9 +48,43 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   @safeGuard()
+  public async updateRoute(id: number, payload: any): Promise<Result<any>> {
+    const currentEntity = await this.dao.get(id);
+    if (currentEntity === null) {
+      if (!currentEntity) {
+        return Result.notFound(`Entity with id ${id} does not exist.`);
+      }
+    }
+
+    const entity = this.wrapEntity(currentEntity, {
+      ...currentEntity,
+      ...payload,
+    });
+
+    const result = await this.dao.update(entity);
+    if (!result) {
+      return Result.fail(`Entity with id ${id} can not be updated.`);
+    }
+    return Result.ok<any>(result);
+  }
+
+  @log()
+  @safeGuard()
   public async remove(id: number): Promise<Result<number>> {
     const entity = this.wrapEntity(this.dao.model, { id });
     return Result.ok<any>(await this.dao.remove(entity));
+  }
+
+  @log()
+  @safeGuard()
+  public async removeRoute(id: number): Promise<Result<number>> {
+    const currentEntity = await this.dao.get(id);
+    if (currentEntity === null) {
+      return Result.notFound(`Entity with id ${id} does not exist.`);
+    }
+    const result = await this.dao.remove(currentEntity);
+
+    return Result.ok<any>(result);
   }
 
   @log()

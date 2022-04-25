@@ -6,9 +6,6 @@ import { unique } from '@/decorators/unique';
 @unique
 export class PhoneRO {
   @JsonProperty()
-  id?: number;
-
-  @JsonProperty()
   phoneLabel: string;
 
   @JsonProperty()
@@ -29,7 +26,7 @@ export class PhoneRO {
 
 @JsonObject()
 @unique
-export class createOrganizationPhoneRO {
+export class createPhoneRO {
   @JsonProperty()
   phoneLabel!: string;
 
@@ -38,8 +35,4 @@ export class createOrganizationPhoneRO {
 
   @JsonProperty()
   phoneNumber!: string;
-}
-export class DeletedPhoneRO {
-  @JsonProperty()
-  id!: number;
 }

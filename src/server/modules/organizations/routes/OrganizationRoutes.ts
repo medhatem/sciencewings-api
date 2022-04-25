@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE } from 'typescript-rest';
+import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
 import {
   CreateOrganizationRO,
   UserInviteToOrgRO,
@@ -28,9 +28,9 @@ import {
 } from '@/modules/resources/dtos/ResourceDTO';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
-import { createOrganizationPhoneRO, DeletedPhoneRO, PhoneRO } from '@/modules/phones/routes';
-import { AddressBodyDTO, AddressOrgDTO } from '@/modules/address/dtos/AddressDTO';
-import { AddressRO, DeletedAddressRO, UpdateAddressRO } from '@/modules/address/routes/AddressRO';
+import { createPhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 
 @provideSingleton()
 @Path('organization')
@@ -105,34 +105,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<PhoneBaseBodyDTO>(204, 'Organization phone created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async CreateOrganizationPhone(
-    @PathParam('id') id: number,
-    payload: createOrganizationPhoneRO,
-  ): Promise<PhoneDTO> {
-    const result = await this.OrganizationService.createOrganizationPhone(payload, id);
-
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new PhoneDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-  /**
-   * Update an organization phone in the database
-   *
-   * @param payload
-   * Should contain organization phone
-   * @param id
-   * id of the updated organization
-   */
-  @PUT
-  @Path('phone/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<PhoneBaseBodyDTO>(204, 'Organization phone updated Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async UpdateOrganizationPhone(@PathParam('id') id: number, payload: PhoneRO): Promise<PhoneDTO> {
-    const result = await this.OrganizationService.updateOrganizationPhone(payload, id);
+  public async CreateOrganizationPhone(@PathParam('id') id: number, payload: createPhoneRO): Promise<PhoneDTO> {
+    const result = await this.OrganizationService.addPhoneToOrganization(payload, id);
 
     if (result.isFailure) {
       throw result.error;
@@ -140,29 +114,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     return new PhoneDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
-  /**
-   * remove an organization phone in the database
-   *
-   * @param phoneId
-   * Should contain the id of phone we need to delete
-   * @param id
-   * id of the organization
-   */
-  @DELETE
-  @Path('phone/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<PhoneBaseBodyDTO>(204, 'Organization phone removed Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async RemoveOrganizationPhone(@PathParam('id') id: number, payload: DeletedPhoneRO): Promise<PhoneDTO> {
-    const result = await this.OrganizationService.removeOrganizationPhone(payload, id);
-
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new PhoneDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
   //Organization Addresses Routes
   /**
    * create a new organization address in the database
@@ -179,65 +130,13 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<AddressBodyDTO>(204, 'Organization address created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async CreateOrganizationAdress(@PathParam('id') id: number, payload: AddressRO): Promise<AddressOrgDTO> {
-    const result = await this.OrganizationService.createOrganizationAdress(payload, id);
+  public async CreateOrganizationAdress(@PathParam('id') id: number, payload: AddressRO): Promise<AddressBaseDTO> {
+    const result = await this.OrganizationService.addAddressToOrganization(payload, id);
 
     if (result.isFailure) {
       throw result.error;
     }
-    return new AddressOrgDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-  /**
-   * Update an organization address in the database
-   *
-   * @param payload
-   * Should contain organization address
-   * @param id
-   * id of the updated organization
-   */
-  @PUT
-  @Path('address/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<AddressBodyDTO>(204, 'Organization address updated Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async UpdateOrganizationAddress(
-    @PathParam('id') id: number,
-    payload: UpdateAddressRO,
-  ): Promise<AddressOrgDTO> {
-    const result = await this.OrganizationService.updateOrganizationAddress(payload, id);
-
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new AddressOrgDTO({ body: { id: result.getValue(), statusCode: 204 } });
-  }
-
-  /**
-   * remove an organization address in the database
-   *
-   * @param addressId
-   * Should contain the id of address we need to delete
-   * @param id
-   * id of the organization
-   */
-  @DELETE
-  @Path('address/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<AddressBodyDTO>(204, 'Organization address removed Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async RemoveOrganizationAddress(
-    @PathParam('id') id: number,
-    payload: DeletedAddressRO,
-  ): Promise<AddressOrgDTO> {
-    const result = await this.OrganizationService.removeOrganizationAddress(payload, id);
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new AddressOrgDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new AddressBaseDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**

@@ -9,8 +9,6 @@ export const CreateOrganizationPhoneSchema = Joi.object({
 });
 
 export const UpdatePhoneSchema = Joi.object({
-  id: Joi.number().required(),
-
   phoneLabel: Joi.string(),
 
   phoneCode: Joi.string(),
