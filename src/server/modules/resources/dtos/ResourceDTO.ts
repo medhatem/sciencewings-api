@@ -25,7 +25,10 @@ export class ResourceCalendarDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class ResourceMemeberDTO extends BaseDTO {
+export class ResourceManagerDTO extends BaseDTO {
+  @JsonProperty()
+  id: number;
+
   @JsonProperty()
   name: string;
 }
@@ -77,10 +80,10 @@ export class ResourceBodyDTO extends BaseBodyDTO {
   tags: Array<ResourceTagDTO>;
 
   @JsonProperty({
-    type: ResourceMemeberDTO,
+    type: ResourceManagerDTO,
     beforeDeserialize,
   })
-  managers: Array<ResourceMemeberDTO>;
+  managers: Array<ResourceManagerDTO>;
 }
 
 @JsonObject()
@@ -207,6 +210,9 @@ export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
   reservationDurationMaximum: string;
   @JsonProperty()
   bufferTimeBeforeReservation: string;
+
+  @JsonProperty()
+  isReservationDetailsVisibilityToNonModerators: boolean;
 }
 
 @JsonObject()

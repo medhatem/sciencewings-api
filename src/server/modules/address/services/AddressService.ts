@@ -4,7 +4,7 @@ import { Address } from '@/modules/address/models/Address';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { IAddressService } from '../interfaces/IAddressService';
+import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
