@@ -82,9 +82,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
     if (currentEntity === null) {
       return Result.notFound(`Entity with id ${id} does not exist.`);
     }
-    const result = await this.dao.remove(currentEntity);
-
-    return Result.ok<any>(result);
+    await this.dao.remove(currentEntity);
+    return Result.ok<any>(currentEntity);
   }
 
   @log()
