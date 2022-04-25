@@ -185,7 +185,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return Result.ok<number>(organization.id);
   }
 
-  //Update General(unit) properties of organization like name description
+  /**
+   * Udate General(unit) properties of organization like name description
+   * @param payload Update Organization properties details
+   * @param orgId organization id
+   */
   @log()
   @safeGuard()
   @validate
@@ -233,9 +237,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return Result.ok<number>(orgId);
   }
 
-  //Organization Phones Services
-
-  //create Organization Phone
+  /**
+   * add new phone to organization
+   * @param payload create phone details
+   * @param orgId organization id
+   */
   @log()
   @safeGuard()
   @validate
@@ -263,9 +269,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return Result.ok<number>(id);
   }
 
-  //Organization Adress Services
-
-  //create Organization Address
+  /**
+   * add new address to organization
+   * @param payload create address details
+   * @param orgId organization id
+   */
   @log()
   @safeGuard()
   @validate
@@ -291,9 +299,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.fail(`fail to create address`);
     }
 
-    fetchedorganization.phones.add(newAddress.getValue());
-
-    await this.dao.update(fetchedorganization);
     const id = newAddress.getValue().id;
     return Result.ok<number>(id);
   }
