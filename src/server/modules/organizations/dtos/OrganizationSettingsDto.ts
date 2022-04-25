@@ -2,8 +2,9 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { beforeDeserialize } from '@/utils/utilities';
 
-export class GetOrganizationSettingsBodyDTO extends BaseBodyDTO {
+export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
   //Reservation Settings
   @JsonProperty()
   approversCanEditReservations: boolean;
@@ -49,6 +50,13 @@ export class GetOrganizationSettingsBodyDTO extends BaseBodyDTO {
   listResourceToNonMembers: boolean;
   @JsonProperty()
   messageSentToNewMembers: string;
+}
+
+@JsonObject()
+@unique
+export class GetOrganizationSettingsBodyDTO extends BaseBodyDTO {
+  @JsonProperty({ type: OrganizationSettingsBodyDTO, beforeDeserialize })
+  data: OrganizationSettingsBodyDTO;
 }
 
 @JsonObject()

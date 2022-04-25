@@ -17,6 +17,50 @@ export class ResourceManagerRO {
   @JsonProperty()
   user: number;
 }
+@JsonObject()
+@unique
+export class OrganizationSettingsRO {
+  @JsonProperty()
+  approversCanEditReservations?: boolean;
+  @JsonProperty()
+  requireReasonWhenEditingReservation?: boolean;
+  @JsonProperty()
+  hideOrganizationCalendar?: boolean;
+  @JsonProperty()
+  hideAccountNumberWhenMakingReservation?: boolean;
+  @JsonProperty()
+  showResourceImagesInReservation?: boolean;
+  @JsonProperty()
+  confirmationEmailWhenMakingReservation?: string;
+  @JsonProperty()
+  attachedIcsCalendarFeeds?: boolean;
+  @JsonProperty()
+  emailAddressToReceiveReservationReplyMessages?: string[];
+  @JsonProperty()
+  membersCanEditBillingAddress?: boolean;
+  @JsonProperty()
+  defaultInvoiceDueDateUnit?: DateUnit;
+  @JsonProperty()
+  defaultInvoiceDueDate?: number;
+  @JsonProperty()
+  roundTaxOnPerItemBasisInsteadOfOnceOnSubtotal?: boolean;
+  @JsonProperty()
+  lockInvoicedReservationsAndRequests?: boolean;
+  @JsonProperty()
+  anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
+  @JsonProperty()
+  memberShouldAccessByJoinCode?: boolean;
+  @JsonProperty()
+  joinCode?: string;
+  @JsonProperty()
+  yourOrganizationWillNeverAppearInSearchResults?: boolean;
+  @JsonProperty()
+  notifyAdministratorsWhenMembersJoinOrganization?: boolean;
+  @JsonProperty()
+  listResourceToNonMembers?: boolean;
+  @JsonProperty()
+  messageSentToNewMembers?: string;
+}
 
 @JsonObject()
 @unique
@@ -68,6 +112,9 @@ export class CreateOrganizationRO {
 
   @JsonProperty()
   parentId?: string;
+
+  @JsonProperty()
+  settings?: OrganizationSettingsRO;
 }
 
 @JsonObject()
@@ -172,38 +219,6 @@ export class ResourceEventRO {
   dateTo: Date;
 }
 
-@JsonObject()
-@unique
-export class OrganizationGeneralSettingsRO {
-  @JsonProperty()
-  name?: string;
-  @JsonProperty()
-  phoneNumber?: number;
-  @JsonProperty()
-  emailAdress?: string;
-  @JsonProperty()
-  createdAt?: string;
-  @JsonProperty()
-  identificationNumber?: number;
-  @JsonProperty()
-  category?: string;
-  @JsonProperty()
-  activity?: string;
-  @JsonProperty()
-  direction?: number;
-  @JsonProperty()
-  admin_contact?: number;
-  @JsonProperty()
-  socialLinkedin?: string;
-  @JsonProperty()
-  socialTwitter?: string;
-  @JsonProperty()
-  socialFacebook?: string;
-  @JsonProperty()
-  website?: string;
-  @JsonProperty()
-  description?: string;
-}
 @JsonObject()
 @unique
 export class OrganizationReservationSettingsRO {
