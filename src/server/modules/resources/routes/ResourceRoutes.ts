@@ -5,6 +5,7 @@ import {
   ResourceSettingsGeneralVisibilityRO,
   ResourceSettingsGeneralPropertiesRO,
   ResourceSettingsGeneralStatusRO,
+  ResourceRO,
 } from './RequestObject';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
@@ -15,6 +16,8 @@ import {
   UpdateResourceDTO,
   GetResourceSettingsBodyDTO,
   GetResourceSettingsDTO,
+  CreatedResourceBodyDTO,
+  GetResourceBodyDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { Resource } from '@/modules/resources/models/Resource';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
@@ -26,6 +29,7 @@ import {
   ResourceReservationVisibilityRO,
 } from './RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dtos/ResourceRateDTO';
 
 @provideSingleton()
 @Path('resources')
@@ -36,6 +40,74 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
 
   static getInstance(): ResourceRoutes {
     return container.get(ResourceRoutes);
+  }
+
+  /**
+   * Registers a new resource in the database
+   *
+   * @param payload
+   * Should contain Resource data that include Resource data
+   */
+  @POST
+  @Path('create')
+  @Security()
+  @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  @LoggerStorage()
+  public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
+    const result = await this.ResourceService.createResource(payload);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+  }
+
+  /**
+   * Update a resource in the database
+   *
+   * @param payload
+   * Should contain Resource data that include Resource data with its id
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('update/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'Resource updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
+    const result = await this.ResourceService.updateResource(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * retrieve all resources of a given organization by id
+   *
+   * @param organizationId organization id
+   */
+  @GET
+  @Path('getOgranizationResourcesById/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceDTO> {
+    const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(organizationId);
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new ResourceDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
   }
 
   /**
@@ -145,6 +217,29 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     }
 
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * get resource reservation rate
+   *
+   * @param resourceId
+   * Requested resource id
+   */
+  @GET
+  @Path('settings/reservation/rate/:resourceId')
+  @Security()
+  @Response<ResourceRateBodyDTO>(201, 'Resource created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  @LoggerStorage()
+  public async getResourceRate(@PathParam('resourceId') resourceId: number): Promise<GetResourceRateDTO> {
+    const result = await this.ResourceService.getResourceRate(resourceId);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new GetResourceRateDTO({ body: { data: result.getValue(), statusCode: 201 } });
   }
 
   /**
