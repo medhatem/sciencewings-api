@@ -10,9 +10,7 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 export abstract class IOrganizationService extends IBaseService<any> {
   createOrganization: (payload: CreateOrganizationRO, userId: number) => Promise<Result<number>>;
   updateOrganizationGeneraleProperties: (payload: UpdateOrganizationRO, orgId: number) => Promise<Result<number>>;
-  //organization phone crud
   addPhoneToOrganization: (payload: PhoneRO, orgId: number) => Promise<Result<number>>;
-  //organization address crud
   addAddressToOrganization: (payload: AddressRO, orgId: number) => Promise<Result<number>>;
   getMembers: (orgId: number) => Promise<Result<Collection<Member>>>;
   getUserOrganizations: (userId: number) => Promise<Result<Organization[]>>;

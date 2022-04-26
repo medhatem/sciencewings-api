@@ -50,10 +50,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /**
    * Update an organization in the database
    *
-   * @param payload
-   * Should contain general data Organization
-   * @param id
-   * id of the updated organization
+   * @param payload Should contain general data Organization
+   * @param id  id of the updated organization
+   *
    */
   @PUT
   @Path('updateOrganization/:id')
@@ -74,7 +73,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
-  //Organization Phones Routes
   /**
    * add an phone to a given organization
    *
@@ -99,7 +97,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     return new PhoneDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
-  //Organization Addresses Routes
   /**
    * create a new organization address in the database
    *
