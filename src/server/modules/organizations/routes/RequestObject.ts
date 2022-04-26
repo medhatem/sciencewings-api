@@ -54,7 +54,7 @@ export class CreateOrganizationRO {
   adminContact: number;
 
   @JsonProperty()
-  parentId?: string;
+  parentId?: number;
 }
 
 @JsonObject()
