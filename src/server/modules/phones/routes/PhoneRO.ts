@@ -23,16 +23,3 @@ export class PhoneRO {
   @JsonProperty()
   memberId?: number;
 }
-
-@JsonObject()
-@unique
-export class createPhoneRO {
-  @JsonProperty()
-  phoneLabel!: string;
-
-  @JsonProperty()
-  phoneCode!: string;
-
-  @JsonProperty()
-  phoneNumber!: string;
-}

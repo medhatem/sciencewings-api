@@ -13,7 +13,7 @@ import { OrganizationMembersDTO } from '@/modules/organizations/dtos/GetOrganiza
 import { UpdateResourceBodyDTO } from '@/modules/resources/dtos/ResourceDTO';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
-import { createPhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 
@@ -76,12 +76,12 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
   //Organization Phones Routes
   /**
-   * create a new organization phone in the database
+   * add an phone to a given organization
    *
-   * @param payload
-   * Should contain new organization phone details
-   * @param id
-   * id of the updated organization
+   * @param payload Should contain new organization phone details
+   *
+   * @param id id of the updated organization
+   *
    */
   @POST
   @Path('phone/:id')
@@ -90,7 +90,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<PhoneBaseBodyDTO>(204, 'Organization phone created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async CreateOrganizationPhone(@PathParam('id') id: number, payload: createPhoneRO): Promise<PhoneDTO> {
+  public async CreateOrganizationPhone(@PathParam('id') id: number, payload: PhoneRO): Promise<PhoneDTO> {
     const result = await this.OrganizationService.addPhoneToOrganization(payload, id);
 
     if (result.isFailure) {
@@ -103,10 +103,10 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /**
    * create a new organization address in the database
    *
-   * @param payload
-   * Should contain organization address details
-   * @param id
-   * id of the updated organization
+   * @param payload add phone to organization as a name
+   *
+   * @param id id of the updated organization
+   *
    */
   @POST
   @Path('address/:id')

@@ -19,7 +19,7 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
-import { createPhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
@@ -57,7 +57,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
     }
-    let parent = null;
+    let parent;
     if (payload.parentId) {
       const org = await this.dao.getByCriteria({ id: payload.parentId });
       if (!org) {
@@ -204,7 +204,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   @validate
   public async addPhoneToOrganization(
-    @validateParam(CreateOrganizationPhoneSchema) payload: createPhoneRO,
+    @validateParam(CreateOrganizationPhoneSchema) payload: PhoneRO,
     orgId: number,
   ): Promise<Result<number>> {
     const fetchedorganization = await this.dao.get(orgId);
@@ -218,13 +218,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
       Organization: fetchedorganization,
     });
 
-    console.log(newPhone);
     if (newPhone.isFailure) {
       return Result.fail(`fail to create new phone.`);
     }
-
-    const id = newPhone.getValue().id;
-    return Result.ok<number>(id);
+    return Result.ok<number>(newPhone.getValue().id);
   }
 
   /**
@@ -256,9 +253,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (newAddress.isFailure) {
       return Result.fail(`fail to create address`);
     }
-
-    const id = newAddress.getValue().id;
-    return Result.ok<number>(id);
+    return Result.ok<number>(newAddress.getValue().id);
   }
 
   @log()

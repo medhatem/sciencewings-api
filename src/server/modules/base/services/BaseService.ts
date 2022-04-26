@@ -50,10 +50,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @safeGuard()
   public async updateRoute(id: number, payload: any): Promise<Result<any>> {
     const currentEntity = await this.dao.get(id);
-    if (currentEntity === null) {
-      if (!currentEntity) {
-        return Result.notFound(`Entity with id ${id} does not exist.`);
-      }
+    if (!currentEntity) {
+      return Result.notFound(`Entity with id ${id} does not exist.`);
     }
 
     const entity = this.wrapEntity(currentEntity, {
@@ -79,7 +77,7 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @safeGuard()
   public async removeRoute(id: number): Promise<Result<number>> {
     const currentEntity = await this.dao.get(id);
-    if (currentEntity === null) {
+    if (!currentEntity) {
       return Result.notFound(`Entity with id ${id} does not exist.`);
     }
     await this.dao.remove(currentEntity);

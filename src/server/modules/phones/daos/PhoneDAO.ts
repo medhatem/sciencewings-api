@@ -5,7 +5,7 @@ import { Phone } from '@/modules/phones/models/Phone';
 
 @provideSingleton()
 export class PhoneDao extends BaseDao<Phone> {
-  private constructor(public model: Phone = Phone.getInstance()) {
+  private constructor(public model: Phone) {
     super(model);
   }
 

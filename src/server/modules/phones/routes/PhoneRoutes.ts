@@ -2,8 +2,8 @@ import { container, provideSingleton } from '@/di/index';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Path } from 'typescript-rest';
-import { PhoneDTO } from '../dtos';
-import { Phone } from '../models/Phone';
+import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { Phone } from '@/modules/phones/models/Phone';
 
 @provideSingleton()
 @Path('phone')
