@@ -113,6 +113,16 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
+    let settings;
+    if (payload.settings) {
+      settings = await this.OrganizationSettingsService.create({
+        ...payload.settings,
+      });
+      if (settings.isFailure) {
+        return settings;
+      }
+    }
+
     const wrappedOrganization = this.wrapEntity(this.dao.model, {
       name: payload.name,
       description: payload.description,
@@ -125,7 +135,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
       owner: user,
-      settings: payload.settings,
+      settings: settings,
     });
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();

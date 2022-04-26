@@ -21,6 +21,7 @@ export const CreateOrganizationSchema = Joi.object({
   direction: Joi.number().required(),
   adminContact: Joi.number().required(),
   parentId: Joi.number().allow(null),
+  settings: Joi.object(),
 });
 
 export const OrganizationReservationSettingsSchema = Joi.object({
