@@ -18,9 +18,11 @@ import { Logger } from '@/utils/Logger';
 import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { BaseService } from '@/modules/base/services/BaseService';
 import Sinon = require('sinon');
+import { mockMethodWithResult } from '@/utils/utilities';
+import { Organization } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
-  let baseService: SinonStubbedInstance<BaseService<any>>;
+  let baseService: SinonStubbedInstance<BaseService<Organization>>;
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
@@ -29,18 +31,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let phoneService: SinonStubbedInstance<PhoneService>;
   let labelService: SinonStubbedInstance<OrganisationLabelService>;
 
-  const mockMethodWithResult = (
-    className: SinonStubbedInstance<any>,
-    methodToStub: any,
-    args: any,
-    returnValue: any,
-  ) => {
-    className[methodToStub].withArgs(...args).returns(returnValue);
-  };
-
   beforeEach(() => {
     createStubInstance(Configuration);
-    baseService = createStubInstance(BaseService);
+    baseService = createStubInstance(BaseService, {
+      wrapEntity: {},
+    });
     organizationDAO = createStubInstance(OrganizationDao);
     organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
@@ -60,6 +55,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       error: stub(),
       warn: stub(),
     });
+    _container.withArgs(BaseService).returns(new BaseService(organizationDAO));
     _container
       .withArgs(OrganizationService)
       .returns(
@@ -186,11 +182,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
-
-      mockMethodWithResult(organizationService, 'wrapEntity', [], Promise.resolve({}));
       mockMethodWithResult(baseService, 'wrapEntity', [], Promise.resolve({}));
       // error during organization creation
-      mockMethodWithResult(baseService, 'create', [Sinon.match.any], Promise.resolve(Result.fail('stackTrace')));
+      mockMethodWithResult(
+        organizationService,
+        'create',
+        [Sinon.match.any],
+        Promise.resolve(Result.fail('stackTrace')),
+      );
 
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
       console.log({ result });
@@ -198,6 +197,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal('stackTrace');
     });
+    // TODO continue testing
   });
 
   suite('get member', () => {
