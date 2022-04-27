@@ -2,7 +2,7 @@ import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -10,7 +10,7 @@ import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { Email } from '@/utils/Email';
-import { CreateOrganizationSchema } from '@/modules/organizations/schemas/OrganizationSchema';
+import { CreateOrganizationSchema, UpdateOrganizationSchema } from '@/modules/organizations/schemas/OrganizationSchema';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
 import { validateParam } from '@/decorators/validateParam';
@@ -19,6 +19,11 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
+
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 
 @provideSingleton(IOrganizationService)
@@ -52,12 +57,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
     }
-
+    let parent;
     if (payload.parentId) {
       const org = await this.dao.getByCriteria({ id: payload.parentId });
       if (!org) {
-        return Result.notFound('Organization parent does not exist');
+        return Result.notFound(`Organization parent with id ${payload.parentId} does not exist`);
       }
+      parent = org;
     }
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
@@ -93,6 +99,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
       owner: user,
+      parent,
     });
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();
@@ -134,6 +141,119 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     return Result.ok<number>(organization.id);
+  }
+
+  /**
+   * Udate General(unit) properties of organization like name description
+   * @param payload Update Organization properties details
+   * @param orgId organization id
+   */
+  @log()
+  @safeGuard()
+  @validate
+  public async updateOrganizationGeneraleProperties(
+    @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
+    orgId: number,
+  ): Promise<Result<number>> {
+    const fetchedorganization = await this.dao.get(orgId);
+    if (!fetchedorganization) {
+      return Result.notFound(`organization with id ${orgId} does not exist.`);
+    }
+
+    let direction;
+    if (payload.direction) {
+      direction = await this.userService.get(payload.direction);
+      if (direction.isFailure || direction.getValue() === null) {
+        return Result.notFound(`User with id: ${payload.direction} does not exist.`);
+      }
+    }
+
+    let adminContact;
+    if (payload.adminContact) {
+      adminContact = await this.userService.get(payload.adminContact);
+      if (adminContact.isFailure || adminContact.getValue() === null) {
+        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
+      }
+    }
+
+    let parent;
+    if (payload.parent) {
+      parent = await this.userService.get(payload.parent);
+      if (parent.isFailure || parent.getValue() === null) {
+        return Result.notFound(`User with id: ${payload.parent} does not exist.`);
+      }
+    }
+    const organization = this.wrapEntity(fetchedorganization, {
+      ...fetchedorganization,
+      ...payload,
+      direction,
+      admin_contact: adminContact,
+      parent,
+    });
+
+    await this.dao.update(organization);
+    return Result.ok<number>(orgId);
+  }
+
+  /**
+   * add new phone to organization
+   * @param payload create phone details
+   * @param orgId organization id
+   */
+  @log()
+  @safeGuard()
+  @validate
+  public async addPhoneToOrganization(
+    @validateParam(CreateOrganizationPhoneSchema) payload: PhoneRO,
+    orgId: number,
+  ): Promise<Result<number>> {
+    const fetchedorganization = await this.dao.get(orgId);
+    if (!fetchedorganization) {
+      return Result.notFound(`organization with id ${orgId} does not exist.`);
+    }
+    const newPhone = await this.phoneService.create({
+      phoneLabel: payload.phoneLabel,
+      phoneCode: payload.phoneCode,
+      phoneNumber: payload.phoneNumber,
+      Organization: fetchedorganization,
+    });
+
+    if (newPhone.isFailure) {
+      return Result.fail(`fail to create new phone.`);
+    }
+    return Result.ok<number>(newPhone.getValue().id);
+  }
+
+  /**
+   * add new address to organization
+   * @param payload create address details
+   * @param orgId organization id
+   */
+  @log()
+  @safeGuard()
+  @validate
+  public async addAddressToOrganization(
+    @validateParam(CreateOrganizationAddressSchema) payload: AddressRO,
+    orgId: number,
+  ): Promise<Result<number>> {
+    const fetchedorganization = await this.dao.get(orgId);
+    if (!fetchedorganization) {
+      return Result.notFound(`organization with id ${orgId} does not exist.`);
+    }
+    const newAddress = await this.addressService.create({
+      country: payload.country,
+      province: payload.province,
+      code: payload.code,
+      type: payload.type,
+      city: payload.city,
+      street: payload.street,
+      apartment: payload.apartment,
+      organization: fetchedorganization,
+    });
+    if (newAddress.isFailure) {
+      return Result.fail(`fail to create address`);
+    }
+    return Result.ok<number>(newAddress.getValue().id);
   }
 
   @log()
