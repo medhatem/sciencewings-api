@@ -10,7 +10,6 @@ import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
 import { safeGuard } from '@/decorators/safeGuard';
 import { FETCH_STRATEGY } from '../daos/BaseDao';
-import * as MikroOrm from '@mikro-orm/core';
 
 @provideSingleton(IBaseService)
 export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
@@ -103,7 +102,6 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
    *
    */
   public wrapEntity(entity: T, payload: any, options: boolean | AssignOptions = true): T {
-    console.log({ xwrap: MikroOrm.wrap });
-    return MikroOrm.wrap(entity).assign(payload, options);
+    return wrap(entity).assign(payload, options);
   }
 }

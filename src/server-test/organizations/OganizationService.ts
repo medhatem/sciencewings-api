@@ -20,12 +20,10 @@ import { BaseService } from '@/modules/base/services/BaseService';
 import Sinon = require('sinon');
 import { mockMethodWithResult } from '@/utils/utilities';
 import { Organization } from '@/modules/organizations/models/Organization';
-import * as MikroOrm from '@mikro-orm/core';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let baseService: SinonStubbedInstance<BaseService<Organization>>;
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
-  let organizationModel: SinonStubbedInstance<Organization>;
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
@@ -35,10 +33,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   beforeEach(() => {
     createStubInstance(Configuration);
-    baseService = createStubInstance(BaseService, {
-      wrapEntity: stub(),
-    });
-    organizationModel = createStubInstance(Organization);
+    baseService = createStubInstance(BaseService);
     organizationDAO = createStubInstance(OrganizationDao);
     organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
@@ -58,23 +53,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       error: stub(),
       warn: stub(),
     });
-    _container.withArgs(BaseService).returns(new BaseService(organizationDAO));
-    stub(MikroOrm, 'wrap').returns({ assign: stub() } as any);
-    const orgService = new OrganizationService(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      new OrganizationDao(organizationModel),
-      userService,
-      labelService,
-      addressService,
-      phoneService,
-      emailService,
-    );
-    // orgService.wrapEntity = stub();
-    console.log({ orgService });
-    stub(BaseService.prototype, 'wrapEntity').returns({} as any);
-    stub(OrganizationService.prototype, 'wrapEntity').returns({} as any);
-    _container.withArgs(OrganizationService).returns(orgService);
+    _container
+      .withArgs(OrganizationService)
+      .returns(
+        new OrganizationService(organizationDAO, userService, labelService, addressService, phoneService, emailService),
+      );
   });
 
   afterEach(() => {
@@ -131,11 +114,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set organization parent to null
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ id: payload.parentId }], Promise.resolve(null));
-      payload.parentId = '1';
+      payload.parentId = 1;
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
 
       expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Organization parent does not exist`);
+      expect(result.error.message).to.equal(`Organization parent with id ${payload.parentId} does not exist`);
 
       delete payload.parentId;
     });
