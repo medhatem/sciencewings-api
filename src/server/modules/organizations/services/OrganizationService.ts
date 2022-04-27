@@ -18,8 +18,9 @@ import { validate } from '@/decorators/validate';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { Collection } from '@mikro-orm/core';
+import { AssignOptions, Collection } from '@mikro-orm/core';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
+import * as MikroOrm from '@mikro-orm/core';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -80,6 +81,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
     }
+    console.log({ wrapEntity: this.wrapEntity });
+    console.log({ model: this.dao.model });
 
     const wrappedOrganization = this.wrapEntity(this.dao.model, {
       name: payload.name,
@@ -156,5 +159,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
       FETCH_STRATEGY.ALL,
     )) as Organization[];
     return Result.ok<Organization[]>(organizations);
+  }
+
+  public wrapEntity(entity: Organization, payload: any, options: boolean | AssignOptions = true): Organization {
+    console.log({ entity });
+
+    return super.wrapEntity(entity, payload, options);
   }
 }
