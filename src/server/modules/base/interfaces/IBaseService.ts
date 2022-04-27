@@ -14,7 +14,11 @@ export abstract class IBaseService<T> {
 
   public update: (entry: T) => Promise<Result<any>>;
 
+  public updateRoute: (id: number, payload: any) => Promise<Result<any>>;
+
   public remove: (id: number) => Promise<Result<number>>;
+
+  public removeRoute: (id: number) => Promise<Result<number>>;
 
   getByCriteria: (
     criteria: { [key: string]: any },

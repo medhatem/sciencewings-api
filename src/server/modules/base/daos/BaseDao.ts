@@ -19,7 +19,7 @@ export class BaseDao<T extends BaseModel<T>> {
   public builder: QueryBuilder<T>;
   public logger: Logger;
   constructor(public model: T) {
-    this.repository = ((connection.em as any) as EntityManager).getRepository<T>(model.constructor as new () => T);
+    this.repository = (connection.em as any as EntityManager).getRepository<T>(model.constructor as new () => T);
     this.logger = Logger.getInstance();
   }
 
@@ -76,7 +76,7 @@ export class BaseDao<T extends BaseModel<T>> {
 
   @log()
   public async remove(entry: T): Promise<T> {
-    await this.repository.removeAndFlush(entry);
+    await this.repository.nativeDelete(entry);
     return entry;
   }
 }
