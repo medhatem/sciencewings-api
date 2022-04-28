@@ -1,4 +1,5 @@
 import { Collection } from '@mikro-orm/core';
+import { SinonStubbedInstance } from 'sinon';
 
 const wait = async (time: number) => {
   return await new Promise((resolve) => {
@@ -60,4 +61,24 @@ export const beforeDeserialize: (property: any, currentInstance?: any) => any = 
     return prop.toJSON();
   }
   return prop;
+};
+
+/**
+ * stub a method with args and results
+ * @param className class to be stubed
+ * @param methodToStub method to be stubed
+ * @param args argument passed to the stub method
+ * @param returnValue stub method result
+ */
+export const mockMethodWithResult = (
+  className: SinonStubbedInstance<any>,
+  methodToStub: any,
+  args: any,
+  returnValue: any,
+) => {
+  if (args.length === 0) {
+    className[methodToStub].returns(returnValue);
+  } else {
+    className[methodToStub].withArgs(...args).returns(returnValue);
+  }
 };

@@ -65,7 +65,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     }
     if (payload.resourceCalendar) {
       resourceCalendar = await this.resourceCalendarSerivce.get(payload.resourceCalendar);
-      if (member.isFailure || member.getValue() === null)
+      if (resourceCalendar.isFailure || resourceCalendar.getValue() === null)
         return Result.notFound(`Resource Calendar with id ${payload.resourceCalendar} does not exist.`);
       resourceCalendar = await resourceCalendar.getValue();
     }

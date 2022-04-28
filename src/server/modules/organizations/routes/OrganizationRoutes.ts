@@ -1,8 +1,8 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
-import { CreateOrganizationRO } from './RequestObject';
+import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
+import { CreateOrganizationRO, UpdateOrganizationRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -10,7 +10,12 @@ import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { OrganizationMembersDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
-import { HttpError, InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { UpdateResourceBodyDTO } from '@/modules/resources/dtos/ResourceDTO';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 
 @provideSingleton()
 @Path('organization')
@@ -33,7 +38,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
-  ): Promise<OrganizationDTO | HttpError> {
+  ): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
@@ -41,6 +46,79 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 201 } });
+  }
+  /**
+   * Update an organization in the database
+   *
+   * @param payload Should contain general data Organization
+   * @param id  id of the updated organization
+   *
+   */
+  @PUT
+  @Path('updateOrganization/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'Organization updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateOrganization(
+    @PathParam('id') id: number,
+    payload: UpdateOrganizationRO,
+  ): Promise<OrganizationDTO> {
+    const result = await this.OrganizationService.updateOrganizationGeneraleProperties(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * add an phone to a given organization
+   *
+   * @param payload Should contain new organization phone details
+   *
+   * @param id id of the updated organization
+   *
+   */
+  @POST
+  @Path('phone/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<PhoneBaseBodyDTO>(204, 'Organization phone created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async CreateOrganizationPhone(@PathParam('id') id: number, payload: PhoneRO): Promise<PhoneDTO> {
+    const result = await this.OrganizationService.addPhoneToOrganization(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new PhoneDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * create a new organization address in the database
+   *
+   * @param payload add phone to organization as a name
+   *
+   * @param id id of the updated organization
+   *
+   */
+  @POST
+  @Path('address/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<AddressBodyDTO>(204, 'Organization address created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async CreateOrganizationAdress(@PathParam('id') id: number, payload: AddressRO): Promise<AddressBaseDTO> {
+    const result = await this.OrganizationService.addAddressToOrganization(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new AddressBaseDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**

@@ -11,6 +11,7 @@ const ContractSchema = Joi.object({
   state: Joi.string(),
   kanbanState: Joi.string(),
   supervisor: Joi.number(),
+  hrResponsible: Joi.number(),
 });
 
 export const CreateContractSchema = ContractSchema.keys({
