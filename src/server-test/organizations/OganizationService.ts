@@ -15,15 +15,12 @@ import { container } from '@/di';
 import { Email } from '@/utils/Email';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
-import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { mockMethodWithResult } from '@/utils/utilities';
-import { Organization } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
-  let baseService: SinonStubbedInstance<BaseService<Organization>>;
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
-  let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
   let addressService: SinonStubbedInstance<AddressService>;
@@ -32,9 +29,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   beforeEach(() => {
     createStubInstance(Configuration);
-    baseService = createStubInstance(BaseService);
     organizationDAO = createStubInstance(OrganizationDao);
-    organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
     emailService = createStubInstance(Email);
     addressService = createStubInstance(AddressService);
@@ -187,7 +182,34 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal('stackTrace');
     });
-    // TODO continue testing
+  });
+
+  suite('update Organization Generale Properties', () => {
+    const userId = 1;
+    const payload: UpdateOrganizationRO = {
+      name: 'testinggroundupdate',
+      description: 'qsdwxcaze',
+    };
+
+    test('should fail on organization update', async () => {
+      // set organization to not exist
+      mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // set adminContact to exist
+      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
+      // set direction to exist
+      mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      mockMethodWithResult(organizationDAO, 'update', [], Promise.resolve({}));
+
+      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(payload, 1);
+      console.log({ result });
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('stackTrace');
+    });
   });
 
   suite('get member', () => {
