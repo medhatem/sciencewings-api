@@ -16,6 +16,7 @@ import { GroupService } from '@/modules/hr/services/GroupService';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { ResourceCalendarService } from '@/modules/resources';
 import { Result } from '@/utils/Result';
+import { BaseService } from '@/modules/base';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let groupService: SinonStubbedInstance<GroupService>;
@@ -150,8 +151,32 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`HR Responsible with id ${payload.hrResponsible} does not exist.`);
     });
-    // TODO continue testing
-    // test('Should fail on retriving entities', async () => {});
+    test('Should fail on contract creation', async () => {
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(memberService, 'get', [payload.member], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(jobService, 'get', [payload.job], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceCalendarService, 'get', [payload.resourceCalendar], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(userService, 'get', [payload.hrResponsible], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'create').resolves(Result.fail('StackTrace'));
+      const result = await container.get(ContractService).createContract(payload);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`StackTrace`);
+    });
+    test('Should success on contract creation', async () => {
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(memberService, 'get', [payload.member], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(jobService, 'get', [payload.job], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceCalendarService, 'get', [payload.resourceCalendar], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(userService, 'get', [payload.hrResponsible], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
+      const result = await container.get(ContractService).createContract(payload);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
+    });
   });
 
   suite('update contract', () => {
@@ -166,10 +191,40 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on retriving organization', async () => {
       mockMethodWithResult(contractDao, 'get', [contractID], Promise.resolve({}));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok(null)));
-      const result = await container.get(ContractService).createContract(payload);
+      const result = await container.get(ContractService).updateContract(payload, contractID);
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
+    });
+    test('Should fail on contract update', async () => {
+      mockMethodWithResult(contractDao, 'get', [contractID], Promise.resolve({}));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(memberService, 'get', [payload.member], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(jobService, 'get', [payload.job], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceCalendarService, 'get', [payload.resourceCalendar], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(userService, 'get', [payload.hrResponsible], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'update').resolves(Result.fail('StackTrace'));
+      const result = await container.get(ContractService).updateContract(payload, contractID);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`StackTrace`);
+    });
+    test('Should success on contract update', async () => {
+      mockMethodWithResult(contractDao, 'get', [contractID], Promise.resolve({}));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(memberService, 'get', [payload.member], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(jobService, 'get', [payload.job], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceCalendarService, 'get', [payload.resourceCalendar], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(userService, 'get', [payload.hrResponsible], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'update').resolves(Result.ok({ id: 1 }));
+      const result = await container.get(ContractService).updateContract(payload, contractID);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
     });
   });
 });
