@@ -13,6 +13,7 @@ import { mockMethodWithResult } from '@/utils/utilities';
 import { Result } from '@/utils/Result';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
+import { BaseService } from '@/modules/base';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let groupService: SinonStubbedInstance<GroupService>;
@@ -71,7 +72,27 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist`);
     });
-    // TODO continue testing
+    test('Should fail on job creation', async () => {
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').resolves(Result.fail('StackTrace'));
+      const result = await container.get(JobService).createJob(payload);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`StackTrace`);
+    });
+
+    test('Should success on job creation', async () => {
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
+      const result = await container.get(JobService).createJob(payload);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
+    });
   });
   suite('update job', async () => {
     const jobId = 1;
@@ -89,6 +110,28 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist`);
+    });
+    test('Should fail on job update', async () => {
+      mockMethodWithResult(jobDAO, 'get', [jobId], Promise.resolve({}));
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'update').resolves(Result.fail('StackTrace'));
+      const result = await container.get(JobService).updateJob(payload, jobId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`StackTrace`);
+    });
+    test('Should success on job update', async () => {
+      mockMethodWithResult(jobDAO, 'get', [jobId], Promise.resolve({}));
+      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'update').resolves(Result.ok({ id: 1 }));
+      const result = await container.get(JobService).updateJob(payload, jobId);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
     });
   });
 });
