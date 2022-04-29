@@ -9,7 +9,7 @@ import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { UserService } from '@/modules/users/services/UserService';
 import { PhoneService } from '@/modules/phones/services/PhoneService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
-import { OrganisationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
+import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
 import { AddressType } from '@/modules/address/models/Address';
 import { container } from '@/di';
 import { Email } from '@/utils/Email';
@@ -18,6 +18,7 @@ import { Logger } from '@/utils/Logger';
 import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { mockMethodWithResult } from '@/utils/utilities';
+import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
@@ -25,7 +26,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let emailService: SinonStubbedInstance<Email>;
   let addressService: SinonStubbedInstance<AddressService>;
   let phoneService: SinonStubbedInstance<PhoneService>;
-  let labelService: SinonStubbedInstance<OrganisationLabelService>;
+  let labelService: SinonStubbedInstance<OrganizationLabelService>;
 
   beforeEach(() => {
     createStubInstance(Configuration);
@@ -34,7 +35,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     emailService = createStubInstance(Email);
     addressService = createStubInstance(AddressService);
     phoneService = createStubInstance(PhoneService);
-    labelService = createStubInstance(OrganisationLabelService);
+    labelService = createStubInstance(OrganizationLabelService);
 
     const _container = stub(container, 'get');
     _container.withArgs(Configuration).returns({
@@ -182,6 +183,33 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal('stackTrace');
     });
+
+    test('should success on organization creation', async () => {
+      // set organization to not exist
+      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // set adminContact to exist
+      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
+      // set direction to exist
+      mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
+      // set member creation
+      stub(MemberEvent.prototype, 'createMember').returns({} as any);
+      // set address creation
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({})));
+      // set phone creation
+      mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.ok({})));
+      // set label creation
+      mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
+    });
   });
 
   suite('update Organization Generale Properties', () => {
@@ -191,7 +219,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       description: 'qsdwxcaze',
     };
 
-    test('should fail on organization update', async () => {
+    // TODO 'should fail on organization update'
+
+    test('should success on organization update', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
       // set owner to exist
@@ -202,13 +232,87 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // prepare base
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(organizationDAO, 'update', [], Promise.resolve({}));
+      mockMethodWithResult(organizationDAO, 'update', [], Promise.resolve(1));
 
       const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(payload, 1);
-      console.log({ result });
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
+    });
+  });
+
+  suite('add Address To Organization', () => {
+    const orgId = 1;
+    const payload = {
+      country: 'Canada',
+      province: 'Ontario',
+      code: '5L8 G9S',
+      type: AddressType.ORGANIZATION,
+      street: '487 Yardley Cres',
+      apartment: '12',
+      city: 'Ontario',
+    };
+    test('should fail on organization not found', async () => {
+      // check if the organization already exist
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
+      const result = await container.get(OrganizationService).addAddressToOrganization(payload, orgId);
 
       expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal('stackTrace');
+      expect(result.error.message).to.equal(`organization with id ${orgId} does not exist.`);
+    });
+
+    test('should fail on address creation', async () => {
+      // check if the organization already exist
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.fail('StackTrace')));
+      const result = await container.get(OrganizationService).addAddressToOrganization(payload, orgId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`fail to create address`);
+    });
+
+    test('should success on address creation', async () => {
+      // check if the organization already exist
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
+      const result = await container.get(OrganizationService).addAddressToOrganization(payload, orgId);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
+    });
+  });
+
+  suite('add Phone To Organization', () => {
+    const orgId = 1;
+    const payload = {
+      phoneLabel: 'personal',
+      phoneCode: '+213',
+      phoneNumber: '541110222',
+    };
+    test('should fail on organization not found', async () => {
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
+      const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`organization with id ${orgId} does not exist.`);
+    });
+
+    test('should fail on phone creation', async () => {
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
+      mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.fail('StackTrace')));
+      const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`fail to create new phone.`);
+    });
+
+    test('should success on phone creation', async () => {
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
+      mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
+      const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
     });
   });
 
