@@ -100,7 +100,7 @@ export class ResourceService extends BaseService<Resource> {
     let organization: Organization = null;
     if (payload.organization) {
       const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (!fetchedOrganization) {
+      if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
         return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
       organization = fetchedOrganization.getValue();
@@ -110,6 +110,7 @@ export class ResourceService extends BaseService<Resource> {
     if (payload.managers) {
       for await (const { organization, user } of payload.managers) {
         const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
+        console.log(fetcheManager);
         if (fetcheManager.isFailure || !fetcheManager.getValue()) {
           return Result.notFound(
             `Manager with user id ${user} in organization with id ${organization} does not exist.`,
