@@ -31,6 +31,9 @@ import { Result } from '@/utils/Result';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { BaseService } from '@/modules/base/services/BaseService';
 import Sinon = require('sinon');
+import { Collection } from '@mikro-orm/core';
+import { Member } from '@/modules/hr/models/Member';
+import { Resource } from '@/modules/resources/models/Resource';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceDao: SinonStubbedInstance<ResourceDao>;
@@ -158,15 +161,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`fail to create resource.`);
     });
-    test('should succeed create resource ', async () => {
+    test('should succeed on create resource ', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
-        managers: [],
+        managers: new Collection<Member>(Resource),
       });
-      //@ts-ignore
-      Array.prototype.init = stub();
+      Collection.prototype.init = stub();
       mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'update', [], {});
       const result = await container.get(ResourceService).createResource(payloaD);
