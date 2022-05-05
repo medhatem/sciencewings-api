@@ -23,7 +23,6 @@ import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
-
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 
 @provideSingleton(IOrganizationService)
@@ -86,7 +85,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
     }
-
     const wrappedOrganization = this.wrapEntity(this.dao.model, {
       name: payload.name,
       description: payload.description,
@@ -101,6 +99,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       owner: user,
       parent,
     });
+
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();
 
