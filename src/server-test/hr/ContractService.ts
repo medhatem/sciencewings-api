@@ -36,18 +36,18 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     resourceCalendarService = createStubInstance(ResourceCalendarService);
     contractDao = createStubInstance(ContractDao);
 
-    const _container = stub(container, 'get');
-    _container.withArgs(Configuration).returns({
+    const mockedContainer = stub(container, 'get');
+    mockedContainer.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    _container.withArgs(Logger).returns({
+    mockedContainer.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
-    _container
+    mockedContainer
       .withArgs(ContractService)
       .returns(
         new ContractService(
