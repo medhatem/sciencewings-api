@@ -147,7 +147,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
       ...entities,
     });
 
-    const updatedContract = await this.create(contract);
+    const updatedContract = await this.update(contract);
 
     if (updatedContract.isFailure) {
       return updatedContract;
