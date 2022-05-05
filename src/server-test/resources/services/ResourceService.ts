@@ -104,29 +104,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       tags: [],
       organization: 1,
       user: 1,
-    };
-    const payloadManagerNtExist: ResourceRO = {
-      name: 'test',
-      description: 'test',
-      active: true,
-      organization: 1,
-      resourceType: 'test',
-      resourceClass: 'test',
-      user: 1,
-      timezone: 'test',
-      tags: [],
       managers: [{ user, organization }],
     };
-    const payloaD: ResourceRO = {
-      name: 'resource_dash_one',
-      description: 'test',
-      active: true,
-      resourceType: 'USER',
-      resourceClass: 'TECH',
-      timezone: 'gmt+1',
-      tags: [],
-    };
-
     test('should fail on organization not found', async () => {
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok(null)));
       const result = await container.get(ResourceService).createResource(payload);
@@ -137,7 +116,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(null)));
 
-      const result = await container.get(ResourceService).createResource(payloadManagerNtExist);
+      const result = await container.get(ResourceService).createResource(payload);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(
         `Manager with user id ${user} in organization with id ${organization} does not exist.`,
@@ -164,6 +143,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`fail to create resource.`);
     });
     test('should succeed on create resource ', async () => {
+      const crPayload = { ...payload };
+      delete crPayload.managers;
+      delete crPayload.user;
+      delete crPayload.organization;
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
@@ -173,7 +156,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       Collection.prototype.init = stub();
       mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'update', [], {});
-      const result = await container.get(ResourceService).createResource(payloaD);
+      const result = await container.get(ResourceService).createResource(crPayload);
       expect(result.isSuccess).to.be.true;
     });
   });
