@@ -11,28 +11,15 @@ import { Result } from '@/utils/Result';
 import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
-import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
 
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {
-  constructor(
-    public dao: JobDAO,
-    public groupService: IGroupService,
-    public organizationService: IOrganizationService,
-  ) {
+  constructor(public dao: JobDAO, public organizationService: IOrganizationService) {
     super(dao);
   }
 
   static getInstance(): IJobService {
     return container.get(IJobService);
-  }
-
-  private async getGroup(groupId: number): Promise<Result<any>> {
-    const fetchedGroup = await this.groupService.get(groupId);
-    if (fetchedGroup.isFailure || fetchedGroup.getValue() === null) {
-      return Result.fail(`Group with id ${groupId} does not exist`);
-    }
-    return Result.ok(fetchedGroup.getValue());
   }
 
   private async getOrganization(organizationId: number): Promise<Result<any>> {
@@ -52,18 +39,9 @@ export class JobService extends BaseService<Job> implements IJobService {
   @safeGuard()
   @validate
   public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<Result<number>> {
-    let group;
-    if (payload.group) {
-      const fetchedGroup = await this.getGroup(payload.group);
-      if (fetchedGroup.isFailure) {
-        return fetchedGroup;
-      }
-      group = fetchedGroup.getValue();
-    }
-
     let organization;
     if (payload.organization) {
-      const fetchedOrganization = await this.getOrganization(payload.group);
+      const fetchedOrganization = await this.getOrganization(payload.organization);
       if (fetchedOrganization.isFailure) {
         return fetchedOrganization;
       }
@@ -73,7 +51,6 @@ export class JobService extends BaseService<Job> implements IJobService {
     const createdJob = await this.create(
       this.wrapEntity(this.dao.model, {
         ...payload,
-        group,
         organization,
       }),
     );
@@ -99,7 +76,7 @@ export class JobService extends BaseService<Job> implements IJobService {
     }
 
     if (payload.organization) {
-      const fetchedOrganization = await this.getOrganization(payload.group);
+      const fetchedOrganization = await this.getOrganization(payload.organization);
       if (fetchedOrganization.isFailure) {
         return fetchedOrganization;
       }

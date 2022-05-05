@@ -8,7 +8,6 @@ import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
 import { JobService } from '@/modules/hr/services/JobService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
-import { GroupService } from '@/modules/hr/services/GroupService';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { Result } from '@/utils/Result';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
@@ -16,27 +15,25 @@ import { JobDAO } from '@/modules/hr/daos/JobDAO';
 import { BaseService } from '@/modules/base';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
-  let groupService: SinonStubbedInstance<GroupService>;
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let jobDAO: SinonStubbedInstance<JobDAO>;
 
   beforeEach(() => {
-    groupService = createStubInstance(GroupService);
     organizationService = createStubInstance(OrganizationService);
     jobDAO = createStubInstance(JobDAO);
 
-    const _container = stub(container, 'get');
-    _container.withArgs(Configuration).returns({
+    const mockedContainer = stub(container, 'get');
+    mockedContainer.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    _container.withArgs(Logger).returns({
+    mockedContainer.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
-    _container.withArgs(JobService).returns(new JobService(jobDAO, groupService, organizationService));
+    mockedContainer.withArgs(JobService).returns(new JobService(jobDAO, organizationService));
   });
 
   afterEach(() => {
@@ -52,20 +49,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     name: 'job uno title',
     description: 'job uno desc',
     state: 'job uno stat',
-    group: 1,
     organization: 1,
   };
 
   suite('create job', () => {
-    test('Should fail on retriving group', async () => {
-      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok(null)));
-      const result = await container.get(JobService).createJob(payload);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Group with id ${payload.group} does not exist`);
-    });
     test('Should fail on retriving organization', async () => {
-      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok(null)));
       const result = await container.get(JobService).createJob(payload);
 
@@ -73,7 +61,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist`);
     });
     test('Should fail on job creation', async () => {
-      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'create').resolves(Result.fail('StackTrace'));
@@ -82,13 +69,23 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`StackTrace`);
     });
-
     test('Should success on job creation', async () => {
-      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
       const result = await container.get(JobService).createJob(payload);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
+    });
+    test('Should success on job creation without organization', async () => {
+      const payloadWithoutProp = { ...payload };
+      delete payloadWithoutProp.organization;
+
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(null));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
+      const result = await container.get(JobService).createJob(payloadWithoutProp);
 
       expect(result.isSuccess).to.be.true;
       expect(result.getValue()).to.equal(1);
@@ -113,7 +110,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
     test('Should fail on job update', async () => {
       mockMethodWithResult(jobDAO, 'get', [jobId], Promise.resolve({}));
-      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'update').resolves(Result.fail('StackTrace'));
@@ -124,11 +120,23 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
     test('Should success on job update', async () => {
       mockMethodWithResult(jobDAO, 'get', [jobId], Promise.resolve({}));
-      mockMethodWithResult(groupService, 'get', [payload.group], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'update').resolves(Result.ok({ id: 1 }));
       const result = await container.get(JobService).updateJob(payload, jobId);
+
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(1);
+    });
+    test('Should success on job update without organization', async () => {
+      const payloadWithoutProp = { ...payload };
+      delete payloadWithoutProp.organization;
+
+      mockMethodWithResult(jobDAO, 'get', [jobId], Promise.resolve({}));
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(null));
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'update').resolves(Result.ok({ id: 1 }));
+      const result = await container.get(JobService).updateJob(payloadWithoutProp, jobId);
 
       expect(result.isSuccess).to.be.true;
       expect(result.getValue()).to.equal(1);
