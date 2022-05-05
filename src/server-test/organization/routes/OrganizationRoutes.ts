@@ -10,10 +10,11 @@ import { OrganizationService } from '@/modules/organizations/services/Organizati
 import { OrganizationRoutes } from '@/modules/organizations/routes/OrganizationRoutes';
 import { LocalStorage } from '@/utils/LocalStorage';
 import { mockMethodWithResult } from '@/utils/utilities';
-import { CreateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { Result } from '@/utils/Result';
+import { AddressType } from '@/modules/address/models/Address';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationService: SinonStubbedInstance<OrganizationService>;
@@ -88,40 +89,148 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.body.statusCode).to.equal(201);
     });
   });
-  /*  
-   suite('POST resources/create', () => {
-    const payload: ResourceRO = {
-      name: 'resource_dash_one',
-      description: 'string',
-      active: true,
-      resourceType: 'USER',
-      resourceClass: 'TECH',
-      timezone: 'gmt+1',
-      tags: [],
-      organization: 1,
-      user: 1,
+  suite('PUT organization/updateOrganization/:id', () => {
+    const payload: UpdateOrganizationRO = {
+      name: 'test',
+      description: 'test',
+      email: 'test',
+      type: 'test',
+      labels: [''],
+      direction: 1,
+      socialFacebook: 'test',
+      socialTwitter: 'test',
+      socialGithub: 'test',
+      socialLinkedin: 'test',
+      socialYoutube: 'test',
+      socialInstagram: 'test',
+      adminContact: 1,
+      parent: 1,
     };
 
     test('Should fail on throw error', async () => {
       mockMethodWithResult(
-        resourceService,
-        'createResource',
+        organizationService,
+        'updateOrganizationGeneraleProperties',
         [payload],
         Promise.resolve({ isFailure: true, error: 'throwing error' }),
       );
       try {
-        await resourceRoute.createResource(payload);
+        await organizationRoutes.updateOrganization(payload, 1);
+      } catch (error) {
+        expect(error).to.equal('throwing error');
+      }
+    });
+    test('Should success at updating and returning the right value', async () => {
+      mockMethodWithResult(organizationService, 'updateOrganizationGeneraleProperties', [payload], Result.ok(1));
+      const result = await organizationRoutes.updateOrganization(payload, 1);
+      expect(result.body.id).to.equal(1);
+      expect(result.body.statusCode).to.equal(204);
+    });
+  });
+  suite('POST organization/phone/:id', () => {
+    const payload: PhoneRO = {
+      phoneLabel: 'test',
+      phoneCode: 'test',
+      phoneNumber: 'test',
+      userId: 1,
+      organizationId: 1,
+      memberId: 1,
+    };
+
+    test('Should fail on throw error', async () => {
+      mockMethodWithResult(
+        organizationService,
+        'addPhoneToOrganization',
+        [payload, 1],
+        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+      );
+      try {
+        await organizationRoutes.CreateOrganizationPhone(payload, 1);
       } catch (error) {
         expect(error).to.equal('throwing error');
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'createResource', [payload], Result.ok(1));
-      const result = await resourceRoute.createResource(payload);
+      mockMethodWithResult(organizationService, 'addPhoneToOrganization', [payload, 1], Result.ok(1));
+      const result = await organizationRoutes.CreateOrganizationPhone(payload, 1);
       expect(result.body.id).to.equal(1);
-      expect(result.body.statusCode).to.equal(201);
+      expect(result.body.statusCode).to.equal(204);
     });
   });
+  suite('POST organization/address/:id', () => {
+    const payload: AddressRO = {
+      country: 'test',
+      province: 'test',
+      code: 'test',
+      type: AddressType.USER,
+      city: 'test',
+      street: 'test',
+      apartment: 'test',
+      user: 1,
+      organization: 1,
+    };
+
+    test('Should fail on throw error', async () => {
+      mockMethodWithResult(
+        organizationService,
+        'addAddressToOrganization',
+        [payload, 1],
+        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+      );
+      try {
+        await organizationRoutes.CreateOrganizationAdress(payload, 1);
+      } catch (error) {
+        expect(error).to.equal('throwing error');
+      }
+    });
+    test('Should success at returning the right value', async () => {
+      mockMethodWithResult(organizationService, 'addAddressToOrganization', [payload, 1], Result.ok(1));
+      const result = await organizationRoutes.CreateOrganizationAdress(payload, 1);
+      expect(result.body.id).to.equal(1);
+      expect(result.body.statusCode).to.equal(204);
+    });
+  });
+  suite('GET organization/getMembers/:id', () => {
+    test('Should fail on throw error', async () => {
+      mockMethodWithResult(
+        organizationService,
+        'getMembers',
+        [1],
+        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+      );
+      try {
+        await organizationRoutes.getUsers(1);
+      } catch (error) {
+        expect(error).to.equal('throwing error');
+      }
+    });
+    test('Should success at eturning the right value', async () => {
+      mockMethodWithResult(organizationService, 'getMembers', [], Result.ok([{}]));
+      const result = await organizationRoutes.getUsers(1);
+      expect(result.body.statusCode).to.equal(200);
+    });
+  });
+  suite('GET gorganization/getUserOrganizations/:id', () => {
+    test('Should fail on throw error', async () => {
+      mockMethodWithResult(
+        organizationService,
+        'getUserOrganizations',
+        [1],
+        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+      );
+      try {
+        await organizationRoutes.getUserOrganizations(1);
+      } catch (error) {
+        expect(error).to.equal('throwing error');
+      }
+    });
+    test('Should success at eturning the right value', async () => {
+      mockMethodWithResult(organizationService, 'getUserOrganizations', [], Result.ok(1));
+      const result = await organizationRoutes.getUserOrganizations(1);
+      expect(result.body.statusCode).to.equal(200);
+    });
+  });
+  /*  
   suite('PUT update/:id', () => {
     const payload: ResourceRO = {
       name: 'resource_dash_one',
