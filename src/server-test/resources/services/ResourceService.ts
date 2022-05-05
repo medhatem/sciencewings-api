@@ -88,7 +88,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const instance = ResourceService.getInstance();
     expect(instance instanceof ResourceService);
   });
-
+  /** 
+ 
+ **/
   suite('create resource', () => {
     const user = 1;
     const organization = 1;
