@@ -54,18 +54,18 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     resourceCalendarService = createStubInstance(ResourceCalendarService);
     resourceTagService = createStubInstance(ResourceTagService);
 
-    const _container = stub(container, 'get');
-    _container.withArgs(Configuration).returns({
+    const mockedContainer = stub(container, 'get');
+    mockedContainer.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    _container.withArgs(Logger).returns({
+    mockedContainer.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
-    _container
+    mockedContainer
       .withArgs(ResourceService)
       .returns(
         new ResourceService(
