@@ -107,7 +107,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (!isUserInOrg) {
       return Result.notFound(`user with id ${id} is not member in organization.`);
     }
-
     if (user.status !== user.status.INVITATION_PENDING) {
       return Result.fail(`Cannot resend invite to an active user `);
     }
