@@ -141,7 +141,6 @@ export class ResourceService extends BaseService<Resource> {
       return Result.fail(`fail to create resource.`);
     }
     await createdResourceResult.managers.init();
-    console.log({ createdResourceResult });
 
     for (const manager of managers) {
       createdResourceResult.managers.add(manager);
