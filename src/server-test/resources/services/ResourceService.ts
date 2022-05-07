@@ -24,7 +24,6 @@ import {
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
   ResourceTimerRestrictionRO,
-  UpdateResourceRO,
 } from '@/modules/resources/routes/RequestObject';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { Result } from '@/utils/Result';
@@ -32,8 +31,6 @@ import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { BaseService } from '@/modules/base/services/BaseService';
 import Sinon = require('sinon');
 import { Collection } from '@mikro-orm/core';
-import { Member } from '@/modules/hr/models/Member';
-import { Resource } from '@/modules/resources/models/Resource';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceDao: SinonStubbedInstance<ResourceDao>;
@@ -88,9 +85,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const instance = ResourceService.getInstance();
     expect(instance instanceof ResourceService);
   });
-  /** 
- 
- **/
+
   suite('create resource', () => {
     const user = 1;
     const organization = 1;
@@ -112,6 +107,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
     });
+
     test('should fail on manager does not exist', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(null)));
@@ -132,6 +128,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Can not create settings for resource.`);
     });
+
     test('should fail on create resource ', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));
@@ -142,7 +139,30 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`fail to create resource.`);
     });
-    test('should succeed on create resource ', async () => {
+
+    test('should succeed on create resource', async () => {
+      const crPayload = { ...payload };
+      crPayload.managers;
+      crPayload.tags = [{ title: '' }];
+      delete crPayload.user;
+      delete crPayload.organization;
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
+        managers: {
+          init: stub(),
+          add: stub(),
+        },
+      });
+      Collection.prototype.init = stub();
+      mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'update', [], {});
+      const result = await container.get(ResourceService).createResource(crPayload);
+
+      expect(result.isSuccess).to.be.true;
+    });
+    test('should succeed on create resource v2', async () => {
       const crPayload = { ...payload };
       delete crPayload.managers;
       delete crPayload.user;
@@ -151,12 +171,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
-        managers: new Collection<Member>(Resource),
+        managers: {
+          init: stub(),
+          add: stub(),
+        },
       });
       Collection.prototype.init = stub();
       mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'update', [], {});
       const result = await container.get(ResourceService).createResource(crPayload);
+
       expect(result.isSuccess).to.be.true;
     });
   });
@@ -196,10 +220,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('update resource', () => {
     const resourceId = 1;
-    const payload: UpdateResourceRO = {
+    const payload: ResourceRO = {
       name: 'resource_dash_one',
       organization: 1,
-    };
+    } as any;
     test('should fail on resource not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(null));
       const result = await container.get(ResourceService).updateResource(payload, resourceId);
@@ -227,6 +251,19 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`resource with id ${resourceId} can not be updated.`);
+    });
+    test('should update resource without organization', async () => {
+      const mockPayload = { ...payload };
+      delete mockPayload.organization;
+
+      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
+
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      mockMethodWithResult(resourceDao, 'update', [], Promise.resolve(Result.ok({})));
+
+      const result = await container.get(ResourceService).updateResource(mockPayload, resourceId);
+
+      expect(result.isSuccess).to.be.true;
     });
     test('should update resource', async () => {
       mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
@@ -266,6 +303,18 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`fail to create resource calendar.`);
+    });
+    test('should succeed create resource calendar without organization', async () => {
+      const mockPayload = { ...payload };
+      delete mockPayload.organization;
+
+      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], Promise.resolve({}));
+
+      mockMethodWithResult(resourceCalendarService, 'create', [], Promise.resolve(Result.ok({})));
+
+      const result = await container.get(ResourceService).createResourceCalendar(mockPayload);
+
+      expect(result.isSuccess).to.be.true;
     });
     test('should succeed create resource calendar', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({ id: 1 })));
