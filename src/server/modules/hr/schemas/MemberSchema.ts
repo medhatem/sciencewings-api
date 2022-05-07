@@ -1,9 +1,5 @@
+import { userStatus } from '@/modules/users/models/User';
 import Joi = require('joi');
-
-export enum MemberStatusType {
-  INVITATION_PENDING = 'INVITATION_PENDING',
-  ACTIVE = 'ACTIVE',
-}
 
 const MemberSchema = Joi.object({
   resource: Joi.number(),
@@ -27,7 +23,7 @@ const MemberSchema = Joi.object({
   notes: Joi.string(),
   departureDescription: Joi.string(),
   departureDate: Date,
-  status: Joi.string().valid(MemberStatusType.ACTIVE, MemberStatusType.INVITATION_PENDING),
+  status: Joi.string().valid(userStatus.ACTIVE, userStatus.INVITATION_PENDING),
 });
 
 export const CreateMemberSchema = MemberSchema.keys({
