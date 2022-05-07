@@ -4,7 +4,7 @@
   "grep": ".*",
   "coverage": [
     "./dist/server/modules/phones/routes/PhoneRoutes.js",
-    "./dist/server/modules/hr/services/PhoneService.js"
+    "./dist/server/modules/phones/services/PhoneService.js"
   ],
 
   "suites": [

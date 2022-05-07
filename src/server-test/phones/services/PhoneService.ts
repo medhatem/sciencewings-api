@@ -40,16 +40,36 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
 
   suite('createBulkPhoneForUser', () => {
-    test('Should success on creation', async () => {
+    test('Should success on creation with no payload', async () => {
+      const result = await container.get(PhoneService).createBulkPhoneForUser(null, {} as any);
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(200);
+    });
+    test('Should success on creation with empty payload', async () => {
       const result = await container.get(PhoneService).createBulkPhoneForUser([] as any, {} as any);
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(200);
+    });
+    test('Should success on creation with data', async () => {
+      const result = await container.get(PhoneService).createBulkPhoneForUser([{}] as any, {} as any);
       expect(result.isSuccess).to.be.true;
       expect(result.getValue()).to.equal(200);
     });
   });
 
   suite('createBulkPhoneForOrganization', () => {
-    test('Should success on creation', async () => {
+    test('Should success on creation with no payload', async () => {
+      const result = await container.get(PhoneService).createBulkPhoneForOrganization(null, {} as any);
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(200);
+    });
+    test('Should success on creation with empty payload', async () => {
       const result = await container.get(PhoneService).createBulkPhoneForOrganization([] as any, {} as any);
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.equal(200);
+    });
+    test('Should success on creation with payload', async () => {
+      const result = await container.get(PhoneService).createBulkPhoneForOrganization([{}] as any, {} as any);
       expect(result.isSuccess).to.be.true;
       expect(result.getValue()).to.equal(200);
     });
