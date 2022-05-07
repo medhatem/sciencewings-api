@@ -6,7 +6,6 @@ import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
 import { container } from '@/di';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
-import { OrganizationRoutes } from '@/modules/organizations/routes/OrganizationRoutes';
 import { LocalStorage } from '@/utils/LocalStorage';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { UserInviteToOrgRO, UserResendPassword } from '@/modules/organizations/routes/RequestObject';
@@ -41,8 +40,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
 
   test('should create the right instance', () => {
-    const instance = OrganizationRoutes.getInstance();
-    expect(instance instanceof OrganizationRoutes);
+    const instance = MemberRoutes.getInstance();
+    expect(instance instanceof MemberRoutes);
   });
   suite('POST members/resendInvite', () => {
     const payload: UserResendPassword = {

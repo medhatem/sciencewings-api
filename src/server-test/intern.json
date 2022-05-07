@@ -2,6 +2,6 @@
   "debug": false,
   "bail": false,
   "grep": ".*",
-  "coverage": ["./dist/server/**/services/*.js"],
+  "coverage": ["./dist/server/**/routes/*.js", "./dist/server/**/services/*.js"],
   "suites": ["./dist/server-test/testSetUp.js", "./dist/server-test/**/*.js"]
 }

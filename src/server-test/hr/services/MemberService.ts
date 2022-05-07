@@ -13,19 +13,22 @@ import { UserService } from '@/modules/users/services/UserService';
 import { Email } from '@/utils/Email';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { Result } from '@/utils/Result';
+import { BaseService } from '@/modules/base/services/BaseService';
+import { Member } from '@/modules/hr/models/Member';
+import sinon = require('sinon');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let memberDao: SinonStubbedInstance<MemberDao>;
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
-
+  let baseService: SinonStubbedInstance<BaseService<Member>>;
   beforeEach(() => {
     memberDao = createStubInstance(MemberDao);
     organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
     emailService = createStubInstance(Email);
-
+    baseService: createStubInstance(BaseService);
     const _container = stub(container, 'get');
     _container.withArgs(Configuration).returns({
       getConfiguration: stub(),
@@ -49,6 +52,31 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   test('should create the right instance', () => {
     const instance = MemberService.getInstance();
     expect(instance instanceof MemberService);
+  });
+
+  suite('invite by email', () => {
+    test('Should fail on The user already exist', async () => {
+      const email = 'test',
+        orgId = 1;
+      sinon.stub(baseService, 'keycloak').returns({
+        getAdminClient: sinon.stub().returnsThis(),
+        users: sinon.stub().returnsThis(),
+        find: sinon.stub().returns([] as any),
+      });
+      const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`The user already exist.`);
+    });
+    /*     test('Should fail on retriving organization', async () => {
+      const userId = 1;
+      const orgId = 1;
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [orgId], Promise.resolve(Result.ok(null)));
+      const result = await container.get(MemberService).resendInvite(userId, orgId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`Organization with id ${orgId} does not exist.`);
+    }); */
   });
 
   // suite('invite User By Email', () => {});
