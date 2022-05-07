@@ -64,7 +64,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       socialYoutube: 'test',
       socialInstagram: 'test',
       adminContact: 1,
-      parentId: 1,
+      parent: 1,
     };
     const request = {
       userId: 1,
