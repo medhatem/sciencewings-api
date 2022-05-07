@@ -138,6 +138,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     if (resEntities.isFailure) {
       return resEntities;
     }
+
     const entities = await resEntities.getValue();
 
     const contract = this.wrapEntity(currentContract, {
