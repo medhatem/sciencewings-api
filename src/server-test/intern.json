@@ -2,6 +2,13 @@
   "debug": false,
   "bail": false,
   "grep": ".*",
-  "coverage": ["./dist/server/**/services/*.js"],
-  "suites": ["./dist/server-test/testSetUp.js", "./dist/server-test/**/*.js"]
+  "coverage": [
+    "./dist/server/modules/address/services/AddressService.js",
+    "./dist/server/modules/address/routes/AddressRoutes.js"
+  ],
+  "suites": [
+    "./dist/server-test/testSetUp.js",
+    "./dist/server-test/address/routes/*.js",
+    "./dist/server-test/address/services/*.js"
+  ]
 }
