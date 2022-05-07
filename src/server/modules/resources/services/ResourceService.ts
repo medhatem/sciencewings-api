@@ -156,7 +156,6 @@ export class ResourceService extends BaseService<Resource> {
     );
 
     await this.dao.update(createdResourceResult);
-    console.log('after uodate');
     const id = createdResourceResult.id;
     return Result.ok<number>(id);
   }
