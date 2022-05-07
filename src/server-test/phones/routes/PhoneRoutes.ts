@@ -12,7 +12,6 @@ import { PhoneService } from '@/modules/phones/services/PhoneService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let phoneService: SinonStubbedInstance<PhoneService>;
-  let phoneRoutes: PhoneRoutes;
   beforeEach(() => {
     createStubInstance(Configuration);
     phoneService = createStubInstance(PhoneService);
@@ -29,7 +28,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       warn: stub(),
     });
     mockedContainer.withArgs(PhoneRoutes).returns(new PhoneRoutes(phoneService));
-    phoneRoutes = container.get(PhoneRoutes);
   });
 
   afterEach(() => {
