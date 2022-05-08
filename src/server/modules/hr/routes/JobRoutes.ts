@@ -3,11 +3,11 @@ import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Job } from '@/modules/hr/models/Job';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { JobDTO, CreateJobDTO, UpdateJobDTO } from '@/modules/hr/dtos/JobDTO';
-import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { JobRO } from './RequestObject';
-import { IJobService } from '@/modules/hr/interfaces';
+import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { Response } from 'typescript-rest-swagger';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 
 @provideSingleton()
 @Path('jobs')
@@ -27,7 +27,7 @@ export class JobRoutes extends BaseRoutes<Job> {
    */
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<JobRO>(201, 'Job created Successfully')
   @Response<JobRO>(500, 'Internal Server Error')
@@ -35,10 +35,10 @@ export class JobRoutes extends BaseRoutes<Job> {
     const result = await this.jobService.createJob(payload);
 
     if (result.isFailure) {
-      return new JobDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      return new JobDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
 
-    return new JobDTO().serialize({ body: { jobId: result.getValue(), statusCode: 201 } });
+    return new JobDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -49,17 +49,18 @@ export class JobRoutes extends BaseRoutes<Job> {
    */
   @PUT
   @Path('/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<JobDTO>(204, 'Job updated Successfully')
-  @Response<JobDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateJob(payload: JobRO, @PathParam('id') id: number): Promise<JobDTO> {
     const result = await this.jobService.updateJob(payload, id);
 
     if (result.isFailure) {
-      return new JobDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new JobDTO().serialize({ body: { jobId: result.getValue(), statusCode: 204 } });
+    return new JobDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }

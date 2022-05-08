@@ -5,7 +5,6 @@ import { Path, GET, PUT, PathParam, DELETE, Security } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
 import { BaseRequestDTO } from '../dtos/BaseDTO';
 import { Logger } from '@/utils/Logger';
-import { KEYCLOAK_TOKEN } from '@/modules/../authenticators/constants';
 
 @provideSingleton()
 export class BaseRoutes<T extends BaseModel<T>> {
@@ -24,23 +23,24 @@ export class BaseRoutes<T extends BaseModel<T>> {
 
   @GET
   @Path('/getById/:id')
-  @Security([], KEYCLOAK_TOKEN)
-  @Response(200, 'success')
+  @Security()
+  @Response<BaseRequestDTO>(200, 'success')
   public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
     const result = await this.service.get(id);
     if (result.isFailure) {
-      return this.getDTOMapper.serialize({
+      return this.getDTOMapper.deserialize({
         error: { statusCode: 500, message: result.error },
       });
     }
-    return this.getDTOMapper.serialize({
-      body: { statusCode: 204, ...result.getValue() },
+
+    return this.getDTOMapper.deserialize({
+      body: { statusCode: 200, data: [result.getValue()] },
     });
   }
 
   @GET
   @Path('/getAll')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @Response(200, 'success')
   @Response(401, 'error')
   public async getAll(): Promise<any> {
@@ -51,57 +51,37 @@ export class BaseRoutes<T extends BaseModel<T>> {
       });
     }
     return this.getDTOMapper.serialize({
-      body: { statusCode: 204, enities: result.getValue() },
+      body: { statusCode: 200, body: result.getValue() },
     });
   }
 
   @PUT
   @Path('/:id')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @Response(204, 'success')
   public async update(@PathParam('id') id: number, payload: any): Promise<any> {
-    const currentEntity = await this.service.get(id);
-    if (currentEntity.isFailure || (await currentEntity.getValue()) === null) {
-      return this.updateDTOMapper.serialize({
-        error: { statusCode: 404, message: `Entity with id ${id} does not exist` },
-      });
-    }
+    const currentEntity = await this.service.updateRoute(id, payload);
 
-    const entity = {
-      ...currentEntity.getValue(),
-      ...payload,
-    };
-
-    const result = await this.service.update(entity);
-    if (result.isFailure) {
-      return this.updateDTOMapper.serialize({
-        error: { statusCode: 500, message: result.error },
-      });
+    if (currentEntity.isFailure) {
+      throw currentEntity.error;
     }
     return this.updateDTOMapper.serialize({
-      body: { statusCode: 204, entityId: result.getValue() },
+      body: { statusCode: 204, id: currentEntity.getValue().id },
     });
   }
 
   @DELETE
   @Path('/:id')
-  @Security([], KEYCLOAK_TOKEN)
+  @Security()
   @Response(201, 'success')
   public async remove(@PathParam('id') id: number): Promise<any> {
-    const currentEntity = await this.service.get(id);
-    if (currentEntity.isFailure || currentEntity.getValue() === null) {
-      return new BaseRequestDTO().serialize({
-        error: { statusCode: 404, userId: `Entity with id ${id} does not exist` },
-      });
-    }
-    const result = await this.service.remove(id);
+    const result = await this.service.removeRoute(id);
+
     if (result.isFailure) {
-      return new BaseRequestDTO().serialize({
-        error: { statusCode: 500, error: result.error },
-      });
+      throw result.error;
     }
     return new BaseRequestDTO().serialize({
-      body: { statusCode: 204, entityId: result.getValue() },
+      body: { statusCode: 204, id },
     });
   }
 }

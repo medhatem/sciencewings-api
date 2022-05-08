@@ -1,4 +1,6 @@
-import { AssignOptions } from '@mikro-orm/core';
+import { AssignOptions, FindOneOptions, FindOptions } from '@mikro-orm/core';
+
+import { FETCH_STRATEGY } from '../daos';
 import { Result } from '@/utils/Result';
 
 export abstract class IBaseService<T> {
@@ -12,9 +14,17 @@ export abstract class IBaseService<T> {
 
   public update: (entry: T) => Promise<Result<any>>;
 
+  public updateRoute: (id: number, payload: any) => Promise<Result<any>>;
+
   public remove: (id: number) => Promise<Result<number>>;
 
-  getByCriteria: (criteria: { [key: string]: any }) => Promise<T>;
+  public removeRoute: (id: number) => Promise<Result<number>>;
+
+  getByCriteria: (
+    criteria: { [key: string]: any },
+    fetchStrategy: FETCH_STRATEGY,
+    options?: FindOptions<T> | FindOneOptions<T>,
+  ) => Promise<Result<T>>;
 
   public wrapEntity: (entity: T, payload: { [key: string]: any }, options: boolean | AssignOptions) => T;
 }

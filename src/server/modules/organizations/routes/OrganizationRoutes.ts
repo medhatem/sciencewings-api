@@ -1,16 +1,21 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Path, POST, Security, ContextRequest, GET, PathParam } from 'typescript-rest';
-import { KEYCLOAK_TOKEN } from '../../../authenticators/constants';
-import { CreateOrganizationRO, UserInviteToOrgRO } from './RequestObject';
+import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
+import { CreateOrganizationRO, UpdateOrganizationRO } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
-import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
+import { OrganizationMembersDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
+import { UpdateResourceBodyDTO } from '@/modules/resources/dtos/ResourceDTO';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 
 @provideSingleton()
 @Path('organization')
@@ -25,10 +30,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
   @POST
   @Path('createOrganization')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<OrganizationDTO>(201, 'Organization created Successfully')
-  @Response<OrganizationDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
@@ -36,36 +42,83 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
-      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new OrganizationDTO().serialize({ body: { createdOrgId: result.getValue(), statusCode: 201 } });
+    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 201 } });
+  }
+  /**
+   * Update an organization in the database
+   *
+   * @param payload Should contain general data Organization
+   * @param id  id of the updated organization
+   *
+   */
+  @PUT
+  @Path('updateOrganization/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'Organization updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateOrganization(
+    @PathParam('id') id: number,
+    payload: UpdateOrganizationRO,
+  ): Promise<OrganizationDTO> {
+    const result = await this.OrganizationService.updateOrganizationGeneraleProperties(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**
-   * invite a user to an organization
-   * creates the newly invited user in keycloak
+   * add an phone to a given organization
    *
-   * @param payload
+   * @param payload Should contain new organization phone details
+   *
+   * @param id id of the updated organization
+   *
    */
   @POST
-  @Path('inviteUserToOrganization')
-  @Response<InviteUserDTO>(201, 'User Registred Successfully')
-  @Response<OrganizationDTO>(500, 'Internal Server Error')
-  @Security([], KEYCLOAK_TOKEN)
+  @Path('phone/:id')
+  @Security()
   @LoggerStorage()
-  public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
-    const result = await this.OrganizationService.inviteUserByEmail(payload.email, payload.organizationId);
+  @Response<PhoneBaseBodyDTO>(204, 'Organization phone created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async CreateOrganizationPhone(@PathParam('id') id: number, payload: PhoneRO): Promise<PhoneDTO> {
+    const result = await this.OrganizationService.addPhoneToOrganization(payload, id);
 
     if (result.isFailure) {
-      return new InviteUserDTO().serialize({
-        error: { statusCode: 500, errorMessage: result.error },
-      });
+      throw result.error;
     }
+    return new PhoneDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
 
-    return new InviteUserDTO().serialize({
-      body: { statusCode: 201, userId: result.getValue() },
-    });
+  /**
+   * create a new organization address in the database
+   *
+   * @param payload add phone to organization as a name
+   *
+   * @param id id of the updated organization
+   *
+   */
+  @POST
+  @Path('address/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<AddressBodyDTO>(204, 'Organization address created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async CreateOrganizationAdress(@PathParam('id') id: number, payload: AddressRO): Promise<AddressBaseDTO> {
+    const result = await this.OrganizationService.addAddressToOrganization(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new AddressBaseDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /**
@@ -75,38 +128,39 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('getMembers/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
-  @Response<OrganizationDTO>(200, 'Return organization members Successfully')
-  @Response<OrganizationDTO>(500, 'Internal Server Error')
-  public async getUsers(@PathParam('id') payload: number) {
+  @Response<OrganizationMembersDTO>(200, 'Return organization members Successfully')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getUsers(@PathParam('id') payload: number): Promise<OrganizationMembersDTO> {
     const result = await this.OrganizationService.getMembers(payload);
 
     if (result.isFailure) {
-      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new OrganizationDTO().serialize({ body: { members: result.getValue(), statusCode: 200 } });
+    return new OrganizationMembersDTO({ body: { members: result.getValue(), statusCode: 200 } });
   }
 
   /**
-   * retrieve all the organizations a given user is a member of
+   * retrieve all the organizations owned by a given user
    *
    * @param id: user id
    */
   @GET
   @Path('getUserOrganizations/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<OrganizationDTO>(200, 'Return Organization that the users belongs to, Successfully')
-  @Response<OrganizationDTO>(500, 'Internal Server Error')
-  public async getUserOrganizations(@PathParam('id') payload: number) {
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getUserOrganizations(@PathParam('id') payload: number): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.getUserOrganizations(payload);
 
     if (result.isFailure) {
-      return new OrganizationDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new OrganizationDTO().serialize({ body: { organizations: result.getValue(), statusCode: 200 } });
+    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 200 } });
   }
 }

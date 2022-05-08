@@ -1,10 +1,10 @@
 import { container, provideSingleton } from '@/di/index';
 
-import { Address } from '@/modules/address/models/AdressModel';
+import { Address } from '@/modules/address/models/Address';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { IAddressService } from '../interfaces/IAddressService';
+import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
@@ -19,22 +19,16 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     return container.get(IAddressService);
   }
 
+  /**
+   * create an address in the database
+   * @param payload address data
+   * @returns created address
+   */
   @log()
   @safeGuard()
   async createAddress(payload: AddressRO): Promise<Result<Address>> {
     const wrappedAddress = this.wrapEntity(this.dao.model, payload);
-    const address = await this.dao.create(wrappedAddress);
+    const address: Address = await this.dao.create(wrappedAddress);
     return Result.ok<Address>(address);
-  }
-
-  @log()
-  @safeGuard()
-  async createBulkAddress(payload: AddressRO[]): Promise<Result<number>> {
-    payload.map((el: AddressRO) => {
-      const address = this.wrapEntity(this.dao.model, el);
-      this.dao.repository.persist(address);
-    });
-
-    return Result.ok<number>(200);
   }
 }

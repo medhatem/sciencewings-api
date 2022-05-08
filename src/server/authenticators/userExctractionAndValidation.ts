@@ -1,8 +1,7 @@
 import { IUserService } from '../modules/users/interfaces/IUserService';
 import { Result } from '@/utils/Result';
 import { UserRequest } from '../types/UserRequest';
-import fetch from 'node-fetch';
-import { getConfig } from '../configuration/Configuration';
+import { fetchKeyclockUserGivenToken } from './fetchKeyclockUserGivenToken';
 import { provideSingleton } from '@/di';
 
 @provideSingleton()
@@ -16,40 +15,22 @@ export class UserExctractionAndValidation {
    *
    * @param req express request
    */
-  userExctractionAndValidation = async (req: UserRequest): Promise<Result<{ keycloakUser: any; userId: any }>> => {
+  userExctractionAndValidation = async (req: UserRequest): Promise<Result<{ keycloakUser: any; userId?: any }>> => {
     if (!req.headers || !req.headers.authorization) {
-      return Result.fail('Not Authorized');
+      return Result.unauthorizedError('Not Authorized');
     }
 
     const token = req.headers.authorization as string;
-    const res = await fetch(
-      `${getConfig('keycloak.baseUrl')}/realms/${getConfig(
-        'keycloak.clientValidation.realmName',
-      )}/protocol/openid-connect/userinfo`,
-      {
-        method: 'get',
-        headers: {
-          Authorization: `${token}`,
-        },
-      },
-    );
-    const result = await res.json();
+    const result = await fetchKeyclockUserGivenToken(token);
     if (result.error) {
-      return Result.fail('Not Authorized');
-    }
-    const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });
-    if (criteriaResult.isFailure) {
-      return Result.fail('Unrecognized user!');
+      return Result.unauthorizedError('Not Authorized');
     }
 
-    let userId = criteriaResult.getValue() ? criteriaResult.getValue().id : null;
-    if (!criteriaResult) {
-      const registerUserResult = await this.userService.registerUser(result);
-      if (registerUserResult.isFailure) {
-        return Result.fail('Unexpected Error!');
-      }
-      userId = registerUserResult.getValue();
+    const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });
+    if (criteriaResult.isFailure || criteriaResult.getValue() === null) {
+      return Result.fail('Unrecognized user!');
     }
+    const userId = criteriaResult.getValue().id;
 
     req.keycloakUser = result;
     req.userId = userId;

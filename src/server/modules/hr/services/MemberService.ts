@@ -1,36 +1,26 @@
-import { Phone } from './../../phones/models/Phone';
-import { Address } from './../../address/models/AdressModel';
-import { Resource } from './../../resources/models/Resource';
-import { Organization } from './../../organizations/models/Organization';
-import { MemberRO } from '@/modules/hr/routes/RequestObject';
-import { CreateMemberSchema, UpdateMemberSchema } from '@/modules/hr/schemas/MemberSchema';
 import { container, provideSingleton } from '@/di/index';
-
 import { BaseService } from '@/modules/base/services/BaseService';
-import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { IOrganizationService } from '@/modules/organizations/interfaces';
-import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { IResourceService } from '@/modules/resources/interfaces';
-import { Member } from '@/modules/hr/models/Member';
+import { Member, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { MemberDao } from '@/modules/hr/daos/MemberDao';
 import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
-import { validate } from '@/decorators/validate';
-import { validateParam } from '@/decorators/validateParam';
-
-type OrganizationAndResource = { currentOrg: Organization; currentRes: Resource };
-type WorkAndEmergencyPhone = { workPhone: Phone; emergencyPhone: Phone };
+import { FETCH_STRATEGY } from '@/modules/base';
+import { getConfig } from '@/configuration/Configuration';
+import { User, userStatus } from '@/modules/users/models/User';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { Email } from '@/utils/Email';
+import { EmailMessage } from '@/types/types';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
   constructor(
     public dao: MemberDao,
+    public userService: IUserService,
     public organizationService: IOrganizationService,
-    public addressService: IAddressService,
-    public phoneService: IPhoneService,
-    public resourceService: IResourceService,
+    public emailService: Email,
   ) {
     super(dao);
   }
@@ -41,206 +31,94 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
   @log()
   @safeGuard()
-  private async checkEntitiesExistence(
-    organization: number,
-    resource: number,
-  ): Promise<Result<OrganizationAndResource | string>> {
-    let currentOrg;
-    let currentRes;
-    if (organization) {
-      currentOrg = await this.organizationService.get(organization);
-      if (currentOrg.isFailure || currentOrg.getValue() === null) {
-        return Result.fail(`Organization with id ${organization} does not exist.`);
-      }
-    }
-    if (resource) {
-      currentRes = await this.resourceService.get(resource);
-      if (currentRes.isFailure || currentRes.getValue() === null) {
-        return Result.fail(`Resource with id ${resource} does not exist.`);
-      }
-    }
-    return Result.ok({ currentOrg: currentOrg.getValue(), currentRes: currentRes.getValue() });
-  }
-
-  @log()
-  @safeGuard()
-  private async handleAddressForMemeber(payload: MemberRO, isUpdate = false): Promise<Result<Address | string>> {
-    let createdWorkLocation;
-
-    if (isUpdate) {
-      if (payload.workLocation) {
-        const fetchedWorkLocation = await this.addressService.get(payload.workLocation.id);
-        if (fetchedWorkLocation.isFailure) {
-          return fetchedWorkLocation;
-        }
-        const workLocation = {
-          ...fetchedWorkLocation.getValue(),
-          ...payload.workLocation,
-        };
-        this.addressService.update(workLocation);
-      }
+  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
+    const existingUser = await this.keycloak
+      .getAdminClient()
+      .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
+    if (existingUser.length > 0) {
+      return Result.fail('The user already exist.');
     }
 
-    if (payload.workLocation) createdWorkLocation = await this.addressService.createAddress(payload.workLocation);
+    const existingOrg = await this.organizationService.get(orgId);
 
-    if (payload.workLocation && createdWorkLocation.isFailure) {
-      return Result.fail(createdWorkLocation.error);
+    if (!existingOrg) {
+      return Result.notFound('The organization to add the user to does not exist.');
     }
 
-    const workLocation = payload.workLocation ? createdWorkLocation.getValue() : null;
-
-    return Result.ok(workLocation);
-  }
-
-  @log()
-  @safeGuard()
-  private async handlePhonesForMemeber(
-    payload: MemberRO,
-    member: Member,
-    isUpdate = false,
-  ): Promise<Result<WorkAndEmergencyPhone | string>> {
-    let createdWorkPhone;
-    let createdEmergencyPhone;
-
-    if (isUpdate) {
-      if (payload.workPhone) {
-        const fetchedWorkPhone = await this.phoneService.get(payload.workPhone.id);
-        if (fetchedWorkPhone.isFailure) {
-          return fetchedWorkPhone;
-        }
-        const workPhone = {
-          ...fetchedWorkPhone.getValue(),
-          ...payload.workPhone,
-        };
-        this.phoneService.update(workPhone);
-      }
-      if (payload.emergencyPhone) {
-        const fetchedEmergencyPhone = await this.phoneService.get(payload.emergencyPhone.id);
-        if (fetchedEmergencyPhone.isFailure) {
-          return fetchedEmergencyPhone;
-        }
-        const emergencyPhone = {
-          ...fetchedEmergencyPhone.getValue(),
-          ...payload.emergencyPhone,
-        };
-        this.phoneService.update(emergencyPhone);
-      }
-    }
-
-    if (payload.workPhone) {
-      createdWorkPhone = await this.phoneService.createPhoneForMember(payload.workPhone, member);
-    }
-    if (payload.emergencyPhone) {
-      createdEmergencyPhone = await this.phoneService.createPhoneForMember(payload.emergencyPhone, member);
-    }
-
-    if (payload.workPhone && createdWorkPhone.isFailure) {
-      return Result.fail(createdWorkPhone.error);
-    } else if (payload.emergencyPhone && createdEmergencyPhone.isFailure) {
-      await this.phoneService.remove(createdWorkPhone.getValue().id);
-      return Result.fail(createdEmergencyPhone.error);
-    }
-
-    const workPhone = payload.workPhone ? createdWorkPhone.getValue() : null;
-    const emergencyPhone = payload.emergencyPhone ? createdEmergencyPhone.getValue() : null;
-
-    return Result.ok({ workPhone, emergencyPhone });
-  }
-
-  /**
-   * Override the create method
-   */
-  @log()
-  @safeGuard()
-  @validate
-  public async createMember(@validateParam(CreateMemberSchema) payload: MemberRO): Promise<Result<number | string>> {
-    const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
-    if (existence.isFailure) {
-      return Result.fail(existence.error);
-    }
-    const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
-
-    const addresss = await this.handleAddressForMemeber(payload);
-    if (addresss.isFailure) {
-      return Result.fail(addresss.error);
-    }
-    const workLocation = addresss.getValue();
-
-    const member = {
-      ...payload,
-      organization: currentOrg,
-      resource: currentRes,
-      workLocation,
-    };
-
-    const createdMemberResult = await this.create(this.wrapEntity(this.dao.model, member));
-
-    if (createdMemberResult.isFailure) {
-      return createdMemberResult;
-    }
-
-    const createdMember = createdMemberResult.getValue();
-
-    const phones = await this.handlePhonesForMemeber(payload, createdMember);
-    if (phones.isFailure) {
-      return Result.fail<number>(existence.error);
-    }
-    const { workPhone, emergencyPhone } = phones.getValue() as WorkAndEmergencyPhone;
-    createdMember.workPhone = workPhone;
-    createdMember.emergencyPhone = emergencyPhone;
-    await this.update(createdMember);
-
-    return Result.ok(createdMember.getValue().id);
-  }
-
-  /**
-   * Override the update method
-   */
-  @log()
-  @safeGuard()
-  @validate
-  public async updateMember(
-    @validateParam(UpdateMemberSchema) payload: MemberRO,
-    memberId: number,
-  ): Promise<Result<number | string>> {
-    const member = await this.dao.get(memberId);
-    if (!member) {
-      return Result.fail<number>(`Member with id ${memberId} does not exist`);
-    }
-
-    const existence = await this.checkEntitiesExistence(payload.organization, payload.resource);
-    if (existence.isFailure) {
-      return Result.fail(existence.error);
-    }
-    delete payload.organization, payload.resource;
-    const { currentOrg, currentRes } = existence.getValue() as OrganizationAndResource;
-
-    const addresss = await this.handleAddressForMemeber(payload, true);
-    if (addresss.isFailure) {
-      return Result.fail(addresss.error);
-    }
-    const workLocation = addresss.getValue();
-
-    const phones = await this.handlePhonesForMemeber(payload, member, true);
-    if (phones.isFailure) {
-      return Result.fail(phones.error);
-    }
-    const { workPhone, emergencyPhone } = phones.getValue() as WorkAndEmergencyPhone;
-
-    const _member = this.wrapEntity(member, {
-      ...member,
-      ...payload,
-      organization: currentOrg ? currentOrg : member.organization,
-      resource: currentRes ? currentRes : member.resource,
-      workLocation: workLocation ? workLocation : member.workLocation,
-      workPhone: workPhone ? workPhone : member.workPhone,
-      emergencyPhone: emergencyPhone ? emergencyPhone : member.emergencyPhone,
+    const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
+      email,
+      firstName: '',
+      lastName: '',
+      realm: getConfig('keycloak.clientValidation.realmName'),
     });
 
-    const updatedMember = await this.update(_member);
-    if (updatedMember.isFailure) {
-      return updatedMember;
+    //save created keycloak user in the database
+    const user = new User();
+    user.firstname = '';
+    user.lastname = '';
+    user.email = email;
+    user.keycloakId = createdKeyCloakUser.id;
+
+    const savedUser = await this.userService.create(user);
+    if (savedUser.isFailure) {
+      return savedUser;
     }
-    return Result.ok(updatedMember.getValue().id);
+    // create member for the organization
+    const createdMemberResult = await this.dao.create({
+      user: savedUser.getValue(),
+      organization: existingOrg,
+      memberType: MemberTypeEnum.Regular,
+    });
+
+    existingOrg.members.add(createdMemberResult);
+
+    await this.dao.update(existingOrg);
+    const emailMessage: EmailMessage = {
+      from: this.emailService.from,
+      to: email,
+      text: 'Sciencewings - reset password',
+      html: '<html><body>Reset password</body></html>',
+      subject: ' reset password',
+    };
+
+    this.emailService.sendEmail(emailMessage);
+    user.status = userStatus.INVITATION_PENDING;
+    await this.userService.update(user);
+
+    return Result.ok<number>(savedUser.getValue().id);
+  }
+
+  @log()
+  @safeGuard()
+  async resendInvite(id: number, orgId: number): Promise<Result<number>> {
+    const existingUser = await this.userService.get(id);
+
+    if (existingUser.isFailure || existingUser.getValue() === null) {
+      return Result.notFound(`user with id ${id} not exist.`);
+    }
+    const user = existingUser.getValue();
+    const existingOrg = await this.dao.get(orgId);
+
+    if (!existingOrg) {
+      return Result.fail(`Organization with id ${orgId} does not exist.`);
+    }
+
+    if (!this.dao.getByCriteria({ user: id }, FETCH_STRATEGY.SINGLE)) {
+      return Result.notFound(`user with id ${id} is not member in organization.`);
+    }
+
+    if (user.status !== user.status.INVITATION_PENDING) {
+      return Result.fail(`Cannot resend invite to an active user `);
+    }
+    const url = process.env.KEYCKLOACK_RESET_PASSWORD;
+    const emailMessage: EmailMessage = {
+      from: this.emailService.from,
+      to: user.email,
+      text: 'Sciencewings - reset password',
+      html: `<html><body><a href=${url}>-reset password</a></body></html>`,
+      subject: 'reset password',
+    };
+    this.emailService.sendEmail(emailMessage);
+    return Result.ok<number>(user.id);
   }
 }

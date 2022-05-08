@@ -1,18 +1,25 @@
-import { EntityRepository, GetRepository } from '@mikro-orm/core';
+import { EntityManager, EntityRepository, QueryBuilder } from '@mikro-orm/postgresql';
+import { FindOneOptions, FindOptions, GetRepository } from '@mikro-orm/core';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Logger } from '@/modules/../utils/Logger';
-import { ServerError } from '@/modules/../errors/ServerError';
-import { connection } from '@/modules/../db/index';
+import { Logger } from '@/utils/Logger';
+import { ServerError } from '@/errors/ServerError';
+import { connection } from '@/db/index';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di/index';
+
+export enum FETCH_STRATEGY {
+  'ALL' = 'ALL',
+  'SINGLE' = 'SINGLE',
+}
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
   public repository: GetRepository<T, EntityRepository<T>>;
+  public builder: QueryBuilder<T>;
   public logger: Logger;
   constructor(public model: T) {
-    this.repository = connection.em.getRepository<T>(model.constructor as new () => T);
+    this.repository = (connection.em as any as EntityManager).getRepository<T>(model.constructor as new () => T);
     this.logger = Logger.getInstance();
   }
 
@@ -21,28 +28,31 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   @log()
-  public async get(id: number): Promise<T> {
-    return (this.repository as any).findOne(id);
+  public async get(id: number, options?: any): Promise<T> {
+    return (this.repository as any).findOne(id, options);
   }
 
   /**
-   * fetches single record using a given search criteria
+   * fetches record using a given search criteria
    *
    * @param criteria the criteria to fetch with
+   * @param fetchStrategy were it return list or single matched record
+   * @param options extra option for search
    */
   @log()
-  async getByCriteria(criteria: { [key: string]: any }): Promise<T> {
-    return (this.repository as any).findOne(criteria);
-  }
-
-  /**
-   * fetches all records  using a given search criteria
-   *
-   * @param criteria the criteria to fetch with
-   */
-  @log()
-  async getAllByCriteria(criteria: { [key: string]: any }): Promise<T[]> {
-    return (this.repository as any).find(criteria);
+  async getByCriteria<Y extends keyof typeof FETCH_STRATEGY>(
+    criteria: { [key: string]: any },
+    fetchStrategy = FETCH_STRATEGY.SINGLE,
+    options?: Y extends FETCH_STRATEGY.SINGLE ? FindOneOptions<T, never> : FindOptions<T, never>,
+  ): Promise<T | T[]> {
+    switch (fetchStrategy) {
+      case FETCH_STRATEGY.ALL:
+        return this.repository.find(criteria as any, options);
+      case FETCH_STRATEGY.SINGLE:
+        return this.repository.findOne(criteria as any, options);
+      default:
+        return (this.repository as any).findOne(criteria, options);
+    }
   }
 
   @log()
@@ -66,7 +76,7 @@ export class BaseDao<T extends BaseModel<T>> {
 
   @log()
   public async remove(entry: T): Promise<T> {
-    await this.repository.removeAndFlush(entry);
+    await this.repository.nativeDelete(entry);
     return entry;
   }
 }

@@ -2,6 +2,7 @@
   "swagger": {
     "basePath": "/api/v1",
     "outputDirectory": "./dist/server",
+    "outputFormat": "OpenApi_3",
     "entryFile": [
       "./src/server/modules/address/dtos/index.ts",
       "./src/server/modules/address/routes/index.ts",
@@ -34,18 +35,14 @@
       "./src/server/modules/users/dtos/index.ts",
       "./src/server/modules/users/routes/index.ts",
       "./src/server/modules/users/models/index.ts",
-      "./src/server/modules/users/interfaces/index.ts"
+      "./src/server/modules/users/interfaces/index.ts",
+      "node_modules/typescript-rest/src/server/model/errors.ts"
     ],
     "securityDefinitions": {
-      "api_key": {
+      "default": {
         "type": "apiKey",
-        "name": "access_token",
-        "in": "query"
-      },
-      "keycloak_token": {
-        "type": "apiKey",
-        "name": "access_token",
-        "in": "query"
+        "name": "Authorization",
+        "in": "header"
       }
     }
   }

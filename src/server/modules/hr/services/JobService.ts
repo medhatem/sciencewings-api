@@ -1,5 +1,5 @@
 import { Job } from '@/modules/hr/models/Job';
-import { IOrganizationService } from '@/modules/organizations/interfaces';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';
@@ -38,7 +38,7 @@ export class JobService extends BaseService<Job> implements IJobService {
   private async getOrganization(organizationId: number): Promise<Result<any>> {
     const fetchedOrganization = await this.organizationService.get(organizationId);
     if (fetchedOrganization.isFailure || fetchedOrganization.getValue() === null) {
-      return Result.fail(`Organization with id ${organizationId} does not exist`);
+      return Result.notFound(`Organization with id ${organizationId} does not exist`);
     }
     return Result.ok(fetchedOrganization.getValue());
   }
@@ -95,15 +95,7 @@ export class JobService extends BaseService<Job> implements IJobService {
   public async updateJob(payload: JobRO, jobId: number): Promise<Result<number>> {
     const fetchedJob = await this.dao.get(jobId);
     if (!fetchedJob) {
-      return Result.fail(`Job with id ${jobId} does not exist`);
-    }
-
-    if (payload.group) {
-      const fetchedGroup = await this.getGroup(payload.group);
-      if (fetchedGroup.isFailure) {
-        return fetchedGroup;
-      }
-      fetchedJob.group = fetchedGroup.getValue();
+      return Result.notFound(`Job with id ${jobId} does not exist`);
     }
 
     if (payload.organization) {

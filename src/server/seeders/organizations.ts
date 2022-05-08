@@ -1,6 +1,6 @@
-import { Address } from '@/modules/address/models/AdressModel';
+import { Address } from '@/modules/address/models/Address';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
-import { AddressType } from '@/modules/address/models/AdressModel';
+import { AddressType } from '@/modules/address/models/Address';
 import { Logger } from '@/utils/Logger';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -45,9 +45,9 @@ export class SeedOrganizations {
         );
         const phone = await this.phoneDAO.create(
           wrap(new Phone()).assign({
-            label: 'personal',
-            code: '+213',
-            number: faker.phone.phoneNumberFormat(3),
+            phoneLabel: 'personal',
+            phoneCode: '+213',
+            phoneNumber: faker.phone.phoneNumberFormat(3),
           }),
         );
         const org: any = {

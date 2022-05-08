@@ -8,7 +8,6 @@ import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 import { container, provideSingleton } from '@/di';
 
-import { KEYCLOAK_TOKEN } from './authenticators/constants';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { Keycloak } from '@/sdks/keycloak';
 import { RequestHandler } from 'express';
@@ -19,6 +18,10 @@ import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
+import { HttpError } from 'typescript-rest/dist/server/model/errors';
+
+import '@/decorators/events';
+import { MemberEvent } from './modules/hr/events/MemberEvent';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -75,7 +78,7 @@ export class Server {
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
-    // handleRequests();
+    new MemberEvent();
   }
 
   /**
@@ -101,11 +104,26 @@ export class Server {
     this.expressApp.use('/api/docs', swaggerUi.serve, swaggerUi.setup(data));
     this.expressApp.use('/swagger', express.static(__dirname));
     RestServer.buildServices(this.expressApp);
+    this.expressApp.use((err: Error, req: any, res: any, next: any) => {
+      if (err instanceof HttpError) {
+        if (res.headersSent) {
+          // important to allow default error handler to close connection if headers already sent
+          return next(err);
+        }
+        console.error(err.stack);
+        res.set('Content-Type', 'application/json');
+        res.status(err.statusCode);
+        res.json({ error: err.message, statusCode: err.statusCode });
+      } else {
+        res.status(500).json({ error: err.message, statusCode: 500 });
+      }
+    });
   }
 
   private configureAuthenticator() {
     const keyCloakAuth = container.get(KeyCloakToken);
-    RestServer.registerAuthenticator(keyCloakAuth, KEYCLOAK_TOKEN);
+    // register the default authenticator which will be the keycloak jwt token
+    RestServer.registerAuthenticator(keyCloakAuth);
   }
 
   private startKeycloakAdmin() {

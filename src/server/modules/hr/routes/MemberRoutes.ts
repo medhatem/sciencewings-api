@@ -1,21 +1,21 @@
-import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Member } from '@/modules/hr/models/Member';
-import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
-import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
-import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
-import { LoggerStorage } from '@/decorators/loggerStorage';
-import { MemberRO } from './RequestObject';
+import { Path, POST, Security } from 'typescript-rest';
+import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces';
-import { CreateMemberDTO } from '@/modules/hr/dtos/CreateMemberDTO';
-import { UpdateMemberDTO } from '@/modules/hr/dtos/UpdateMemberDTO';
+import { MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos';
+import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { InviteUserDTO } from '@/modules/organizations';
+import { UserIdDTO, UserInviteToOrgRO } from '@/modules/users';
+import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
 
 @provideSingleton()
 @Path('members')
 export class MemberRoutes extends BaseRoutes<Member> {
-  constructor(private memberService: IMemberService) {
-    super(memberService as any, new CreateMemberDTO(), new UpdateMemberDTO());
+  constructor(private MemberService: IMemberService) {
+    super(MemberService as any, new MemberDTO(), new UpdateMemberDTO());
   }
 
   static getInstance(): MemberRoutes {
@@ -23,40 +23,50 @@ export class MemberRoutes extends BaseRoutes<Member> {
   }
 
   /**
-   * Override the create method
+   * invite a user to an organization
+   * creates the newly invited user in keycloak
+   *
+   * @param payload
    */
   @POST
-  @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Path('inviteUserToOrganization')
+  @Response<InviteUserDTO>(201, 'User Registred Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  @Security()
   @LoggerStorage()
-  @Response<MemberDTO>(201, 'Member created Successfully')
-  @Response<MemberDTO>(500, 'Internal Server Error')
-  public async createMember(payload: MemberRO): Promise<MemberDTO> {
-    const result = await this.memberService.createMember(payload);
-
+  public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
+    const result = await this.MemberService.inviteUserByEmail(payload.email, payload.organizationId);
     if (result.isFailure) {
-      return new MemberDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new MemberDTO().serialize({ body: { memberId: result.getValue(), statusCode: 201 } });
+    return new InviteUserDTO({
+      body: { statusCode: 201, id: result.getValue() },
+    });
   }
 
   /**
-   * Override the update method
+   * resend the reset password email to the invited user
+   *
+   * @param payload
+   *
    */
-  @PUT
-  @Path('/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @POST
+  @Path('   ')
+  @Response<UserIdDTO>(200, 'invite resent successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  @Security()
   @LoggerStorage()
-  @Response<MemberDTO>(204, 'Member updated Successfully')
-  @Response<MemberDTO>(500, 'Internal Server Error')
-  public async createUpdateMember(payload: MemberRO, @PathParam('id') id: number): Promise<MemberDTO> {
-    const result = await this.memberService.updateMember(payload, id);
+  public async resendInvite(payload: UserResendPassword): Promise<InviteUserDTO> {
+    const result = await this.MemberService.resendInvite(payload.userId, payload.orgId);
 
     if (result.isFailure) {
-      return new MemberDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
-
-    return new MemberDTO().serialize({ body: { memberId: result.getValue(), statusCode: 204 } });
+    return new InviteUserDTO({
+      body: { statusCode: 200, id: result.getValue() },
+    });
   }
 }

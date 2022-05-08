@@ -1,7 +1,12 @@
-import { MemberStatusType } from '@/modules/hr/models/Member';
 import Joi = require('joi');
 
+export enum MemberStatusType {
+  INVITATION_PENDING = 'INVITATION_PENDING',
+  ACTIVE = 'ACTIVE',
+}
+
 const MemberSchema = Joi.object({
+  resource: Joi.number(),
   resourceCalendar: Joi.number(),
   name: Joi.string(),
   active: Joi.boolean(),
@@ -26,11 +31,9 @@ const MemberSchema = Joi.object({
 });
 
 export const CreateMemberSchema = MemberSchema.keys({
-  resource: Joi.number().required(),
   organization: Joi.number().required(),
 });
 
 export const UpdateMemberSchema = MemberSchema.keys({
-  resource: Joi.number(),
   organization: Joi.number(),
 });

@@ -1,4 +1,4 @@
-import { Address, AddressType } from '@/modules/address/models/AdressModel';
+import { Address, AddressType } from '@/modules/address/models/Address';
 
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { Logger } from '@/utils/Logger';
@@ -26,9 +26,9 @@ export class SeedMembers {
       await applyToAll(organizations, async (org: any, idx: number) => {
         const phone = await this.phoneDAO.create(
           wrap(new Phone()).assign({
-            label: 'personal',
-            code: '+213',
-            number: faker.phone.phoneNumberFormat(3),
+            phoneLabel: 'personal',
+            phoneCode: '+213',
+            phoneNumber: faker.phone.phoneNumberFormat(3),
           }),
         );
         const address = await this.addressDAO.create(
@@ -49,7 +49,7 @@ export class SeedMembers {
           name: faker.name.findName(),
           active: true,
           jobTitle: faker.name.jobTitle(),
-          address: address,
+          addresses: address,
           workPhone: phone,
           memberType: 'regular',
         };

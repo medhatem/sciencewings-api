@@ -1,15 +1,15 @@
-import { JsonProperty, Serializable, deserialize, serialize } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty, JsonSerializer } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class BaseBodyDTO {
   @JsonProperty()
   statusCode: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class BaseErrorDTO {
   @JsonProperty()
@@ -19,15 +19,22 @@ export class BaseErrorDTO {
   errorMessage: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class BaseRequestDTO {
-  serialize(payload: { [key: string]: any }): this {
-    return serialize(payload as any);
+  constructor(payload?: { [key: string]: any }) {
+    if (payload && Object.keys(payload)?.length > 0) {
+      const result = this.deserialize(payload);
+      Object.assign(this, result);
+    }
   }
 
-  deserialize<T extends BaseRequestDTO>(model: T, payload: any): any {
-    return deserialize<T>(payload as any, model as any);
+  serialize(payload: { [key: string]: any }): this {
+    return new JsonSerializer().serialize(payload as any) as this;
+  }
+
+  deserialize(payload: { [key: string]: any }): this {
+    return new JsonSerializer().deserialize<this>(payload as any, this.constructor as any) as this;
   }
 
   @JsonProperty()
@@ -37,7 +44,7 @@ export class BaseRequestDTO {
   public error?: BaseErrorDTO;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class BaseDTO {
   @JsonProperty()

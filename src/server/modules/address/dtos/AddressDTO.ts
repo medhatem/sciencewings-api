@@ -1,8 +1,9 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 
-@Serializable()
+@JsonObject()
 @unique
 export class AddressDTO {
   @JsonProperty()
@@ -27,5 +28,24 @@ export class AddressDTO {
   street: string;
 
   @JsonProperty()
-  apartment: number;
+  apartment?: string;
+}
+@JsonObject()
+@unique
+export class AddressBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
+
+@JsonObject()
+@unique
+export class AddressBaseDTO extends BaseRequestDTO {
+  @JsonProperty()
+  public body?: AddressBodyDTO;
+}
+@JsonObject()
+@unique
+export class UpdatedAddressDTO extends BaseRequestDTO {
+  @JsonProperty()
+  public body?: AddressBodyDTO;
 }

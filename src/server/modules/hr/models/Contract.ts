@@ -1,41 +1,30 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
-
-import { BaseModel } from '@/modules/base/models/BaseModel';
+import { container, provide } from '@/di/index';
 import { ContractType } from '@/modules/hr/models/ContractType';
 import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
-import { Organization } from '@/modules/organizations/models/Organization';
-import { PayrollStructureType } from '@/modules/hr/models/PayrollStructureType';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { User } from '@/modules/users/models/User';
+import { BaseModel } from '@/modules/base';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Contract extends BaseModel<Contract> {
-  constructor() {
-    super();
-  }
-
   static getInstance(): Contract {
     return container.get(Contract);
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
+
+  @ManyToOne({ entity: () => Member, primary: true, unique: false })
+  member!: Member;
 
   @Property()
   name!: string;
 
   @Property({ nullable: true })
   active?: boolean;
-
-  @ManyToOne({ entity: () => PayrollStructureType, onDelete: 'set null', nullable: true })
-  structureType?: PayrollStructureType;
-
-  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
-  member?: Member;
 
   @ManyToOne({ entity: () => Group, onDelete: 'set null', nullable: true })
   group?: Group;
@@ -49,9 +38,6 @@ export class Contract extends BaseModel<Contract> {
 
   @Property({ columnType: 'date', nullable: true })
   dateEnd?: Date;
-
-  @Property({ columnType: 'date', nullable: true })
-  trialDateEnd?: Date;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
@@ -70,15 +56,12 @@ export class Contract extends BaseModel<Contract> {
   @Property({ nullable: true })
   state?: string;
 
-  @ManyToOne({ entity: () => Organization })
-  organization!: Organization;
-
   @ManyToOne({ entity: () => ContractType, onDelete: 'set null', nullable: true })
   contractType?: ContractType;
 
   @Property({ nullable: true })
   kanbanState?: string;
 
-  @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  hrResponsible?: User;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  supervisor?: Member;
 }

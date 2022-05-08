@@ -1,16 +1,14 @@
 import { container, provideSingleton } from '@/di/index';
-
 import { BaseService } from '@/modules/base/services/BaseService';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { Result } from '@/utils/Result';
 import { User } from '@/modules/users/models/User';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IPhoneService)
 export class PhoneService extends BaseService<Phone> implements IPhoneService {
@@ -24,9 +22,9 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
 
   private extractFromRO(payload: PhoneRO): Partial<Phone> {
     return {
-      label: payload.label,
-      code: payload.code,
-      number: payload.number,
+      phoneLabel: payload.phoneLabel,
+      phoneCode: payload.phoneCode,
+      phoneNumber: payload.phoneNumber,
     };
   }
 
@@ -38,6 +36,7 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
         payload.map(async (phone) => {
           const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
           wrappedPhone.user = entity as User;
+          return wrappedPhone;
         }),
       );
 
@@ -61,14 +60,5 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
       this.dao.repository.persist(phones);
     }
     return Result.ok<number>(200);
-  }
-
-  @log()
-  @safeGuard()
-  async createPhoneForMember(payload: PhoneRO, entity: Member): Promise<Result<Phone>> {
-    const phone = this.wrapEntity(this.dao.model, this.extractFromRO(payload));
-    phone.member = entity as Member;
-    this.dao.repository.persist(phone);
-    return Result.ok<Phone>(phone);
   }
 }

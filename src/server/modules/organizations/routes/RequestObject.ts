@@ -1,57 +1,104 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class CreateOrganizationRO {
   @JsonProperty()
   name: string;
 
   @JsonProperty()
-  email: string;
+  description: string;
 
   @JsonProperty()
-  phones: PhoneRO[];
+  email: string;
 
+  @JsonProperty({
+    type: PhoneRO,
+  })
+  phones?: Array<PhoneRO>;
   @JsonProperty()
   type: string;
 
-  @JsonProperty()
-  address: AddressRO[];
+  @JsonProperty({
+    type: AddressRO,
+  })
+  addresses?: Array<AddressRO>;
 
   @JsonProperty()
-  labels: string[];
+  labels: Array<string>;
 
   @JsonProperty()
-  members: number[];
+  members: Array<number>;
 
   @JsonProperty()
   direction: number;
 
   @JsonProperty()
-  social_facebook?: string;
+  socialFacebook?: string;
   @JsonProperty()
-  social_twitter?: string;
+  socialTwitter?: string;
   @JsonProperty()
-  social_github?: string;
+  socialGithub?: string;
   @JsonProperty()
-  social_linkedin?: string;
+  socialLinkedin?: string;
   @JsonProperty()
-  social_youtube?: string;
+  socialYoutube?: string;
   @JsonProperty()
-  social_instagram?: string;
+  socialInstagram?: string;
 
   @JsonProperty()
   adminContact: number;
 
   @JsonProperty()
-  parentId?: string;
+  parentId?: number;
 }
 
-@Serializable()
+@JsonObject()
+@unique
+export class UpdateOrganizationRO {
+  @JsonProperty()
+  name?: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  email?: string;
+
+  @JsonProperty()
+  type?: string;
+
+  @JsonProperty()
+  labels?: Array<string>;
+
+  @JsonProperty()
+  direction?: number;
+
+  @JsonProperty()
+  socialFacebook?: string;
+  @JsonProperty()
+  socialTwitter?: string;
+  @JsonProperty()
+  socialGithub?: string;
+  @JsonProperty()
+  socialLinkedin?: string;
+  @JsonProperty()
+  socialYoutube?: string;
+  @JsonProperty()
+  socialInstagram?: string;
+
+  @JsonProperty()
+  adminContact?: number;
+
+  @JsonProperty()
+  parent?: number;
+}
+
+@JsonObject()
 @unique
 export class UserInviteToOrgRO {
   @JsonProperty()
@@ -59,4 +106,13 @@ export class UserInviteToOrgRO {
 
   @JsonProperty()
   email: string;
+}
+@JsonObject()
+@unique
+export class UserResendPassword {
+  @JsonProperty()
+  userId: number;
+
+  @JsonProperty()
+  orgId: number;
 }

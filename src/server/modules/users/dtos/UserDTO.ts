@@ -1,11 +1,14 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
+import { AddressDTO } from '@/modules/address';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
 @unique
-class UserBaseBodyGetDTO extends BaseBodyDTO {
+@JsonObject()
+export class UserBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 
@@ -18,15 +21,26 @@ class UserBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   email: string;
 
-  @JsonProperty()
-  phones: PhoneRO[];
+  @JsonProperty({
+    type: PhoneRO,
+    name: 'phone',
+    beforeDeserialize,
+  })
+  phones: Array<PhoneRO>;
+
+  @JsonProperty({
+    type: AddressDTO,
+    name: 'address',
+    beforeDeserialize,
+  })
+  addresses: Array<AddressDTO>;
 
   @JsonProperty()
   keycloakId: string;
 }
 
 @unique
-@Serializable()
+@JsonObject()
 export class UserDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: UserBaseBodyGetDTO;

@@ -1,7 +1,6 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@/di/index';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
 
-import { Address } from '@/modules/address/models/AdressModel';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
@@ -18,9 +17,12 @@ export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
-@provideSingleton()
+export enum MemberTypeEnum {
+  Regular = 'regular',
+}
+
+@provide()
 @Entity()
-@Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
 export class Member extends BaseModel<Member> {
   constructor() {
     super();
@@ -30,20 +32,27 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
-  @PrimaryKey()
-  id!: number;
+  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index', nullable: true })
+  resource?: Resource;
 
-  @ManyToOne({
-    entity: () => Resource,
-    index: 'hr_member_resource_id_index',
-  })
-  resource!: Resource;
-
-  @ManyToOne({
+  @OneToOne({
     entity: () => Organization,
-    nullable: true,
+    onDelete: 'set null',
+    primary: true,
+    unique: false,
   })
-  organization: Organization;
+  organization!: Organization;
+
+  @OneToOne({
+    entity: () => User,
+    onDelete: 'set null',
+    nullable: true,
+    primary: true,
+    unique: false,
+  })
+  user!: User;
+
+  [PrimaryKeyType]?: [Organization, User];
 
   @ManyToOne({
     entity: () => ResourceCalendar,
@@ -52,6 +61,12 @@ export class Member extends BaseModel<Member> {
     index: 'hr_member_resource_calendar_id_index',
   })
   resourceCalendar?: ResourceCalendar;
+
+  @ManyToMany({
+    entity: () => Resource,
+    nullable: true,
+  })
+  resources? = new Collection<Resource>(this);
 
   @Property({ nullable: true })
   name?: string;
@@ -75,10 +90,7 @@ export class Member extends BaseModel<Member> {
   workEmail?: string;
 
   @ManyToOne({ entity: () => WorkLocation, onDelete: 'set null', nullable: true })
-  workLocation?: Address;
-
-  @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  user?: User;
+  workLocation?: WorkLocation;
 
   @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
   parent?: Member;

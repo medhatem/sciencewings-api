@@ -9,6 +9,8 @@ export type KeycloakUserInfo = {
   given_name: string;
   family_name: string;
   email: string;
+  //sub is the keycloakId
+  sub: string;
 };
 
 export type UserRequest = express.Request & { keycloakUser?: KeycloakUserInfo; userId?: number };
