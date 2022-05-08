@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -14,6 +14,9 @@ export class ProjectTag extends BaseModel<ProjectTag> {
   static getInstance(): ProjectTag {
     return container.get(ProjectTag);
   }
+
+  @PrimaryKey()
+  id?: number;
 
   @Property()
   title: string;

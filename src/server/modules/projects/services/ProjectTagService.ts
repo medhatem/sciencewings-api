@@ -40,7 +40,7 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
         }),
       );
       if (createdTaskResult.isFailure) {
-        return Result.fail(createdTaskResult.error);
+        return Result.fail(`Can not create project task`);
       }
       const createdTask = await createdTaskResult.getValue();
 

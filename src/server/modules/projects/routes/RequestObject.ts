@@ -1,15 +1,15 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
 @unique
 export class ProjectTagRO {
   @JsonProperty()
   title: string;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ProjectTaskRO {
   @JsonProperty()
@@ -37,7 +37,7 @@ export class ProjectTaskRO {
   public parent?: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class ProjectRO {
   @JsonProperty()

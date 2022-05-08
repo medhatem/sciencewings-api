@@ -130,7 +130,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       }),
     );
     if (updatedProjectResult.isFailure) {
-      return Result.fail<number>(updatedProjectResult.error);
+      return Result.fail<number>(`Project with id ${projetcId} can not be updated`);
     }
     return Result.ok((await updatedProjectResult.getValue()).id);
   }

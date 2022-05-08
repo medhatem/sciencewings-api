@@ -4,9 +4,15 @@ import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { CreateProjectDTO, IProjectService, ProjectDTO, UpdateProjectDTO } from '..';
+import {
+  CreateProjectDTO,
+  ProjectBaseBodyGetDTO,
+  ProjectDTO,
+  UpdateProjectDTO,
+} from '@/modules/projects/dtos/projectDTO';
 import { ProjectRO } from './RequestObject';
-import { KEYCLOAK_TOKEN } from '@/authenticators/constants';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 
 @provideSingleton()
 @Path('projects')
@@ -27,18 +33,19 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @POST
   @Path('create')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
   @Response<ProjectDTO>(201, 'Project created Successfully')
-  @Response<ProjectDTO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async createProject(payload: ProjectRO): Promise<ProjectDTO> {
     const result = await this.projectService.createProject(payload);
 
     if (result.isFailure) {
-      return new ProjectDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new ProjectDTO().serialize({ body: { projectId: result.getValue(), statusCode: 201 } });
+    return new ProjectDTO({ body: { projectId: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -49,17 +56,18 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @PUT
   @Path('/update/:id')
-  @Security('', KEYCLOAK_TOKEN)
+  @Security()
   @LoggerStorage()
-  @Response<ProjectDTO>(204, 'Project updated Successfully')
-  @Response<ProjectDTO>(500, 'Internal Server Error')
+  @Response<ProjectBaseBodyGetDTO>(204, 'Project updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async updateProject(payload: ProjectRO, @PathParam('id') id: number): Promise<ProjectDTO> {
     const result = await this.projectService.updateProject(payload, id);
 
     if (result.isFailure) {
-      return new ProjectDTO().serialize({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new ProjectDTO().serialize({ body: { projectId: result.getValue(), statusCode: 204 } });
+    return new ProjectDTO({ body: { projectId: result.getValue(), statusCode: 204 } });
   }
 }

@@ -1,19 +1,20 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
-@Serializable()
+
+@JsonObject()
 @unique
 export class ProjectDTO extends BaseRequestDTO {}
 
-@Serializable()
+@JsonObject()
 @unique
-class ProjectBaseBodyGetDTO extends BaseBodyDTO {
+export class ProjectBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class CreateProjectDTO extends BaseRequestDTO {
   @JsonProperty()
@@ -23,7 +24,7 @@ export class CreateProjectDTO extends BaseRequestDTO {
   public error?: BaseErrorDTO;
 }
 
-@Serializable()
+@JsonObject()
 @unique
 export class UpdateProjectDTO extends BaseRequestDTO {
   @JsonProperty()
