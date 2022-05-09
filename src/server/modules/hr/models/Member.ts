@@ -10,6 +10,7 @@ import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 
 export enum MemberStatusType {
   INVITATION_PENDING = 'INVITATION_PENDING',
@@ -130,4 +131,10 @@ export class Member extends BaseModel<Member> {
 
   @Property({ nullable: true })
   status?: MemberStatusType;
+
+  @ManyToMany({
+    entity: () => ResourceStatusHistory,
+    nullable: true,
+  })
+  resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
 }

@@ -47,6 +47,8 @@ import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTag
 import { Organization } from '@/modules/organizations/models/Organization';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { applyToAll } from '@/utils/utilities';
+import { IResourceStatusHistoryService } from '../interfaces/IResourceStatusHistoryService';
+import { IResourceStatusService } from '../interfaces/IResourceStatusService';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
@@ -58,6 +60,8 @@ export class ResourceService extends BaseService<Resource> {
     public resourceRateService: IResourceRateService,
     public resourceCalendarService: IResourceCalendarService,
     public resourceTagService: IResourceTagService,
+    public resourceStatusHistoryService: IResourceStatusHistoryService,
+    public resourceStatusService: IResourceStatusService,
   ) {
     super(dao);
   }
@@ -268,27 +272,27 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
-    if (!fetchedResource) {
+    const resource = await this.dao.get(resourceId);
+    if (!resource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    const resourceValue = fetchedResource.getValue();
 
-    const resource = this.wrapEntity(
-      resourceValue,
-      {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
-      },
-      false,
-    );
+    const fetchedMember = await this.memberService.get(payload.memberId);
+    if (fetchedMember.isFailure) {
+      return Result.notFound(`member with id ${resourceId} does not exist.`);
+    }
+    const member = fetchedMember.getValue();
+    const resourceStatusHistory = await this.resourceStatusHistoryService.create({
+      ...payload,
+      resource,
+      member,
+    });
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    if (resourceStatusHistory.isFailure && resourceStatusHistory.getValue === null) {
+      return Result.fail(`can not create history for resource status.`);
     }
 
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    return Result.ok<number>(resourceStatusHistory.getValue().id);
   }
 
   @log()
