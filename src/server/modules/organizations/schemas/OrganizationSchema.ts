@@ -19,6 +19,7 @@ const organizationSchema = Joi.object({
   socialLinkedin: Joi.string().allow(''),
   parentId: Joi.number().allow(null),
 });
+
 export const CreateOrganizationSchema = organizationSchema.keys({
   name: Joi.string().required(),
   description: Joi.string().allow('').required(),
@@ -31,6 +32,7 @@ export const CreateOrganizationSchema = organizationSchema.keys({
   direction: Joi.number().required(),
   adminContact: Joi.number().required(),
 });
+
 export const UpdateOrganizationSchema = organizationSchema.keys({
   name: Joi.string(),
   description: Joi.string().allow(''),

@@ -6,18 +6,6 @@ import { DateUnit } from '../models/OrganizationSettings';
 
 @JsonObject()
 @unique
-export class ResourceManagerRO {
-  @JsonProperty()
-  id?: number;
-
-  @JsonProperty()
-  organization: number;
-
-  @JsonProperty()
-  user: number;
-}
-@JsonObject()
-@unique
 export class OrganizationSettingsRO {
   @JsonProperty()
   approversCanEditReservations?: boolean;
