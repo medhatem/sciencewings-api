@@ -196,7 +196,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       throw result.error;
     }
 
-    return new GetOrganizationSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
+    return new GetOrganizationSettingsDTO({ body: { data: result.getValue(), statusCode: 200 } });
   }
 
   /* Update a organization settings, section reservation

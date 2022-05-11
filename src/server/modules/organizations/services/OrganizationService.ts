@@ -38,7 +38,7 @@ import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
-    public OrganizationSettingsService: IOrganizationSettingsService,
+    public organizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
@@ -108,13 +108,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
       owner: user,
-      settings: payload.settings,
       parent,
     });
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();
 
     const createdOrg = await this.create(wrappedOrganization);
+    const createdSettings = await this.organizationSettingsService.create({});
+    wrappedOrganization.settings = createdSettings.getValue();
 
     if (createdOrg.isFailure) {
       return createdOrg;
@@ -324,9 +325,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${OrganizationId} does not exist.`);
     }
     const organizationValue = fetchedOrganization.getValue();
-    organizationValue.settings.init();
     const oldSetting = organizationValue.settings;
-    const newSettings = this.OrganizationSettingsService.wrapEntity(
+    const newSettings = this.organizationSettingsService.wrapEntity(
       oldSetting,
       {
         ...oldSetting,
@@ -335,8 +335,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       false,
     );
 
-    await this.OrganizationSettingsService.update(newSettings);
-    await this.update(organizationValue);
+    await this.organizationSettingsService.update(newSettings);
 
     return Result.ok<number>(OrganizationId);
   }
