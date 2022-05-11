@@ -1,5 +1,4 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
@@ -77,13 +76,14 @@ export class CreateOrganizationRO {
   @JsonProperty({
     type: PhoneRO,
   })
-  phones: Array<PhoneRO>;
-
+  phones?: Array<PhoneRO>;
   @JsonProperty()
   type: string;
 
-  @JsonProperty()
-  addresses: Array<AddressRO>;
+  @JsonProperty({
+    type: AddressRO,
+  })
+  addresses?: Array<AddressRO>;
 
   @JsonProperty()
   labels: Array<string>;
@@ -111,10 +111,51 @@ export class CreateOrganizationRO {
   adminContact: number;
 
   @JsonProperty()
-  parentId?: string;
+  settings?: OrganizationSettingsRO;
 
   @JsonProperty()
-  settings?: OrganizationSettingsRO;
+  parentId?: number;
+}
+
+@JsonObject()
+@unique
+export class UpdateOrganizationRO {
+  @JsonProperty()
+  name?: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  email?: string;
+
+  @JsonProperty()
+  type?: string;
+
+  @JsonProperty()
+  labels?: Array<string>;
+
+  @JsonProperty()
+  direction?: number;
+
+  @JsonProperty()
+  socialFacebook?: string;
+  @JsonProperty()
+  socialTwitter?: string;
+  @JsonProperty()
+  socialGithub?: string;
+  @JsonProperty()
+  socialLinkedin?: string;
+  @JsonProperty()
+  socialYoutube?: string;
+  @JsonProperty()
+  socialInstagram?: string;
+
+  @JsonProperty()
+  adminContact?: number;
+
+  @JsonProperty()
+  parent?: number;
 }
 
 @JsonObject()
@@ -134,89 +175,6 @@ export class UserResendPassword {
 
   @JsonProperty()
   orgId: number;
-}
-// resource ROs
-
-@JsonObject()
-@unique
-export class ResourceTagRO {
-  @JsonProperty()
-  id?: number;
-
-  @JsonProperty()
-  title!: string;
-}
-
-@JsonObject()
-@unique
-export class ResourceCalendarRO {
-  @JsonProperty()
-  name!: string;
-
-  @JsonProperty()
-  active?: boolean;
-
-  @JsonProperty()
-  organization?: number;
-
-  @JsonProperty()
-  hoursPerDay?: number;
-
-  @JsonProperty()
-  timezone!: string;
-
-  @JsonProperty()
-  twoWeeksCalendar?: boolean;
-}
-
-@JsonObject()
-@unique
-export class ResourceRO {
-  @JsonProperty()
-  name: string;
-
-  @JsonProperty()
-  description: string;
-
-  @JsonProperty()
-  active?: boolean;
-
-  @JsonProperty()
-  organization?: number;
-
-  @JsonProperty()
-  resourceType!: string;
-
-  @JsonProperty()
-  resourceClass!: string;
-
-  @JsonProperty()
-  user?: number;
-
-  @JsonProperty()
-  timezone!: string;
-
-  @JsonProperty()
-  calendar?: Array<ResourceCalendarRO>;
-
-  @JsonProperty()
-  tags?: Array<ResourceTagRO>;
-
-  @JsonProperty()
-  managers?: Array<ResourceManagerRO>;
-}
-
-@JsonObject()
-@unique
-export class ResourceEventRO {
-  @JsonProperty()
-  title: string;
-
-  @JsonProperty()
-  dateFrom: Date;
-
-  @JsonProperty()
-  dateTo: Date;
 }
 
 @JsonObject()

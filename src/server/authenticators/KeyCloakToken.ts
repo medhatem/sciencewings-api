@@ -14,14 +14,19 @@ export class KeyCloakToken implements ServiceAuthenticator {
         const result = await this.userExtractorAndValidator.userExctractionAndValidation(req);
         if (result.isFailure) {
           response.status(403).json({
-            error: result.error,
+            error: {
+              message: result.error.message,
+              statusCode: result.error.statusCode,
+            },
           });
           response.end();
+        } else {
+          next();
         }
-        next();
       } catch (error) {
         response.status(403).json({
-          error: error.message,
+          message: error.message,
+          statusCode: 403,
         });
         response.end();
       }

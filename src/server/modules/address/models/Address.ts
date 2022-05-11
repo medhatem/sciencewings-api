@@ -3,7 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { User } from '@/modules/users';
+import { User } from '@/modules/users/models/User';
 
 export enum AddressType {
   USER = 'USER',

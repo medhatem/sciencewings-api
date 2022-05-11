@@ -53,7 +53,7 @@ export class Resource extends BaseModel<Resource> {
   resourceClass!: string;
 
   @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource, nullable: true })
-  calendar: ResourceCalendar;
+  calendar? = new Collection<ResourceCalendar>(this);
 
   @Property()
   timezone!: string;

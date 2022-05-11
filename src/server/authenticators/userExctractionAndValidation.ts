@@ -17,13 +17,13 @@ export class UserExctractionAndValidation {
    */
   userExctractionAndValidation = async (req: UserRequest): Promise<Result<{ keycloakUser: any; userId?: any }>> => {
     if (!req.headers || !req.headers.authorization) {
-      return Result.fail('Not Authorized');
+      return Result.unauthorizedError('Not Authorized');
     }
 
     const token = req.headers.authorization as string;
     const result = await fetchKeyclockUserGivenToken(token);
     if (result.error) {
-      return Result.fail('Not Authorized');
+      return Result.unauthorizedError('Not Authorized');
     }
 
     const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });

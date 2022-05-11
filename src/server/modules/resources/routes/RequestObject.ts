@@ -58,9 +58,20 @@ export class ResourcesSettingsReservationUnitRO {
 @unique
 export class ResourceSettingsGeneralStatusRO {
   @JsonProperty()
-  statusType: string;
+  resourceStatus: string;
   @JsonProperty()
   statusDescription: string;
+  @JsonProperty()
+  memberId: number;
+}
+
+@JsonObject()
+@unique
+export class ResourceStatusRO {
+  @JsonProperty()
+  memberId: number;
+  @JsonProperty()
+  title: string;
 }
 
 @JsonObject()
@@ -111,4 +122,99 @@ export class ResourceReservationVisibilityRO {
 export class ResourceSettingsGeneralPropertiesRO {
   @JsonProperty()
   accessToResource: string;
+}
+
+@JsonObject()
+@unique
+export class ResourceManagerRO {
+  @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  user: number;
+}
+
+@JsonObject()
+@unique
+export class ResourceTagRO {
+  @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
+  title!: string;
+}
+
+@JsonObject()
+@unique
+export class ResourceCalendarRO {
+  @JsonProperty()
+  name!: string;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  hoursPerDay?: number;
+
+  @JsonProperty()
+  timezone!: string;
+
+  @JsonProperty()
+  twoWeeksCalendar?: boolean;
+}
+
+@JsonObject()
+@unique
+export class ResourceRO {
+  @JsonProperty()
+  name: string;
+
+  @JsonProperty()
+  description: string;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  resourceType!: string;
+
+  @JsonProperty()
+  resourceClass!: string;
+
+  @JsonProperty()
+  user?: number;
+
+  @JsonProperty()
+  timezone!: string;
+
+  @JsonProperty()
+  calendar?: Array<ResourceCalendarRO>;
+
+  @JsonProperty()
+  tags?: Array<ResourceTagRO>;
+
+  @JsonProperty()
+  managers?: Array<ResourceManagerRO>;
+}
+
+@JsonObject()
+@unique
+export class ResourceEventRO {
+  @JsonProperty()
+  title: string;
+
+  @JsonProperty()
+  dateFrom: Date;
+
+  @JsonProperty()
+  dateTo: Date;
 }

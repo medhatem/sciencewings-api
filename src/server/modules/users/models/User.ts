@@ -1,7 +1,6 @@
 import { Collection, DateType, Entity, Index, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
-import { Address } from '@/modules/address';
+import { Address } from '@/modules/address/models/Address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Phone } from '@/modules/phones/models/Phone';
 
@@ -9,6 +8,7 @@ export enum userStatus {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
+
 @provide()
 @Entity()
 export class User extends BaseModel<User> {
