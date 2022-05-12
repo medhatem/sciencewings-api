@@ -36,8 +36,6 @@ export class OrganizationSettingsRO {
   @JsonProperty()
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
   @JsonProperty()
-  memberShouldAccessByJoinCode?: boolean;
-  @JsonProperty()
   joinCode?: string;
   @JsonProperty()
   yourOrganizationWillNeverAppearInSearchResults?: boolean;
@@ -206,8 +204,6 @@ export class OrganizationInvoicesSettingsRO {
 export class OrganizationAccessSettingsRO {
   @JsonProperty()
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
-  @JsonProperty()
-  memberShouldAccessByJoinCode?: boolean;
   @JsonProperty()
   joinCode?: string;
   @JsonProperty()

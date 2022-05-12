@@ -57,8 +57,6 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   //Access Settings
   @Property({ nullable: true, type: BooleanType })
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules = true;
-  @Property({ nullable: true, type: BooleanType })
-  memberShouldAccessByJoinCode = true;
   @Property({ nullable: true, type: StringType })
   joinCode = '';
   @Property({ nullable: true, type: BooleanType })

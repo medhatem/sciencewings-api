@@ -39,8 +39,6 @@ export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules: boolean;
   @JsonProperty()
-  memberShouldAccessByJoinCode: boolean;
-  @JsonProperty()
   joinCode: string;
   @JsonProperty()
   yourOrganizationWillNeverAppearInSearchResults: boolean;

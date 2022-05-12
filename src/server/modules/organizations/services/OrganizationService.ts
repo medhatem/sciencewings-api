@@ -318,11 +318,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   public async updateOrganizationsSettingsProperties(
     payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
-    OrganizationId: number,
+    organizationId: number,
   ): Promise<Result<number>> {
-    const fetchedOrganization = await this.get(OrganizationId);
+    const fetchedOrganization = await this.get(organizationId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`Organization with id ${OrganizationId} does not exist.`);
+      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     const organizationValue = fetchedOrganization.getValue();
     const oldSetting = organizationValue.settings;
@@ -337,6 +337,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     await this.organizationSettingsService.update(newSettings);
 
-    return Result.ok<number>(OrganizationId);
+    return Result.ok<number>(organizationId);
   }
 }

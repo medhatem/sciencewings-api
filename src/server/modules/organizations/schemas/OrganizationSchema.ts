@@ -64,7 +64,6 @@ export const OrganizationInvoicesSettingsSchema = Joi.object({
 
 export const OrganizationAccessSettingsSchema = Joi.object({
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules: Joi.boolean(),
-  memberShouldAccessByJoinCode: Joi.boolean(),
   joinCode: Joi.string(),
   yourOrganizationWillNeverAppearInSearchResults: Joi.boolean(),
   notifyAdministratorsWhenMembersJoinOrganization: Joi.boolean(),
