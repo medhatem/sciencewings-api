@@ -7,7 +7,7 @@ import { MemberDTO, UpdateMemberDTO } from '../dtos';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
-import { InviteUserDTO } from '@/modules/organizations';
+import { InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { UserIdDTO, UserInviteToOrgRO } from '@/modules/users';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
 

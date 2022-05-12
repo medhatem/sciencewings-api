@@ -1,5 +1,5 @@
 import Joi = require('joi');
-import { DateUnit } from '../models/OrganizationSettings';
+import { DateUnit } from '@/modules/organizations/models/OrganizationSettings';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -41,6 +41,13 @@ export const UpdateOrganizationSchema = organizationSchema.keys({
   type: Joi.string().valid(...Object.values(OrganizationType)),
   direction: Joi.number(),
   adminContact: Joi.number(),
+});
+
+export const OrganizationMemberSettingsSchema = Joi.object({
+  membersCanEditAccountNumbers: Joi.boolean(),
+  promptForAccouantNumbers: Joi.boolean(),
+  acountNumberNote: Joi.string(),
+  allowMembersToSeeAllOtherMembers: Joi.boolean(),
 });
 
 export const OrganizationReservationSettingsSchema = Joi.object({

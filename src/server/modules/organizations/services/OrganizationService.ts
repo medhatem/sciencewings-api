@@ -6,6 +6,7 @@ import {
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationReservationSettingsRO,
+  OrganizationMemberSettingsRO,
   CreateOrganizationRO,
   UpdateOrganizationRO,
 } from '@/modules/organizations/routes/RequestObject';
@@ -25,13 +26,11 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
-import { OrganizationSettings } from '../models/OrganizationSettings';
-import { IOrganizationSettingsService } from '../interfaces/IOrganizationSettingsService';
+import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
-
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 
 @provideSingleton(IOrganizationService)
@@ -298,14 +297,30 @@ export class OrganizationService extends BaseService<Organization> implements IO
    */
   @log()
   @safeGuard()
-  public async getOrganizationSettingsById(organizationId: number): Promise<Result<OrganizationSettings>> {
+  public async getOrganizationSettingsById(organizationId: number): Promise<Result<any>> {
     const fetchedOrganization = await this.get(organizationId);
 
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
+    const fetchedOrganizationValue = fetchedOrganization.getValue();
+    const organization = {
+      name: fetchedOrganizationValue.name,
+      description: fetchedOrganizationValue.description,
+      email: fetchedOrganizationValue.email,
+      type: fetchedOrganizationValue.type,
+      direction: fetchedOrganizationValue.direction,
+      note: fetchedOrganizationValue.note,
+    } as any;
 
-    return Result.ok(fetchedOrganization.getValue().settings);
+    if (fetchedOrganizationValue.phone) {
+      organization.phone = fetchedOrganizationValue.phone[0];
+    }
+
+    return Result.ok({
+      organization,
+      settings: fetchedOrganizationValue.settings,
+    });
   }
 
   /* Update the reservation, invoices or access settings of an organization ,
@@ -317,7 +332,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   public async updateOrganizationsSettingsProperties(
-    payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
+    payload:
+      | OrganizationMemberSettingsRO
+      | OrganizationReservationSettingsRO
+      | OrganizationInvoicesSettingsRO
+      | OrganizationAccessSettingsRO,
     organizationId: number,
   ): Promise<Result<number>> {
     const fetchedOrganization = await this.get(organizationId);

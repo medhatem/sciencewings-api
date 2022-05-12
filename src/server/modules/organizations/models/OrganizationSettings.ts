@@ -24,6 +24,16 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   @PrimaryKey()
   id?: number;
 
+  //Member Settings
+  @Property({ nullable: true, type: BooleanType })
+  membersCanEditAccountNumbers = true;
+  @Property({ nullable: true, type: BooleanType })
+  promptForAccouantNumbers = true;
+  @Property({ nullable: true, type: StringType })
+  acountNumberNote = '';
+  @Property({ nullable: true, type: BooleanType })
+  allowMembersToSeeAllOtherMembers = true;
+
   //Reservation Settings
   @Property({ nullable: true, type: BooleanType })
   approversCanEditReservations = true;

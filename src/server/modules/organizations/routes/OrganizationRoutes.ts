@@ -1,4 +1,5 @@
 import { container, provideSingleton } from '@/di/index';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
@@ -8,6 +9,7 @@ import {
   OrganizationReservationSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationAccessSettingsRO,
+  OrganizationMemberSettingsRO,
 } from './RequestObject';
 import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
@@ -22,8 +24,7 @@ import {
   GetOrganizationSettingsDTO,
   UpdateOrganizationSettingsBodyDTO,
   UpdateOrganizationSettingsDTO,
-} from '../dtos/OrganizationSettingsDto';
-import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+} from '@/modules/organizations/dtos/OrganizationSettingsDto';
 import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
@@ -197,6 +198,32 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     }
 
     return new GetOrganizationSettingsDTO({ body: { data: result.getValue(), statusCode: 200 } });
+  }
+
+  /* Update a organization settings, section members
+   *
+   * @param payload
+   * @param id of the requested resource
+   *
+   */
+  @PUT
+  @Path('settings/member/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateOrganizationsSettingsnMembersProperties(
+    payload: OrganizationMemberSettingsRO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /* Update a organization settings, section reservation

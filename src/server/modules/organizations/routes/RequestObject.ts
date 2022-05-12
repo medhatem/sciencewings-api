@@ -2,7 +2,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
-import { DateUnit } from '../models/OrganizationSettings';
+import { DateUnit } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
@@ -161,6 +161,19 @@ export class UserResendPassword {
 
   @JsonProperty()
   orgId: number;
+}
+
+@JsonObject()
+@unique
+export class OrganizationMemberSettingsRO {
+  @JsonProperty()
+  membersCanEditAccountNumbers: boolean;
+  @JsonProperty()
+  promptForAccouantNumbers: boolean;
+  @JsonProperty()
+  acountNumberNote: string;
+  @JsonProperty()
+  allowMembersToSeeAllOtherMembers: boolean;
 }
 
 @JsonObject()
