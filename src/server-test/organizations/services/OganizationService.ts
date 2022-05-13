@@ -108,14 +108,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set organization parent to null
-      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ id: payload.parentId }], Promise.resolve(null));
-      payload.parentId = 1;
+      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ id: payload.parent }], Promise.resolve(null));
+      payload.parent = 1;
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
 
       expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Organization parent with id ${payload.parentId} does not exist`);
+      expect(result.error.message).to.equal(`Organization parent with id ${payload.parent} does not exist`);
 
-      delete payload.parentId;
+      delete payload.parent;
     });
 
     test('should fail on find the owner', async () => {
@@ -219,10 +219,79 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       description: 'qsdwxcaze',
     };
 
-    // TODO 'should fail on organization update'
+    test('should fail on organization update', async () => {
+      // set organization to not exist
+      mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve(null));
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // set adminContact to exist
+      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
+      // set direction to exist
+      mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      mockMethodWithResult(organizationDAO, 'update', [], Promise.resolve(1));
+
+      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(payload, 1);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`Organization with id 1 does not exist.`);
+    });
+
+    test('should fail on find the adminContact', async () => {
+      const mackPayload = { ...payload };
+      mackPayload.adminContact = 2;
+      // set organization to exist
+      mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // set adminContact to null
+      mockMethodWithResult(userService, 'get', [mackPayload.adminContact], Promise.resolve(Result.ok(null)));
+
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+
+      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`User with id: ${mackPayload.adminContact} does not exist.`);
+    });
+
+    test('should fail on find the direction', async () => {
+      const mackPayload = { ...payload };
+      mackPayload.direction = 2;
+      // set organization to exist
+      mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // set adminContact to exist
+      mockMethodWithResult(userService, 'get', [mackPayload.adminContact], Promise.resolve(Result.ok({})));
+      // set direction to null
+      mockMethodWithResult(userService, 'get', [mackPayload.direction], Promise.resolve(Result.ok(null)));
+
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+
+      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`User with id: ${mackPayload.direction} does not exist.`);
+    });
+
+    test('should fail on organization parent does not existe', async () => {
+      const mackPayload = { ...payload };
+      mackPayload.parent = 2;
+
+      // set organization to exist
+      mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
+      // set organization parent to null
+      mockMethodWithResult(organizationDAO, 'get', [2], Promise.resolve(null));
+      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`Organization parent with id: ${mackPayload.parent} does not exist.`);
+    });
 
     test('should success on organization update', async () => {
-      // set organization to not exist
+      // set organization to exist
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));

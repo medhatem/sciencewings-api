@@ -62,8 +62,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganization(
-    @PathParam('id') id: number,
     payload: UpdateOrganizationRO,
+    @PathParam('id') id: number,
   ): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.updateOrganizationGeneraleProperties(payload, id);
 
@@ -88,7 +88,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<PhoneBaseBodyDTO>(204, 'Organization phone created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async CreateOrganizationPhone(@PathParam('id') id: number, payload: PhoneRO): Promise<PhoneDTO> {
+  public async CreateOrganizationPhone(payload: PhoneRO, @PathParam('id') id: number): Promise<PhoneDTO> {
     const result = await this.OrganizationService.addPhoneToOrganization(payload, id);
 
     if (result.isFailure) {
@@ -112,7 +112,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<AddressBodyDTO>(204, 'Organization address created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async CreateOrganizationAdress(@PathParam('id') id: number, payload: AddressRO): Promise<AddressBaseDTO> {
+  public async CreateOrganizationAdress(payload: AddressRO, @PathParam('id') id: number): Promise<AddressBaseDTO> {
     const result = await this.OrganizationService.addAddressToOrganization(payload, id);
 
     if (result.isFailure) {
@@ -154,8 +154,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<OrganizationDTO>(200, 'Return Organization that the users belongs to, Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getUserOrganizations(@PathParam('id') payload: number): Promise<OrganizationDTO> {
-    const result = await this.OrganizationService.getUserOrganizations(payload);
+  public async getUserOrganizations(@PathParam('id') id: number): Promise<OrganizationDTO> {
+    const result = await this.OrganizationService.getUserOrganizations(id);
 
     if (result.isFailure) {
       throw result.error;
