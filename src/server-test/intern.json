@@ -2,14 +2,6 @@
   "debug": false,
   "bail": false,
   "grep": ".*",
-  "coverage": [
-    "./dist/server/modules/phones/routes/PhoneRoutes.js",
-    "./dist/server/modules/phones/services/PhoneService.js"
-  ],
-
-  "suites": [
-    "./dist/server-test/testSetUp.js",
-    "./dist/server-test/phones/routes/*.js",
-    "./dist/server-test/phones/services/*.js"
-  ]
+  "coverage": ["./dist/server/**/services/*.js", "./dist/server/**/routes/*.js"],
+  "suites": ["./dist/server-test/testSetUp.js", "./dist/server-test/**/*.js"]
 }
