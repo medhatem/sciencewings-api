@@ -2,10 +2,6 @@
   "debug": false,
   "bail": false,
   "grep": ".*",
-  "coverage": ["./dist/server/modules/hr/routes/MemberRoutes.js", "./dist/server/modules/hr/services/MemberService.js"],
-  "suites": [
-    "./dist/server-test/testSetUp.js",
-    "./dist/server-test/hr/routes/*.js",
-    "./dist/server-test/hr/services/*.js"
-  ]
+  "coverage": ["./dist/server/**/services/*.js", "./dist/server/**/routes/*.js"],
+  "suites": ["./dist/server-test/testSetUp.js", "./dist/server-test/**/*.js"]
 }
