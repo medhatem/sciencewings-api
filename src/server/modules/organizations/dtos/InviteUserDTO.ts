@@ -8,5 +8,5 @@ import { unique } from '@/decorators/unique';
 @unique
 export class InviteUserDTO extends BaseRequestDTO {
   @JsonProperty()
-  body?: UserIdDTO = new UserIdDTO();
+  body?: UserIdDTO;
 }

@@ -7,14 +7,10 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { User } from '@/modules/users/models/User';
+import { User, userStatus } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 
-export enum MemberStatusType {
-  INVITATION_PENDING = 'INVITATION_PENDING',
-  ACTIVE = 'ACTIVE',
-}
 export enum MemberTypeEnum {
   Regular = 'regular',
 }
@@ -129,5 +125,5 @@ export class Member extends BaseModel<Member> {
   contract?: Contract;
 
   @Property({ nullable: true })
-  status?: MemberStatusType;
+  status?: userStatus;
 }
