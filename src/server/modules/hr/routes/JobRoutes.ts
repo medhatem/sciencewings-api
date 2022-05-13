@@ -2,7 +2,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Job } from '@/modules/hr/models/Job';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
-import { JobDTO, CreateJobDTO, UpdateJobDTO } from '@/modules/hr/dtos/JobDTO';
+import { JobDTO, CreateJobDTO, UpdateJobDTO, JobBaseBodyGetDTO } from '@/modules/hr/dtos/JobDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { JobRO } from './RequestObject';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
@@ -29,16 +29,16 @@ export class JobRoutes extends BaseRoutes<Job> {
   @Path('create')
   @Security()
   @LoggerStorage()
-  @Response<JobRO>(201, 'Job created Successfully')
+  @Response<JobBaseBodyGetDTO>(201, 'Job created Successfully')
   @Response<JobRO>(500, 'Internal Server Error')
-  public async createJob(payload: JobRO): Promise<JobDTO> {
+  public async createJob(payload: JobRO): Promise<CreateJobDTO> {
     const result = await this.jobService.createJob(payload);
 
     if (result.isFailure) {
-      return new JobDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
-    return new JobDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateJobDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -54,13 +54,13 @@ export class JobRoutes extends BaseRoutes<Job> {
   @Response<JobDTO>(204, 'Job updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateJob(payload: JobRO, @PathParam('id') id: number): Promise<JobDTO> {
+  public async updateJob(payload: JobRO, @PathParam('id') id: number): Promise<CreateJobDTO> {
     const result = await this.jobService.updateJob(payload, id);
 
     if (result.isFailure) {
       throw result.error;
     }
 
-    return new JobDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateJobDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 }
