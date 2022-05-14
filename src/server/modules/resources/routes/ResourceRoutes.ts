@@ -51,13 +51,12 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @POST
   @Path('create')
   @Security()
+  @LoggerStorage()
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  @LoggerStorage()
   public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
     const result = await this.ResourceService.createResource(payload);
-
     if (result.isFailure) {
       throw result.error;
     }
@@ -81,11 +80,9 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResource(payload, id);
-
     if (result.isFailure) {
       throw result.error;
     }
-
     return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
@@ -103,10 +100,10 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceDTO> {
     const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(organizationId);
+
     if (result.isFailure) {
       throw result.error;
     }
-
     return new ResourceDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
   }
 
@@ -239,7 +236,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       throw result.error;
     }
 
-    return new GetResourceRateDTO({ body: { data: result.getValue(), statusCode: 201 } });
+    return new GetResourceRateDTO({ body: { data: result.getValue(), statusCode: 200 } });
   }
 
   /**

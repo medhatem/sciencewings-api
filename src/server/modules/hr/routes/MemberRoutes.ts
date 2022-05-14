@@ -54,7 +54,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
    *
    */
   @POST
-  @Path('   ')
+  @Path('resendInvite')
   @Response<UserIdDTO>(200, 'invite resent successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -67,7 +67,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
       throw result.error;
     }
     return new InviteUserDTO({
-      body: { statusCode: 200, id: result.getValue() },
+      body: { statusCode: 201, id: result.getValue() },
     });
   }
 }
