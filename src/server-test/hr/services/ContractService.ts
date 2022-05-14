@@ -66,7 +66,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     restore();
   });
 
-  test('should create the right instance', () => {
+  test('Should create the right instance', () => {
     const instance = ContractService.getInstance();
     expect(instance instanceof ContractService);
   });

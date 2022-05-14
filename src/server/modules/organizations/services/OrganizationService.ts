@@ -158,7 +158,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!fetchedorganization) {
       return Result.notFound(`Organization with id ${orgId} does not exist.`);
     }
-    console.log({ payload });
+
     let direction;
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
