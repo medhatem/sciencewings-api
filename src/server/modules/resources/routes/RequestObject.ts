@@ -58,20 +58,11 @@ export class ResourcesSettingsReservationUnitRO {
 @unique
 export class ResourceSettingsGeneralStatusRO {
   @JsonProperty()
-  resourceStatus: string;
+  statusType: string;
   @JsonProperty()
   statusDescription: string;
   @JsonProperty()
   memberId: number;
-}
-
-@JsonObject()
-@unique
-export class ResourceStatusRO {
-  @JsonProperty()
-  memberId: number;
-  @JsonProperty()
-  title: string;
 }
 
 @JsonObject()

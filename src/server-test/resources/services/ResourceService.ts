@@ -78,8 +78,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           resourceRateService,
           resourceCalendarService,
           resourceTagService,
-          resourceStatusService,
           resourceStatusHistoryService,
+          resourceStatusService,
         ),
       );
   });
@@ -390,7 +390,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   suite('update Resource Reservation Status', () => {
     const resourceId = 1;
     const payload: ResourceSettingsGeneralStatusRO = {
-      resourceStatus: 1,
+      statusType: 'OPERATIONAL',
       statusDescription: 'test',
       memberId: 1,
     };
@@ -398,26 +398,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
-      console.log({ result });
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('Should fail on status general settings can not be updated', async () => {
-      mockMethodWithResult(resourceDao, 'get', [], {});
-      stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], null);
-
-      const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Status General setings of resource with id ${resourceId} can not be updated.`,
-      );
-    });
-    test('Should succeed upcating status general settings', async () => {
+    test('Should succeed updating status general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
+      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({ id: 1 })));
+      mockMethodWithResult(resourceStatusHistoryService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
       expect(result.isSuccess).to.be.true;
