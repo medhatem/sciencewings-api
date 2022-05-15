@@ -121,6 +121,11 @@ export class UpdateOrganizationRO {
   @JsonProperty()
   labels?: Array<string>;
 
+  @JsonProperty({
+    type: PhoneRO,
+  })
+  phones?: Array<PhoneRO>;
+
   @JsonProperty()
   direction?: number;
 

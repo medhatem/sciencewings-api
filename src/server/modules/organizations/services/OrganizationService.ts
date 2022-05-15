@@ -165,6 +165,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
     orgId: number,
   ): Promise<Result<number>> {
+    console.log({ payload });
+
     const fetchedorganization = await this.dao.get(orgId);
     if (!fetchedorganization) {
       return Result.notFound(`organization with id ${orgId} does not exist.`);
@@ -176,6 +178,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (direction.isFailure || direction.getValue() === null) {
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
+      direction = direction.getValue();
     }
 
     let adminContact;
@@ -184,23 +187,37 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (adminContact.isFailure || adminContact.getValue() === null) {
         return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
       }
+      adminContact = adminContact.getValue();
     }
 
     let parent;
     if (payload.parent) {
-      parent = await this.userService.get(payload.parent);
-      if (parent.isFailure || parent.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.parent} does not exist.`);
+      parent = await this.dao.get(payload.parent);
+      if (parent === null) {
+        return Result.notFound(`Organization with id: ${payload.parent} does not exist.`);
       }
+    }
+
+    if (payload.phones) {
+      // TODO better way to update
+      const phone = await this.phoneService.get(payload.phones[0].id);
+      console.log({ ...phone, ...payload.phones[0] });
+
+      await this.phoneService.update({ ...phone, ...payload.phones[0] });
     }
     const organization = this.wrapEntity(fetchedorganization, {
       ...fetchedorganization,
       ...payload,
-      direction,
-      admin_contact: adminContact,
-      parent,
     });
-
+    if (adminContact) {
+      organization.admin_contact = adminContact;
+    }
+    if (direction) {
+      organization.direction = direction.id;
+    }
+    if (parent) {
+      organization.parent = parent;
+    }
     await this.dao.update(organization);
     return Result.ok<number>(orgId);
   }
@@ -307,6 +324,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const organization = {
       name: fetchedOrganizationValue.name,
       description: fetchedOrganizationValue.description,
+      phones: fetchedOrganizationValue.phones,
       email: fetchedOrganizationValue.email,
       type: fetchedOrganizationValue.type,
       direction: fetchedOrganizationValue.direction,

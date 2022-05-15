@@ -37,6 +37,7 @@ export const UpdateOrganizationSchema = organizationSchema.keys({
   name: Joi.string(),
   description: Joi.string().allow(''),
   email: Joi.string().email(),
+  phones: Joi.array(),
   labels: Joi.array(),
   type: Joi.string().valid(...Object.values(OrganizationType)),
   direction: Joi.number(),
