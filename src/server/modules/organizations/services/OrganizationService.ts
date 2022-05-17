@@ -25,6 +25,8 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
+import { Phone } from '@/modules/users';
+import { Address } from '@/modules/address';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -52,7 +54,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<Result<number>> {
-    // check if the organization already exist
+    console.log({ payload: payload, phones: payload.phones });
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
@@ -87,7 +89,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
     }
 
-    const wrappedOrganization = this.wrapEntity(this.dao.model, {
+    const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       description: payload.description,
       email: payload.email,
@@ -116,30 +118,42 @@ export class OrganizationService extends BaseService<Organization> implements IO
     memberEvent.createMember(user, organization);
 
     await applyToAll(payload.addresses, async (address) => {
-      await this.addressService.create({
-        city: address.city,
-        apartment: address.apartment,
-        country: address.country,
-        code: address.code,
-        province: address.province,
-        street: address.street,
-        type: address.type,
-        organization,
-      });
+      const wrappedAddress = this.addressService.wrapEntity(
+        new Address(),
+        {
+          city: address.city,
+          apartment: address.apartment,
+          country: address.country,
+          code: address.code,
+          province: address.province,
+          street: address.street,
+          type: address.type,
+        },
+        false,
+      );
+      wrappedAddress.organization = organization;
+      await this.addressService.create(wrappedAddress);
     });
+    console.log({ phones: payload.phones });
+
     await applyToAll(payload.phones, async (phone) => {
-      await this.phoneService.create({
-        phoneLabel: phone.phoneLabel,
-        phoneCode: phone.phoneCode,
-        phoneNumber: phone.phoneNumber,
-        organization,
-      });
+      const wrappedPhone = this.phoneService.wrapEntity(
+        new Phone(),
+        {
+          phoneLabel: phone.phoneLabel,
+          phoneCode: phone.phoneCode,
+          phoneNumber: phone.phoneNumber,
+        },
+        false,
+      );
+      wrappedPhone.organization = organization;
+      await this.phoneService.create({ wrappedPhone });
     });
 
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
-
+    this.dao.repository.flush();
     return Result.ok<number>(organization.id);
   }
 
