@@ -37,12 +37,16 @@ export class User extends BaseModel<User> {
     entity: () => Address,
     mappedBy: (entity: Address) => entity.user,
     nullable: true,
+    lazy: true,
+    eager: false,
   })
   address? = new Collection<Address>(this);
 
   @ManyToMany({
     entity: () => Phone,
     mappedBy: (entity: Phone) => entity.user,
+    lazy: true,
+    eager: false,
   })
   phones? = new Collection<Phone>(this);
 
