@@ -215,3 +215,25 @@ export class UpdateMemberRO {
   @JsonProperty()
   status?: MemberStatusType;
 }
+
+@JsonObject()
+@unique
+export class GroupRO {
+  @JsonProperty()
+  name: string;
+
+  @JsonProperty()
+  active: boolean;
+
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  parent: number;
+
+  @JsonProperty()
+  member?: number[];
+
+  @JsonProperty()
+  note: string;
+}

@@ -40,6 +40,9 @@ export class Organization extends BaseModel<Organization> {
   @PrimaryKey()
   id?: number;
 
+  @Property()
+  kcid!: string;
+
   @Unique({ name: 'organization_name_uniq' })
   @Property()
   name!: string;

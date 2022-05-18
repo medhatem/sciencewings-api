@@ -23,8 +23,9 @@ import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
-
+import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
+import { getConfig } from '@/configuration/Configuration';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -35,6 +36,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public addressService: IAddressService,
     public phoneService: IPhoneService,
     public emailService: Email,
+    public keycloak: Keycloak = Keycloak.getInstance(),
   ) {
     super(dao);
   }
@@ -104,6 +106,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();
 
+    const keycloakGroup = await this.keycloak.getAdminClient().groups.create({
+      name: payload.name,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+
+    await this.keycloak.getAdminClient().groups.setOrCreateChild(
+      { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
+      {
+        name: 'admin',
+      },
+    );
+    wrappedOrganization.kcid = keycloakGroup.id;
     const createdOrg = await this.create(wrappedOrganization);
 
     if (createdOrg.isFailure) {
@@ -158,6 +172,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const fetchedorganization = await this.dao.get(orgId);
     if (!fetchedorganization) {
       return Result.notFound(`organization with id ${orgId} does not exist.`);
+    }
+
+    if (fetchedorganization.name !== payload.name) {
+      await this.keycloak.getAdminClient().groups.setOrCreateChild(
+        { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
+        {
+          name: payload.name,
+        },
+      );
     }
 
     let direction;

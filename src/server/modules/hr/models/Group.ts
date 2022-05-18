@@ -1,8 +1,7 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
 import { BaseModel } from '@/modules//base/models/BaseModel';
-import { Member } from './Member';
+import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 
 @provide()
@@ -20,31 +19,26 @@ export class Group extends BaseModel<Group> {
   id?: number;
 
   @Property()
-  name!: string;
+  kcid!: string;
 
-  @Property({ nullable: true })
-  completeName?: string;
+  @Property()
+  name!: string;
 
   @Property({ nullable: true })
   active?: boolean;
 
-  //TODO check if managers and members are in this organization
-  @ManyToOne({
-    entity: () => Organization,
-    index: 'hr_group_organization_id_index',
-  })
+  @ManyToOne({ entity: () => Organization })
   organization!: Organization;
 
   @ManyToOne({
     entity: () => Group,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_group_parent_id_index',
   })
   parent?: Group;
 
-  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
-  manager?: Member;
+  @OneToMany({ entity: () => Member, mappedBy: (member) => member.group, nullable: true })
+  members?: Member;
 
   @Property({ columnType: 'text', nullable: true })
   note?: string;
