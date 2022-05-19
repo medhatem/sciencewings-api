@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Group } from '@/modules/hr/models/Group';
-import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { Path, PathParam, POST, PUT, Security, DELETE, GET } from 'typescript-rest';
 import { GroupDTO, CreateGroupDTO, UpdateGroupDTO } from '@/modules/hr/dtos/GroupDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { GroupRO } from '@/modules/hr/routes/RequestObject';
@@ -18,6 +18,27 @@ export class GroupRoutes extends BaseRoutes<Group> {
 
   static getInstance(): GroupRoutes {
     return container.get(GroupRoutes);
+  }
+
+  /**
+   * create a group that the organization offer
+   * @param payload
+   * @returns the created group id
+   */
+  @GET
+  @Path('getOrganizationGroup/:organizationId')
+  @Security()
+  @LoggerStorage()
+  @Response<GroupRO>(200, 'Group fetched Successfully')
+  @Response<GroupRO>(500, 'Internal Server Error')
+  public async getOrganizationGroup(@PathParam('organizationId') organizationId: number): Promise<GroupDTO> {
+    const result = await this.groupService.getOrganizationGroup(organizationId);
+
+    if (result.isFailure) {
+      return new GroupDTO({ error: { statusCode: 500, errorMessage: result.error } });
+    }
+
+    return new GroupDTO({ body: { data: [result.getValue()], statusCode: 201 } });
   }
 
   /**
@@ -65,12 +86,12 @@ export class GroupRoutes extends BaseRoutes<Group> {
   }
 
   /**
-   * update a group data given its id
+   * delete a group data given its id
    * @param payload
    * @param id
-   * @returns the updated group id
+   * @returns the deleted group id
    */
-  @PUT
+  @DELETE
   @Path('/delete/:id')
   @Security()
   @LoggerStorage()

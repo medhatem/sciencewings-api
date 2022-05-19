@@ -1,6 +1,6 @@
-import { Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-import { BaseModel } from '@/modules//base/models/BaseModel';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 
@@ -38,7 +38,7 @@ export class Group extends BaseModel<Group> {
   parent?: Group;
 
   @OneToMany({ entity: () => Member, mappedBy: (member) => member.group, nullable: true })
-  members?: Member;
+  members? = new Collection<Member>(this);
 
   @Property({ columnType: 'text', nullable: true })
   note?: string;

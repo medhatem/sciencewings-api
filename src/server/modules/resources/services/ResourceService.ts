@@ -47,8 +47,8 @@ import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTag
 import { Organization } from '@/modules/organizations/models/Organization';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { applyToAll } from '@/utils/utilities';
-import { IResourceStatusHistoryService } from '../interfaces/IResourceStatusHistoryService';
-import { IResourceStatusService } from '../interfaces/IResourceStatusService';
+import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IResourceStatusHistoryService';
+import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
