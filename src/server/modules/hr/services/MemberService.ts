@@ -35,15 +35,18 @@ export class MemberService extends BaseService<Member> implements IMemberService
     const existingUser = await this.keycloak
       .getAdminClient()
       .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
+
     if (existingUser.length > 0) {
       return Result.fail('The user already exist.');
     }
 
     const existingOrg = await this.organizationService.get(orgId);
 
-    if (!existingOrg) {
+    if (existingOrg.isFailure || existingOrg.getValue() === null) {
       return Result.notFound('The organization to add the user to does not exist.');
     }
+
+    const existingOrgValue = existingOrg.getValue();
 
     const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
       email,
@@ -58,21 +61,22 @@ export class MemberService extends BaseService<Member> implements IMemberService
     user.lastname = '';
     user.email = email;
     user.keycloakId = createdKeyCloakUser.id;
-
-    const savedUser = await this.userService.create(user);
+    const wrappedUser = this.userService.wrapEntity(new User(), user, false);
+    const savedUser = await this.userService.create(wrappedUser);
     if (savedUser.isFailure) {
       return savedUser;
     }
     // create member for the organization
-    const createdMemberResult = await this.dao.create({
-      user: savedUser.getValue(),
-      organization: existingOrg,
+    const wrappedMember = this.wrapEntity(new Member(), {
       memberType: MemberTypeEnum.Regular,
     });
+    wrappedMember.user = savedUser.getValue();
+    wrappedMember.organization = existingOrgValue;
+    const createdMemberResult = await this.dao.create(wrappedMember);
 
-    existingOrg.members.add(createdMemberResult);
+    existingOrgValue.members.add(createdMemberResult);
 
-    await this.dao.update(existingOrg);
+    await this.dao.update(existingOrgValue);
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
       to: email,

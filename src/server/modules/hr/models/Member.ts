@@ -10,6 +10,7 @@ import { Phone } from '@/modules/phones/models/Phone';
 import { Project } from '@/modules/projects/models/Project';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 
@@ -138,4 +139,10 @@ export class Member extends BaseModel<Member> {
 
   @Property({ nullable: true })
   status?: MemberStatusType;
+
+  @ManyToMany({
+    entity: () => ResourceStatusHistory,
+    nullable: true,
+  })
+  resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
 }

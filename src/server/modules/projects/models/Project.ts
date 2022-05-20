@@ -4,6 +4,7 @@ import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
+import { ProjectBoard } from './ProjectBoard';
 import { ProjectTag } from './ProjectTag';
 import { ProjectTask } from './ProjectTask';
 
@@ -44,7 +45,7 @@ export class Project extends BaseModel<Project> {
 
   @OneToMany({
     entity: () => ProjectTag,
-    mappedBy: (entity) => entity.project,
+    mappedBy: (entity) => entity.project, //project nefsha li mektoba 9edam public fel manytoone ta3 table tag w public name li hna wa7edha tetdiclara
   })
   public projectTags? = new Collection<ProjectTag>(this);
 
@@ -52,7 +53,13 @@ export class Project extends BaseModel<Project> {
     entity: () => ProjectTask,
     mappedBy: (entity) => entity.project,
   })
-  public projectTasks? = new Collection<ProjectTask>(this);
+  public projectTasks? = new Collection<ProjectTask>(this); //
+
+  @OneToMany({
+    entity: () => ProjectBoard,
+    mappedBy: (entity) => entity.project,
+  })
+  public projectBoard? = new Collection<ProjectBoard>(this);
 
   @ManyToOne({
     entity: () => Organization,

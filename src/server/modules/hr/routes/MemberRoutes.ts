@@ -1,14 +1,16 @@
-import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { Member } from '@/modules/hr/models/Member';
-import { Path, POST, Security } from 'typescript-rest';
-import { container, provideSingleton } from '@/di/index';
-import { IMemberService } from '@/modules/hr/interfaces';
-import { MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos';
-import { LoggerStorage } from '@/decorators/loggerStorage';
-import { Response } from 'typescript-rest-swagger';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
-import { InviteUserDTO } from '@/modules/organizations';
-import { UserIdDTO, UserInviteToOrgRO } from '@/modules/users';
+import { InviteUserBodyDTO, InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
+import { MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
+import { POST, Path, Security } from 'typescript-rest';
+import { container, provideSingleton } from '@/di/index';
+
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { LoggerStorage } from '@/decorators/loggerStorage';
+import { Member } from '@/modules/hr/models/Member';
+import { Response } from 'typescript-rest-swagger';
+import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
+import { UserInviteToOrgRO } from '@/modules/users/routes/RequstObjects';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
 
 @provideSingleton()
@@ -30,7 +32,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
    */
   @POST
   @Path('inviteUserToOrganization')
-  @Response<InviteUserDTO>(201, 'User Registred Successfully')
+  @Response<InviteUserBodyDTO>(201, 'User Registred Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   @Security()
