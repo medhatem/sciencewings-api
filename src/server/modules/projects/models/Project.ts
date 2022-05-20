@@ -6,7 +6,6 @@ import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ProjectBoard } from './ProjectBoard';
 import { ProjectTag } from './ProjectTag';
-import { ProjectTask } from './ProjectTask';
 
 @provide()
 @Entity()
@@ -45,15 +44,15 @@ export class Project extends BaseModel<Project> {
 
   @OneToMany({
     entity: () => ProjectTag,
-    mappedBy: (entity) => entity.project, //project nefsha li mektoba 9edam public fel manytoone ta3 table tag w public name li hna wa7edha tetdiclara
+    mappedBy: (entity) => entity.project,
   })
   public projectTags? = new Collection<ProjectTag>(this);
 
-  @OneToMany({
-    entity: () => ProjectTask,
-    mappedBy: (entity) => entity.project,
-  })
-  public projectTasks? = new Collection<ProjectTask>(this); //
+  // @OneToMany({
+  //   entity: () => ProjectTask,
+  //   mappedBy: (entity) => entity.project,
+  // })
+  // public projectTasks? = new Collection<ProjectTask>(this);
 
   @OneToMany({
     entity: () => ProjectBoard,

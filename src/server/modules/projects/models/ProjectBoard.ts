@@ -5,13 +5,6 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Project } from './Project';
 import { TasksList } from './TasksList';
 
-export enum Priority {
-  Lowest,
-  Low,
-  Medium,
-  High,
-  Highest,
-}
 @provide()
 @Entity()
 export class ProjectBoard extends BaseModel<ProjectBoard> {

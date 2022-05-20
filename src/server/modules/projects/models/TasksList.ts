@@ -42,7 +42,7 @@ export class TasksList extends BaseModel<TasksList> {
 
   @OneToMany({
     entity: () => ProjectTask,
-    mappedBy: (entity) => entity.project,
+    mappedBy: (entity) => entity.projectTask,
   })
-  public projectTask? = new Collection<ProjectTask>(this);
+  public tasklist? = new Collection<ProjectTask>(this);
 }

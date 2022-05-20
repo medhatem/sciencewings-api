@@ -3,8 +3,6 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
-import { Project } from './Project';
-import { ProjectBoard } from './ProjectBoard';
 import { TasksList } from './TasksList';
 
 export enum Priority {
@@ -49,13 +47,13 @@ export class ProjectTask extends BaseModel<ProjectTask> {
   @Property({ nullable: true })
   dateEnd?: Date;
 
-  @ManyToOne({
-    entity: () => Project,
-    onDelete: 'cascade',
-    nullable: true,
-    eager: false,
-  })
-  project: Project; //
+  // @ManyToOne({
+  //   entity: () => Project,
+  //   onDelete: 'cascade',
+  //   nullable: true,
+  //   eager: false,
+  // })
+  // project: Project;
 
   @ManyToOne({
     entity: () => ProjectTask,
@@ -69,7 +67,7 @@ export class ProjectTask extends BaseModel<ProjectTask> {
     nullable: true,
     eager: false,
   })
-  tasksList: TasksList;
+  projectTask: TasksList;
 
   @Property()
   status: string;
