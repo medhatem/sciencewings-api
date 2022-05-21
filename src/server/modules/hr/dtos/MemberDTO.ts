@@ -1,6 +1,5 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
 import { unique } from '@/decorators/unique';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';

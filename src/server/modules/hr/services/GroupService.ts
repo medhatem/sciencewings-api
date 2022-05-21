@@ -88,7 +88,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       await createdGroup.members.init();
       await applyToAll(payload.members, async (member) => {
         const fetchedMember = await this.memberService.get(member);
-        if (fetchedMember.isSuccess || fetchedMember.getValue() !== null) {
+        if (fetchedMember.isSuccess && fetchedMember.getValue() !== null) {
           createdGroup.members.add(fetchedMember.getValue());
         }
       });
