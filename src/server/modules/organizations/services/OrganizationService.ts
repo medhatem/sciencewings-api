@@ -189,7 +189,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (fetchedorganization.name !== payload.name) {
-      await this.keycloak.getAdminClient().groups.setOrCreateChild(
+      await this.keycloak.getAdminClient().groups.update(
         { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
         {
           name: payload.name,

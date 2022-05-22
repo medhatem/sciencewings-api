@@ -14,5 +14,4 @@ export const CreateGroupSchema = GroupSchema.keys({
 
 export const UpdateGroupSchema = GroupSchema.keys({
   name: Joi.string(),
-  organization: Joi.number(),
 });

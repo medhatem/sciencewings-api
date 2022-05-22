@@ -110,28 +110,21 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     }
 
     if (fetchedGroup.name !== payload.name) {
-      await this.keycloak
-        .getAdminClient()
-        .groups.del({ id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') });
-      const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
-        { id: fetchedGroup.organization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
-        {
-          name: payload.name,
-        },
-      );
-      fetchedGroup.kcid = id;
-    }
-
-    if (payload.organization) {
-      const fetchedorganization = await this.organizationService.get(payload.organization);
-      if (fetchedorganization.isFailure || fetchedorganization.getValue() !== null) {
-        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+      try {
+        await this.keycloak.getAdminClient().groups.update(
+          { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
+          {
+            name: payload.name,
+          },
+        );
+      } catch (e) {
+        console.log({ e });
       }
     }
 
-    const group = await this.dao.get(groupId);
-    this.wrapEntity(group, {
-      ...group,
+    this.wrapEntity(fetchedGroup, {
+      ...fetchedGroup,
+      ...payload,
     });
     return Result.ok<number>(1);
   }
@@ -150,7 +143,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       });
       await this.dao.remove(fetchedGroup);
     } catch (error) {
-      console.log({ error });
+      return Result.fail(error.response.data);
     }
 
     return Result.ok<number>(groupId);
