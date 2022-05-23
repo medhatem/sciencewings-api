@@ -34,7 +34,6 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   @safeGuard()
   public async getOrganizationGroup(organizationId: number): Promise<Result<any>> {
     const fetchedorganization = await this.organizationService.get(organizationId);
-    console.log({ organizationId, fetchedorganization });
 
     if (fetchedorganization.isFailure || fetchedorganization.getValue() === null) {
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
@@ -92,11 +91,10 @@ export class GroupService extends BaseService<Group> implements IGroupService {
           FETCH_STRATEGY.SINGLE,
         );
         if (fetchedMember.isFailure) {
-          console.log({ error: fetchedMember.error });
+          return fetchedMember;
         }
         if (fetchedMember.isSuccess && fetchedMember.getValue() !== null) {
           const fetchedMemberValue = fetchedMember.getValue();
-          console.log({ fetchedMemberValue });
 
           createdGroup.members.add(fetchedMemberValue);
           await this.keycloak.getAdminClient().users.addToGroup({
@@ -105,6 +103,8 @@ export class GroupService extends BaseService<Group> implements IGroupService {
             realm: getConfig('keycloak.clientValidation.realmName'),
           });
         }
+
+        return fetchedMember;
       });
     }
 
@@ -132,7 +132,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
           },
         );
       } catch (e) {
-        console.log({ e });
+        return Result.notFound(e);
       }
     }
 
