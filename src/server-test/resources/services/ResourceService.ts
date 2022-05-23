@@ -19,7 +19,6 @@ import {
   ResourceReservationVisibilityRO,
   ResourceRO,
   ResourceSettingsGeneralPropertiesRO,
-  ResourceSettingsGeneralStatusRO,
   ResourceSettingsGeneralVisibilityRO,
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
@@ -389,11 +388,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('update Resource Reservation Status', () => {
     const resourceId = 1;
-    const payload: ResourceSettingsGeneralStatusRO = {
-      resourceStatus: 'OPERATIONAL',
+    const payload = {
+      resourceType: 'ORGANIZATION',
       statusDescription: 'test',
-      memberId: 1,
-    };
+    } as any;
     test('should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
@@ -407,6 +405,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(resourceDao, 'update', [], null);
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
+      console.log({ result });
+
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(
         `Status General setings of resource with id ${resourceId} can not be updated.`,

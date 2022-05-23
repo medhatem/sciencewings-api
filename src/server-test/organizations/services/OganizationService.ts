@@ -187,6 +187,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('should success on organization creation', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
+
+      // mockMethodWithResult(organizationDAO., 'repository', [], { flush: stub() });
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
       // set adminContact to exist
@@ -194,14 +196,17 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // prepare base
+      organizationDAO['repository'] = { flush: stub() } as any;
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
       // set member creation
       stub(MemberEvent.prototype, 'createMember').returns({} as any);
       // set address creation
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(addressService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
       // set phone creation
       mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(phoneService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
       // set label creation
       mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
 

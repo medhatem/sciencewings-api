@@ -14,7 +14,6 @@ import {
   ResourceReservationVisibilityRO,
   ResourceRO,
   ResourceSettingsGeneralPropertiesRO,
-  ResourceSettingsGeneralStatusRO,
   ResourceSettingsGeneralVisibilityRO,
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
@@ -172,8 +171,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
   });
   suite('PUT settings/general/status/:resourceId', () => {
-    const payload: ResourceSettingsGeneralStatusRO = {
-      resourceStatus: 'OPERATIONAL',
+    const payload: any = {
       statusDescription: 'test',
       memberId: 1,
     };

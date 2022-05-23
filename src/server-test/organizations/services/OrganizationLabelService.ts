@@ -10,6 +10,7 @@ import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLa
 import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationLabelDao';
 import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
 import { mockMethodWithResult } from '@/utils/utilities';
+import { BaseService } from '@/modules/base';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationLabelDAO: SinonStubbedInstance<OrganizationLabelDao>;
@@ -52,7 +53,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   suite('create Bulk Label', () => {
     test('Should success on bulk label creation', async () => {
       (organizationLabelDAO.repository as any) = { persistAndFlush: stub() };
-
+      stub(BaseService.prototype, 'wrapEntity').returns({});
       const result = await container.get(OrganizationLabelService).createBulkLabel(['test'], {} as any);
 
       expect(result.isSuccess).to.be.true;
