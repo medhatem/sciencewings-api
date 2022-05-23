@@ -173,8 +173,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('PUT settings/general/status/:resourceId', () => {
     const payload: ResourceSettingsGeneralStatusRO = {
-      statusType: 'OPERZTIONAL',
+      resourceStatus: 'OPERATIONAL',
       statusDescription: 'test',
+      memberId: 1,
     };
 
     test('Should fail on throw error', async () => {

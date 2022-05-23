@@ -31,6 +31,7 @@ import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { BaseService } from '@/modules/base/services/BaseService';
 import Sinon = require('sinon');
 import { Collection } from '@mikro-orm/core';
+import { ResourceStatusHistoryService, ResourceStatusService } from '@/modules/resources';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceDao: SinonStubbedInstance<ResourceDao>;
@@ -40,6 +41,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let resourceRateService: SinonStubbedInstance<ResourceRateService>;
   let resourceCalendarService: SinonStubbedInstance<ResourceCalendarService>;
   let resourceTagService: SinonStubbedInstance<ResourceTagService>;
+  let resourceStatusHistoryService: SinonStubbedInstance<ResourceStatusHistoryService>;
+  let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
 
   beforeEach(() => {
     createStubInstance(Configuration);
@@ -50,6 +53,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     resourceRateService = createStubInstance(ResourceRateService);
     resourceCalendarService = createStubInstance(ResourceCalendarService);
     resourceTagService = createStubInstance(ResourceTagService);
+    resourceStatusHistoryService = createStubInstance(ResourceStatusHistoryService);
+    resourceStatusService = createStubInstance(ResourceStatusService);
 
     const mockedContainer = stub(container, 'get');
     mockedContainer.withArgs(Configuration).returns({
@@ -73,6 +78,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           resourceRateService,
           resourceCalendarService,
           resourceTagService,
+          resourceStatusHistoryService,
+          resourceStatusService,
         ),
       );
   });
@@ -383,8 +390,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   suite('update Resource Reservation Status', () => {
     const resourceId = 1;
     const payload: ResourceSettingsGeneralStatusRO = {
-      statusType: 'OPERZTIONAL',
+      resourceStatus: 'OPERATIONAL',
       statusDescription: 'test',
+      memberId: 1,
     };
     test('should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);

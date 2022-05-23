@@ -104,7 +104,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`StackTrace`);
     });
-    test('Should success on ivite user', async () => {
+    test('Should success on invite user', async () => {
       stubKeyclockInstanceWithBaseService([]);
       mockMethodWithResult(
         organizationService,
@@ -120,7 +120,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       );
       mockMethodWithResult(userService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       mockMethodWithResult(memberDao, 'create', [], Promise.resolve({}));
-
+      stub(BaseService.prototype, 'wrapEntity').returns({});
       const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
 
       expect(result.isSuccess).to.be.true;

@@ -53,7 +53,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<Result<number>> {
-    console.log({ payload: payload, phones: payload.phones });
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
@@ -134,7 +133,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedAddress.organization = organization;
       await this.addressService.create(wrappedAddress);
     });
-    console.log({ phones: payload.phones });
 
     await applyToAll(payload.phones, async (phone) => {
       const wrappedPhone = this.phoneService.wrapEntity(
@@ -173,7 +171,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!fetchedorganization) {
       return Result.notFound(`Organization with id ${orgId} does not exist.`);
     }
-    console.log({ payload });
+
     let direction;
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
