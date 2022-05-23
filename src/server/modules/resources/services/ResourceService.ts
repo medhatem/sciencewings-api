@@ -48,6 +48,8 @@ import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTag
 import { Organization } from '@/modules/organizations/models/Organization';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { applyToAll } from '@/utils/utilities';
+import { IResourceStatusHistoryService } from '../interfaces/IResourceStatusHistoryService';
+import { IResourceStatusService } from '../interfaces/IResourceStatusService';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
@@ -59,6 +61,8 @@ export class ResourceService extends BaseService<Resource> {
     public resourceRateService: IResourceRateService,
     public resourceCalendarService: IResourceCalendarService,
     public resourceTagService: IResourceTagService,
+    public resourceStatusHistoryService: IResourceStatusHistoryService,
+    public resourceStatusService: IResourceStatusService,
   ) {
     super(dao);
   }
@@ -276,26 +280,27 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.dao.get(resourceId);
-    if (!fetchedResource) {
+    const resource = await this.dao.get(resourceId);
+    if (!resource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    const resource = this.wrapEntity(
-      fetchedResource,
-      {
-        ...fetchedResource,
-        settings: { ...fetchedResource.settings, ...payload },
-      },
-      false,
-    );
+    const fetchedMember = await this.memberService.get(payload.memberId);
+    if (fetchedMember.isFailure) {
+      return Result.notFound(`member with id ${resourceId} does not exist.`);
+    }
+    const member = fetchedMember.getValue();
+    const resourceStatusHistory = await this.resourceStatusHistoryService.create({
+      ...payload,
+      resource,
+      member,
+    });
 
-    const updatedResourceResult = await this.dao.update(resource);
-    if (!updatedResourceResult) {
-      return Result.fail(`Status General setings of resource with id ${resourceId} can not be updated.`);
+    if (resourceStatusHistory.isFailure && resourceStatusHistory.getValue === null) {
+      return Result.fail(`can not create history for resource status.`);
     }
 
-    return Result.ok<number>(updatedResourceResult.id);
+    return Result.ok<number>(resourceStatusHistory.getValue().id);
   }
 
   @log()

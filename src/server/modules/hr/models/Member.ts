@@ -10,6 +10,7 @@ import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User, userStatus } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 
 export enum MemberTypeEnum {
   Regular = 'regular',
@@ -59,6 +60,8 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({
     entity: () => Resource,
     nullable: true,
+    lazy: true,
+    eager: false,
   })
   resources? = new Collection<Resource>(this);
 
@@ -126,4 +129,10 @@ export class Member extends BaseModel<Member> {
 
   @Property({ nullable: true })
   status?: userStatus;
+
+  @ManyToMany({
+    entity: () => ResourceStatusHistory,
+    nullable: true,
+  })
+  resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
 }

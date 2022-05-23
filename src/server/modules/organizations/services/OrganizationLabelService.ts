@@ -30,7 +30,9 @@ export class OrganizationLabelService extends BaseService<OrganizationLabel> imp
   @safeGuard()
   async createBulkLabel(payload: string[], organization: Organization): Promise<Result<number>> {
     const labels = payload.map((name: string) => {
-      return { name, organization } as OrganizationLabel;
+      const label = this.wrapEntity(new OrganizationLabel(), { name });
+      label.organization = organization;
+      return label;
     });
 
     this.dao.repository.persistAndFlush(labels);
