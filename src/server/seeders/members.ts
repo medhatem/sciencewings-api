@@ -6,7 +6,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { Phone } from '@/modules/phones/models/Phone';
 import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
 import { applyToAll } from '@/utils/utilities';
-import { connection } from '../db/index';
+import { connection } from '@/db/index';
 import { faker } from '@faker-js/faker';
 import { provideSingleton } from '@/di';
 import { wrap } from '@mikro-orm/core';

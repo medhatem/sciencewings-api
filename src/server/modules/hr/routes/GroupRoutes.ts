@@ -86,6 +86,29 @@ export class GroupRoutes extends BaseRoutes<Group> {
   }
 
   /**
+   * update a group data given its id
+   * @param payload
+   * @param id
+   * @returns the updated group id
+   */
+  @PUT
+  @Path('/groupMember/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<GroupDTO>(204, 'Group updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateGroupMember(payload: GroupRO, @PathParam('id') id: number): Promise<GroupDTO> {
+    const result = await this.groupService.updateGroupMember(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new GroupDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
    * delete a group data given its id
    * @param payload
    * @param id

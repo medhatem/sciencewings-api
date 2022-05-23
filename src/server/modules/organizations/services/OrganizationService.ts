@@ -113,7 +113,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
 
-    await this.keycloak.getAdminClient().groups.setOrCreateChild(
+    const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
       { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         name: 'admin',
@@ -130,6 +130,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const memberEvent = new MemberEvent();
     memberEvent.createMember(user, organization);
+
+    await this.keycloak.getAdminClient().users.addToGroup({
+      id: user.keycloakId,
+      groupId: id,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
 
     await applyToAll(payload.addresses, async (address) => {
       const wrappedAddress = this.addressService.wrapEntity(
@@ -148,7 +154,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedAddress.organization = organization;
       await this.addressService.create(wrappedAddress);
     });
-    console.log({ phones: payload.phones });
 
     await applyToAll(payload.phones, async (phone) => {
       const wrappedPhone = this.phoneService.wrapEntity(

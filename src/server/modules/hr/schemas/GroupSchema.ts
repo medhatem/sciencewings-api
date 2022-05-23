@@ -15,3 +15,7 @@ export const CreateGroupSchema = GroupSchema.keys({
 export const UpdateGroupSchema = GroupSchema.keys({
   name: Joi.string(),
 });
+
+export const UpdateGroupMember = GroupSchema.keys({
+  members: Joi.array(),
+});

@@ -11,7 +11,7 @@ import { getConfig } from '@/configuration/Configuration';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
-import { CreateGroupSchema, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
+import { CreateGroupSchema, UpdateGroupMember, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { applyToAll } from '@/utils/utilities';
@@ -87,9 +87,23 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     if (payload.members) {
       await createdGroup.members.init();
       await applyToAll(payload.members, async (member) => {
-        const fetchedMember = await this.memberService.get(member);
+        const fetchedMember = await this.memberService.getByCriteria(
+          { user: member, organization: payload.organization },
+          FETCH_STRATEGY.SINGLE,
+        );
+        if (fetchedMember.isFailure) {
+          console.log({ error: fetchedMember.error });
+        }
         if (fetchedMember.isSuccess && fetchedMember.getValue() !== null) {
-          createdGroup.members.add(fetchedMember.getValue());
+          const fetchedMemberValue = fetchedMember.getValue();
+          console.log({ fetchedMemberValue });
+
+          createdGroup.members.add(fetchedMemberValue);
+          await this.keycloak.getAdminClient().users.addToGroup({
+            id: fetchedMemberValue.user.keycloakId,
+            groupId: wrappedGroup.kcid,
+            realm: getConfig('keycloak.clientValidation.realmName'),
+          });
         }
       });
     }
@@ -147,5 +161,57 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     }
 
     return Result.ok<number>(groupId);
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async updateGroupMember(
+    @validateParam(UpdateGroupMember) payload: GroupRO,
+    groupId: number,
+  ): Promise<Result<number>> {
+    const fetchedGroup = await this.dao.get(groupId);
+    if (!fetchedGroup) {
+      return Result.notFound(`group with id ${groupId} does not exist.`);
+    }
+
+    let existingMembers = [await fetchedGroup.members.init()];
+    let requestedMembers = [payload.members];
+    const newMembers = [];
+
+    await applyToAll(payload.members, async ({ user }) => {
+      let flagIsExiste = false;
+      for (const existingMember in existingMembers) {
+        if ((existingMember as any).user.id === user.id) {
+          flagIsExiste = true;
+          existingMembers = existingMembers.filter((el: any) => el.user.id !== user.id);
+          requestedMembers = requestedMembers.filter((el: any) => el.user.id !== user.id);
+          break;
+        }
+      }
+      if (!flagIsExiste) {
+        newMembers.push(user.id);
+      }
+    });
+
+    await applyToAll(payload.members as any, async ({ user }: any) => {
+      this.keycloak.getAdminClient().users.addToGroup({
+        id: user.keycloakId,
+        groupId: fetchedGroup.kcid,
+      });
+      fetchedGroup.members.add({
+        user,
+        organization: fetchedGroup.organization,
+      } as any);
+    });
+    await applyToAll(existingMembers, async (member: any) => {
+      await this.keycloak.getAdminClient().users.delFromGroup({
+        id: member.user.keycloakId,
+        groupId: fetchedGroup.kcid,
+      });
+      await this.dao.remove(member);
+    });
+
+    return Result.ok<number>(1);
   }
 }

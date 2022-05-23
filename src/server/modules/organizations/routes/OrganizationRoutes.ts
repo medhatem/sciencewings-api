@@ -3,7 +3,7 @@ import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
 import { CreateOrganizationRO, UpdateOrganizationRO } from './RequestObject';
-import { UserRequest } from '../../../types/UserRequest';
+import { UserRequest } from '@/types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
