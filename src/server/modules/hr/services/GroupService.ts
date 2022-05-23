@@ -175,9 +175,9 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       return Result.notFound(`group with id ${groupId} does not exist.`);
     }
 
-    let existingMembers = [await fetchedGroup.members.init()];
-    let requestedMembers = [payload.members];
-    const newMembers = [];
+    let existingMembers = [...(await fetchedGroup.members.init())];
+    let requestedMembers = [...payload.members];
+    const newMembers: any = [];
 
     await applyToAll(payload.members, async ({ user }) => {
       let flagIsExiste = false;
