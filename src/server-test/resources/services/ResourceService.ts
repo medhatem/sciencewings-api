@@ -87,7 +87,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     restore();
   });
 
-  test('should create the right instance', () => {
+  test('Should create the right instance', () => {
     const instance = ResourceService.getInstance();
     expect(instance instanceof ResourceService);
   });
@@ -107,14 +107,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       user: 1,
       managers: [{ user, organization }],
     };
-    test('should fail on organization not found', async () => {
+    test('Should fail on organization not found', async () => {
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok(null)));
       const result = await container.get(ResourceService).createResource(payload);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
     });
 
-    test('should fail on manager does not exist', async () => {
+    test('Should fail on manager does not exist', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(null)));
 
@@ -125,7 +125,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       );
     });
 
-    test('should fail on can not create settings for resource', async () => {
+    test('Should fail on can not create settings for resource', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok()));
@@ -135,7 +135,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Can not create settings for resource.`);
     });
 
-    test('should fail on create resource ', async () => {
+    test('Should fail on create resource ', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok(1)));
@@ -146,7 +146,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`fail to create resource.`);
     });
 
-    test('should succeed on create resource', async () => {
+    test('Should succeed on create resource', async () => {
       const crPayload = { ...payload };
       crPayload.managers;
       crPayload.tags = [{ title: '' }];
@@ -168,7 +168,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       expect(result.isSuccess).to.be.true;
     });
-    test('should succeed on create resource v2', async () => {
+    test('Should succeed on create resource v2', async () => {
       const crPayload = { ...payload };
       delete crPayload.managers;
       delete crPayload.user;
@@ -193,11 +193,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get Resources Of A Given Organization By Id', () => {
     const organizationId = 1;
-    test('should fail organization Id should be provided', async () => {
+    test('Should fail organization Id should be provided', async () => {
       const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(null);
       expect(result.error.message).to.equal(`Organization id should be provided.`);
     });
-    test('should fail organization does not exist', async () => {
+    test('Should fail organization does not exist', async () => {
       mockMethodWithResult(organizationService, 'get', [organizationId], Promise.resolve(Result.notFound(null)));
 
       const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
@@ -205,7 +205,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${organizationId} does not exist.`);
     });
-    test('should fail on can not get resources of organization', async () => {
+    test('Should fail on can not get resources of organization', async () => {
       mockMethodWithResult(organizationService, 'get', [organizationId], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'getByCriteria', [organizationId, FETCH_STRATEGY.ALL, { refresh: true }], null);
 
@@ -214,7 +214,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`can not get resources of organization with id ${organizationId}.`);
     });
-    test('should return organization resource ', async () => {
+    test('Should return organization resource ', async () => {
       mockMethodWithResult(organizationService, 'get', [organizationId], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'getByCriteria', [], Promise.resolve([1]));
 
@@ -230,14 +230,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       name: 'resource_dash_one',
       organization: 1,
     } as any;
-    test('should fail on resource not exist', async () => {
+    test('Should fail on resource not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(null));
       const result = await container.get(ResourceService).updateResource(payload, resourceId);
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on organization not exist', async () => {
+    test('Should fail on organization not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(null));
 
@@ -246,7 +246,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
     });
-    test('should fail on resource can not be updated', async () => {
+    test('Should fail on resource can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
 
@@ -258,7 +258,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`resource with id ${resourceId} can not be updated.`);
     });
-    test('should update resource without organization', async () => {
+    test('Should update resource without organization', async () => {
       const mockPayload = { ...payload };
       delete mockPayload.organization;
 
@@ -271,7 +271,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       expect(result.isSuccess).to.be.true;
     });
-    test('should update resource', async () => {
+    test('Should update resource', async () => {
       mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
 
@@ -292,14 +292,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       timezone: 'gmt+1',
       twoWeeksCalendar: true,
     };
-    test('should fail on organization does not exist', async () => {
+    test('Should fail on organization does not exist', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(null));
       const result = await container.get(ResourceService).createResourceCalendar(payload);
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
     });
-    test('should fail to create resource calendar', async () => {
+    test('Should fail to create resource calendar', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({ id: 1 })));
       mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], Promise.resolve({}));
 
@@ -310,7 +310,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`fail to create resource calendar.`);
     });
-    test('should succeed create resource calendar without organization', async () => {
+    test('Should succeed create resource calendar without organization', async () => {
       const mockPayload = { ...payload };
       delete mockPayload.organization;
 
@@ -322,7 +322,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       expect(result.isSuccess).to.be.true;
     });
-    test('should succeed create resource calendar', async () => {
+    test('Should succeed create resource calendar', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({ id: 1 })));
       mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], Promise.resolve({}));
 
@@ -335,14 +335,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('Get Resource Settings', () => {
     const resourceId = 1;
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], Promise.resolve(null));
       const result = await container.get(ResourceService).getResourceSettings(resourceId);
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should succed getting resource settings', async () => {
+    test('Should succed getting resource settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], Promise.resolve({}));
       const result = await container.get(ResourceService).getResourceSettings(resourceId);
       expect(result.isSuccess).to.be.true;
@@ -353,7 +353,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourcesSettingsReservationGeneralRO = {
       isEnabled: true,
     };
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).updateResourceReservationGeneral(payload, resourceId);
@@ -361,7 +361,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on resource reservation general can not be updated', async () => {
+    test('Should fail on resource reservation general can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
 
@@ -374,7 +374,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         `Reservation General setings of resource with id ${resourceId} can not be updated.`,
       );
     });
-    test('should succeed update resource reservation general ', async () => {
+    test('Should succeed update resource reservation general ', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
 
@@ -391,15 +391,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload = {
       resourceType: 'ORGANIZATION',
       statusDescription: 'test',
+      memberId: 1,
     } as any;
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on status general settings can not be updated', async () => {
+    test('Should fail on status general settings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
@@ -418,7 +419,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         `Status General setings of resource with id ${resourceId} can not be updated.`,
       );
     });
-    test('should succeed upcating status general settings', async () => {
+    test('Should succeed updating status general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
@@ -435,14 +436,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       unitName: 'aze',
       unites: 0,
     };
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).updateResourceReservationUnits(payload, resourceId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on Units General setings can not be updated', async () => {
+    test('Should fail on Units General setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
@@ -453,7 +454,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         `Units General setings of resource with id ${resourceId} can not be updated.`,
       );
     });
-    test('should succeed updating Units general settings', async () => {
+    test('Should succeed updating Units general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
@@ -467,14 +468,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceReservationVisibilityRO = {
       isReservationDetailsVisibilityToNonModerators: true,
     };
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).updateResourceReservationVisibility(payload, resourceId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on Visibility Reservation setings can not be updated', async () => {
+    test('Should fail on Visibility Reservation setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
@@ -485,7 +486,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         `Visibility Reservation setings of resource with id ${resourceId} can not be updated.`,
       );
     });
-    test('should succeed updating Visibility Reservation settings', async () => {
+    test('Should succeed updating Visibility Reservation settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
@@ -504,14 +505,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       isPromotedOnSitePageAsALargeButtonAboveOtherResources: true,
       isHideAvailabilityonSitePage: true,
     };
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralVisibility(payload, resourceId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on Visibility General setings can not be updated', async () => {
+    test('Should fail on Visibility General setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
@@ -522,7 +523,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         `Visibility General setings of resource with id ${resourceId} can not be updated.`,
       );
     });
-    test('should succeed updating Visibility general settings', async () => {
+    test('Should succeed updating Visibility general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
@@ -536,7 +537,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceSettingsGeneralPropertiesRO = {
       accessToResource: 'Test',
     };
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container
@@ -545,7 +546,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on properties General properties setings can not be updated', async () => {
+    test('Should fail on properties General properties setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
@@ -558,7 +559,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         `General roperties settings of resource with id ${resourceId} can not be updated.`,
       );
     });
-    test('should succeed updating general properties settings', async () => {
+    test('Should succeed updating general properties settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
@@ -571,14 +572,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('Get Resources rate Settings', () => {
     const resourceId = 1;
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).getResourceRate(resourceId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on Resource Rate can not get', async () => {
+    test('Should fail on Resource Rate can not get', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       mockMethodWithResult(resourceRateService, 'getByCriteria', [], Promise.resolve(Result.ok(null)));
 
@@ -586,7 +587,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Can not get resource rate.`);
     });
-    test('should succeed getting resource rate', async () => {
+    test('Should succeed getting resource rate', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       mockMethodWithResult(resourceRateService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
 
@@ -604,14 +605,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       isRequiredAccountNumber: true,
       duration: 2,
     };
-    test('should fail on resource rate does not exist', async () => {
+    test('Should fail on resource rate does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).createResourceRate(payload, resourceId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on Resource Rate can not be created', async () => {
+    test('Should fail on Resource Rate can not be created', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       mockMethodWithResult(resourceRateService, 'create', [], Promise.resolve(Result.ok(null)));
 
@@ -619,7 +620,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource Rate can not be created.`);
     });
-    test('should succeed creating resource rate', async () => {
+    test('Should succeed creating resource rate', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       mockMethodWithResult(resourceRateService, 'create', [], Promise.resolve(Result.ok({})));
 
@@ -637,14 +638,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       isRequiredAccountNumber: true,
       duration: 2,
     };
-    test('should fail on resource rate does not exist', async () => {
+    test('Should fail on resource rate does not exist', async () => {
       mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve(Result.ok(null)));
 
       const result = await container.get(ResourceService).updateResourceRate(payload, resourceRateId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource Rate with id ${resourceRateId} does not exist.`);
     });
-    test('should fail on resource rate can not be updated', async () => {
+    test('Should fail on resource rate can not be updated', async () => {
       mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceRateService, 'wrapEntity', [], Promise.resolve({}));
       mockMethodWithResult(resourceRateService, 'update', [], Promise.resolve(Result.ok(null)));
@@ -653,7 +654,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource rate with id ${resourceRateId} can not be updated.`);
     });
-    test('should succeed updating resource rate', async () => {
+    test('Should succeed updating resource rate', async () => {
       mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceRateService, 'wrapEntity', [], Promise.resolve({}));
       mockMethodWithResult(resourceRateService, 'update', [], Promise.resolve(Result.ok({})));
@@ -675,7 +676,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       reservationDurationMaximum: 'test',
       bufferTimeBeforeReservation: 'test',
     };
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container
@@ -684,7 +685,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on properties Reservation Timer Restriction Settings can not be updated', async () => {
+    test('Should fail on properties Reservation Timer Restriction Settings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
@@ -697,7 +698,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         `Reservation time restriction of resource with id ${resourceId} can not be updated.`,
       );
     });
-    test('should succeed updating resource reservation Timer Restriction Settings', async () => {
+    test('Should succeed updating resource reservation Timer Restriction Settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
