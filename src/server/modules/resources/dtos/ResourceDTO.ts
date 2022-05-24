@@ -150,7 +150,7 @@ export class UpdateResourceDTO extends BaseRequestDTO {
 @unique
 export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
-  statusType: string;
+  resourceType: string;
   @JsonProperty()
   statusDescription: string;
 

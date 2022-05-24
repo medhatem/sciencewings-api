@@ -63,7 +63,7 @@ export class ResourceSettings extends BaseModel<ResourceSettings> {
   @OneToOne({
     entity: () => ResourceStatus,
   })
-  statusType: ResourceStatus;
+  resourceType: ResourceStatus;
 
   @Property({ type: StringType })
   statusDescription = '';

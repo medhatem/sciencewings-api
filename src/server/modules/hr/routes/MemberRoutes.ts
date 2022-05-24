@@ -1,17 +1,16 @@
-import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
-import { InviteUserBodyDTO, InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { POST, Path, Security } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
-
-import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Member } from '@/modules/hr/models/Member';
 import { Response } from 'typescript-rest-swagger';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { InviteUserBodyDTO, InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { UserInviteToOrgRO } from '@/modules/users/routes/RequstObjects';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 
 @provideSingleton()
 @Path('members')
@@ -55,7 +54,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
    *
    */
   @POST
-  @Path('   ')
+  @Path('resendInvite')
   @Response<UserIdDTO>(200, 'invite resent successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -68,7 +67,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
       throw result.error;
     }
     return new InviteUserDTO({
-      body: { statusCode: 200, id: result.getValue() },
+      body: { statusCode: 201, id: result.getValue() },
     });
   }
 }

@@ -116,7 +116,7 @@ export class ResourceSettingsGeneralVisibilityRO {
 @unique
 export class ResourceReservationVisibilityRO {
   @JsonProperty()
-  isReservationDetailsVisibilityToNonModerators: string;
+  isReservationDetailsVisibilityToNonModerators: boolean;
 }
 
 export class ResourceSettingsGeneralPropertiesRO {
@@ -205,7 +205,42 @@ export class ResourceRO {
   @JsonProperty()
   managers?: Array<ResourceManagerRO>;
 }
+@JsonObject()
+@unique
+export class UpdateResourceRO {
+  @JsonProperty()
+  name?: string;
 
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  resourceType?: string;
+
+  @JsonProperty()
+  resourceClass?: string;
+
+  @JsonProperty()
+  user?: number;
+
+  @JsonProperty()
+  timezone?: string;
+
+  @JsonProperty()
+  calendar?: Array<ResourceCalendarRO>;
+
+  @JsonProperty()
+  tags?: Array<ResourceTagRO>;
+
+  @JsonProperty()
+  managers?: Array<ResourceManagerRO>;
+}
 @JsonObject()
 @unique
 export class ResourceEventRO {

@@ -5,7 +5,7 @@ import { Organization } from '@/modules/organizations/models/Organization';
 
 @provideSingleton()
 export class OrganizationDao extends BaseDao<Organization> {
-  private constructor(public model: Organization = Organization.getInstance()) {
+  private constructor(public model: Organization) {
     super(model);
   }
 

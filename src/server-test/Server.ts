@@ -171,7 +171,7 @@
 //   });
 
 //   suite('mongodb ', () => {
-//     test('should connect to mongo successfully', async (): Promise<void> => {
+//     test('Should connect to mongo successfully', async (): Promise<void> => {
 //       stub(expressApp, 'use');
 //       stub(expressApp, 'listen');
 //       mongoose.connect
