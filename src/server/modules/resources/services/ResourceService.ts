@@ -281,6 +281,7 @@ export class ResourceService extends BaseService<Resource> {
     resourceId: number,
   ): Promise<Result<number>> {
     const resource = await this.dao.get(resourceId);
+
     if (!resource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }

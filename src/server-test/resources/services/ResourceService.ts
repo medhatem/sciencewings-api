@@ -391,15 +391,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload = {
       resourceType: 'ORGANIZATION',
       statusDescription: 'test',
+      memberId: 1,
     } as any;
-    test('should fail on resource does not exist', async () => {
+    test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
     });
-    test('should fail on status general settings can not be updated', async () => {
+    test('Should fail on status general settings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
@@ -414,7 +415,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
 
       expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      expect(result.error.message).to.equal(
+        `Status General setings of resource with id ${resourceId} can not be updated.`,
+      );
     });
     test('Should succeed updating status general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
