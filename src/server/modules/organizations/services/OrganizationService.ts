@@ -178,8 +178,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
     orgId: number,
   ): Promise<Result<number>> {
-    console.log({ payload });
-
     const fetchedorganization = await this.dao.get(orgId);
     if (!fetchedorganization) {
       return Result.notFound(`Organization with id ${orgId} does not exist.`);
@@ -214,7 +212,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.phones) {
       // TODO better way to update
       const phone = await this.phoneService.get(payload.phones[0].id);
-      console.log({ ...phone, ...payload.phones[0] });
 
       await this.phoneService.update({ ...phone, ...payload.phones[0] });
     }
