@@ -10,7 +10,7 @@ import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IOrganizationLabelService)
-export class OrganisationLabelService extends BaseService<OrganizationLabel> implements IOrganizationLabelService {
+export class OrganizationLabelService extends BaseService<OrganizationLabel> implements IOrganizationLabelService {
   constructor(public dao: OrganizationLabelDao) {
     super(dao);
   }
