@@ -98,7 +98,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     restore();
   });
 
-  test('should create the right instance', () => {
+  test('Should create the right instance', () => {
     const instance = OrganizationService.getInstance();
     expect(instance instanceof OrganizationService);
   });
@@ -134,7 +134,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       ],
     };
 
-    test('should fail on organization already existe', async () => {
+    test('Should fail on organization already existe', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve({}));
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
@@ -143,7 +143,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization ${payload.name} already exist.`);
     });
 
-    test('should fail on organization parent does not existe', async () => {
+    test('Should fail on organization parent does not existe', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set organization parent to null
@@ -157,7 +157,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       delete payload.parent;
     });
 
-    test('should fail on find the owner', async () => {
+    test('Should fail on find the owner', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set owner to null
@@ -168,7 +168,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`User with id: ${userId} does not exist`);
     });
 
-    test('should fail on find the adminContact', async () => {
+    test('Should fail on find the adminContact', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set owner to exist
@@ -185,7 +185,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       payload.adminContact = 1;
     });
 
-    test('should fail on find the direction', async () => {
+    test('Should fail on find the direction', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set owner to exist
@@ -204,7 +204,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       payload.direction = 1;
     });
 
-    test('should fail on organization creation', async () => {
+    test('Should fail on organization creation', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set owner to exist
@@ -224,7 +224,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal('stackTrace');
     });
 
-    test('should success on organization creation', async () => {
+    test('Should success on organization creation', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
 
@@ -266,7 +266,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       description: 'qsdwxcaze',
     };
 
-    test('should fail on organization update', async () => {
+    test('Should fail on organization update', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve(null));
       // set owner to exist
@@ -285,7 +285,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization with id 1 does not exist.`);
     });
 
-    test('should fail on find the adminContact', async () => {
+    test('Should fail on find the adminContact', async () => {
       const mackPayload = { ...payload };
       mackPayload.adminContact = 2;
       // set organization to exist
@@ -304,7 +304,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`User with id: ${mackPayload.adminContact} does not exist.`);
     });
 
-    test('should fail on find the direction', async () => {
+    test('Should fail on find the direction', async () => {
       const mackPayload = { ...payload };
       mackPayload.direction = 2;
       // set organization to exist
@@ -325,7 +325,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`User with id: ${mackPayload.direction} does not exist.`);
     });
 
-    test('should fail on organization parent does not existe', async () => {
+    test('Should fail on organization parent does not existe', async () => {
       const mackPayload = { ...payload };
       mackPayload.parent = 2;
 
@@ -340,7 +340,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization parent with id: ${mackPayload.parent} does not exist.`);
     });
 
-    test('should success on organization update', async () => {
+    test('Should success on organization update', async () => {
       // set organization to exist
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
       // set owner to exist
@@ -372,7 +372,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       apartment: '12',
       city: 'Ontario',
     };
-    test('should fail on organization not found', async () => {
+    test('Should fail on organization not found', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       const result = await container.get(OrganizationService).addAddressToOrganization(payload, orgId);
@@ -381,7 +381,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`organization with id ${orgId} does not exist.`);
     });
 
-    test('should fail on address creation', async () => {
+    test('Should fail on address creation', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.fail('StackTrace')));
@@ -391,7 +391,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`fail to create address`);
     });
 
-    test('should success on address creation', async () => {
+    test('Should success on address creation', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
@@ -409,7 +409,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       phoneCode: '+213',
       phoneNumber: '541110222',
     };
-    test('should fail on organization not found', async () => {
+    test('Should fail on organization not found', async () => {
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);
 
@@ -417,7 +417,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`organization with id ${orgId} does not exist.`);
     });
 
-    test('should fail on phone creation', async () => {
+    test('Should fail on phone creation', async () => {
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
       mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.fail('StackTrace')));
       const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);
@@ -426,7 +426,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`fail to create new phone.`);
     });
 
-    test('should success on phone creation', async () => {
+    test('Should success on phone creation', async () => {
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({}));
       mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);
@@ -438,7 +438,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get member', () => {
     const orgId = 1;
-    test('should fail on organization not found', async () => {
+    test('Should fail on organization not found', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       const result = await container.get(OrganizationService).getMembers(orgId);
@@ -446,7 +446,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization with id ${orgId} does not exist.`);
     });
-    test('should return collection of members', async () => {
+    test('Should return collection of members', async () => {
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({ members: [] }));
       const result = await container.get(OrganizationService).getMembers(orgId);
       expect(result.isSuccess).to.be.true;
@@ -456,7 +456,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get user organizations', () => {
     const userId = 1;
-    test('should return array of organization', async () => {
+    test('Should return array of organization', async () => {
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ owner: userId }], Promise.resolve([]));
       const result = await container.get(OrganizationService).getUserOrganizations(userId);
       expect(result.isSuccess).to.be.true;

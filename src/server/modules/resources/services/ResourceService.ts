@@ -281,14 +281,17 @@ export class ResourceService extends BaseService<Resource> {
     resourceId: number,
   ): Promise<Result<number>> {
     const resource = await this.dao.get(resourceId);
+
     if (!resource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
     const fetchedMember = await this.memberService.get(payload.memberId);
+
     if (fetchedMember.isFailure) {
       return Result.notFound(`member with id ${resourceId} does not exist.`);
     }
+
     const member = fetchedMember.getValue();
     const resourceStatusHistory = await this.resourceStatusHistoryService.create({
       ...payload,

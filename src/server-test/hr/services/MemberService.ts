@@ -71,7 +71,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     restore();
   });
 
-  test('should create the right instance', () => {
+  test('Should create the right instance', () => {
     const instance = MemberService.getInstance();
     expect(instance instanceof MemberService);
   });
@@ -121,6 +121,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       mockMethodWithResult(memberDao, 'create', [], Promise.resolve({}));
       stub(BaseService.prototype, 'wrapEntity').returns({});
+
       const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
 
       expect(result.isSuccess).to.be.true;
