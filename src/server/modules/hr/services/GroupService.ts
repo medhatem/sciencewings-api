@@ -69,7 +69,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       name: payload.name,
       active: payload.active,
       parent: payload.parent,
-      note: payload.note,
+      description: payload.description,
     });
 
     wrappedGroup.organization = fetchedorganizationValue;

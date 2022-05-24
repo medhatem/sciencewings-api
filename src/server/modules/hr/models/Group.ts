@@ -41,5 +41,5 @@ export class Group extends BaseModel<Group> {
   members? = new Collection<Member>(this);
 
   @Property({ columnType: 'text', nullable: true })
-  note?: string;
+  description?: string;
 }

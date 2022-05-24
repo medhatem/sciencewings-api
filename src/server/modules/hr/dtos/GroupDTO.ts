@@ -22,7 +22,7 @@ export class GroupBodyDTO extends BaseBodyDTO {
   member?: Array<MemberDTO>;
 
   @JsonProperty()
-  note: string;
+  description: string;
 }
 
 @JsonObject()

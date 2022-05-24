@@ -36,7 +36,7 @@ export class ContractRO {
   manager?: number;
 
   @JsonProperty()
-  note?: string;
+  description?: string;
 
   @JsonProperty()
   member?: number;
@@ -235,5 +235,5 @@ export class GroupRO {
   members?: any[];
 
   @JsonProperty()
-  note: string;
+  description: string;
 }

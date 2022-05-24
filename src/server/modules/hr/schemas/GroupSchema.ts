@@ -4,7 +4,7 @@ export const GroupSchema = Joi.object({
   active: Joi.boolean(),
   parent: Joi.number(),
   members: Joi.array(),
-  note: Joi.string(),
+  description: Joi.string(),
 });
 
 export const CreateGroupSchema = GroupSchema.keys({
