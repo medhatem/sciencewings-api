@@ -1,8 +1,7 @@
-import { MemberStatusType } from '@/modules/hr/models/Member';
 import { MemberService } from '@/modules/hr/services/MemberService';
 import { on } from '@/decorators/events';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { User } from '@/modules/users/models/User';
+import { User, userStatus } from '@/modules/users/models/User';
 
 export class MemberEvent {
   @on('create-member')
@@ -13,7 +12,7 @@ export class MemberEvent {
       user,
       active: true,
       organization,
-      memberType: MemberStatusType.ACTIVE,
+      memberType: userStatus.ACTIVE,
     });
   }
 }

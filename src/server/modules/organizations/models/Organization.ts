@@ -60,6 +60,8 @@ export class Organization extends BaseModel<Organization> {
   @ManyToMany({
     entity: () => Phone,
     mappedBy: (entity) => entity.organization,
+    lazy: true,
+    eager: false,
   })
   public phones = new Collection<Phone>(this);
 
@@ -70,24 +72,32 @@ export class Organization extends BaseModel<Organization> {
   @ManyToMany({
     entity: () => Address,
     mappedBy: (entity) => entity.organization,
+    lazy: true,
+    eager: false,
   })
   public address = new Collection<Address>(this);
 
   @OneToMany({
     entity: () => OrganizationLabel,
     mappedBy: (entity) => entity.organization,
+    lazy: true,
+    eager: false,
   })
   public labels? = new Collection<OrganizationLabel>(this);
 
   @OneToMany({
     entity: () => WorkLocation,
     mappedBy: (entity) => entity.organization,
+    lazy: true,
+    eager: false,
   })
   public worklocations? = new Collection<WorkLocation>(this);
 
   @OneToMany({
     entity: () => Job,
     mappedBy: (entity) => entity.organization,
+    lazy: true,
+    eager: false,
   })
   public jobs? = new Collection<Job>(this);
 
@@ -114,11 +124,15 @@ export class Organization extends BaseModel<Organization> {
 
   @OneToOne({
     entity: () => User,
+    unique: false,
   })
   public direction!: User;
 
   @OneToOne({
     entity: () => User,
+    unique: false,
+    lazy: true,
+    eager: false,
   })
   public admin_contact!: User;
 
@@ -134,6 +148,8 @@ export class Organization extends BaseModel<Organization> {
   @OneToMany({
     entity: () => Organization,
     mappedBy: 'parent',
+    lazy: true,
+    eager: false,
   })
   public children? = new Collection<Organization>(this);
 

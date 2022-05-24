@@ -15,7 +15,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   afterEach((): void => {
     restore();
   });
-  test('should not create an instance', () => {
+  test('Should not create an instance', () => {
     try {
       BaseModel.getInstance();
       assert.fail('unexpected success!');
@@ -24,7 +24,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     }
   });
 
-  test('should initialize the schema and add all defined properties', () => {
+  test('Should initialize the schema and add all defined properties', () => {
     // const model = new TestModel();
     // expect(model.schema).to.be.undefined;
     // model.initSchema();
@@ -36,7 +36,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 });
 
 suite('generating model', () => {
-  test('should generate model', () => {
+  test('Should generate model', () => {
     // const model = new TestModel();
     // const mongooseModelSpy = spy(mongoose, 'model');
     // expect(model.schema).to.not.be.undefined;

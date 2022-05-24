@@ -100,7 +100,7 @@ export class CreateOrganizationRO {
   settings?: OrganizationSettingsRO;
 
   @JsonProperty()
-  parentId?: number;
+  parent?: number;
 }
 
 @JsonObject()

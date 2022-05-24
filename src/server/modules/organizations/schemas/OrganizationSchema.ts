@@ -17,7 +17,7 @@ const organizationSchema = Joi.object({
   socialGithub: Joi.string().allow(''),
   socialTwitter: Joi.string().allow(''),
   socialLinkedin: Joi.string().allow(''),
-  parentId: Joi.number().allow(null),
+  parent: Joi.number().allow(null),
 });
 
 export const CreateOrganizationSchema = organizationSchema.keys({
