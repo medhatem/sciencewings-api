@@ -14,7 +14,7 @@ import {
   UpdateResourceRO,
 } from '@/modules/resources/routes/RequestObject';
 import {
-  CreateResourceCalendarSchema,
+  ResourceCalendarSchema,
   CreateResourceSchema,
   ResourceReservationGeneralSchema,
   ResourceReservationUnitSchema,
@@ -205,7 +205,7 @@ export class ResourceService extends BaseService<Resource> {
   @safeGuard()
   @validate
   public async createResourceCalendar(
-    @validateParam(CreateResourceCalendarSchema) payload: ResourceCalendarRO,
+    @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
   ): Promise<Result<ResourceCalendar>> {
     let organization = null;
     if (payload.organization) {
