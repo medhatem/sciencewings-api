@@ -60,6 +60,8 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({
     entity: () => Resource,
     nullable: true,
+    lazy: true,
+    eager: false,
   })
   resources? = new Collection<Resource>(this);
 

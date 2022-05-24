@@ -19,7 +19,6 @@ import {
   ResourceReservationVisibilityRO,
   ResourceRO,
   ResourceSettingsGeneralPropertiesRO,
-  ResourceSettingsGeneralStatusRO,
   ResourceSettingsGeneralVisibilityRO,
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
@@ -41,8 +40,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let resourceRateService: SinonStubbedInstance<ResourceRateService>;
   let resourceCalendarService: SinonStubbedInstance<ResourceCalendarService>;
   let resourceTagService: SinonStubbedInstance<ResourceTagService>;
-  let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
   let resourceStatusHistoryService: SinonStubbedInstance<ResourceStatusHistoryService>;
+  let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
 
   beforeEach(() => {
     createStubInstance(Configuration);
@@ -53,8 +52,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     resourceRateService = createStubInstance(ResourceRateService);
     resourceCalendarService = createStubInstance(ResourceCalendarService);
     resourceTagService = createStubInstance(ResourceTagService);
-    resourceStatusService = createStubInstance(ResourceStatusService);
     resourceStatusHistoryService = createStubInstance(ResourceStatusHistoryService);
+    resourceStatusService = createStubInstance(ResourceStatusService);
 
     const mockedContainer = stub(container, 'get');
     mockedContainer.withArgs(Configuration).returns({
@@ -389,13 +388,28 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('update Resource Reservation Status', () => {
     const resourceId = 1;
-    const payload: ResourceSettingsGeneralStatusRO = {
-      statusType: 'OPERATIONAL',
+    const payload = {
+      resourceType: 'ORGANIZATION',
       statusDescription: 'test',
-      memberId: 1,
-    };
-    test('Should fail on resource does not exist', async () => {
+    } as any;
+    test('should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
+
+      const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+    });
+    test('should fail on status general settings can not be updated', async () => {
+      mockMethodWithResult(resourceDao, 'get', [], {});
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(
+        resourceStatusHistoryService,
+        'create',
+        [],
+        Promise.resolve(Result.fail(`Status General setings of resource with id ${resourceId} can not be updated.`)),
+      );
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
 
@@ -406,9 +420,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
-      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({ id: 1 })));
+      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceStatusHistoryService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
-
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
       expect(result.isSuccess).to.be.true;
     });

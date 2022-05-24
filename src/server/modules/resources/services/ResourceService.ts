@@ -298,8 +298,8 @@ export class ResourceService extends BaseService<Resource> {
       member,
     });
 
-    if (resourceStatusHistory.isFailure && resourceStatusHistory.getValue === null) {
-      return Result.fail(`can not create history for resource status.`);
+    if (resourceStatusHistory.isFailure) {
+      return resourceStatusHistory;
     }
 
     return Result.ok<number>(resourceStatusHistory.getValue().id);
