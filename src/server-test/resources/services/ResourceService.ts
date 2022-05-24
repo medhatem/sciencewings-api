@@ -403,9 +403,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(
+        resourceStatusHistoryService,
+        'create',
+        [],
+        Promise.resolve(Result.fail(`Status General setings of resource with id ${resourceId} can not be updated.`)),
+      );
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
-      console.log({ result });
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(
@@ -416,7 +422,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
-
+      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceStatusHistoryService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
       expect(result.isSuccess).to.be.true;
     });
