@@ -101,18 +101,18 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound(`user with id ${id} not exist.`);
     }
     const user = existingUser.getValue();
-    const existingOrg = await this.dao.get(orgId);
+    const existingOrg = await this.organizationService.get(orgId);
 
-    if (!existingOrg) {
+    if (existingOrg.isFailure || existingOrg.getValue() === null) {
       return Result.fail(`Organization with id ${orgId} does not exist.`);
     }
 
-    if (!this.dao.getByCriteria({ user: id }, FETCH_STRATEGY.SINGLE)) {
+    const isUserInOrg = await this.dao.getByCriteria({ user: id }, FETCH_STRATEGY.SINGLE);
+    if (!isUserInOrg) {
       return Result.notFound(`user with id ${id} is not member in organization.`);
     }
-
-    if (user.status !== user.status.INVITATION_PENDING) {
-      return Result.fail(`Cannot resend invite to an active user `);
+    if (user.status !== userStatus.INVITATION_PENDING) {
+      return Result.fail(`Cannot resend invite to an active user.`);
     }
     const url = process.env.KEYCKLOACK_RESET_PASSWORD;
     const emailMessage: EmailMessage = {

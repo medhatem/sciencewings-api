@@ -8,7 +8,7 @@ export class JobDTO extends BaseRequestDTO {}
 
 @JsonObject()
 @unique
-class JobBaseBodyGetDTO extends BaseBodyDTO {
+export class JobBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }

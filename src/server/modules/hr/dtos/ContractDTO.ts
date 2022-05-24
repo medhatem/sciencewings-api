@@ -1,28 +1,22 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
-export class ContractDTO extends BaseRequestDTO {}
-
-@JsonObject()
-@unique
-class CreateContracBaseBodyGetDTO extends BaseBodyDTO {
+export class ContracBaseBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
-
 @JsonObject()
 @unique
-export class CreateContractDTO extends BaseRequestDTO {
+export class ContracBaseDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: CreateContracBaseBodyGetDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
+  body: ContracBaseBodyDTO;
 }
-
 @JsonObject()
 @unique
-export class UpdateContractDTO extends BaseRequestDTO {}
+export class UpdateContracBaseDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: ContracBaseBodyDTO;
+}

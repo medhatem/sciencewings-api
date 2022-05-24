@@ -56,16 +56,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<Result<number>> {
-    console.log({ payload: payload, phones: payload.phones });
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
     }
     let parent;
-    if (payload.parentId) {
-      const org = await this.dao.getByCriteria({ id: payload.parentId });
+    if (payload.parent) {
+      const org = await this.dao.getByCriteria({ id: payload.parent });
       if (!org) {
-        return Result.notFound(`Organization parent with id ${payload.parentId} does not exist`);
+        return Result.notFound(`Organization parent with id ${payload.parent} does not exist`);
       }
       parent = org;
     }
@@ -105,6 +104,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       owner: user,
       parent,
     });
+
     wrappedOrganization.direction = await direction.getValue();
     wrappedOrganization.admin_contact = await adminContact.getValue();
 
@@ -190,7 +190,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   ): Promise<Result<number>> {
     const fetchedorganization = await this.dao.get(orgId);
     if (!fetchedorganization) {
-      return Result.notFound(`organization with id ${orgId} does not exist.`);
+      return Result.notFound(`Organization with id ${orgId} does not exist.`);
     }
 
     if (fetchedorganization.name !== payload.name) {
@@ -220,9 +220,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     let parent;
     if (payload.parent) {
-      parent = await this.userService.get(payload.parent);
-      if (parent.isFailure || parent.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.parent} does not exist.`);
+      parent = await this.dao.get(payload.parent);
+      if (!parent) {
+        return Result.notFound(`Organization parent with id: ${payload.parent} does not exist.`);
       }
     }
     const organization = this.wrapEntity(fetchedorganization, {
