@@ -4,3 +4,5 @@ export * from './ResourceCalendarDAO';
 export * from './ResourceTagDAO';
 export * from './ResourceEventDAO';
 export * from './ResourceRateDAO';
+export * from './ResourceStatusDAO';
+export * from './ResourceStatusHistoryDAO';

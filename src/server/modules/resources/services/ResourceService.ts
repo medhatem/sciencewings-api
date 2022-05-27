@@ -11,6 +11,7 @@ import {
   ResourceRateRO,
   ResourceTimerRestrictionRO,
   ResourceReservationVisibilityRO,
+  UpdateResourceRO,
 } from '@/modules/resources/routes/RequestObject';
 import {
   CreateResourceSchema,
@@ -47,6 +48,8 @@ import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTag
 import { Organization } from '@/modules/organizations/models/Organization';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { applyToAll } from '@/utils/utilities';
+import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IResourceStatusHistoryService';
+import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> {
@@ -58,6 +61,8 @@ export class ResourceService extends BaseService<Resource> {
     public resourceRateService: IResourceRateService,
     public resourceCalendarService: IResourceCalendarService,
     public resourceTagService: IResourceTagService,
+    public resourceStatusHistoryService: IResourceStatusHistoryService,
+    public resourceStatusService: IResourceStatusService,
   ) {
     super(dao);
   }
@@ -79,7 +84,7 @@ export class ResourceService extends BaseService<Resource> {
       return Result.fail(`Organization id should be provided.`);
     }
     const fetchedOrganization = await this.organizationService.get(organizationId);
-    if (!fetchedOrganization) {
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     const resources = await this.dao.getByCriteria(
@@ -89,7 +94,9 @@ export class ResourceService extends BaseService<Resource> {
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
-
+    if (!resources) {
+      return Result.fail(`can not get resources of organization with id ${organizationId}.`);
+    }
     return Result.ok(resources as Resource[]);
   }
 
@@ -100,7 +107,7 @@ export class ResourceService extends BaseService<Resource> {
     let organization: Organization = null;
     if (payload.organization) {
       const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (!fetchedOrganization) {
+      if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
         return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
       organization = fetchedOrganization.getValue();
@@ -118,9 +125,10 @@ export class ResourceService extends BaseService<Resource> {
         managers.push(fetcheManager.getValue());
       }
     }
+
     const resourceSetting = await this.resourceSettingsService.create({});
-    if (resourceSetting.isFailure) {
-      return resourceSetting;
+    if (resourceSetting.isFailure || !resourceSetting.getValue()) {
+      return Result.fail(`Can not create settings for resource.`);
     }
 
     const createdResourceResult = await this.dao.create({
@@ -133,12 +141,14 @@ export class ResourceService extends BaseService<Resource> {
       organization,
       settings: resourceSetting.getValue(),
     });
-
+    if (!createdResourceResult) {
+      return Result.fail(`fail to create resource.`);
+    }
     await createdResourceResult.managers.init();
+
     for (const manager of managers) {
       createdResourceResult.managers.add(manager);
     }
-
     await applyToAll(
       payload.tags,
       async (tag) => {
@@ -151,8 +161,6 @@ export class ResourceService extends BaseService<Resource> {
     );
 
     await this.dao.update(createdResourceResult);
-    await this.organizationService.update(organization);
-
     const id = createdResourceResult.id;
     return Result.ok<number>(id);
   }
@@ -161,10 +169,10 @@ export class ResourceService extends BaseService<Resource> {
   @safeGuard()
   @validate
   public async updateResource(
-    @validateParam(UpdateResourceSchema) payload: ResourceRO,
+    @validateParam(UpdateResourceSchema) payload: UpdateResourceRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
@@ -178,14 +186,16 @@ export class ResourceService extends BaseService<Resource> {
       organization = fetchedOrganization.getValue();
     }
 
-    const fetchedResourceValue = fetchedResource.getValue();
-    const resource = this.wrapEntity(fetchedResourceValue, {
-      ...fetchedResourceValue,
+    const resource = this.wrapEntity(fetchedResource, {
+      ...fetchedResource,
       ...payload,
       organization,
     });
 
     const createdResource = await this.dao.update(resource);
+    if (!createdResource) {
+      return Result.fail(`resource with id ${resourceId} can not be updated.`);
+    }
 
     const id = createdResource.id;
     return Result.ok<number>(id);
@@ -215,19 +225,22 @@ export class ResourceService extends BaseService<Resource> {
     );
 
     const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
+    if (createdResourceCalendar.isFailure || !createdResourceCalendar.getValue()) {
+      return Result.fail(`fail to create resource calendar.`);
+    }
     return Result.ok<any>(createdResourceCalendar);
   }
 
   @log()
   @safeGuard()
   public async getResourceSettings(resourceId: number): Promise<Result<any>> {
-    const fetchedResource = await this.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId);
 
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+    if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    return Result.ok(fetchedResource.getValue().settings);
+    return Result.ok(fetchedResource.settings);
   }
 
   //Resource settings
@@ -238,27 +251,26 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceReservationGeneralSchema) payload: ResourcesSettingsReservationGeneralRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    const resourceValue = fetchedResource.getValue();
 
     const resource = this.wrapEntity(
-      resourceValue,
+      fetchedResource,
       {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
+        ...fetchedResource,
+        settings: { ...fetchedResource.settings, ...payload },
       },
       false,
     );
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    const updatedResourceResult = await this.dao.update(resource);
+    if (!updatedResourceResult) {
+      return Result.fail(`Reservation General setings of resource with id ${resourceId} can not be updated.`);
     }
 
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    return Result.ok<number>(updatedResourceResult.id);
   }
 
   @log()
@@ -268,27 +280,30 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
-    if (!fetchedResource) {
+    const resource = await this.dao.get(resourceId);
+
+    if (!resource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    const resourceValue = fetchedResource.getValue();
 
-    const resource = this.wrapEntity(
-      resourceValue,
-      {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
-      },
-      false,
-    );
+    const fetchedMember = await this.memberService.get(payload.memberId);
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    if (fetchedMember.isFailure) {
+      return Result.notFound(`member with id ${resourceId} does not exist.`);
     }
 
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    const member = fetchedMember.getValue();
+    const resourceStatusHistory = await this.resourceStatusHistoryService.create({
+      ...payload,
+      resource,
+      member,
+    });
+
+    if (resourceStatusHistory.isFailure) {
+      return resourceStatusHistory;
+    }
+
+    return Result.ok<number>(resourceStatusHistory.getValue().id);
   }
 
   @log()
@@ -298,11 +313,11 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceReservationUnitSchema) payload: ResourcesSettingsReservationUnitRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    const resourceValue = fetchedResource.getValue();
+    const resourceValue = fetchedResource;
 
     const resource = this.wrapEntity(
       resourceValue,
@@ -313,38 +328,37 @@ export class ResourceService extends BaseService<Resource> {
       false,
     );
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    const updatedResourceResult = await this.dao.update(resource);
+    if (!updatedResourceResult) {
+      return Result.fail(`Units General setings of resource with id ${resourceId} can not be updated.`);
     }
 
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    return Result.ok<number>(updatedResourceResult.id);
   }
 
   public async updateResourcesSettingsGeneralVisibility(
     @validateParam(ResourceGeneralVisibilitySchema) payload: ResourceSettingsGeneralVisibilityRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    const resourceValue = fetchedResource.getValue();
 
     const resource = this.wrapEntity(
-      resourceValue,
+      fetchedResource,
       {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
+        ...fetchedResource,
+        settings: { ...fetchedResource.settings, ...payload },
       },
       false,
     );
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    const updatedResourceResult = await this.dao.update(resource);
+    if (!updatedResourceResult) {
+      return Result.fail(`Visibility General setings of resource with id ${resourceId} can not be updated.`);
     }
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    return Result.ok<number>(updatedResourceResult.id);
   }
 
   @log()
@@ -354,27 +368,26 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceReservationVisibilitySchema) payload: ResourceReservationVisibilityRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    const resourceValue = fetchedResource.getValue();
 
     const resource = this.wrapEntity(
-      resourceValue,
+      fetchedResource,
       {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
+        ...fetchedResource,
+        settings: { ...fetchedResource.settings, ...payload },
       },
       false,
     );
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    const updatedResourceResult = await this.dao.update(resource);
+    if (!updatedResourceResult) {
+      return Result.fail(`Visibility Reservation setings of resource with id ${resourceId} can not be updated.`);
     }
 
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    return Result.ok<number>(updatedResourceResult.id);
   }
 
   /**
@@ -390,41 +403,41 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(ResourceGeneralPropertiesSchema) payload: ResourceSettingsGeneralPropertiesRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    const resourceValue = fetchedResource.getValue();
 
     const resource = this.wrapEntity(
-      resourceValue,
+      fetchedResource,
       {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
+        ...fetchedResource,
+        settings: { ...fetchedResource.settings, ...payload },
       },
       false,
     );
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    const updatedResourceResult = await this.dao.update(resource);
+    if (!updatedResourceResult) {
+      return Result.fail(`General roperties settings of resource with id ${resourceId} can not be updated.`);
     }
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    return Result.ok<number>(updatedResourceResult.id);
   }
 
   @log()
   @safeGuard()
   public async getResourceRate(resourceId: number): Promise<Result<any>> {
-    let resource: Resource = null;
-    const fetchedResource = await this.get(resourceId);
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    resource = fetchedResource.getValue();
 
-    const getResourceRateResult = await this.resourceRateService.getByCriteria({ resource }, FETCH_STRATEGY.ALL);
-    if (getResourceRateResult.isFailure) {
-      return getResourceRateResult;
+    const getResourceRateResult = await this.resourceRateService.getByCriteria(
+      { resource: fetchedResource },
+      FETCH_STRATEGY.ALL,
+    );
+    if (getResourceRateResult.isFailure || !getResourceRateResult.getValue()) {
+      return Result.fail(`Can not get resource rate.`);
     }
     const getResourceRate = getResourceRateResult.getValue();
     return Result.ok<any>(getResourceRate);
@@ -437,19 +450,17 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(CreateResourceRateSchema) payload: ResourceRateRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    let resource: Resource = null;
-    const fetchedResource = await this.get(resourceId);
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
-    resource = fetchedResource.getValue();
 
     const createdResourceRateResult = await this.resourceRateService.create({
       ...payload,
-      resource,
+      fetchedResource,
     });
-    if (createdResourceRateResult.isFailure) {
-      return createdResourceRateResult;
+    if (createdResourceRateResult.isFailure || !createdResourceRateResult.getValue()) {
+      return Result.fail(`Resource Rate can not be created.`);
     }
     const createdResourceRate = createdResourceRateResult.getValue();
     return Result.ok<number>(createdResourceRate.id);
@@ -464,7 +475,7 @@ export class ResourceService extends BaseService<Resource> {
   ): Promise<Result<number>> {
     let resourceRate: ResourceRate = null;
     const fetchedResourceRate = await this.resourceRateService.get(resourceRateId);
-    if (fetchedResourceRate.isFailure || fetchedResourceRate.getValue() === null) {
+    if (fetchedResourceRate.isFailure || !fetchedResourceRate.getValue()) {
       return Result.notFound(`Resource Rate with id ${resourceRateId} does not exist.`);
     }
     resourceRate = fetchedResourceRate.getValue();
@@ -479,8 +490,8 @@ export class ResourceService extends BaseService<Resource> {
     );
 
     const updatedResourceRateResult = await this.resourceRateService.update(updatedResourceRate);
-    if (updatedResourceRateResult.isFailure) {
-      return updatedResourceRateResult;
+    if (updatedResourceRateResult.isFailure || !updatedResourceRateResult.getValue()) {
+      return Result.fail(`Resource rate with id ${resourceRateId} can not be updated.`);
     }
     const id = updatedResourceRateResult.getValue().id;
     return Result.ok<number>(id);
@@ -493,26 +504,24 @@ export class ResourceService extends BaseService<Resource> {
     @validateParam(UpdateResourceSchema) payload: ResourceTimerRestrictionRO,
     resourceId: number,
   ): Promise<Result<number>> {
-    const fetchedResource = await this.get(resourceId);
-    if (fetchedResource.isFailure || !fetchedResource.getValue()) {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    const resourceValue = fetchedResource.getValue();
-
     const resource = this.wrapEntity(
-      resourceValue,
+      fetchedResource,
       {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
+        ...fetchedResource,
+        settings: { ...fetchedResource.settings, ...payload },
       },
       false,
     );
 
-    const updatedResourceResult = await this.update(resource);
-    if (updatedResourceResult.isFailure) {
-      return updatedResourceResult;
+    const updatedResourceResult = await this.dao.update(resource);
+    if (!updatedResourceResult) {
+      return Result.fail(`Reservation time restriction of resource with id ${resourceId} can not be updated.`);
     }
-    return Result.ok<number>(updatedResourceResult.getValue().id);
+    return Result.ok<number>(updatedResourceResult.id);
   }
 }

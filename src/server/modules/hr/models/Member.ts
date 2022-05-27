@@ -10,13 +10,10 @@ import { Phone } from '@/modules/phones/models/Phone';
 import { Project } from '@/modules/projects/models/Project';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { User } from '@/modules/users/models/User';
+import { User, userStatus } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
+import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 
-export enum MemberStatusType {
-  INVITATION_PENDING = 'INVITATION_PENDING',
-  ACTIVE = 'ACTIVE',
-}
 export enum MemberTypeEnum {
   Regular = 'regular',
 }
@@ -65,6 +62,8 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({
     entity: () => Resource,
     nullable: true,
+    lazy: true,
+    eager: false,
   })
   resources? = new Collection<Resource>(this);
 
@@ -137,5 +136,11 @@ export class Member extends BaseModel<Member> {
   participants? = new Collection<Project>(this);
 
   @Property({ nullable: true })
-  status?: MemberStatusType;
+  status?: userStatus;
+
+  @ManyToMany({
+    entity: () => ResourceStatusHistory,
+    nullable: true,
+  })
+  resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
 }
