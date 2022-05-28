@@ -334,6 +334,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // set organization parent to null
       mockMethodWithResult(organizationDAO, 'get', [2], Promise.resolve(null));
       stubKeyclockInstanceWithBaseService([]);
+      stub(BaseService.prototype, 'wrapEntity').returns({});
       const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
 
       expect(result.isFailure).to.be.true;
