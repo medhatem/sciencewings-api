@@ -128,8 +128,6 @@ export class Organization extends BaseModel<Organization> {
   @OneToOne({
     entity: () => User,
     unique: false,
-    lazy: true,
-    eager: false,
   })
   public admin_contact!: User;
 

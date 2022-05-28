@@ -47,6 +47,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return container.get(IOrganizationService);
   }
 
+  private catchKeycloackError(error: any, name: string): any {
+    const err = error.response.data;
+    if (err.error === 'unknown_error') {
+      return Result.fail(`Unknown error.`);
+    } else if (err.error === 'HTTP 401 Unauthorized') {
+      return Result.fail(`HTTP 401 Unauthorized.`);
+    } else if (err.errorMessage.includes('already exists')) {
+      return Result.fail(`Organization ${name} already exist.`);
+    }
+  }
+
   // Oranization methods
 
   @log()
@@ -60,15 +71,16 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
     }
-    let parent;
+    let parent: Organization;
     if (payload.parent) {
-      const org = await this.dao.getByCriteria({ id: payload.parent });
+      const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
       if (!org) {
         return Result.notFound(`Organization parent with id ${payload.parent} does not exist`);
       }
       parent = org;
     }
     const fetchedUser = await this.userService.get(userId);
+
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
       return Result.notFound(`User with id: ${userId} does not exist`);
     }
@@ -80,6 +92,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (adminContact.isFailure || adminContact.getValue() === null) {
         return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
       }
+      adminContact = adminContact.getValue();
     }
 
     let direction;
@@ -88,6 +101,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (direction.isFailure || direction.getValue() === null) {
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
+      direction = direction.getValue();
     }
 
     const wrappedOrganization = this.wrapEntity(new Organization(), {
@@ -101,25 +115,42 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialGithub: payload.socialGithub || null,
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
-      owner: user,
-      parent,
     });
+    wrappedOrganization.parent = parent;
 
-    wrappedOrganization.direction = await direction.getValue();
-    wrappedOrganization.admin_contact = await adminContact.getValue();
+    wrappedOrganization.direction = direction;
+    wrappedOrganization.admin_contact = adminContact;
 
-    const keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-      name: payload.name,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    let kcGroupId = null;
+    try {
+      let keycloakGroup = null;
+      if (payload.parent) {
+        console.log({ kcid: parent.kcid });
 
-    const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
-      { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
-      {
-        name: 'admin',
-      },
-    );
-    wrappedOrganization.kcid = keycloakGroup.id;
+        keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
+          { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
+          {
+            name: payload.name,
+          },
+        );
+      } else {
+        keycloakGroup = await this.keycloak.getAdminClient().groups.create({
+          name: payload.name,
+          realm: getConfig('keycloak.clientValidation.realmName'),
+        });
+      }
+      const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
+        { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
+        {
+          name: 'admin',
+        },
+      );
+      kcGroupId = id;
+      wrappedOrganization.kcid = keycloakGroup.id;
+    } catch (error) {
+      return this.catchKeycloackError(error, payload.name);
+    }
+
     const createdOrg = await this.create(wrappedOrganization);
 
     if (createdOrg.isFailure) {
@@ -133,7 +164,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
-      groupId: id,
+      groupId: kcGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
 
@@ -194,46 +225,51 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (fetchedorganization.name !== payload.name) {
-      await this.keycloak.getAdminClient().groups.update(
-        { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
-        {
-          name: payload.name,
-        },
-      );
+      try {
+        await this.keycloak.getAdminClient().groups.update(
+          { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
+          {
+            name: payload.name,
+          },
+        );
+      } catch (error) {
+        return this.catchKeycloackError(error, payload.name);
+      }
     }
+    console.log({ fetchedorganization, payload });
 
-    let direction;
+    const wrappedOrganization = this.wrapEntity(fetchedorganization, {
+      // ...fetchedorganization,
+      ...payload,
+    });
+
+    console.log({ wrappedOrganization });
+
     if (payload.direction) {
-      direction = await this.userService.get(payload.direction);
+      const direction = await this.userService.get(payload.direction);
       if (direction.isFailure || direction.getValue() === null) {
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
+      wrappedOrganization.direction = direction;
     }
 
-    let adminContact;
     if (payload.adminContact) {
-      adminContact = await this.userService.get(payload.adminContact);
+      const adminContact = await this.userService.get(payload.adminContact);
       if (adminContact.isFailure || adminContact.getValue() === null) {
         return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
       }
+      wrappedOrganization.admin_contact = adminContact;
     }
 
-    let parent;
     if (payload.parent) {
-      parent = await this.dao.get(payload.parent);
+      const parent = await this.dao.get(payload.parent);
       if (!parent) {
         return Result.notFound(`Organization parent with id: ${payload.parent} does not exist.`);
       }
+      wrappedOrganization.parent = parent;
     }
-    const organization = this.wrapEntity(fetchedorganization, {
-      ...fetchedorganization,
-      ...payload,
-      direction,
-      admin_contact: adminContact,
-      parent,
-    });
 
-    await this.dao.update(organization);
+    await this.dao.update(wrappedOrganization);
     return Result.ok<number>(orgId);
   }
 
