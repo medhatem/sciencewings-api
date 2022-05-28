@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Path, POST, Security, ContextRequest, GET, PathParam, PUT } from 'typescript-rest';
+import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE } from 'typescript-rest';
 import { CreateOrganizationRO, UpdateOrganizationRO } from './RequestObject';
 import { UserRequest } from '@/types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
@@ -66,6 +66,30 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @PathParam('id') id: number,
   ): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.updateOrganizationGeneraleProperties(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+  /**
+   * Delete an organization in the database
+   *
+   * @param id  id of the delete organization
+   *
+   */
+  @DELETE
+  @Path('delete/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'Organization delted Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async deleteOrganization(
+    payload: UpdateOrganizationRO,
+    @PathParam('id') id: number,
+  ): Promise<OrganizationDTO> {
+    const result = await this.OrganizationService.deleteOrganization(id);
 
     if (result.isFailure) {
       throw result.error;

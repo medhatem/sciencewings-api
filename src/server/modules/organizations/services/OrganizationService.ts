@@ -125,8 +125,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     try {
       let keycloakGroup = null;
       if (payload.parent) {
-        console.log({ kcid: parent.kcid });
-
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
@@ -236,14 +234,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return this.catchKeycloackError(error, payload.name);
       }
     }
-    console.log({ fetchedorganization, payload });
 
     const wrappedOrganization = this.wrapEntity(fetchedorganization, {
-      // ...fetchedorganization,
       ...payload,
     });
-
-    console.log({ wrappedOrganization });
 
     if (payload.direction) {
       const direction = await this.userService.get(payload.direction);
@@ -354,5 +348,38 @@ export class OrganizationService extends BaseService<Organization> implements IO
       FETCH_STRATEGY.ALL,
     )) as Organization[];
     return Result.ok<Organization[]>(organizations);
+  }
+
+  /**
+   * Delete organization
+   * @param organizationId organization id
+   */
+  @log()
+  @safeGuard()
+  public async deleteOrganization(organizationId: number): Promise<Result<number>> {
+    const fetchedorganization = await this.dao.get(organizationId);
+    if (!fetchedorganization) {
+      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
+    }
+    try {
+      const groups = await this.keycloak
+        .getAdminClient()
+        .groups.findOne({ id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') });
+
+      console.log(fetchedorganization.kcid, { subGroups: groups.subGroups });
+
+      if (groups.subGroups.length !== 1) {
+        return Result.fail(`This Organization has sub groups that need to be deleted first !`);
+      }
+
+      await this.keycloak.getAdminClient().groups.del({
+        id: fetchedorganization.kcid,
+        realm: getConfig('keycloak.clientValidation.realmName'),
+      });
+    } catch (error) {
+      return this.catchKeycloackError(error, fetchedorganization.name);
+    }
+    await this.dao.remove(fetchedorganization);
+    return Result.ok<number>(organizationId);
   }
 }
