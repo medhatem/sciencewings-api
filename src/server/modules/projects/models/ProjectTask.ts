@@ -4,6 +4,7 @@ import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { TasksList } from './TasksList';
+import { Project } from './Project';
 
 export enum Priority {
   Lowest,
@@ -47,13 +48,13 @@ export class ProjectTask extends BaseModel<ProjectTask> {
   @Property({ nullable: true })
   dateEnd?: Date;
 
-  // @ManyToOne({
-  //   entity: () => Project,
-  //   onDelete: 'cascade',
-  //   nullable: true,
-  //   eager: false,
-  // })
-  // project: Project;
+  @ManyToOne({
+    entity: () => Project,
+    onDelete: 'cascade',
+    nullable: true,
+    eager: false,
+  })
+  project: Project;
 
   @ManyToOne({
     entity: () => ProjectTask,
