@@ -12,6 +12,7 @@ import { User, userStatus } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 
 export enum MemberTypeEnum {
   Regular = 'regular',
@@ -142,4 +143,7 @@ export class Member extends BaseModel<Member> {
     nullable: true,
   })
   resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
+
+  @ManyToMany({ entity: () => ProjectTask, nullable: true })
+  task?: ProjectTask;
 }

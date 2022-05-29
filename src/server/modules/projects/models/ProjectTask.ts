@@ -1,10 +1,11 @@
-import { Entity, ManyToOne, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { TasksList } from './TasksList';
 import { Project } from './Project';
+import { Comment } from './Comment';
 
 export enum Priority {
   Lowest,
@@ -13,6 +14,7 @@ export enum Priority {
   High,
   Highest,
 }
+
 @provide()
 @Entity()
 export class ProjectTask extends BaseModel<ProjectTask> {
@@ -34,7 +36,18 @@ export class ProjectTask extends BaseModel<ProjectTask> {
   description: string;
 
   @OneToOne({ entity: () => Member, nullable: true })
-  assigned: Member;
+  createdBy: Member;
+
+  @ManyToMany({
+    entity: () => Member,
+    mappedBy: (entity) => entity.task,
+    lazy: true,
+    eager: false,
+  })
+  public assigned = new Collection<Member>(this);
+
+  @OneToOne({ entity: () => Member, nullable: true })
+  reporter: Member;
 
   @Property()
   active: boolean;
@@ -71,5 +84,27 @@ export class ProjectTask extends BaseModel<ProjectTask> {
   projectTask: TasksList;
 
   @Property()
-  status: string;
+  completed: string;
+
+  @Property()
+  createdAt: Date = new Date();
+
+  @Property()
+  updatedAt: Date;
+
+  @OneToMany({
+    entity: () => ProjectTask,
+    mappedBy: 'parent',
+    lazy: true,
+    eager: false,
+  })
+  public subTasks? = new Collection<ProjectTask>(this);
+
+  @OneToMany({
+    entity: () => Comment,
+    mappedBy: (entity) => entity.task,
+    lazy: true,
+    eager: false,
+  })
+  public comments? = new Collection<Comment>(this);
 }
