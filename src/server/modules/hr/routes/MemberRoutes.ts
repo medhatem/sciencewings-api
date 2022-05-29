@@ -1,16 +1,16 @@
-import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { Member } from '@/modules/hr/models/Member';
-import { Path, POST, Security } from 'typescript-rest';
+import { MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
+import { POST, Path, Security } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
+import { Member } from '@/modules/hr/models/Member';
 import { Response } from 'typescript-rest-swagger';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { InviteUserBodyDTO, InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
 import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { UserInviteToOrgRO } from '@/modules/users/routes/RequstObjects';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
+import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 
 @provideSingleton()
 @Path('members')

@@ -1,7 +1,5 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
-import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
 import { Job } from './Job';
@@ -12,6 +10,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { User, userStatus } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 
 export enum MemberTypeEnum {

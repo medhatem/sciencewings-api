@@ -3,8 +3,15 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
-import { Project } from './Project';
+import { TasksList } from './TasksList';
 
+export enum Priority {
+  Lowest,
+  Low,
+  Medium,
+  High,
+  Highest,
+}
 @provide()
 @Entity()
 export class ProjectTask extends BaseModel<ProjectTask> {
@@ -40,17 +47,28 @@ export class ProjectTask extends BaseModel<ProjectTask> {
   @Property({ nullable: true })
   dateEnd?: Date;
 
-  @ManyToOne({
-    entity: () => Project,
-    onDelete: 'cascade',
-    nullable: true,
-    eager: false,
-  })
-  project: Project;
+  // @ManyToOne({
+  //   entity: () => Project,
+  //   onDelete: 'cascade',
+  //   nullable: true,
+  //   eager: false,
+  // })
+  // project: Project;
 
   @ManyToOne({
     entity: () => ProjectTask,
     nullable: true,
   })
   public parent?: ProjectTask;
+
+  @ManyToOne({
+    entity: () => TasksList,
+    onDelete: 'cascade',
+    nullable: true,
+    eager: false,
+  })
+  projectTask: TasksList;
+
+  @Property()
+  status: string;
 }
