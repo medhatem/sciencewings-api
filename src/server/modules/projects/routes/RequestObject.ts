@@ -62,11 +62,11 @@ export class ProjectRO {
   dateEnd?: Date;
 
   @JsonProperty()
-  public tags: ProjectTagRO[];
+  tags: ProjectTagRO[];
 
   @JsonProperty()
-  public tasks: ProjectTaskRO[];
+  tasks: ProjectTaskRO[];
 
   @JsonProperty()
-  public organization: number;
+  organization: number;
 }

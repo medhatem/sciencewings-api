@@ -6,7 +6,7 @@ export const ProjectTaskSchema = Joi.object({
   priority: Joi.string().required(),
   assigned: Joi.array().items(Joi.number()),
   active: Joi.boolean(),
-  dateEnd: Joi.date(),
+  dateStart: Joi.date(),
   parent: Joi.number(),
 });
 
