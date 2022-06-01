@@ -125,7 +125,7 @@ export class Member extends BaseModel<Member> {
   @Property({ columnType: 'date', nullable: true })
   departureDate?: Date;
 
-  @Property({ columnType: 'date', nullable: true })
+  @Property({ columnType: 'timestamp', nullable: true })
   joinDate?: Date;
 
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
