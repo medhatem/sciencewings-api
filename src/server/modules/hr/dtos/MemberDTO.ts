@@ -4,12 +4,10 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { DateType } from '@mikro-orm/core';
 
 @JsonObject()
 export class MemberBodyDTO extends BaseBodyDTO {
-  @JsonProperty()
-  id: number;
-
   @JsonProperty()
   name: string;
 
@@ -18,6 +16,15 @@ export class MemberBodyDTO extends BaseBodyDTO {
 
   @JsonProperty()
   organization: OrganizationDTO;
+
+  @JsonProperty()
+  status: string;
+
+  @JsonProperty()
+  active: boolean;
+
+  @JsonProperty()
+  joinDate: DateType;
 }
 
 @JsonObject()

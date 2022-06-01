@@ -104,6 +104,7 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   identificationId?: string;
 
+  @Property({ nullable: true })
   certificate?: string;
 
   @Property({ nullable: true })
@@ -123,6 +124,9 @@ export class Member extends BaseModel<Member> {
 
   @Property({ columnType: 'date', nullable: true })
   departureDate?: Date;
+
+  @Property({ columnType: 'date', nullable: true })
+  joinDate?: Date;
 
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;

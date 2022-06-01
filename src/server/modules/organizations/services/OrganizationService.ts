@@ -114,7 +114,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const organization = await createdOrg.getValue();
 
     const memberEvent = new MemberEvent();
-    memberEvent.createMember(user, organization);
+    const memberResult = await memberEvent.createMember(user, organization);
+    if (memberResult.isSuccess) {
+      organization.members.add(memberResult.getValue());
+    }
 
     await applyToAll(payload.addresses, async (address) => {
       const wrappedAddress = this.addressService.wrapEntity(
@@ -151,6 +154,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
+
     this.dao.repository.flush();
     return Result.ok<number>(organization.id);
   }
@@ -276,8 +280,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!existingOrg) {
       return Result.notFound(`Organization with id ${orgId} does not exist.`);
     }
-
-    return Result.ok<any>(existingOrg.members);
+    console.log({ existingOrg });
+    if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
+    return Result.ok<any>(existingOrg.members.toArray());
   }
 
   @log()
