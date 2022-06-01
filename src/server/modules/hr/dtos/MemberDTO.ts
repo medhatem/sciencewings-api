@@ -7,6 +7,7 @@ import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { DateType } from '@mikro-orm/core';
 
 @JsonObject()
+@unique
 export class MemberBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   name: string;
@@ -24,7 +25,7 @@ export class MemberBodyDTO extends BaseBodyDTO {
   active: boolean;
 
   @JsonProperty()
-  joinDate: DateType;
+  joinDate: Date;
 }
 
 @JsonObject()
