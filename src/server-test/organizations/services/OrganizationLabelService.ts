@@ -10,7 +10,7 @@ import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLa
 import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationLabelDao';
 import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
 import { mockMethodWithResult } from '@/utils/utilities';
-import { BaseService } from '@/modules/base';
+import { BaseService } from '@/modules/base/services/BaseService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationLabelDAO: SinonStubbedInstance<OrganizationLabelDao>;

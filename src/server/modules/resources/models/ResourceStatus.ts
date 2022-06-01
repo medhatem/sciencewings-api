@@ -1,5 +1,5 @@
 import { container, provide } from '@/di';
-import { BaseModel } from '@/modules/base';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 export enum StatusCases {

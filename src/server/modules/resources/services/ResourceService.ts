@@ -39,7 +39,7 @@ import {
 import { log } from '@/decorators/log';
 import { ResourceCalendarRO, ResourceRO } from '@/modules/resources/routes/RequestObject';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { FETCH_STRATEGY } from '@/modules/base';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { Member } from '@/modules/hr/models/Member';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';

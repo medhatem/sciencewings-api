@@ -6,7 +6,7 @@ import { MemberDao } from '@/modules/hr/daos/MemberDao';
 import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
-import { FETCH_STRATEGY } from '@/modules/base';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { getConfig } from '@/configuration/Configuration';
 import { User, userStatus } from '@/modules/users/models/User';
 import { IUserService } from '@/modules/users/interfaces/IUserService';

@@ -16,7 +16,7 @@ import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IO
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';
-import { FETCH_STRATEGY } from '@/modules/base';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';

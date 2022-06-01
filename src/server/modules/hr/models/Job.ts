@@ -1,7 +1,7 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { Organization } from '@/modules//organizations/models/Organization';
-import { BaseModel } from '@/modules/base';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provide()
 @Entity()
