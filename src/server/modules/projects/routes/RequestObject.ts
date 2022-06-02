@@ -19,7 +19,7 @@ export class ProjectTaskRO {
   description: string;
 
   @JsonProperty()
-  assigned: number[];
+  assigned: number;
 
   @JsonProperty()
   active: boolean;
@@ -35,6 +35,18 @@ export class ProjectTaskRO {
 
   @JsonProperty()
   public parent?: number;
+
+  @JsonProperty()
+  completed: boolean;
+
+  @JsonProperty()
+  project: number;
+
+  @JsonProperty()
+  projectTask: number;
+
+  @JsonProperty()
+  reporter: number;
 }
 
 @JsonObject()
