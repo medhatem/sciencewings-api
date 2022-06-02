@@ -25,6 +25,9 @@ export class MemberBodyDTO extends BaseBodyDTO {
 
   @JsonProperty()
   joinDate: Date;
+
+  @JsonProperty()
+  workEmail: string;
 }
 
 @JsonObject()

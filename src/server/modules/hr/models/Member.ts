@@ -13,7 +13,8 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 
 export enum MemberTypeEnum {
-  Regular = 'regular',
+  ADMIN = 'admin',
+  REGULAR = 'regular',
 }
 
 @provide()
