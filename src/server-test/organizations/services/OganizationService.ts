@@ -19,6 +19,7 @@ import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizati
 import { BaseService } from '@/modules/base/services/BaseService';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
+import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
@@ -243,6 +244,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       // set member creation
       stub(MemberEvent.prototype, 'createMember').returns({} as any);
+      stub(GroupEvent.prototype, 'createGroup').returns({} as any);
       // set address creation
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(addressService, 'wrapEntity', [], Promise.resolve({ organization: {} }));

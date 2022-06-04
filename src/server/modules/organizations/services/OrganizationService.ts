@@ -28,6 +28,7 @@ import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
 import { Phone } from '@/modules/users';
 import { Address } from '@/modules/address';
+import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -159,6 +160,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const memberEvent = new MemberEvent();
     memberEvent.createMember(user, organization);
+    const groupEvent = new GroupEvent();
+    groupEvent.createGroup(kcGroupId, organization, 'admin');
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,

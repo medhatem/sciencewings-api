@@ -37,8 +37,8 @@ export class GroupRoutes extends BaseRoutes<Group> {
     if (result.isFailure) {
       return new GroupDTO({ error: { statusCode: 500, errorMessage: result.error } });
     }
-
-    return new GroupDTO({ body: { data: [result.getValue()], statusCode: 201 } });
+    console.log({ result: result.getValue() });
+    return new GroupDTO({ body: { data: result.getValue(), statusCode: 201 } });
   }
 
   /**
