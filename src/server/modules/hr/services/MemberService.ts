@@ -80,7 +80,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     wrappedMember.user = savedUserValue;
     wrappedMember.name = savedUserValue.firstname + ' ' + savedUserValue.lastname;
     wrappedMember.workEmail = savedUserValue.email;
-    wrappedMember.status = userStatus.ACTIVE;
+    wrappedMember.status = userStatus.INVITATION_PENDING;
     wrappedMember.joinDate = new Date();
     wrappedMember.organization = existingOrgValue;
 
