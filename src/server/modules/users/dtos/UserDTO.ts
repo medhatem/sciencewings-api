@@ -1,7 +1,7 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-import { AddressDTO } from '@/modules/address';
+import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';

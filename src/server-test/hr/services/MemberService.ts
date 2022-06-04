@@ -13,7 +13,7 @@ import { UserService } from '@/modules/users/services/UserService';
 import { Email } from '@/utils/Email';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { Result } from '@/utils/Result';
-import { userStatus } from '@/modules/users';
+import { userStatus } from '@/modules/users/models/User';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Keycloak } from '@/sdks/keycloak';
 

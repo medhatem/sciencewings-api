@@ -20,7 +20,7 @@ import {
   ResourceTimerRestrictionRO,
 } from '@/modules/resources/routes/RequestObject';
 import { Result } from '@/utils/Result';
-import { Resource } from '@/modules/resources';
+import { Resource } from '@/modules/resources/models/Resource';
 import { LocalStorage } from '@/utils/LocalStorage';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {

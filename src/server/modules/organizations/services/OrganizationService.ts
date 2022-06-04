@@ -24,8 +24,8 @@ import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSch
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
-import { Phone } from '@/modules/users';
-import { Address } from '@/modules/address';
+import { Phone } from '@/modules/phones/models/Phone';
+import { Address } from '@/modules/address/models/Address';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {

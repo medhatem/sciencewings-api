@@ -14,7 +14,7 @@ import { JobService } from '@/modules/hr/services/JobService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
 import { GroupService } from '@/modules/hr/services/GroupService';
 import { mockMethodWithResult } from '@/utils/utilities';
-import { ResourceCalendarService } from '@/modules/resources';
+import { ResourceCalendarService } from '@/modules/resources/services/ResourceCalendarService';
 import { Result } from '@/utils/Result';
 import { BaseService } from '@/modules/base/services/BaseService';
 

@@ -7,7 +7,7 @@ import { container } from '@/di';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
 import { ResourceEventService } from '@/modules/resources/services/ResourceEventService';
-import { ResourceEventDao } from '@/modules/resources';
+import { ResourceEventDao } from '@/modules/resources/daos/ResourceEventDAO';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceEventDao: SinonStubbedInstance<ResourceEventDao>;

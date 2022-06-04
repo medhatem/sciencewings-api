@@ -16,7 +16,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
-import { Resource } from '@/modules/resources';
+import { Resource } from '@/modules/resources/models/Resource';
 import { Job } from '@/modules/hr/models/Job';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
 
