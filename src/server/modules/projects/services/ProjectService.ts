@@ -1,4 +1,3 @@
-import { checkMemberExistance } from './ProjectServiceUtils';
 import { IOrganizationService } from '@/modules/organizations/interfaces';
 import { Project } from '@/modules/projects/models/Project';
 import { ProjectDao } from '@/modules/projects/daos/projectDAO';
@@ -15,6 +14,7 @@ import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
 import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInterfaces';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
   constructor(
@@ -36,17 +36,22 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   @validate
   public async createProject(@validateParam(CreateProjectSchema) payload: ProjectRO): Promise<Result<number>> {
     const fetchedOrganization = await this.organizationService.get(payload.organization);
-
     if (fetchedOrganization.isFailure) {
       return Result.fail(`Organization with id ${payload.organization} does not exist.`);
     }
-
-    const fetchedResponsibles = await checkMemberExistance(payload.managers, this.memberService);
+    const fetchedResponsibles = await this.memberService.getByCriteria(
+      { organization: payload.organization, user: payload.managers },
+      FETCH_STRATEGY.ALL,
+      { refresh: true },
+    );
     if (fetchedResponsibles.isFailure) {
       return fetchedResponsibles;
     }
-
-    const fetchedParticipants = await checkMemberExistance(payload.participants, this.memberService);
+    const fetchedParticipants = await this.memberService.getByCriteria(
+      { organization: payload.organization, user: payload.participants },
+      FETCH_STRATEGY.ALL,
+      { refresh: true },
+    );
     if (fetchedParticipants.isFailure) {
       return fetchedParticipants;
     }
@@ -55,7 +60,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     const managers = await fetchedResponsibles.getValue();
     const participants = await fetchedParticipants.getValue();
 
-    const project: Project = {
+    const createdProject: Project = await this.dao.create({
       title: payload.title,
       description: payload.description,
       active: payload.active,
@@ -63,14 +68,10 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       managers: managers,
       participants: participants,
       organizations: organization,
-    };
-
-    const createdProjectResult = await this.create(project);
-    if (createdProjectResult.isFailure) {
-      return createdProjectResult;
+    });
+    if (!createdProject) {
+      return Result.fail(`fail to create project.`);
     }
-
-    const createdProject = await createdProjectResult.getValue();
 
     if (payload?.tasks?.length) {
       await this.projectTaskService.createProjectTasks(payload.tasks, createdProject);
@@ -104,9 +105,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     if (payload.managers) {
-      const fetchedResponsibles = await checkMemberExistance(payload.managers, this.memberService);
-      // should be remove to avoid type conflic
-      delete payload.managers;
+      const fetchedResponsibles = await this.memberService.getByCriteria(
+        { organization: payload.organization, user: payload.managers },
+        FETCH_STRATEGY.ALL,
+        { refresh: true },
+      );
       if (fetchedResponsibles.isFailure) {
         return fetchedResponsibles;
       }
@@ -114,9 +117,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     if (payload.participants) {
-      const fetchedParticipants = await checkMemberExistance(payload.participants, this.memberService);
-      // should be remove to avoid type conflic
-      delete payload.participants;
+      const fetchedParticipants = await this.memberService.getByCriteria(
+        { organization: payload.organization, user: payload.participants },
+        FETCH_STRATEGY.ALL,
+        { refresh: true },
+      );
       if (fetchedParticipants.isFailure) {
         return fetchedParticipants;
       }
