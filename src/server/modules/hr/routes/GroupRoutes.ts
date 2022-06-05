@@ -109,7 +109,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   }
 
   /**
-   * delete a group data given its id
+   * delete group by id
    * @param payload
    * @param id
    * @returns the deleted group id

@@ -232,7 +232,7 @@ export class GroupRO {
   parent: number;
 
   @JsonProperty()
-  members?: any[];
+  members?: number[];
 
   @JsonProperty()
   description: string;

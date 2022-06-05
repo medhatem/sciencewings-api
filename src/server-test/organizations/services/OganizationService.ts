@@ -64,7 +64,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     _container
       .withArgs(OrganizationService)
       .returns(
-        new OrganizationService(organizationDAO, userService, labelService, addressService, phoneService, emailService),
+        new OrganizationService(
+          organizationDAO,
+          userService,
+          labelService,
+          addressService,
+          phoneService,
+          emailService,
+          Keycloak.getInstance(),
+        ),
       );
   }
 
@@ -91,7 +99,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     _container
       .withArgs(OrganizationService)
       .returns(
-        new OrganizationService(organizationDAO, userService, labelService, addressService, phoneService, emailService),
+        new OrganizationService(
+          organizationDAO,
+          userService,
+          labelService,
+          addressService,
+          phoneService,
+          emailService,
+          Keycloak.getInstance(),
+        ),
       );
   });
 

@@ -29,6 +29,7 @@ import { getConfig } from '@/configuration/Configuration';
 import { Phone } from '@/modules/users';
 import { Address } from '@/modules/address';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
+import { catchKeycloackError } from '@/utils/keycloack';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -39,24 +40,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public addressService: IAddressService,
     public phoneService: IPhoneService,
     public emailService: Email,
-    public keycloak: Keycloak = Keycloak.getInstance(),
+    public keycloak: Keycloak,
   ) {
     super(dao);
   }
 
   static getInstance(): IOrganizationService {
     return container.get(IOrganizationService);
-  }
-
-  private catchKeycloackError(error: any, name: string): any {
-    const err = error.response.data;
-    if (err.error === 'unknown_error') {
-      return Result.fail(`Unknown error.`);
-    } else if (err.error === 'HTTP 401 Unauthorized') {
-      return Result.fail(`HTTP 401 Unauthorized.`);
-    } else if (err.errorMessage.includes('already exists')) {
-      return Result.fail(`Organization ${name} already exist.`);
-    }
   }
 
   // Oranization methods
@@ -147,7 +137,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       kcGroupId = id;
       wrappedOrganization.kcid = keycloakGroup.id;
     } catch (error) {
-      return this.catchKeycloackError(error, payload.name);
+      return catchKeycloackError(error, payload.name);
     }
 
     const createdOrg = await this.create(wrappedOrganization);
@@ -234,7 +224,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
           },
         );
       } catch (error) {
-        return this.catchKeycloackError(error, payload.name);
+        return catchKeycloackError(error, payload.name);
       }
     }
 
@@ -380,7 +370,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
     } catch (error) {
-      return this.catchKeycloackError(error, fetchedorganization.name);
+      return catchKeycloackError(error, fetchedorganization.name);
     }
     await this.dao.remove(fetchedorganization);
     return Result.ok<number>(organizationId);
