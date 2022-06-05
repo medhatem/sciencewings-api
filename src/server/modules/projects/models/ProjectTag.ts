@@ -27,6 +27,4 @@ export class ProjectTag extends BaseModel<ProjectTag> {
     nullable: true,
   })
   project: Project;
-
-  // FK Project
 }

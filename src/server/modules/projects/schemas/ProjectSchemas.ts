@@ -1,4 +1,4 @@
-import Joi = require('joi');
+import * as Joi from 'joi';
 
 export const ProjectTaskSchema = Joi.object({
   title: Joi.string().required(),

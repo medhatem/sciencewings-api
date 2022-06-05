@@ -28,7 +28,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   /**
    * Containing data related to the project to be saved in the database
    *
-   * @param payload
+   * @param payload containing data related to the project to be saved in the database
    * Should container Project data
    */
   @POST

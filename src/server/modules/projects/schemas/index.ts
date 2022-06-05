@@ -1,1 +1,1 @@
-export * from './ProjetcSchemas';
+export * from './ProjectSchemas';

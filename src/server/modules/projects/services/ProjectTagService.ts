@@ -24,7 +24,7 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
   /**
    * add a list of tags for a given project
    * a project can have one or many tags
-   * @param payload
+   * @param payload a list of tags that will be associated to the project
    * @param project id
    * @returns
    */

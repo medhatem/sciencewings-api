@@ -25,7 +25,7 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
   /**
    * add a list of tasks for a given project
    * a project can have one or many tasks
-   * @param payloads
+   * @param payloads a list of project tasks to be created
    * @param project
    * @returns
    */
