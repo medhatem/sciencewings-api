@@ -282,7 +282,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     console.log({ existingOrg });
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    return Result.ok<any>(existingOrg.members.toArray());
+    return Result.ok<any>(existingOrg.members);
   }
 
   @log()
