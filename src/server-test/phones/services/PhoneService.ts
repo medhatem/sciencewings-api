@@ -8,7 +8,7 @@ import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
 import { PhoneService } from '@/modules/phones/services/PhoneService';
 import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
-import { BaseService } from '@/modules/base';
+import { BaseService } from '@/modules/base/services/BaseService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let phoneDAO: SinonStubbedInstance<PhoneDao>;

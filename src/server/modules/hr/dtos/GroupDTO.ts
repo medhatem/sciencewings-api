@@ -1,4 +1,4 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
@@ -44,9 +44,6 @@ export class GroupDTO extends BaseRequestDTO {
 export class CreateGroupDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: GroupBaseBodyGetDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
 }
 
 @JsonObject()
@@ -54,7 +51,4 @@ export class CreateGroupDTO extends BaseRequestDTO {
 export class UpdateGroupDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: GroupBaseBodyGetDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
 }

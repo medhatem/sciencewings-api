@@ -12,7 +12,7 @@ import { mockMethodWithResult } from '@/utils/utilities';
 import { Result } from '@/utils/Result';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
-import { BaseService } from '@/modules/base';
+import { BaseService } from '@/modules/base/services/BaseService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationService: SinonStubbedInstance<OrganizationService>;

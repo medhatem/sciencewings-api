@@ -1,5 +1,5 @@
 import { container, provide } from '@/di';
-import { BaseModel } from '@/modules/base';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { Resource } from './Resource';
 
