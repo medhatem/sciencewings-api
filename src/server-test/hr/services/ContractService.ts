@@ -16,7 +16,7 @@ import { GroupService } from '@/modules/hr/services/GroupService';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { ResourceCalendarService } from '@/modules/resources';
 import { Result } from '@/utils/Result';
-import { BaseService } from '@/modules/base';
+import { BaseService } from '@/modules/base/services/BaseService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let groupService: SinonStubbedInstance<GroupService>;

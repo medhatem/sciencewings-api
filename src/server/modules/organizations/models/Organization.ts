@@ -40,6 +40,9 @@ export class Organization extends BaseModel<Organization> {
   @PrimaryKey()
   id?: number;
 
+  @Property()
+  kcid!: string;
+
   @Unique({ name: 'organization_name_uniq' })
   @Property()
   name!: string;
@@ -125,8 +128,6 @@ export class Organization extends BaseModel<Organization> {
   @OneToOne({
     entity: () => User,
     unique: false,
-    lazy: true,
-    eager: false,
   })
   public admin_contact!: User;
 

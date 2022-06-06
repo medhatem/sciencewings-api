@@ -4,7 +4,7 @@ import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { ResourceCalendarDao } from '@/modules/resources/daos/ResourceCalendarDAO';
 import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
 import { applyToAll } from '@/utils/utilities';
-import { connection } from '../db/index';
+import { connection } from '@/db/index';
 import { faker } from '@faker-js/faker';
 import { provideSingleton } from '@/di';
 import { wrap } from '@mikro-orm/core';

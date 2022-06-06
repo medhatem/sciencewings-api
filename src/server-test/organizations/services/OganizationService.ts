@@ -19,6 +19,8 @@ import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizati
 import { BaseService } from '@/modules/base/services/BaseService';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
+import { GroupEvent } from '@/modules/hr/events/GroupEvent';
+import { Keycloak } from '@/sdks/keycloak';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
@@ -27,6 +29,52 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let addressService: SinonStubbedInstance<AddressService>;
   let phoneService: SinonStubbedInstance<PhoneService>;
   let labelService: SinonStubbedInstance<OrganizationLabelService>;
+  let containerStub: any = null;
+
+  function stubKeyclockInstanceWithBaseService(users: any) {
+    stub(Keycloak, 'getInstance').returns({
+      getAdminClient: () => {
+        return {
+          users: {
+            create: () => {
+              return {} as any;
+            },
+            addToGroup: () => {
+              return {} as any;
+            },
+            find: () => users as any,
+          },
+          groups: {
+            create: () => {
+              return {} as any;
+            },
+            update: () => {
+              return {} as any;
+            },
+            setOrCreateChild: () => {
+              return {} as any;
+            },
+            find: () => users as any,
+          },
+        };
+      },
+    } as any);
+
+    containerStub.withArgs(BaseService).returns(new BaseService({} as any));
+    containerStub
+      .withArgs(OrganizationService)
+      .returns(
+        new OrganizationService(
+          organizationDAO,
+          userService,
+          labelService,
+          addressService,
+          phoneService,
+          emailService,
+          Keycloak.getInstance(),
+        ),
+      );
+  }
 
   beforeEach(() => {
     createStubInstance(Configuration);
@@ -37,21 +85,29 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     phoneService = createStubInstance(PhoneService);
     labelService = createStubInstance(OrganizationLabelService);
 
-    const _container = stub(container, 'get');
-    _container.withArgs(Configuration).returns({
+    containerStub = stub(container, 'get');
+    containerStub.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    _container.withArgs(Logger).returns({
+    containerStub.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
-    _container
+    containerStub
       .withArgs(OrganizationService)
       .returns(
-        new OrganizationService(organizationDAO, userService, labelService, addressService, phoneService, emailService),
+        new OrganizationService(
+          organizationDAO,
+          userService,
+          labelService,
+          addressService,
+          phoneService,
+          emailService,
+          Keycloak.getInstance(),
+        ),
       );
   });
 
@@ -177,6 +233,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // prepare base
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'create').resolves(Result.fail('stackTrace'));
+      stubKeyclockInstanceWithBaseService([]);
 
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
 
@@ -199,8 +256,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       organizationDAO['repository'] = { flush: stub() } as any;
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
+      stubKeyclockInstanceWithBaseService([{}]);
+
       // set member creation
       stub(MemberEvent.prototype, 'createMember').returns({} as any);
+      stub(GroupEvent.prototype, 'createGroup').returns({} as any);
       // set address creation
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(addressService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
@@ -254,6 +314,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [mackPayload.adminContact], Promise.resolve(Result.ok(null)));
 
       stub(BaseService.prototype, 'wrapEntity').returns({});
+      stubKeyclockInstanceWithBaseService([]);
 
       const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
 
@@ -274,6 +335,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [mackPayload.direction], Promise.resolve(Result.ok(null)));
 
       stub(BaseService.prototype, 'wrapEntity').returns({});
+      stubKeyclockInstanceWithBaseService([]);
 
       const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
 
@@ -289,6 +351,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
       // set organization parent to null
       mockMethodWithResult(organizationDAO, 'get', [2], Promise.resolve(null));
+      stubKeyclockInstanceWithBaseService([]);
+      stub(BaseService.prototype, 'wrapEntity').returns({});
       const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
 
       expect(result.isFailure).to.be.true;
@@ -306,6 +370,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // prepare base
       stub(BaseService.prototype, 'wrapEntity').returns({});
+      stubKeyclockInstanceWithBaseService([{}]);
       mockMethodWithResult(organizationDAO, 'update', [], Promise.resolve(1));
 
       const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(payload, 1);

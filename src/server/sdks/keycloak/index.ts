@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
 
 import KcAdminClient from '@keycloak/keycloak-admin-client';
-import { getConfig } from '../../configuration/Configuration';
+import { getConfig } from '@/configuration/Configuration';
 import { requiredAction } from '@keycloak/keycloak-admin-client';
 
 export { KcAdminClient, requiredAction };

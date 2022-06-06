@@ -15,18 +15,18 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let addressDAO: SinonStubbedInstance<AddressDao>;
   beforeEach(() => {
     addressDAO = createStubInstance(AddressDao);
-    const _container = stub(container, 'get');
-    _container.withArgs(Configuration).returns({
+    const containerStub = stub(container, 'get');
+    containerStub.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    _container.withArgs(Logger).returns({
+    containerStub.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
-    _container.withArgs(AddressService).returns(new AddressService(addressDAO));
+    containerStub.withArgs(AddressService).returns(new AddressService(addressDAO));
   });
 
   afterEach(() => {

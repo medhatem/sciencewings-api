@@ -5,7 +5,7 @@ import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { BaseModel } from '@/modules/base';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provide()
 @Entity()
