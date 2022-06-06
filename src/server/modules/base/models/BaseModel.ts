@@ -1,5 +1,4 @@
 import { Property } from '@mikro-orm/core';
-
 import { provideSingleton } from '@/di/index';
 
 /**
