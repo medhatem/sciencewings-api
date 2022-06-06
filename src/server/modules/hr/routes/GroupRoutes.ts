@@ -21,7 +21,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   }
 
   /**
-   * create a group that the organization offer
+   * get organization groups
    * @param payload
    * @returns the created group id
    */
@@ -43,7 +43,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   }
 
   /**
-   * create a group that the organization offer
+   * create a group
    * @param payload
    * @returns the created group id
    */
