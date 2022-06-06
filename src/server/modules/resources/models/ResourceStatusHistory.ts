@@ -32,7 +32,7 @@ export class ResourceStatusHistory extends BaseModel<ResourceStatusHistory> {
   member: Member;
 
   @OneToOne({ entity: () => ResourceStatus, onDelete: 'set null', nullable: true })
-  statusType: ResourceStatus;
+  resourceStatus: ResourceStatus;
 
   @Property()
   statusDescription: string;
