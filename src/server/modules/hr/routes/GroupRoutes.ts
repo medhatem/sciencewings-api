@@ -87,20 +87,49 @@ export class GroupRoutes extends BaseRoutes<Group> {
   }
 
   /**
-   * update group memebers by id
+   * add group memebers by id
    * @param payload
    * @param id
-   * @returns the updated group id
+   * @returns the inserted member id
    */
-  @PUT
-  @Path('/groupMember/:id')
+  @POST
+  @Path('/groupMember/:groupid/:memberid')
   @Security()
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateGroupMember(payload: GroupRO, @PathParam('id') id: number): Promise<GroupDTO> {
-    const result = await this.groupService.updateGroupMember(payload, id);
+  public async updateGroupMember(
+    @PathParam('memberid') memberid: number,
+    @PathParam('groupid') groupid: number,
+  ): Promise<GroupDTO> {
+    const result = await this.groupService.addGroupMember(memberid, groupid);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new GroupDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+
+  /**
+   * delete group memebers by id
+   * @param payload
+   * @param id
+   * @returns the deleted member id
+   */
+  @DELETE
+  @Path('/groupMember/:groupid/:memberid')
+  @Security()
+  @LoggerStorage()
+  @Response<GroupDTO>(204, 'Group updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async deleteGroupMember(
+    @PathParam('memberid') memberid: number,
+    @PathParam('groupid') groupid: number,
+  ): Promise<GroupDTO> {
+    const result = await this.groupService.deleteGroupMember(memberid, groupid);
 
     if (result.isFailure) {
       throw result.error;

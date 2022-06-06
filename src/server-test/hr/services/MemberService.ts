@@ -22,7 +22,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
-  let container: any = null;
+  let containerStub: any = null;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
     stub(Keycloak, 'getInstance').returns({
@@ -38,8 +38,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       },
     } as any);
 
-    container.withArgs(BaseService).returns(new BaseService({} as any));
-    container
+    containerStub.withArgs(BaseService).returns(new BaseService({} as any));
+    containerStub
       .withArgs(MemberService)
       .returns(new MemberService(memberDao, userService, organizationService, emailService));
   }
@@ -50,19 +50,19 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     userService = createStubInstance(UserService);
     emailService = createStubInstance(Email);
 
-    container = stub(container, 'get');
-    container.withArgs(Configuration).returns({
+    containerStub = stub(container, 'get');
+    containerStub.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    container.withArgs(Logger).returns({
+    containerStub.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
 
-    container
+    containerStub
       .withArgs(MemberService)
       .returns(new MemberService(memberDao, userService, organizationService, emailService));
   });

@@ -14,18 +14,18 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let phoneDAO: SinonStubbedInstance<PhoneDao>;
   beforeEach(() => {
     phoneDAO = createStubInstance(PhoneDao);
-    const container = stub(container, 'get');
-    container.withArgs(Configuration).returns({
+    const containerStub = stub(container, 'get');
+    containerStub.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    container.withArgs(Logger).returns({
+    containerStub.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
-    container.withArgs(PhoneService).returns(new PhoneService(phoneDAO));
+    containerStub.withArgs(PhoneService).returns(new PhoneService(phoneDAO));
     stub(BaseService.prototype, 'wrapEntity').returns({});
     (phoneDAO.repository as any) = { persist: stub() };
   });
