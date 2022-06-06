@@ -11,7 +11,7 @@ import { getConfig } from '@/configuration/Configuration';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
-import { CreateGroupSchema, UpdateGroupMember, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
+import { CreateGroupSchema, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { applyToAll } from '@/utils/utilities';
@@ -168,52 +168,55 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   @log()
   @safeGuard()
   @validate
-  public async updateGroupMember(
-    @validateParam(UpdateGroupMember) payload: GroupRO,
-    groupId: number,
-  ): Promise<Result<number>> {
+  public async addGroupMember(member: any, groupId: number): Promise<Result<number>> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
       return Result.notFound(`group with id ${groupId} does not exist.`);
     }
+    const fetchedMember = await this.memberService.getByCriteria(
+      {
+        user: member.user,
+        organization: member.organization,
+      },
+      FETCH_STRATEGY.SINGLE,
+    );
+    if (fetchedMember.isFailure || fetchedMember.getValue() === null) {
+      return Result.notFound(`member does not exist.`);
+    }
 
-    let existingMembers = [...(await fetchedGroup.members.init())];
-    let requestedMembers = [...payload.members];
-    const newMembers: any = [];
+    if (!fetchedGroup.members.isInitialized) fetchedGroup.members.init();
 
-    await applyToAll(payload.members, async ({ user }) => {
-      let flagIsExiste = false;
-      for (const existingMember in existingMembers) {
-        if ((existingMember as any).user.id === user.id) {
-          flagIsExiste = true;
-          existingMembers = existingMembers.filter((el: any) => el.user.id !== user.id);
-          requestedMembers = requestedMembers.filter((el: any) => el.user.id !== user.id);
-          break;
-        }
-      }
-      if (!flagIsExiste) {
-        newMembers.push(user.id);
-      }
-    });
+    fetchedGroup.members.add(fetchedMember.getValue());
+    this.dao.update(fetchedGroup);
 
-    await applyToAll(payload.members as any, async ({ user }: any) => {
-      this.keycloak.getAdminClient().users.addToGroup({
-        id: user.keycloakId,
-        groupId: fetchedGroup.kcid,
-      });
-      fetchedGroup.members.add({
-        user,
-        organization: fetchedGroup.organization,
-      } as any);
-    });
-    await applyToAll(existingMembers, async (member: any) => {
-      await this.keycloak.getAdminClient().users.delFromGroup({
-        id: member.user.keycloakId,
-        groupId: fetchedGroup.kcid,
-      });
-      await this.dao.remove(member);
-    });
+    return Result.ok(groupId);
+  }
 
-    return Result.ok<number>(1);
+  @log()
+  @safeGuard()
+  @validate
+  public async deleteGroupMember(member: any, groupId: number): Promise<Result<number>> {
+    const fetchedGroup = await this.dao.get(groupId);
+    if (!fetchedGroup) {
+      return Result.notFound(`group with id ${groupId} does not exist.`);
+    }
+    const fetchedMember = await this.memberService.getByCriteria(
+      {
+        user: member.user,
+        organization: member.organization,
+      },
+      FETCH_STRATEGY.SINGLE,
+    );
+    if (fetchedMember.isFailure || fetchedMember.getValue() === null) {
+      return Result.notFound(`member does not exist.`);
+    }
+
+    if (!fetchedGroup.members.isInitialized) fetchedGroup.members.init();
+
+    fetchedGroup.members.remove(fetchedMember.getValue());
+
+    this.dao.update(fetchedGroup);
+
+    return Result.ok(groupId);
   }
 }
