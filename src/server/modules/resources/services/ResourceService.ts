@@ -14,8 +14,8 @@ import {
   UpdateResourceRO,
 } from '@/modules/resources/routes/RequestObject';
 import {
-  CreateResourceSchema,
   ResourceCalendarSchema,
+  CreateResourceSchema,
   ResourceReservationGeneralSchema,
   ResourceReservationUnitSchema,
   ResourceReservationVisibilitySchema,
