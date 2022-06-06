@@ -16,19 +16,19 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let organizationLabelDAO: SinonStubbedInstance<OrganizationLabelDao>;
   beforeEach(() => {
     organizationLabelDAO = createStubInstance(OrganizationLabelDao);
-    const _container = stub(container, 'get');
-    _container.withArgs(Configuration).returns({
+    const container = stub(container, 'get');
+    container.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    _container.withArgs(Logger).returns({
+    container.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
 
-    _container.withArgs(OrganizationLabelService).returns(new OrganizationLabelService(organizationLabelDAO));
+    container.withArgs(OrganizationLabelService).returns(new OrganizationLabelService(organizationLabelDAO));
   });
 
   afterEach(() => {

@@ -29,7 +29,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let addressService: SinonStubbedInstance<AddressService>;
   let phoneService: SinonStubbedInstance<PhoneService>;
   let labelService: SinonStubbedInstance<OrganizationLabelService>;
-  let _container: any = null;
+  let container: any = null;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
     stub(Keycloak, 'getInstance').returns({
@@ -60,8 +60,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       },
     } as any);
 
-    _container.withArgs(BaseService).returns(new BaseService({} as any));
-    _container
+    container.withArgs(BaseService).returns(new BaseService({} as any));
+    container
       .withArgs(OrganizationService)
       .returns(
         new OrganizationService(
@@ -85,18 +85,18 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     phoneService = createStubInstance(PhoneService);
     labelService = createStubInstance(OrganizationLabelService);
 
-    _container = stub(container, 'get');
-    _container.withArgs(Configuration).returns({
+    container = stub(container, 'get');
+    container.withArgs(Configuration).returns({
       getConfiguration: stub(),
       currentENV: 'test',
     });
-    _container.withArgs(Logger).returns({
+    container.withArgs(Logger).returns({
       setup: stub(),
       info: stub(),
       error: stub(),
       warn: stub(),
     });
-    _container
+    container
       .withArgs(OrganizationService)
       .returns(
         new OrganizationService(

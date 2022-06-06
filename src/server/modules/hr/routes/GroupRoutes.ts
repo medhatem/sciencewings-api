@@ -30,12 +30,13 @@ export class GroupRoutes extends BaseRoutes<Group> {
   @Security()
   @LoggerStorage()
   @Response<GroupRO>(200, 'Group fetched Successfully')
-  @Response<GroupRO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async getOrganizationGroup(@PathParam('organizationId') organizationId: number): Promise<GroupDTO> {
     const result = await this.groupService.getOrganizationGroup(organizationId);
 
     if (result.isFailure) {
-      return new GroupDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     return new GroupDTO({ body: { data: result.getValue(), statusCode: 201 } });
@@ -51,12 +52,12 @@ export class GroupRoutes extends BaseRoutes<Group> {
   @Security()
   @LoggerStorage()
   @Response<GroupRO>(201, 'Group created Successfully')
-  @Response<GroupRO>(500, 'Internal Server Error')
+  @Response<InternalServerError>(500, 'Internal Server Error')
   public async createGroup(payload: GroupRO): Promise<GroupDTO> {
     const result = await this.groupService.createGroup(payload);
 
     if (result.isFailure) {
-      return new GroupDTO({ error: { statusCode: 500, errorMessage: result.error } });
+      throw result.error;
     }
 
     return new GroupDTO({ body: { id: result.getValue(), statusCode: 201 } });
