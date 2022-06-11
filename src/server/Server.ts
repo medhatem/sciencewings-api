@@ -20,6 +20,9 @@ import { startDB } from './db';
 import swaggerUi = require('swagger-ui-express');
 import { HttpError } from 'typescript-rest/dist/server/model/errors';
 
+import '@/decorators/events';
+import { MemberEvent } from './modules/hr/events/MemberEvent';
+
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
   urlencoded(options: OptionsUrlencoded): RequestHandler;
@@ -75,6 +78,7 @@ export class Server {
     this.addMiddlewares();
     this.addRoutes();
     this.startKeycloakAdmin();
+    new MemberEvent();
   }
 
   /**

@@ -1,9 +1,9 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressRO } from '@/modules/address/routes/AddressRO';
-import { MemberStatusType } from '@/modules/hr/models/Member';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
+import { userStatus } from '@/modules/users/models/User';
 
 @JsonObject()
 @unique
@@ -36,7 +36,7 @@ export class ContractRO {
   manager?: number;
 
   @JsonProperty()
-  note?: string;
+  description?: string;
 
   @JsonProperty()
   member?: number;
@@ -172,7 +172,7 @@ export class MemberRO {
   @JsonProperty()
   departureDate?: Date;
   @JsonProperty()
-  status?: MemberStatusType;
+  status?: userStatus;
 }
 
 @JsonObject()
@@ -213,5 +213,27 @@ export class UpdateMemberRO {
   @JsonProperty()
   departureDate?: Date;
   @JsonProperty()
-  status?: MemberStatusType;
+  status?: userStatus;
+}
+
+@JsonObject()
+@unique
+export class GroupRO {
+  @JsonProperty()
+  name: string;
+
+  @JsonProperty()
+  active: boolean;
+
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  parent: number;
+
+  @JsonProperty()
+  members?: number[];
+
+  @JsonProperty()
+  description: string;
 }

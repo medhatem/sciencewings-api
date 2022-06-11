@@ -10,7 +10,7 @@ import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IOrganizationLabelService)
-export class OrganisationLabelService extends BaseService<OrganizationLabel> implements IOrganizationLabelService {
+export class OrganizationLabelService extends BaseService<OrganizationLabel> implements IOrganizationLabelService {
   constructor(public dao: OrganizationLabelDao) {
     super(dao);
   }
@@ -29,11 +29,13 @@ export class OrganisationLabelService extends BaseService<OrganizationLabel> imp
   @log()
   @safeGuard()
   async createBulkLabel(payload: string[], organization: Organization): Promise<Result<number>> {
-    const labels = payload.map((el: string) => {
-      return { name: el, organization };
+    const labels = payload.map((name: string) => {
+      const label = this.wrapEntity(new OrganizationLabel(), { name });
+      label.organization = organization;
+      return label;
     });
 
-    this.dao.repository.persist(labels);
+    this.dao.repository.persistAndFlush(labels);
     return Result.ok<number>(200);
   }
 }

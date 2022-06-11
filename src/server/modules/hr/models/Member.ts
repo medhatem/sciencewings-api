@@ -5,16 +5,15 @@ import { Group } from './Group';
 import { Job } from './Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
+import { Project } from '@/modules/projects/models/Project';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { User } from '@/modules/users/models/User';
+import { User, userStatus } from '@/modules/users/models/User';
 import { WorkLocation } from './WorkLocation';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 
-export enum MemberStatusType {
-  INVITATION_PENDING = 'INVITATION_PENDING',
-  ACTIVE = 'ACTIVE',
-}
 export enum MemberTypeEnum {
   Regular = 'regular',
 }
@@ -63,6 +62,8 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({
     entity: () => Resource,
     nullable: true,
+    lazy: true,
+    eager: false,
   })
   resources? = new Collection<Resource>(this);
 
@@ -128,6 +129,21 @@ export class Member extends BaseModel<Member> {
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
 
+  @ManyToMany(() => Project, (project) => project.managers)
+  managers? = new Collection<Project>(this);
+
+  @ManyToMany(() => Project, (project) => project.participants)
+  participants? = new Collection<Project>(this);
+
   @Property({ nullable: true })
-  status?: MemberStatusType;
+  status?: userStatus;
+
+  @ManyToMany({
+    entity: () => ResourceStatusHistory,
+    nullable: true,
+  })
+  resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
+
+  @ManyToMany({ entity: () => ProjectTask, nullable: true })
+  task?: ProjectTask;
 }

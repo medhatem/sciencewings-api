@@ -1,7 +1,6 @@
 import { Collection, DateType, Entity, Index, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
-import { Address } from '@/modules/address';
+import { Address } from '@/modules/address/models/Address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Phone } from '@/modules/phones/models/Phone';
 
@@ -9,6 +8,7 @@ export enum userStatus {
   INVITATION_PENDING = 'INVITATION_PENDING',
   ACTIVE = 'ACTIVE',
 }
+
 @provide()
 @Entity()
 export class User extends BaseModel<User> {
@@ -37,12 +37,16 @@ export class User extends BaseModel<User> {
     entity: () => Address,
     mappedBy: (entity: Address) => entity.user,
     nullable: true,
+    lazy: true,
+    eager: false,
   })
   address? = new Collection<Address>(this);
 
   @ManyToMany({
     entity: () => Phone,
     mappedBy: (entity: Phone) => entity.user,
+    lazy: true,
+    eager: false,
   })
   phones? = new Collection<Phone>(this);
 

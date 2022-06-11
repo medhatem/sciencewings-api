@@ -5,7 +5,7 @@ import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { BaseModel } from '@/modules/base';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provide()
 @Entity()
@@ -32,7 +32,7 @@ export class Contract extends BaseModel<Contract> {
   @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
   job?: Job;
 
-  @Index({ name: 'hr_contract_date_start_index' })
+  @Index({ name: 'hr_contract_dateStart_index' })
   @Property({ columnType: 'date' })
   dateStart!: Date;
 

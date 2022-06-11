@@ -60,26 +60,13 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @Security()
   @Response(204, 'success')
   public async update(@PathParam('id') id: number, payload: any): Promise<any> {
-    const currentEntity = await this.service.get(id);
-    if (currentEntity.isFailure || (await currentEntity.getValue()) === null) {
-      return this.updateDTOMapper.serialize({
-        error: { statusCode: 404, message: `Entity with id ${id} does not exist` },
-      });
-    }
+    const currentEntity = await this.service.updateRoute(id, payload);
 
-    const entity = {
-      ...currentEntity.getValue(),
-      ...payload,
-    };
-
-    const result = await this.service.update(entity);
-    if (result.isFailure) {
-      return this.updateDTOMapper.serialize({
-        error: { statusCode: 500, message: result.error },
-      });
+    if (currentEntity.isFailure) {
+      throw currentEntity.error;
     }
     return this.updateDTOMapper.serialize({
-      body: { statusCode: 204, entityId: result.getValue() },
+      body: { statusCode: 204, id: currentEntity.getValue().id },
     });
   }
 
@@ -88,20 +75,13 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @Security()
   @Response(201, 'success')
   public async remove(@PathParam('id') id: number): Promise<any> {
-    const currentEntity = await this.service.get(id);
-    if (currentEntity.isFailure || currentEntity.getValue() === null) {
-      return new BaseRequestDTO().serialize({
-        error: { statusCode: 404, userId: `Entity with id ${id} does not exist` },
-      });
-    }
-    const result = await this.service.remove(id);
+    const result = await this.service.removeRoute(id);
+
     if (result.isFailure) {
-      return new BaseRequestDTO().serialize({
-        error: { statusCode: 500, error: result.error },
-      });
+      throw result.error;
     }
     return new BaseRequestDTO().serialize({
-      body: { statusCode: 204, entityId: result.getValue() },
+      body: { statusCode: 204, id },
     });
   }
 }

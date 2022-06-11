@@ -31,12 +31,16 @@ export class Resource extends BaseModel<Resource> {
     entity: () => Member,
     nullable: true,
     mappedBy: (entity) => entity.resources,
+    lazy: true,
+    eager: false,
   })
   public managers? = new Collection<Member>(this);
 
   @ManyToMany({
     entity: () => ResourceTag,
     mappedBy: (entity) => entity.resource,
+    lazy: true,
+    eager: false,
   })
   public tags? = new Collection<ResourceTag>(this);
 
@@ -52,8 +56,14 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   resourceClass!: string;
 
-  @OneToMany({ entity: () => ResourceCalendar, mappedBy: (entity) => entity.resource, nullable: true })
-  calendar: ResourceCalendar;
+  @OneToMany({
+    entity: () => ResourceCalendar,
+    mappedBy: (entity) => entity.resource,
+    nullable: true,
+    lazy: true,
+    eager: false,
+  })
+  calendar? = new Collection<ResourceCalendar>(this);
 
   @Property()
   timezone!: string;

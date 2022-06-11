@@ -11,6 +11,7 @@ export * from '@/modules/resources';
 export * from '@/modules/organizations';
 export * from '@/modules/address';
 export * from '@/modules/phones';
+export * from '@/modules/projects';
 
 container.initialize();
 

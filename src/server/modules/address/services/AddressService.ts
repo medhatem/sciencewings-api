@@ -1,10 +1,9 @@
 import { container, provideSingleton } from '@/di/index';
-
 import { Address } from '@/modules/address/models/Address';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { IAddressService } from '../interfaces/IAddressService';
+import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
@@ -28,7 +27,11 @@ export class AddressService extends BaseService<Address> implements IAddressServ
   @safeGuard()
   async createAddress(payload: AddressRO): Promise<Result<Address>> {
     const wrappedAddress = this.wrapEntity(this.dao.model, payload);
-    const address: Address = await this.dao.create(wrappedAddress);
-    return Result.ok<Address>(address);
+    try {
+      const address: Address = await this.dao.create(wrappedAddress);
+      return Result.ok<Address>(address);
+    } catch (e) {
+      return Result.fail(e);
+    }
   }
 }
