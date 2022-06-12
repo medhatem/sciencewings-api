@@ -119,13 +119,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         ),
       );
       mockMethodWithResult(userService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
-      mockMethodWithResult(memberDao, 'create', [], Promise.resolve({}));
+      mockMethodWithResult(memberDao, 'create', [], Promise.resolve({ user: 1, organization: orgId }));
       stub(BaseService.prototype, 'wrapEntity').returns({});
 
       const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
 
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.equal(1);
+      expect(result.getValue().user).to.equal(1);
+      expect(result.getValue().organization).to.equal(orgId);
     });
   });
 

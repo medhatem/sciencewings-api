@@ -330,7 +330,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!existingOrg) {
       return Result.notFound(`Organization with id ${orgId} does not exist.`);
     }
-    console.log({ existingOrg });
+
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
     return Result.ok<any>(existingOrg.members);
   }

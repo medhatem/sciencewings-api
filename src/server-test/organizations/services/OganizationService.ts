@@ -469,7 +469,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({ members: [] }));
       const result = await container.get(OrganizationService).getMembers(orgId);
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql([]);
     });
   });
 

@@ -37,7 +37,6 @@ export class BaseRequestDTO {
     const filtredPayload = { ...payload };
     if (filtredPayload.body.data) {
       filtredPayload.body.data = payload.body.data.toArray().map((el: any) => {
-        console.log({ '-------------': el instanceof Date });
         for (const key in el) {
           if (el[key] instanceof Date) {
             el[key] = el[key].toISOString();

@@ -204,8 +204,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         expect(error).to.equal('throwing error');
       }
     });
-    test('Should success at eturning the right value', async () => {
-      mockMethodWithResult(organizationService, 'getMembers', [], Result.ok([{}]));
+    test('Should success at returning the right value', async () => {
+      mockMethodWithResult(organizationService, 'getMembers', [], Result.ok());
       const result = await organizationRoutes.getUsers(1);
       expect(result.body.statusCode).to.equal(200);
     });
