@@ -1,11 +1,12 @@
 import { User } from '@/modules/users/models/User';
 import { UserDao } from '@/modules/users/daos/UserDao';
-import { connection } from './../db/index';
+import { connection } from '@/db/index';
 import { faker } from '@faker-js/faker';
 import { provideSingleton } from '@/di';
 import { wrap } from '@mikro-orm/core';
 import { Logger } from '@/utils/Logger';
 import { applyToAll } from '@/utils/utilities';
+
 @provideSingleton()
 export class SeedUsers {
   constructor(private dao: UserDao, private logger: Logger) {}

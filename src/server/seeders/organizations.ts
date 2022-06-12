@@ -1,6 +1,5 @@
-import { Address } from '@/modules/address/models/Address';
+import { Address, AddressType } from '@/modules/address/models/Address';
 import { AddressDao } from '@/modules/address/daos/AddressDAO';
-import { AddressType } from '@/modules/address/models/Address';
 import { Logger } from '@/utils/Logger';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -8,9 +7,9 @@ import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationL
 import { Phone } from '@/modules/phones/models/Phone';
 import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
 import { applyToAll } from '@/utils/utilities';
-import { connection } from '../db/index';
+import { connection } from '@/db/index';
 import { faker } from '@faker-js/faker';
-import { provideSingleton } from '@/di';
+import { provideSingleton } from '@/di/index';
 import { wrap } from '@mikro-orm/core';
 
 /**

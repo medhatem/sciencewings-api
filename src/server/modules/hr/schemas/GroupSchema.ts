@@ -1,11 +1,21 @@
 import Joi = require('joi');
 
 export const GroupSchema = Joi.object({
-  name: Joi.string().required(),
-  completeName: Joi.string(),
   active: Joi.boolean(),
-  organization: Joi.number(),
   parent: Joi.number(),
-  manager: Joi.number(),
-  note: Joi.string(),
+  members: Joi.array(),
+  description: Joi.string(),
+});
+
+export const CreateGroupSchema = GroupSchema.keys({
+  name: Joi.string().required(),
+  organization: Joi.number().required(),
+});
+
+export const UpdateGroupSchema = GroupSchema.keys({
+  name: Joi.string(),
+});
+
+export const UpdateGroupMember = GroupSchema.keys({
+  members: Joi.array(),
 });

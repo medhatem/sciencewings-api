@@ -9,6 +9,7 @@ import {
   NotImplementedError,
   MethodNotAllowedError,
 } from 'typescript-rest/dist/server/model/errors';
+
 export class Result<T> {
   public isSuccess: boolean;
   public isFailure: boolean;

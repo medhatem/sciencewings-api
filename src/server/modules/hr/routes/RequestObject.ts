@@ -36,7 +36,7 @@ export class ContractRO {
   manager?: number;
 
   @JsonProperty()
-  note?: string;
+  description?: string;
 
   @JsonProperty()
   member?: number;
@@ -214,4 +214,26 @@ export class UpdateMemberRO {
   departureDate?: Date;
   @JsonProperty()
   status?: userStatus;
+}
+
+@JsonObject()
+@unique
+export class GroupRO {
+  @JsonProperty()
+  name: string;
+
+  @JsonProperty()
+  active: boolean;
+
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  parent: number;
+
+  @JsonProperty()
+  members?: number[];
+
+  @JsonProperty()
+  description: string;
 }

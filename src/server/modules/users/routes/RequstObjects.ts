@@ -1,7 +1,7 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressRO } from '@/modules/address/routes';
-import { PhoneRO } from '../../phones/routes/PhoneRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 
 export class UserInviteToOrgRO {
