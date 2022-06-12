@@ -22,6 +22,7 @@ import { HttpError } from 'typescript-rest/dist/server/model/errors';
 
 import '@/decorators/events';
 import { MemberEvent } from './modules/hr/events/MemberEvent';
+import { ResourceStatusService, StatusCases } from './modules';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -79,6 +80,12 @@ export class Server {
     this.addRoutes();
     this.startKeycloakAdmin();
     new MemberEvent();
+
+    const resourceStatusService = ResourceStatusService.getInstance();
+    resourceStatusService.create({ title: StatusCases.OPERATIONAL });
+    resourceStatusService.create({ title: StatusCases.NON_OPERATIONAL });
+    resourceStatusService.create({ title: StatusCases.MAJOR_REPAIR });
+    resourceStatusService.create({ title: StatusCases.SOLD });
   }
 
   /**
