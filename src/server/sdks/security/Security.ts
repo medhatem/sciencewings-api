@@ -1,6 +1,5 @@
 import { container, provideSingleton, unmanaged } from '@/di/index';
 
-import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakConfig } from '@/types/ServerConfiguration';
 import { safeGuard } from '@/decorators/safeGuard';
 
@@ -21,7 +20,7 @@ export type UserInformationFromToken = {
 export class Security {
   private url: string;
   private realm: string;
-  constructor(private keycloak: Keycloak, @unmanaged() configuration: KeycloakConfig) {
+  constructor(@unmanaged() configuration: KeycloakConfig) {
     this.url = configuration.baseUrl;
     this.realm = configuration.clientValidation.realmName;
   }
