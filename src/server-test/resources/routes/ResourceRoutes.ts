@@ -134,7 +134,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'getResourcesOfAGivenOrganizationById', [], Result.ok());
+      mockMethodWithResult(resourceService, 'getResourcesOfAGivenOrganizationById', [], Result.ok([]));
       const result = await resourceRoute.getOgranizationResources(1);
       expect(result.body.statusCode).to.equal(200);
     });

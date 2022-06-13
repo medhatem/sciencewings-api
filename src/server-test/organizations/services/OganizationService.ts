@@ -21,6 +21,8 @@ import { mockMethodWithResult } from '@/utils/utilities';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
+import { Collection } from '@mikro-orm/core';
+import { Member } from '@/modules/hr/models/Member';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
@@ -466,7 +468,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization with id ${orgId} does not exist.`);
     });
     test('Should return collection of members', async () => {
-      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({ members: [] }));
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({ members: new Collection(Member) }));
       const result = await container.get(OrganizationService).getMembers(orgId);
       expect(result.isSuccess).to.be.true;
     });

@@ -34,25 +34,7 @@ export class BaseRequestDTO {
   }
 
   deserialize(payload: { [key: string]: any }): this {
-    const filtredPayload = { ...payload };
-    if (filtredPayload.body.data) {
-      filtredPayload.body.data = payload.body.data.toArray().map((el: any) => {
-        for (const key in el) {
-          if (el[key] instanceof Date) {
-            el[key] = el[key].toISOString();
-          }
-        }
-
-        return el;
-      });
-    }
-
-    const deserialized: any = new JsonSerializer().deserialize<this>(
-      filtredPayload as any,
-      this.constructor as any,
-    ) as this;
-
-    return deserialized;
+    return new JsonSerializer().deserialize<this>(payload as any, this.constructor as any) as this;
   }
 
   @JsonProperty()

@@ -18,7 +18,6 @@ import { validate } from '@/decorators/validate';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { Collection } from '@mikro-orm/core';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
@@ -324,7 +323,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Collection<Member>>> {
+  public async getMembers(orgId: number): Promise<Result<Member[]>> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
@@ -332,7 +331,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    return Result.ok<any>(existingOrg.members);
+    return Result.ok<any>(existingOrg.members.toArray());
   }
 
   @log()
