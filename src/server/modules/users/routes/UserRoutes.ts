@@ -66,7 +66,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Response<ResetPasswordDTO>(201, 'Password reset successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  @Security()
+  @Security(['rest_password'])
   @LoggerStorage()
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
     const result = await this.userService.resetPassword(payload);
@@ -182,5 +182,19 @@ export class UserRoutes extends BaseRoutes<User> {
     }
     const user = result.getValue();
     return new UserDTO({ body: { ...user, statusCode: 200 } });
+  }
+
+  /**
+   * Get user By auth token
+   */
+  @GET
+  @Path('test')
+  @LoggerStorage()
+  @Security(['test_role'])
+  @Response<UserDTO>(200, 'Return User Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async test(): Promise<void> {
+    console.log('got inside the test route');
   }
 }
