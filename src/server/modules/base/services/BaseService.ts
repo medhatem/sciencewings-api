@@ -102,6 +102,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
    *
    */
   public wrapEntity(entity: T, payload: any, options: boolean | AssignOptions = true): T {
+    console.log('i am inside wrap');
+    console.log('object inside wrap : ', payload);
     return wrap(entity).assign(payload, options);
   }
 }

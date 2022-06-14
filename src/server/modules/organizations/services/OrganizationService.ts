@@ -58,10 +58,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<Result<number>> {
+    console.log('i am inside the service');
     const existingOrg = await this.dao.getByCriteria({ name: payload.name });
     if (existingOrg) {
       return Result.fail(`Organization ${payload.name} already exist.`);
     }
+    console.log('after get organization by name');
     let parent: Organization;
     if (payload.parent) {
       const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
@@ -71,12 +73,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       parent = org;
     }
     const fetchedUser = await this.userService.get(userId);
-
+    console.log('after fetched user ');
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
       return Result.notFound(`User with id: ${userId} does not exist`);
     }
     const user = fetchedUser.getValue();
-
+    console.log('after user ');
     let adminContact;
     if (payload.adminContact) {
       adminContact = await this.userService.get(payload.adminContact);
@@ -85,7 +87,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
       adminContact = adminContact.getValue();
     }
-
+    console.log('after admin contact');
     let direction;
     if (payload.direction) {
       direction = await this.userService.get(payload.direction);
@@ -94,7 +96,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
       direction = direction.getValue();
     }
-
+    console.log('after direction');
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       description: payload.description,
@@ -107,8 +109,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
     });
+    console.log('after wrapentity');
     wrappedOrganization.parent = parent;
-
+    console.log('after parent');
     wrappedOrganization.direction = direction;
     wrappedOrganization.admin_contact = adminContact;
 
@@ -122,11 +125,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
             name: payload.name,
           },
         );
+        console.log('ligne 127');
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
           name: payload.name,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
+        console.log('ligne 133');
       }
       const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
@@ -136,29 +141,30 @@ export class OrganizationService extends BaseService<Organization> implements IO
       );
       kcGroupId = id;
       wrappedOrganization.kcid = keycloakGroup.id;
+      console.log('143');
     } catch (error) {
       return catchKeycloackError(error, payload.name);
     }
-
+    console.log('147');
     const createdOrg = await this.create(wrappedOrganization);
-
+    console.log('149');
     if (createdOrg.isFailure) {
       return createdOrg;
     }
-
+    console.log('153');
     const organization = await createdOrg.getValue();
 
     const memberEvent = new MemberEvent();
     memberEvent.createMember(user, organization);
     const groupEvent = new GroupEvent();
     groupEvent.createGroup(kcGroupId, organization, 'admin');
-
+    console.log('160');
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
       groupId: kcGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-
+    console.log('166');
     await applyToAll(payload.addresses, async (address) => {
       const wrappedAddress = this.addressService.wrapEntity(
         new Address(),
@@ -176,7 +182,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedAddress.organization = organization;
       await this.addressService.create(wrappedAddress);
     });
-
+    console.log('184');
     await applyToAll(payload.phones, async (phone) => {
       const wrappedPhone = this.phoneService.wrapEntity(
         new Phone(),
@@ -190,12 +196,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedPhone.organization = organization;
       await this.phoneService.create({ wrappedPhone });
     });
-
+    console.log('198');
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
     this.dao.repository.flush();
-    console.log('endsss');
+    console.log('endsss=========================');
     return Result.ok<number>(organization.id);
   }
 
