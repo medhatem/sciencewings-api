@@ -195,6 +195,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
     this.dao.repository.flush();
+    console.log('endsss');
     return Result.ok<number>(organization.id);
   }
 
