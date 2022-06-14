@@ -73,14 +73,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       return Result.fail(`fail to create project.`);
     }
 
-    if (payload?.tasks?.length) {
-      await this.projectTaskService.createProjectTasks(payload.tasks, createdProject);
-    }
-
-    if (payload?.tags?.length) {
-      await this.projectTagService.createProjectTags(payload.tags, createdProject);
-    }
-
     return Result.ok(createdProject.id);
   }
 
