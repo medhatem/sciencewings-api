@@ -148,9 +148,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const organization = await createdOrg.getValue();
 
     const memberEvent = new MemberEvent();
-    memberEvent.createMember(user, organization);
+    const memberOwnerResult = await memberEvent.createMember(user, organization);
     const groupEvent = new GroupEvent();
     groupEvent.createGroup(kcGroupId, organization, 'admin');
+
+    organization.members.add(memberOwnerResult.getValue());
+    this.update(organization);
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
@@ -331,7 +334,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    return Result.ok<any>(existingOrg.members.toArray());
+
+    const members = existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
+    return Result.ok<any>(members);
   }
 
   @log()

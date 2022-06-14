@@ -14,7 +14,7 @@ export class MemberEvent {
       active: true,
       organization,
       memberType: MemberTypeEnum.ADMIN,
-      status: userStatus.INVITATION_PENDING,
+      status: userStatus.ACTIVE,
       joinDate: new Date(),
       workEmail: user.email,
     } as Member);
