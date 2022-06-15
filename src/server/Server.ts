@@ -80,12 +80,6 @@ export class Server {
     this.addRoutes();
     this.startKeycloakAdmin();
     new MemberEvent();
-
-    const resourceStatusService = ResourceStatusService.getInstance();
-    resourceStatusService.create({ title: StatusCases.OPERATIONAL });
-    resourceStatusService.create({ title: StatusCases.NON_OPERATIONAL });
-    resourceStatusService.create({ title: StatusCases.MAJOR_REPAIR });
-    resourceStatusService.create({ title: StatusCases.SOLD });
   }
 
   /**
