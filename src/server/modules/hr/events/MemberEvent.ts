@@ -2,7 +2,7 @@ import { MemberService } from '@/modules/hr/services/MemberService';
 import { on } from '@/decorators/events';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { User, userStatus } from '@/modules/users/models/User';
-import { Member, MemberTypeEnum } from '../models';
+import { Member, MemberTypeEnum } from '@/modules/hr/models/Member';
 
 export class MemberEvent {
   @on('create-member')
