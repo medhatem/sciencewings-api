@@ -125,4 +125,20 @@ export class MemberService extends BaseService<Member> implements IMemberService
     this.emailService.sendEmail(emailMessage);
     return Result.ok<number>(user.id);
   }
+
+  @log()
+  @safeGuard()
+  public async getUserMemberships(userId: number): Promise<Result<Member[]>> {
+    const fetchedUser = await this.userService.get(userId);
+    if (fetchedUser.isFailure) {
+      return Result.notFound(`User with id: ${userId} does not exists.`);
+    }
+    const fetchedMembers = await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL);
+    if (!fetchedMembers) {
+      return Result.notFound(`user with id: ${userId} has no memberships.`);
+    }
+    console.log('fetchedMember: ', fetchedMembers);
+    return Result.ok(fetchedMembers as Member[]);
+  }
+
 }
