@@ -1,9 +1,7 @@
 import { userStatus } from '@/modules/users/models/User';
 import Joi = require('joi');
-import { MembershipStatus } from '@/modules/hr/models/Member';
 
 export const MemberSchema = Joi.object({
-  membership: Joi.string().valid(MembershipStatus),
   resource: Joi.number(),
   resourceCalendar: Joi.number(),
   name: Joi.string(),
