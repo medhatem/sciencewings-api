@@ -106,6 +106,8 @@ export class MemberRO {
   @JsonProperty()
   organization!: number;
   @JsonProperty()
+  membership!: string;
+  @JsonProperty()
   name?: string;
   @JsonProperty()
   active?: boolean;

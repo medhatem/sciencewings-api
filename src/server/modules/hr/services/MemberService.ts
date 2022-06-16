@@ -13,6 +13,10 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Email } from '@/utils/Email';
 import { EmailMessage } from '@/types/types';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
+import { MemberRO } from '../routes/RequestObject';
+import { validate } from '@/decorators/validate';
+import { validateParam } from '@/decorators/validateParam';
+import { MemberSchema } from '../schemas/MemberSchema';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -124,5 +128,42 @@ export class MemberService extends BaseService<Member> implements IMemberService
     };
     this.emailService.sendEmail(emailMessage);
     return Result.ok<number>(user.id);
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async updateMembershipStatus(
+    @validateParam(MemberSchema) payload: MemberRO,
+    userId: number,
+    orgId: number,
+  ): Promise<Result<object>> {
+    const fetchedUser = await this.userService.get(userId);
+    if (fetchedUser.isFailure) {
+      return Result.notFound(`User with id: ${userId} does not exists.`);
+    }
+    const fetchedOrg = await this.organizationService.get(orgId);
+    if (fetchedOrg.isFailure) {
+      return Result.notFound(`organization with id: ${orgId} does not exists.`);
+    }
+    const fetchedMember = (await this.dao.getByCriteria(
+      { organization: orgId, user: userId },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+    if (!fetchedMember) {
+      return Result.notFound(
+        `membership of user with id: ${userId} in organization with id: ${orgId} does not exists.`,
+      );
+    }
+    const member = this.wrapEntity(fetchedMember, {
+      ...fetchedMember,
+      ...payload,
+    });
+
+    const updatedMember = await this.dao.update(member);
+    if (!updatedMember) {
+      return Result.fail(`membership of user with id: ${userId} in organization with id: ${orgId} can not be updated.`);
+    }
+    return Result.ok<object>({ userId, orgId });
   }
 }

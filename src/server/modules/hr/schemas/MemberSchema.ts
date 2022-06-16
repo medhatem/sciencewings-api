@@ -1,7 +1,9 @@
 import { userStatus } from '@/modules/users/models/User';
 import Joi = require('joi');
+import { MembershipStatus } from '../models/Member';
 
-const MemberSchema = Joi.object({
+export const MemberSchema = Joi.object({
+  membership: Joi.string().valid(MembershipStatus.ACCEPTED, MembershipStatus.REJECTED),
   resource: Joi.number(),
   resourceCalendar: Joi.number(),
   name: Joi.string(),
@@ -15,7 +17,7 @@ const MemberSchema = Joi.object({
   user: Joi.number(),
   parent: Joi.number(),
   coach: Joi.number(),
-  memberType: Joi.string().required(),
+  memberType: Joi.string(),
   identificationId: Joi.string(),
   studyField: Joi.string(),
   emergencyContact: Joi.string(),

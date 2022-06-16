@@ -1,5 +1,5 @@
-import { MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
-import { POST, Path, Security } from 'typescript-rest';
+import { MemberDTO, UpdateMemberBodyDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
+import { POST, Path, Security, PUT, PathParam } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -11,6 +11,7 @@ import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
 import { UserInviteToOrgRO } from '@/modules/users/routes/RequstObjects';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
+import { MemberRO } from './RequestObject';
 
 @provideSingleton()
 @Path('members')
@@ -69,5 +70,31 @@ export class MemberRoutes extends BaseRoutes<Member> {
     return new InviteUserDTO({
       body: { statusCode: 201, id: result.getValue() },
     });
+  }
+  /**
+   * Update a Membership status in the database
+   *
+   * @param payload
+   * Should contain Resource data that include Resource data with its id
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('/:userId/:orgId/membership')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateMemberBodyDTO>(204, 'Resource updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateMembershipStatus(
+    payload: MemberRO,
+    @PathParam('userId') userId: number,
+    @PathParam('orgId') orgId: number,
+  ): Promise<UpdateMemberDTO> {
+    const result = await this.MemberService.updateMembershipStatus(payload, userId, orgId);
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new UpdateMemberDTO({ body: { ...result.getValue(), statusCode: 204 } });
   }
 }

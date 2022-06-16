@@ -42,10 +42,20 @@ export class CreateMemberDTO extends BaseRequestDTO {
   @JsonProperty()
   public error?: BaseErrorDTO;
 }
+@JsonObject()
+@unique
+export class UpdateMemberBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  userId: number;
+  @JsonProperty()
+  orgId: number;
+}
 
 @JsonObject()
 @unique
 export class UpdateMemberDTO extends BaseRequestDTO {
+  @JsonProperty()
+  public body?: UpdateMemberBodyDTO;
   @JsonProperty()
   public error?: BaseErrorDTO;
 }

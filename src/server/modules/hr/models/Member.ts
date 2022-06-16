@@ -17,7 +17,11 @@ import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 export enum MemberTypeEnum {
   Regular = 'regular',
 }
-
+export enum MembershipStatus {
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  PENDING = 'pending',
+}
 @provide()
 @Entity()
 export class Member extends BaseModel<Member> {
@@ -50,6 +54,9 @@ export class Member extends BaseModel<Member> {
   user!: User;
 
   [PrimaryKeyType]?: [Organization, User];
+
+  @Property()
+  membership: MembershipStatus;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
