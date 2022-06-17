@@ -1,4 +1,4 @@
-import { getMembershipDTO, getMembershipsBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
+import { getMembershipDTO, getAllMembershipsBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { POST, Path, Security, PathParam, GET } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
@@ -72,15 +72,15 @@ export class MemberRoutes extends BaseRoutes<Member> {
   }
 
   /**
-   * retrieve all resources of a given organization by id
+   * get all user memberships 
    *
-   * @param organizationId organization id
+   * @param userId userId
    */
    @GET
    @Path('/:userId/memberships')
    @Security()
    @LoggerStorage()
-   @Response<getMembershipsBodyDTO>(200, 'Resource Retrived Successfully')
+   @Response<getAllMembershipsBodyDTO>(200, 'Resource Retrived Successfully')
    @Response<InternalServerError>(500, 'Internal Server Error')
    @Response<NotFoundError>(404, 'Not Found Error')
    public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
@@ -89,7 +89,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
      if (result.isFailure) {
        throw result.error;
      }
-     console.log('resul: ', result.getValue());
+     
      return new getMembershipDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
    }
  

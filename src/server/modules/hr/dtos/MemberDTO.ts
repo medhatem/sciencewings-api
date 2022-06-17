@@ -60,7 +60,7 @@ export class getMembershipBodyDTO extends BaseBodyDTO {
 }
 @JsonObject()
 @unique
-export class getMembershipsBodyDTO extends BaseBodyDTO {
+export class getAllMembershipsBodyDTO extends BaseBodyDTO {
   @JsonProperty({
     type: getMembershipBodyDTO,
     beforeDeserialize,
@@ -71,5 +71,5 @@ export class getMembershipsBodyDTO extends BaseBodyDTO {
 @unique
 export class getMembershipDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: getMembershipsBodyDTO;
+  body: getAllMembershipsBodyDTO;
 }
