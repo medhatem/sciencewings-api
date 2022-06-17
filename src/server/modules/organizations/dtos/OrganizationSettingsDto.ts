@@ -1,10 +1,19 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
 import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 
 export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
+  //Member Settings
+  @JsonProperty()
+  membersCanEditAccountNumbers: boolean;
+  @JsonProperty()
+  promptForAccouantNumbers: boolean;
+  @JsonProperty()
+  acountNumberNote: string;
+  @JsonProperty()
+  allowMembersToSeeAllOtherMembers: boolean;
+
   //Reservation Settings
   @JsonProperty()
   approversCanEditReservations: boolean;
@@ -38,8 +47,6 @@ export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
   //Access Settings
   @JsonProperty()
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules: boolean;
-  @JsonProperty()
-  memberShouldAccessByJoinCode: boolean;
   @JsonProperty()
   joinCode: string;
   @JsonProperty()

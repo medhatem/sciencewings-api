@@ -151,7 +151,7 @@ export class Organization extends BaseModel<Organization> {
   website: string;
 
   @Property({ nullable: true })
-  identificationNumber: Number;
+  identificationNumber: number;
 
   @OneToOne({
     entity: () => OrganizationCategory,

@@ -25,8 +25,8 @@ import { Keycloak } from '@/sdks/keycloak';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
-  let userService: SinonStubbedInstance<UserService>;
   let organizationSettingsService: SinonStubbedInstance<OrganizationSettingsService>;
+  let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
   let addressService: SinonStubbedInstance<AddressService>;
   let phoneService: SinonStubbedInstance<PhoneService>;
@@ -82,6 +82,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   beforeEach(() => {
     createStubInstance(Configuration);
     organizationDAO = createStubInstance(OrganizationDao);
+    organizationSettingsService = createStubInstance(OrganizationSettingsService);
     userService = createStubInstance(UserService);
     emailService = createStubInstance(Email);
     addressService = createStubInstance(AddressService);
@@ -135,7 +136,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           phoneLabel: 'personal',
           phoneCode: '+213',
           phoneNumber: '541110222',
-        },
+        } as any,
       ],
       type: 'Public',
       labels: ['x', 'y', 'z'],
@@ -234,6 +235,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       // prepare base
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'create').resolves(Result.fail('stackTrace'));
@@ -256,6 +259,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       // prepare base
       organizationDAO['repository'] = { flush: stub() } as any;
       stub(BaseService.prototype, 'wrapEntity').returns({});
@@ -431,7 +436,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       phoneLabel: 'personal',
       phoneCode: '+213',
       phoneNumber: '541110222',
-    };
+    } as any;
     test('Should fail on organization not found', async () => {
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);

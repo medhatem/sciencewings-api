@@ -128,14 +128,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
   });
   suite('POST organization/phone/:id', () => {
-    const payload: PhoneRO = {
+    const payload = {
       phoneLabel: 'test',
       phoneCode: 'test',
       phoneNumber: 'test',
       userId: 1,
       organizationId: 1,
       memberId: 1,
-    };
+    } as any;
 
     test('Should fail on throw error', async () => {
       mockMethodWithResult(

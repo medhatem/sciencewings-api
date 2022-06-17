@@ -1,9 +1,8 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
-import { DateUnit } from '../models/OrganizationSettings';
+import { DateUnit } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
@@ -36,8 +35,6 @@ export class OrganizationSettingsRO {
   lockInvoicedReservationsAndRequests?: boolean;
   @JsonProperty()
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
-  @JsonProperty()
-  memberShouldAccessByJoinCode?: boolean;
   @JsonProperty()
   joinCode?: string;
   @JsonProperty()
@@ -100,10 +97,10 @@ export class CreateOrganizationRO {
   adminContact: number;
 
   @JsonProperty()
-  parent?: number;
+  settings?: OrganizationSettingsRO;
 
   @JsonProperty()
-  settings?: OrganizationSettingsRO;
+  parent?: number;
 }
 
 @JsonObject()
@@ -123,6 +120,11 @@ export class UpdateOrganizationRO {
 
   @JsonProperty()
   labels?: Array<string>;
+
+  @JsonProperty({
+    type: PhoneRO,
+  })
+  phones?: Array<PhoneRO>;
 
   @JsonProperty()
   direction?: number;
@@ -168,6 +170,19 @@ export class UserResendPassword {
 
 @JsonObject()
 @unique
+export class OrganizationMemberSettingsRO {
+  @JsonProperty()
+  membersCanEditAccountNumbers: boolean;
+  @JsonProperty()
+  promptForAccouantNumbers: boolean;
+  @JsonProperty()
+  acountNumberNote: string;
+  @JsonProperty()
+  allowMembersToSeeAllOtherMembers: boolean;
+}
+
+@JsonObject()
+@unique
 export class OrganizationReservationSettingsRO {
   @JsonProperty()
   approversCanEditReservations?: boolean;
@@ -207,8 +222,6 @@ export class OrganizationInvoicesSettingsRO {
 export class OrganizationAccessSettingsRO {
   @JsonProperty()
   anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
-  @JsonProperty()
-  memberShouldAccessByJoinCode?: boolean;
   @JsonProperty()
   joinCode?: string;
   @JsonProperty()

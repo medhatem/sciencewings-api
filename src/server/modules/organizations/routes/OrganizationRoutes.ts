@@ -8,8 +8,8 @@ import {
   OrganizationReservationSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationAccessSettingsRO,
+  OrganizationMemberSettingsRO,
 } from './RequestObject';
-import { UserRequest } from '../../../types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
@@ -28,6 +28,7 @@ import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { UserRequest } from '@/types/UserRequest';
 
 @provideSingleton()
 @Path('organization')
@@ -220,7 +221,33 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       throw result.error;
     }
 
-    return new GetOrganizationSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
+    return new GetOrganizationSettingsDTO({ body: { data: result.getValue(), statusCode: 200 } });
+  }
+
+  /* Update a organization settings, section members
+   *
+   * @param payload
+   * @param id of the requested resource
+   *
+   */
+  @PUT
+  @Path('settings/member/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateOrganizationsSettingsnMembersProperties(
+    payload: OrganizationMemberSettingsRO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
 
   /* Update a organization settings, section reservation

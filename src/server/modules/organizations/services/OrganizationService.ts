@@ -6,8 +6,10 @@ import {
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
   OrganizationReservationSettingsRO,
+  OrganizationMemberSettingsRO,
+  CreateOrganizationRO,
+  UpdateOrganizationRO,
 } from '@/modules/organizations/routes/RequestObject';
-import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -24,8 +26,7 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
-import { OrganizationSettings } from '../models/OrganizationSettings';
-import { IOrganizationSettingsService } from '../interfaces/IOrganizationSettingsService';
+import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
@@ -42,7 +43,7 @@ import { catchKeycloackError } from '@/utils/keycloack';
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
-    public OrganizationSettingsService: IOrganizationSettingsService,
+    public organizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
@@ -105,7 +106,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     let settings;
     if (payload.settings) {
-      settings = await this.OrganizationSettingsService.create({
+      settings = await this.organizationSettingsService.create({
         ...payload.settings,
       });
       if (settings.isFailure) {
@@ -126,6 +127,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialLinkedin: payload.socialLinkedin || null,
       owner: user,
       settings: settings,
+      parent,
     });
     wrappedOrganization.parent = parent;
 
@@ -161,6 +163,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     const createdOrg = await this.create(wrappedOrganization);
+    const createdSettings = await this.organizationSettingsService.create({});
+    wrappedOrganization.settings = createdSettings.getValue();
 
     if (createdOrg.isFailure) {
       return createdOrg;
@@ -257,7 +261,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (direction.isFailure || direction.getValue() === null) {
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
-      wrappedOrganization.direction = direction;
+      wrappedOrganization.direction = direction.getValue();
     }
 
     if (payload.adminContact) {
@@ -265,7 +269,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (adminContact.isFailure || adminContact.getValue() === null) {
         return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
       }
-      wrappedOrganization.admin_contact = adminContact;
+      wrappedOrganization.admin_contact = adminContact.getValue();
     }
 
     if (payload.parent) {
@@ -403,14 +407,31 @@ export class OrganizationService extends BaseService<Organization> implements IO
    */
   @log()
   @safeGuard()
-  public async getOrganizationSettingsById(organizationId: number): Promise<Result<OrganizationSettings>> {
+  public async getOrganizationSettingsById(organizationId: number): Promise<Result<any>> {
     const fetchedOrganization = await this.get(organizationId);
 
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
+    const fetchedOrganizationValue = fetchedOrganization.getValue();
+    const organization = {
+      name: fetchedOrganizationValue.name,
+      description: fetchedOrganizationValue.description,
+      phones: fetchedOrganizationValue.phones,
+      email: fetchedOrganizationValue.email,
+      type: fetchedOrganizationValue.type,
+      direction: fetchedOrganizationValue.direction,
+      note: fetchedOrganizationValue.note,
+    } as any;
 
-    return Result.ok(fetchedOrganization.getValue().settings);
+    if (fetchedOrganizationValue.phone) {
+      organization.phone = fetchedOrganizationValue.phone[0];
+    }
+
+    return Result.ok({
+      organization,
+      settings: fetchedOrganizationValue.settings,
+    });
   }
 
   /* Update the reservation, invoices or access settings of an organization ,
@@ -422,17 +443,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   @safeGuard()
   public async updateOrganizationsSettingsProperties(
-    payload: OrganizationReservationSettingsRO | OrganizationInvoicesSettingsRO | OrganizationAccessSettingsRO,
-    OrganizationId: number,
+    payload:
+      | OrganizationMemberSettingsRO
+      | OrganizationReservationSettingsRO
+      | OrganizationInvoicesSettingsRO
+      | OrganizationAccessSettingsRO,
+    organizationId: number,
   ): Promise<Result<number>> {
-    const fetchedOrganization = await this.get(OrganizationId);
+    const fetchedOrganization = await this.get(organizationId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`Organization with id ${OrganizationId} does not exist.`);
+      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     const organizationValue = fetchedOrganization.getValue();
-    organizationValue.settings.init();
     const oldSetting = organizationValue.settings;
-    const newSettings = this.OrganizationSettingsService.wrapEntity(
+    const newSettings = this.organizationSettingsService.wrapEntity(
       oldSetting,
       {
         ...oldSetting,
@@ -441,9 +465,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       false,
     );
 
-    await this.OrganizationSettingsService.update(newSettings);
-    await this.update(organizationValue);
+    await this.organizationSettingsService.update(newSettings);
 
-    return Result.ok<number>(OrganizationId);
+    return Result.ok<number>(organizationId);
   }
 }
