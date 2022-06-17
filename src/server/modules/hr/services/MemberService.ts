@@ -38,7 +38,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
         .getAdminClient()
         .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
     } catch (error) {
-      console.log({ error: error.response.data });
       return Result.fail('Something went wrong when retriving the user.');
     }
 
