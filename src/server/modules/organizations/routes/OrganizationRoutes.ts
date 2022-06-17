@@ -226,7 +226,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section reservation
    *
    * @param payload
-   * @param id of the requested resource
+   * @param id is the is of requested resource
    *
    */
   @PUT
@@ -251,7 +251,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section invoices
    *
    * @param payload
-   * @param id of the requested organization
+   * @param id is the is of requested resource
    *
    */
   @PUT
@@ -276,8 +276,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section access
    *
    * @param payload
-   * @param id
-   * id of the requested resource
+   * @param id is the is of requested resource
+   *
    */
   @PUT
   @Path('settings/access/:id')

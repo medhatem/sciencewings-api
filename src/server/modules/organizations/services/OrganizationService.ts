@@ -379,8 +379,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         .getAdminClient()
         .groups.findOne({ id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') });
 
-      console.log(fetchedorganization.kcid, { subGroups: groups.subGroups });
-
       if (groups.subGroups.length !== 1) {
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }

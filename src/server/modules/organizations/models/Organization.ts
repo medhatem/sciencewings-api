@@ -18,19 +18,10 @@ import { Phone } from '@/modules/phones/models/Phone';
 import { User } from '@/modules/users/models/User';
 import { Resource } from '@/modules/resources';
 import { Job } from '@/modules/hr/models/Job';
-import { OrganizationSettings } from './OrganizationSettings';
+import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
-
-export enum OrganizationType {
-  PUBLIC = 'Public',
-  SERVICE = 'Service',
-  INSTITUT = 'Institut',
-}
-
-export enum OrganizationCategory {
-  PODUCTION = 'Production',
-  CONSTRUCTION = 'Construction',
-}
+import { OrganizationCategory } from '@/modules/organizations/models/OrganizationCategory';
+import { OrganizationType } from '@/modules/organizations/models/OrganizationType';
 
 @provide()
 @Entity()
@@ -69,7 +60,9 @@ export class Organization extends BaseModel<Organization> {
   public phones = new Collection<Phone>(this);
 
   // e.i: Public, Service, Institut
-  @Property()
+  @OneToOne({
+    entity: () => OrganizationType,
+  })
   type!: OrganizationType;
 
   @ManyToMany({
@@ -160,7 +153,9 @@ export class Organization extends BaseModel<Organization> {
   @Property({ nullable: true })
   identificationNumber: Number;
 
-  @Property({ nullable: true })
+  @OneToOne({
+    entity: () => OrganizationCategory,
+  })
   category: OrganizationCategory;
 
   @Property({ nullable: true })
