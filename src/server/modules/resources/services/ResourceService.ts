@@ -125,8 +125,10 @@ export class ResourceService extends BaseService<Resource> {
         managers.push(fetcheManager.getValue());
       }
     }
-
-    const resourceSetting = await this.resourceSettingsService.create({});
+    const resourceStatusSetting = await this.resourceStatusService.get(1);
+    const resourceSetting = await this.resourceSettingsService.create({
+      resourceType: resourceStatusSetting.getValue(),
+    });
     if (resourceSetting.isFailure || !resourceSetting.getValue()) {
       return Result.fail(`Can not create settings for resource.`);
     }
@@ -141,14 +143,17 @@ export class ResourceService extends BaseService<Resource> {
       organization,
       settings: resourceSetting.getValue(),
     });
+
     if (!createdResourceResult) {
       return Result.fail(`fail to create resource.`);
     }
+
     await createdResourceResult.managers.init();
 
     for (const manager of managers) {
       createdResourceResult.managers.add(manager);
     }
+
     await applyToAll(
       payload.tags,
       async (tag) => {
