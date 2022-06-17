@@ -9,6 +9,7 @@ export class RestServer extends Server {
   }
 
   static buildServices(router: express.Router, ...types: Array<any>) {
+    /* eslint-disable-next-line */
     //@ts-ignore access to private member
     if (!RestServer.locked) {
       const serverContainer = ServerContainer.get();
@@ -22,15 +23,17 @@ export class RestServer extends Server {
        * @param serviceClass
        * @param serviceMethod
        */
-      //@ts-ignore
+      /* eslint-disable-next-line */
+      //@ts-ignore access to private member
       serverContainer.buildSecurityMiddlewares = (serviceClass, serviceMethod) => {
-        const result = new Array();
+        const result = [];
         const authenticatorMap = serviceMethod.authenticator || serviceClass.authenticator;
         if (serverContainer.authenticator && authenticatorMap) {
           const authenticatorNames = Object.keys(authenticatorMap);
           for (const authenticatorName of authenticatorNames) {
             let roles = authenticatorMap[authenticatorName];
-            //@ts-ignore
+            /* eslint-disable-next-line */
+            //@ts-ignore access to private member
             const authenticator = serverContainer.getAuthenticator(authenticatorName);
             roles = roles.filter((role: any) => role !== '*');
             result.push(authenticator.getMiddleware(roles));

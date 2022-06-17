@@ -1,14 +1,16 @@
 import * as express from 'express';
 
 import { Security } from '@/sdks/security/Security';
-import { ServiceAuth } from './ServiceAuth';
+import { ServiceAuthenticator } from 'typescript-rest';
 import { UserExctractionAndValidation } from './userExctractionAndValidation';
 import { provideSingleton } from '@/di';
 
 @provideSingleton()
-export class KeyCloakToken implements ServiceAuth {
+export class KeyCloakToken implements ServiceAuthenticator {
   constructor(private userExtractorAndValidator: UserExctractionAndValidation, private securityLayer: Security) {}
 
+  /* eslint-disable-next-line */
+  //@ts-ignore
   getMiddleware(roles: string[]): any {
     return async (req: express.Request, response: express.Response, next: express.NextFunction) => {
       try {

@@ -123,6 +123,7 @@ export class Server {
   private configureAuthenticator() {
     const keyCloakAuth = container.get(KeyCloakToken);
     // register the default authenticator which will be the keycloak jwt token
+    /* eslint-disable-next-line */
     // @ts-ignore
     RestServer.registerAuthenticator(keyCloakAuth);
   }
