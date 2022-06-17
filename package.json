@@ -117,6 +117,6 @@
     "nodemon": "latest",
     "sinon": "latest",
     "tsconfig-paths": "^3.12.0",
-    "typescript": "latest"
+    "typescript": "4.6.4"
   }
 }
