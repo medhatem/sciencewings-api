@@ -13,10 +13,10 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Email } from '@/utils/Email';
 import { EmailMessage } from '@/types/types';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { MemberRO } from '../routes/RequestObject';
+import { MemberRO } from '@/modules/hr/routes/RequestObject';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
-import { MemberSchema } from '../schemas/MemberSchema';
+import { MemberSchema } from '@/modules/hr/schemas/MemberSchema';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -137,13 +137,13 @@ export class MemberService extends BaseService<Member> implements IMemberService
     @validateParam(MemberSchema) payload: MemberRO,
     userId: number,
     orgId: number,
-  ): Promise<Result<object>> {
+  ): Promise<Result<any>> {
     const fetchedUser = await this.userService.get(userId);
-    if (fetchedUser.isFailure) {
+    if (fetchedUser.isFailure || !fetchedUser.getValue()) {
       return Result.notFound(`User with id: ${userId} does not exists.`);
     }
     const fetchedOrg = await this.organizationService.get(orgId);
-    if (fetchedOrg.isFailure) {
+    if (fetchedOrg.isFailure || !fetchedOrg.getValue()) {
       return Result.notFound(`organization with id: ${orgId} does not exists.`);
     }
     const fetchedMember = (await this.dao.getByCriteria(
@@ -164,6 +164,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (!updatedMember) {
       return Result.fail(`membership of user with id: ${userId} in organization with id: ${orgId} can not be updated.`);
     }
-    return Result.ok<object>({ userId, orgId });
+    return Result.ok<any>({ userId, orgId });
   }
 }
