@@ -63,8 +63,6 @@ export class CreateOrganizationRO {
     type: PhoneRO,
   })
   phones?: Array<PhoneRO>;
-  @JsonProperty()
-  type: string;
 
   @JsonProperty({
     type: AddressRO,

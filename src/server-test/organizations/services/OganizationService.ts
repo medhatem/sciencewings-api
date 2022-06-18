@@ -138,7 +138,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           phoneNumber: '541110222',
         } as any,
       ],
-      type: 'Public',
       labels: ['x', 'y', 'z'],
       members: [] as any,
       direction: 1,

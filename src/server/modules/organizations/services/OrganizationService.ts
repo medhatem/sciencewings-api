@@ -118,7 +118,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       name: payload.name,
       description: payload.description,
       email: payload.email,
-      type: payload.type,
       socialFacebook: payload.socialFacebook || null,
       socialInstagram: payload.socialInstagram || null,
       socialYoutube: payload.socialYoutube || null,
