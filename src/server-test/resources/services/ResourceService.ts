@@ -128,6 +128,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on can not create settings for resource', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));
+      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok()));
 
       const result = await container.get(ResourceService).createResource(payload);
@@ -135,9 +136,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Can not create settings for resource.`);
     });
 
-    test('Should fail on create resource ', async () => {
+    test('Should fail on create resource', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));
+      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(resourceDao, 'create', [], null);
 
@@ -154,6 +156,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       delete crPayload.organization;
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
         managers: {
@@ -175,6 +178,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       delete crPayload.organization;
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
         managers: {
