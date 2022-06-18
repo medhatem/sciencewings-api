@@ -203,4 +203,22 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.getValue()).to.equal(1);
     });
   });
+
+  suite('get user members', () => {
+    const userId = 1;
+    test('Should fail on retriving user', async () => {
+      mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.ok(null)));
+      const result = await container.get(MemberService).getUserMemberships(userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`User with id: ${userId} does not exists.`);
+    });
+    test('Should return array of members', async () => {
+      mockMethodWithResult(memberDao, 'getByCriteria', [{ user: userId }], Promise.resolve([]));
+      const result = await container.get(MemberService).getUserMemberships(userId);
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.eql([]);
+    });
+  });
+
 });
