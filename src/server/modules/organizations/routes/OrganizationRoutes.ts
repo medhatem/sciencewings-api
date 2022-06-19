@@ -278,7 +278,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section invoices
    *
    * @param payload
-   * @param id is the is of requested resource
+   * @param id is the is of the resource
    *
    */
   @PUT

@@ -1,11 +1,4 @@
 import Joi = require('joi');
-import { DateUnit } from '@/modules/organizations/models/OrganizationSettings';
-
-export enum OrganizationType {
-  PUBLIC = 'Public',
-  SERVICE = 'Service',
-  INSTITUT = 'Institut',
-}
 
 const organizationSchema = Joi.object({
   members: Joi.array(),
@@ -62,7 +55,7 @@ export const OrganizationReservationSettingsSchema = Joi.object({
 
 export const OrganizationInvoicesSettingsSchema = Joi.object({
   membersCanEditBillingAddress: Joi.boolean(),
-  defaultInvoiceDueDateUnit: Joi.string().valid(...Object.values(DateUnit)),
+  defaultInvoiceDueDateUnit: Joi.string(),
   defaultInvoiceDueDate: Joi.number(),
   roundTaxOnPerItemBasisInsteadOfOnceOnSubtotal: Joi.boolean(),
   lockInvoicedReservationsAndRequests: Joi.boolean(),

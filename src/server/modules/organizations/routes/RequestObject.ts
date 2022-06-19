@@ -2,7 +2,6 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
-import { DateUnit } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
@@ -26,7 +25,7 @@ export class OrganizationSettingsRO {
   @JsonProperty()
   membersCanEditBillingAddress?: boolean;
   @JsonProperty()
-  defaultInvoiceDueDateUnit?: DateUnit;
+  defaultInvoiceDueDateUnit?: string;
   @JsonProperty()
   defaultInvoiceDueDate?: number;
   @JsonProperty()
@@ -63,8 +62,6 @@ export class CreateOrganizationRO {
     type: PhoneRO,
   })
   phones?: Array<PhoneRO>;
-  @JsonProperty()
-  type: string;
 
   @JsonProperty({
     type: AddressRO,
@@ -95,9 +92,6 @@ export class CreateOrganizationRO {
 
   @JsonProperty()
   adminContact: number;
-
-  @JsonProperty()
-  settings?: OrganizationSettingsRO;
 
   @JsonProperty()
   parent?: number;
@@ -208,7 +202,7 @@ export class OrganizationInvoicesSettingsRO {
   @JsonProperty()
   membersCanEditBillingAddress?: boolean;
   @JsonProperty()
-  defaultInvoiceDueDateUnit?: DateUnit;
+  defaultInvoiceDueDateUnit?: string;
   @JsonProperty()
   defaultInvoiceDueDate?: number;
   @JsonProperty()

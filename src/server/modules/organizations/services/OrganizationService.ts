@@ -104,21 +104,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
       direction = direction.getValue();
     }
 
-    let settings;
-    if (payload.settings) {
-      settings = await this.organizationSettingsService.create({
-        ...payload.settings,
-      });
-      if (settings.isFailure) {
-        return settings;
-      }
-    }
-
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       description: payload.description,
       email: payload.email,
-      type: payload.type,
       socialFacebook: payload.socialFacebook || null,
       socialInstagram: payload.socialInstagram || null,
       socialYoutube: payload.socialYoutube || null,
@@ -126,7 +115,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
       owner: user,
-      settings: settings,
       parent,
     });
     wrappedOrganization.parent = parent;

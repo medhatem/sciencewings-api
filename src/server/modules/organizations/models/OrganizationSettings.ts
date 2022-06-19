@@ -2,14 +2,6 @@ import { BooleanType, DateType, Entity, PrimaryKey, Property, StringType } from 
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 
-export enum DateUnit {
-  YEARS = 'Year',
-  MOUNTHS = 'Mounth',
-  DAYS = 'Day',
-  HOURS = 'Hour',
-  MINUTES = 'Minute',
-}
-
 @provide()
 @Entity()
 export class OrganizationSettings extends BaseModel<OrganizationSettings> {

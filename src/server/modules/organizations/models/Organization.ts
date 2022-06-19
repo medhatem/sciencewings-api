@@ -63,7 +63,7 @@ export class Organization extends BaseModel<Organization> {
   @OneToOne({
     entity: () => OrganizationType,
   })
-  type!: OrganizationType;
+  type?: OrganizationType;
 
   @ManyToMany({
     entity: () => Address,
@@ -162,5 +162,5 @@ export class Organization extends BaseModel<Organization> {
   activity: string;
 
   @OneToOne({ entity: () => OrganizationSettings, nullable: true })
-  settings: OrganizationSettings;
+  settings?: OrganizationSettings;
 }
