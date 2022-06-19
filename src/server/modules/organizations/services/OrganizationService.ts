@@ -162,7 +162,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const groupEvent = new GroupEvent();
     groupEvent.createGroup(kcAdminGroupId, organization, 'admin');
-    groupEvent.createGroup(kcAdminGroupId, organization, 'member');
+    groupEvent.createGroup(kcMemberGroupId, organization, 'member');
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
