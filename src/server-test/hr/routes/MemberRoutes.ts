@@ -115,6 +115,4 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.body.statusCode).to.equal(200);
     });
   });
-﻿
-
 });
