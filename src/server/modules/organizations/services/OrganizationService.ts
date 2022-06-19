@@ -112,7 +112,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.direction = direction;
     wrappedOrganization.admin_contact = adminContact;
 
-    let kcGroupId = null;
+    let kcAdminGroupId = null;
+    let kcMemberGroupId = null;
     try {
       let keycloakGroup = null;
       if (payload.parent) {
@@ -128,14 +129,22 @@ export class OrganizationService extends BaseService<Organization> implements IO
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
-      const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
+      const kcAdminGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
           name: 'admin',
         },
       );
-      kcGroupId = id;
+      kcAdminGroupId = kcAdminGroupCreated.id;
+      const kcMemberGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
+        { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
+        {
+          name: 'member',
+        },
+      );
+      kcMemberGroupId = kcMemberGroupCreated.id;
       wrappedOrganization.kcid = keycloakGroup.id;
+
     } catch (error) {
       return catchKeycloackError(error, payload.name);
     }
@@ -150,12 +159,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const memberEvent = new MemberEvent();
     memberEvent.createMember(user, organization);
+
     const groupEvent = new GroupEvent();
-    groupEvent.createGroup(kcGroupId, organization, 'admin');
+    groupEvent.createGroup(kcAdminGroupId, organization, 'admin');
+    groupEvent.createGroup(kcAdminGroupId, organization, 'member');
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
-      groupId: kcGroupId,
+      groupId: kcAdminGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
 
