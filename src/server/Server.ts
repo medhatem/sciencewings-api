@@ -7,7 +7,6 @@ import * as morgan from 'morgan';
 import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 import { container, provideSingleton } from '@/di';
-
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { Keycloak } from '@/sdks/keycloak';
 import { RequestHandler } from 'express';
@@ -16,10 +15,8 @@ import { RestServiceFactory } from '@/di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
 import { join } from 'path';
 import { startDB } from './db';
-
 import swaggerUi = require('swagger-ui-express');
 import { HttpError } from 'typescript-rest/dist/server/model/errors';
-
 import '@/decorators/events';
 import { MemberEvent } from './modules/hr/events/MemberEvent';
 
