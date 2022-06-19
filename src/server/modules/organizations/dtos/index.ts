@@ -5,3 +5,4 @@ export * from './CreateOrganizationDTO';
 export * from './GetUserOrganizationDTO';
 export * from './OrganizationSettingsDto';
 export * from './InviteUserDTO';
+export * from './UserOrganizationsDTO';
