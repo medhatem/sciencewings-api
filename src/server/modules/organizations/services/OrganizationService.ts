@@ -119,19 +119,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `org_${payload.name}`,
           },
         );
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-          name: payload.name,
+          name: `org_${payload.name}`,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
       const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
-          name: 'admin',
+          name: 'grp_admin',
         },
       );
       kcGroupId = id;
@@ -220,7 +220,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `org_${payload.name}`,
           },
         );
       } catch (error) {

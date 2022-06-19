@@ -80,7 +80,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
       { id: fetchedorganizationValue.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
-        name: payload.name,
+        name: `grp_${payload.name}`,
       },
     );
     wrappedGroup.kcid = id;
@@ -131,7 +131,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `grp_${payload.name}`,
           },
         );
       } catch (e) {
