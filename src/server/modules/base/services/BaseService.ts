@@ -1,6 +1,8 @@
 import { AssignOptions, wrap } from '@mikro-orm/core';
+
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { FETCH_STRATEGY } from '../daos/BaseDao';
 import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@/sdks/keycloak';
 import { Logger } from '@/utils/Logger';
@@ -9,7 +11,6 @@ import { ServerError } from '@/errors/ServerError';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
 import { safeGuard } from '@/decorators/safeGuard';
-import { FETCH_STRATEGY } from '../daos/BaseDao';
 
 @provideSingleton(IBaseService)
 export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
@@ -101,7 +102,7 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
    * @param options for assign options
    *
    */
-  public wrapEntity(entity: T, payload: any, options: boolean | AssignOptions = true): T {
+  public wrapEntity(entity: T, payload: any, options: AssignOptions = {}): T {
     return wrap(entity).assign(payload, options);
   }
 }
