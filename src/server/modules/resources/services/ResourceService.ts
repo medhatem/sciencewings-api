@@ -220,14 +220,10 @@ export class ResourceService extends BaseService<Resource> {
       }
     }
 
-    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(
-      new ResourceCalendar(),
-      {
-        ...payload,
-        organization,
-      },
-      false,
-    );
+    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(new ResourceCalendar(), {
+      ...payload,
+      organization,
+    });
 
     const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
     if (createdResourceCalendar.isFailure || !createdResourceCalendar.getValue()) {
@@ -465,14 +461,10 @@ export class ResourceService extends BaseService<Resource> {
     }
     resourceRate = fetchedResourceRate.getValue();
 
-    const updatedResourceRate = this.resourceRateService.wrapEntity(
-      resourceRate,
-      {
-        ...resourceRate,
-        ...payload,
-      },
-      false,
-    );
+    const updatedResourceRate = this.resourceRateService.wrapEntity(resourceRate, {
+      ...resourceRate,
+      ...payload,
+    });
 
     const updatedResourceRateResult = await this.resourceRateService.update(updatedResourceRate);
     if (updatedResourceRateResult.isFailure || !updatedResourceRateResult.getValue()) {
