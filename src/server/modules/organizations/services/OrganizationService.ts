@@ -150,32 +150,24 @@ export class OrganizationService extends BaseService<Organization> implements IO
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
     await applyToAll(payload.addresses, async (address) => {
-      const wrappedAddress = this.addressService.wrapEntity(
-        new Address(),
-        {
-          city: address.city,
-          apartment: address.apartment,
-          country: address.country,
-          code: address.code,
-          province: address.province,
-          street: address.street,
-          type: address.type,
-        },
-        false,
-      );
+      const wrappedAddress = this.addressService.wrapEntity(Address.getInstance(), {
+        city: address.city,
+        apartment: address.apartment,
+        country: address.country,
+        code: address.code,
+        province: address.province,
+        street: address.street,
+        type: address.type,
+      });
       wrappedAddress.organization = organization;
       await this.addressService.create(wrappedAddress);
     });
     await applyToAll(payload.phones, async (phone) => {
-      const wrappedPhone = this.phoneService.wrapEntity(
-        new Phone(),
-        {
-          phoneLabel: phone.phoneLabel,
-          phoneCode: phone.phoneCode,
-          phoneNumber: phone.phoneNumber,
-        },
-        false,
-      );
+      const wrappedPhone = this.phoneService.wrapEntity(Phone.getInstance(), {
+        phoneLabel: phone.phoneLabel,
+        phoneCode: phone.phoneCode,
+        phoneNumber: phone.phoneNumber,
+      });
       wrappedPhone.organization = organization;
       await this.phoneService.create({ wrappedPhone });
     });

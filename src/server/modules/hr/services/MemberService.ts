@@ -1,18 +1,18 @@
+import { Member, MemberTypeEnum } from '@/modules/hr/models/Member';
+import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { Member, MemberTypeEnum } from '@/modules/hr/models/Member';
-import { MemberDao } from '@/modules/hr/daos/MemberDao';
-import { Result } from '@/utils/Result';
-import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
-import { FETCH_STRATEGY } from '@/modules/base';
-import { getConfig } from '@/configuration/Configuration';
-import { User, userStatus } from '@/modules/users/models/User';
-import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Email } from '@/utils/Email';
 import { EmailMessage } from '@/types/types';
+import { FETCH_STRATEGY } from '@/modules/base';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { MemberDao } from '@/modules/hr/daos/MemberDao';
+import { Result } from '@/utils/Result';
+import { getConfig } from '@/configuration/Configuration';
+import { log } from '@/decorators/log';
+import { safeGuard } from '@/decorators/safeGuard';
 import { MemberRO } from '@/modules/hr/routes/RequestObject';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
@@ -65,7 +65,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     user.lastname = '';
     user.email = email;
     user.keycloakId = createdKeyCloakUser.id;
-    const wrappedUser = this.userService.wrapEntity(new User(), user, false);
+    const wrappedUser = this.userService.wrapEntity(new User(), user);
     const savedUser = await this.userService.create(wrappedUser);
     if (savedUser.isFailure) {
       return savedUser;
