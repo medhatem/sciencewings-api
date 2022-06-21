@@ -125,8 +125,10 @@ export class ResourceService extends BaseService<Resource> {
         managers.push(fetcheManager.getValue());
       }
     }
-
-    const resourceSetting = await this.resourceSettingsService.create({});
+    const resourceStatusSetting = await this.resourceStatusService.get(1);
+    const resourceSetting = await this.resourceSettingsService.create({
+      resourceType: resourceStatusSetting.getValue(),
+    });
     if (resourceSetting.isFailure || !resourceSetting.getValue()) {
       return Result.fail(`Can not create settings for resource.`);
     }
@@ -141,14 +143,17 @@ export class ResourceService extends BaseService<Resource> {
       organization,
       settings: resourceSetting.getValue(),
     });
+
     if (!createdResourceResult) {
       return Result.fail(`fail to create resource.`);
     }
+
     await createdResourceResult.managers.init();
 
     for (const manager of managers) {
       createdResourceResult.managers.add(manager);
     }
+
     await applyToAll(
       payload.tags,
       async (tag) => {
@@ -215,14 +220,10 @@ export class ResourceService extends BaseService<Resource> {
       }
     }
 
-    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(
-      new ResourceCalendar(),
-      {
-        ...payload,
-        organization,
-      },
-      false,
-    );
+    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(new ResourceCalendar(), {
+      ...payload,
+      organization,
+    });
 
     const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
     if (createdResourceCalendar.isFailure || !createdResourceCalendar.getValue()) {
@@ -256,14 +257,10 @@ export class ResourceService extends BaseService<Resource> {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    const resource = this.wrapEntity(
-      fetchedResource,
-      {
-        ...fetchedResource,
-        settings: { ...fetchedResource.settings, ...payload },
-      },
-      false,
-    );
+    const resource = this.wrapEntity(fetchedResource, {
+      ...fetchedResource,
+      settings: { ...fetchedResource.settings, ...payload },
+    });
 
     const updatedResourceResult = await this.dao.update(resource);
     if (!updatedResourceResult) {
@@ -319,14 +316,10 @@ export class ResourceService extends BaseService<Resource> {
     }
     const resourceValue = fetchedResource;
 
-    const resource = this.wrapEntity(
-      resourceValue,
-      {
-        ...resourceValue,
-        settings: { ...resourceValue.settings, ...payload },
-      },
-      false,
-    );
+    const resource = this.wrapEntity(resourceValue, {
+      ...resourceValue,
+      settings: { ...resourceValue.settings, ...payload },
+    });
 
     const updatedResourceResult = await this.dao.update(resource);
     if (!updatedResourceResult) {
@@ -345,14 +338,10 @@ export class ResourceService extends BaseService<Resource> {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    const resource = this.wrapEntity(
-      fetchedResource,
-      {
-        ...fetchedResource,
-        settings: { ...fetchedResource.settings, ...payload },
-      },
-      false,
-    );
+    const resource = this.wrapEntity(fetchedResource, {
+      ...fetchedResource,
+      settings: { ...fetchedResource.settings, ...payload },
+    });
 
     const updatedResourceResult = await this.dao.update(resource);
     if (!updatedResourceResult) {
@@ -373,14 +362,10 @@ export class ResourceService extends BaseService<Resource> {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    const resource = this.wrapEntity(
-      fetchedResource,
-      {
-        ...fetchedResource,
-        settings: { ...fetchedResource.settings, ...payload },
-      },
-      false,
-    );
+    const resource = this.wrapEntity(fetchedResource, {
+      ...fetchedResource,
+      settings: { ...fetchedResource.settings, ...payload },
+    });
 
     const updatedResourceResult = await this.dao.update(resource);
     if (!updatedResourceResult) {
@@ -408,14 +393,10 @@ export class ResourceService extends BaseService<Resource> {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    const resource = this.wrapEntity(
-      fetchedResource,
-      {
-        ...fetchedResource,
-        settings: { ...fetchedResource.settings, ...payload },
-      },
-      false,
-    );
+    const resource = this.wrapEntity(fetchedResource, {
+      ...fetchedResource,
+      settings: { ...fetchedResource.settings, ...payload },
+    });
 
     const updatedResourceResult = await this.dao.update(resource);
     if (!updatedResourceResult) {
@@ -480,14 +461,10 @@ export class ResourceService extends BaseService<Resource> {
     }
     resourceRate = fetchedResourceRate.getValue();
 
-    const updatedResourceRate = this.resourceRateService.wrapEntity(
-      resourceRate,
-      {
-        ...resourceRate,
-        ...payload,
-      },
-      false,
-    );
+    const updatedResourceRate = this.resourceRateService.wrapEntity(resourceRate, {
+      ...resourceRate,
+      ...payload,
+    });
 
     const updatedResourceRateResult = await this.resourceRateService.update(updatedResourceRate);
     if (updatedResourceRateResult.isFailure || !updatedResourceRateResult.getValue()) {
@@ -509,14 +486,10 @@ export class ResourceService extends BaseService<Resource> {
       return Result.notFound(`Resource with id ${resourceId} does not exist.`);
     }
 
-    const resource = this.wrapEntity(
-      fetchedResource,
-      {
-        ...fetchedResource,
-        settings: { ...fetchedResource.settings, ...payload },
-      },
-      false,
-    );
+    const resource = this.wrapEntity(fetchedResource, {
+      ...fetchedResource,
+      settings: { ...fetchedResource.settings, ...payload },
+    });
 
     const updatedResourceResult = await this.dao.update(resource);
     if (!updatedResourceResult) {
