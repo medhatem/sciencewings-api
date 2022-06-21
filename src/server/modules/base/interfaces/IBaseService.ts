@@ -26,5 +26,5 @@ export abstract class IBaseService<T> {
     options?: FindOptions<T> | FindOneOptions<T>,
   ) => Promise<Result<T>>;
 
-  public wrapEntity: (entity: T, payload: { [key: string]: any }, options: boolean | AssignOptions) => T;
+  public wrapEntity: (entity: T, payload: { [key: string]: any }, options?: AssignOptions) => T;
 }
