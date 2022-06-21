@@ -27,9 +27,9 @@ import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
 import { Phone } from '@/modules/users';
-import { Address } from '@/modules/address';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
+import { AddressEvent } from '@/modules/address/events/AddressEvent';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -158,19 +158,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       groupId: kcGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-
+    const addressEvent = new AddressEvent();
     await applyToAll(payload.addresses, async (address) => {
-      const wrappedAddress = this.addressService.wrapEntity(Address.getInstance(), {
-        city: address.city,
-        apartment: address.apartment,
-        country: address.country,
-        code: address.code,
-        province: address.province,
-        street: address.street,
-        type: address.type,
-      });
-      wrappedAddress.organization = organization;
-      await this.addressService.create(wrappedAddress);
+      addressEvent.createAddress(address, organization);
     });
 
     await applyToAll(payload.phones, async (phone) => {
