@@ -26,10 +26,10 @@ import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/Addre
 import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
-import { Phone } from '@/modules/users';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
 import { AddressEvent } from '@/modules/address/events/AddressEvent';
+import { PhoneEvent } from '@/modules/phones/events/PhoneEvent';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -162,15 +162,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await applyToAll(payload.addresses, async (address) => {
       addressEvent.createAddress(address, organization);
     });
+    const phoneEvent = new PhoneEvent();
 
     await applyToAll(payload.phones, async (phone) => {
-      const wrappedPhone = this.phoneService.wrapEntity(Phone.getInstance(), {
-        phoneLabel: phone.phoneLabel,
-        phoneCode: phone.phoneCode,
-        phoneNumber: phone.phoneNumber,
-      });
-      wrappedPhone.organization = organization;
-      await this.phoneService.create({ wrappedPhone });
+      phoneEvent.createPhone(phone, organization);
     });
 
     if (payload.labels?.length) {
