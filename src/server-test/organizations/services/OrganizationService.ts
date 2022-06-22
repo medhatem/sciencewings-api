@@ -21,6 +21,8 @@ import { mockMethodWithResult } from '@/utils/utilities';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
+import { AddressEvent } from '@/modules/address/events/AddressEvent';
+import { PhoneEvent } from '@/modules/phones/events/PhoneEvent';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
@@ -262,11 +264,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(MemberEvent.prototype, 'createMember').returns({} as any);
       stub(GroupEvent.prototype, 'createGroup').returns({} as any);
       // set address creation
-      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(addressService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
+      stub(AddressEvent.prototype, 'createAddress').returns({} as any);
       // set phone creation
-      mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(phoneService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
+      stub(PhoneEvent.prototype, 'createPhone').returns({} as any);
       // set label creation
       mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
 
