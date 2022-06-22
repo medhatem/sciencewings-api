@@ -21,8 +21,8 @@ import { mockMethodWithResult } from '@/utils/utilities';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
-import { AddressEvent } from '@/modules/address/events/AddressEvent';
 import { PhoneEvent } from '@/modules/phones/events/PhoneEvent';
+import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
@@ -135,7 +135,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           phoneNumber: '541110222',
         },
       ],
-      type: 'Public',
+      type: OrganizationType.PUBLIC,
       labels: ['x', 'y', 'z'],
       members: [] as any,
       direction: 1,
@@ -264,7 +264,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(MemberEvent.prototype, 'createMember').returns({} as any);
       stub(GroupEvent.prototype, 'createGroup').returns({} as any);
       // set address creation
-      stub(AddressEvent.prototype, 'createAddress').returns({} as any);
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set phone creation
       stub(PhoneEvent.prototype, 'createPhone').returns({} as any);
       // set label creation
