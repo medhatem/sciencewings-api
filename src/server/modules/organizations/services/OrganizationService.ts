@@ -28,7 +28,6 @@ import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
-import { PhoneEvent } from '@/modules/phones/events/PhoneEvent';
 import { AddressType } from '@/modules/address/models/Address';
 
 @provideSingleton(IOrganizationService)
@@ -170,10 +169,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
         organization,
       });
     });
-    const phoneEvent = new PhoneEvent();
 
     await applyToAll(payload.phones, async (phone) => {
-      phoneEvent.createPhone(phone, organization);
+      await this.addressService.create({
+        phoneLabel: phone.phoneLabel,
+        phoneCode: phone.phoneCode,
+        phoneNumber: phone.phoneNumber,
+        organization,
+      });
     });
 
     if (payload.labels?.length) {

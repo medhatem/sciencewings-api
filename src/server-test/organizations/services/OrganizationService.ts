@@ -21,7 +21,6 @@ import { mockMethodWithResult } from '@/utils/utilities';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
-import { PhoneEvent } from '@/modules/phones/events/PhoneEvent';
 import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
@@ -266,7 +265,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // set address creation
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set phone creation
-      stub(PhoneEvent.prototype, 'createPhone').returns({} as any);
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set label creation
       mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
 
