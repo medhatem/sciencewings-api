@@ -126,4 +126,30 @@ export class MemberService extends BaseService<Member> implements IMemberService
     this.emailService.sendEmail(emailMessage);
     return Result.ok<number>(user.id);
   }
+  @log()
+  @safeGuard()
+  public async switchOrganization(orgId: number, userId: number): Promise<Result<number>> {
+    const fetchedUser = await this.userService.get(userId);
+    const user = fetchedUser.getValue();
+    const fetchedOrganization = await this.organizationService.get(orgId);
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+      return Result.notFound(`organization with ${orgId} does not exists.`);
+    }
+    const organization = fetchedOrganization.getValue();
+    const fetchedMember = await this.dao.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+    if (!fetchedMember) {
+      return Result.notFound(`User with ${userId} does not exist ${orgId}.`);
+    }
+
+    let currentOrganization = `org${organization.name}`;
+    await this.update(
+      this.wrapEntity(user, {
+        ...user,
+        currentOrganization,
+      }),
+    );
+    console.log(user);
+    return Result.ok<number>(fetchedUser.id);
+  }
+﻿
 }
