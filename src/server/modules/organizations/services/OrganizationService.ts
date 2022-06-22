@@ -28,8 +28,8 @@ import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
-import { AddressEvent } from '@/modules/address/events/AddressEvent';
 import { PhoneEvent } from '@/modules/phones/events/PhoneEvent';
+import { AddressType } from '@/modules/address/models/Address';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -158,9 +158,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
       groupId: kcGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-    const addressEvent = new AddressEvent();
     await applyToAll(payload.addresses, async (address) => {
-      addressEvent.createAddress(address, organization);
+      await this.addressService.create({
+        city: address.city,
+        apartment: address.apartment,
+        country: address.country,
+        code: address.code,
+        province: address.province,
+        street: address.street,
+        type: AddressType.ORGANIZATION,
+        organization,
+      });
     });
     const phoneEvent = new PhoneEvent();
 
