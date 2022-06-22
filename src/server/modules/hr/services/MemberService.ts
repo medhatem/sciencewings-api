@@ -147,7 +147,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       ...user,
       currentOrganization,
     });
-    this.userService.updateUserCurrentOrganization(wrappedUser, currentOrganization);
+    this.userService.updateUserCurrentOrganization(wrappedUser);
     console.log(user);
     return Result.ok<number>(fetchedUser.id);
   }

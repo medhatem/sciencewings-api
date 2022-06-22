@@ -97,5 +97,4 @@ export class MemberRoutes extends BaseRoutes<Member> {
      }
      return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
    }
- ﻿
 }

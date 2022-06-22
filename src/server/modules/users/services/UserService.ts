@@ -232,7 +232,7 @@ export class UserService extends BaseService<User> implements IUserService {
 
   @log()
   @safeGuard()
-  async updateUserCurrentOrganization(user: any, payload: string): Promise<Result<User>> {
+  async updateUserCurrentOrganization(user: any): Promise<Result<User>> {
     const fetchedUser = await this.dao.get(user.id);
 
     if (!fetchedUser) {
