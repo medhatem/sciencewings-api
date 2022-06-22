@@ -142,14 +142,13 @@ export class MemberService extends BaseService<Member> implements IMemberService
     }
 
     let currentOrganization = `org${organization.name}`;
-    await this.update(
-      this.wrapEntity(user, {
-        ...user,
-        currentOrganization,
-      }),
-    );
+
+    const wrappedUser = this.wrapEntity(user, {
+      ...user,
+      currentOrganization,
+    });
+    this.userService.updateUserCurrentOrganization(wrappedUser, currentOrganization);
     console.log(user);
     return Result.ok<number>(fetchedUser.id);
   }
-﻿
 }

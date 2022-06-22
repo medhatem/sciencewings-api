@@ -229,4 +229,21 @@ export class UserService extends BaseService<User> implements IUserService {
     }
     return Result.ok<User>(user);
   }
+
+  @log()
+  @safeGuard()
+  async updateUserCurrentOrganization(user: any, payload: string): Promise<Result<User>> {
+    const fetchedUser = await this.dao.get(user.id);
+
+    if (!fetchedUser) {
+      return Result.notFound(`user with id ${user.id} not exist.`);
+    }
+    const updateUser = await this.dao.update(
+      this.wrapEntity(fetchedUser, {
+        ...fetchedUser,
+        ...user,
+      }),
+    );
+    return Result.ok<User>(updateUser);
+  }
 }
