@@ -19,10 +19,13 @@ import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLa
 import { Phone } from '@/modules/phones/models/Phone';
 import { Resource } from '@/modules/resources/models/Resource';
 import { User } from '@/modules/users/models/User';
-import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
-import { OrganizationCategory } from '@/modules/organizations/models/OrganizationCategory';
-import { OrganizationType } from '@/modules/organizations/models/OrganizationType';
+
+export enum OrganizationType {
+  PUBLIC = 'Public',
+  SERVICE = 'Service',
+  INSTITUT = 'Institut',
+}
 
 @provide()
 @Entity()
@@ -61,10 +64,8 @@ export class Organization extends BaseModel<Organization> {
   public phones = new Collection<Phone>(this);
 
   // e.i: Public, Service, Institut
-  @OneToOne({
-    entity: () => OrganizationType,
-  })
-  type?: OrganizationType;
+  @Property()
+  type!: OrganizationType;
 
   @ManyToMany({
     entity: () => Address,
@@ -147,21 +148,4 @@ export class Organization extends BaseModel<Organization> {
     eager: false,
   })
   public children? = new Collection<Organization>(this);
-
-  @Property({ nullable: true })
-  website: string;
-
-  @Property({ nullable: true })
-  identificationNumber: number;
-
-  @OneToOne({
-    entity: () => OrganizationCategory,
-  })
-  category: OrganizationCategory;
-
-  @Property({ nullable: true })
-  activity: string;
-
-  @OneToOne({ entity: () => OrganizationSettings, nullable: true })
-  settings?: OrganizationSettings;
 }

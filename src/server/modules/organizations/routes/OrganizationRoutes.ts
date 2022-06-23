@@ -4,12 +4,13 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE } from 'typescript-rest';
 import {
   CreateOrganizationRO,
-  UpdateOrganizationRO,
-  OrganizationReservationSettingsRO,
-  OrganizationInvoicesSettingsRO,
   OrganizationAccessSettingsRO,
+  OrganizationInvoicesSettingsRO,
   OrganizationMemberSettingsRO,
+  OrganizationReservationSettingsRO,
+  UpdateOrganizationRO,
 } from './RequestObject';
+import { UserRequest } from '@/types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { UserOrganizationsDTO } from '@/modules/organizations/dtos/UserOrganizationsDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -18,18 +19,17 @@ import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrgani
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { OrganizationMembersDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 import { UpdateResourceBodyDTO } from '@/modules/resources/dtos/ResourceDTO';
+import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
 import {
   GetOrganizationSettingsBodyDTO,
   GetOrganizationSettingsDTO,
   UpdateOrganizationSettingsBodyDTO,
   UpdateOrganizationSettingsDTO,
 } from '../dtos/OrganizationSettingsDto';
-import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
-import { PhoneBaseBodyDTO, PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
-import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
-import { AddressBaseDTO, AddressBodyDTO } from '@/modules/address/dtos/AddressDTO';
-import { AddressRO } from '@/modules/address/routes/AddressRO';
-import { UserRequest } from '@/types/UserRequest';
 
 @provideSingleton()
 @Path('organization')
@@ -201,9 +201,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new UserOrganizationsDTO({ body: { organizations: result.getValue(), statusCode: 200 } });
   }
-
-  //Organization settings routes
-
   /**
    * retrieve Organization settings by organization id
    *

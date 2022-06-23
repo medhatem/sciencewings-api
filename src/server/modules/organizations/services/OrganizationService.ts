@@ -3,11 +3,11 @@ import { Member } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
+  CreateOrganizationRO,
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
-  OrganizationReservationSettingsRO,
   OrganizationMemberSettingsRO,
-  CreateOrganizationRO,
+  OrganizationReservationSettingsRO,
   UpdateOrganizationRO,
 } from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -26,7 +26,6 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { Collection } from '@mikro-orm/core';
-import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
@@ -34,16 +33,16 @@ import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/Addre
 import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
-import { Phone } from '@/modules/users';
-import { Address } from '@/modules/address';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
+import { AddressType } from '@/modules/address/models/Address';
+import { OrganizationSettingsService } from './OrganizationSettingsService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
-    public organizationSettingsService: IOrganizationSettingsService,
+    public organizationSettingsService: OrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
@@ -108,14 +107,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       name: payload.name,
       description: payload.description,
       email: payload.email,
+      type: payload.type,
       socialFacebook: payload.socialFacebook || null,
       socialInstagram: payload.socialInstagram || null,
       socialYoutube: payload.socialYoutube || null,
       socialGithub: payload.socialGithub || null,
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
-      owner: user,
-      parent,
     });
     wrappedOrganization.parent = parent;
 
@@ -151,8 +149,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     const createdOrg = await this.create(wrappedOrganization);
-    const createdSettings = await this.organizationSettingsService.create({});
-    wrappedOrganization.settings = createdSettings.getValue();
 
     if (createdOrg.isFailure) {
       return createdOrg;
@@ -170,29 +166,26 @@ export class OrganizationService extends BaseService<Organization> implements IO
       groupId: kcGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-
     await applyToAll(payload.addresses, async (address) => {
-      const wrappedAddress = this.addressService.wrapEntity(Address.getInstance(), {
+      await this.addressService.create({
         city: address.city,
         apartment: address.apartment,
         country: address.country,
         code: address.code,
         province: address.province,
         street: address.street,
-        type: address.type,
+        type: AddressType.ORGANIZATION,
+        organization,
       });
-      wrappedAddress.organization = organization;
-      await this.addressService.create(wrappedAddress);
     });
 
     await applyToAll(payload.phones, async (phone) => {
-      const wrappedPhone = this.phoneService.wrapEntity(Phone.getInstance(), {
+      await this.addressService.create({
         phoneLabel: phone.phoneLabel,
         phoneCode: phone.phoneCode,
         phoneNumber: phone.phoneNumber,
+        organization,
       });
-      wrappedPhone.organization = organization;
-      await this.phoneService.create({ wrappedPhone });
     });
 
     if (payload.labels?.length) {
@@ -241,7 +234,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (direction.isFailure || direction.getValue() === null) {
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
-      wrappedOrganization.direction = direction.getValue();
+      wrappedOrganization.direction = direction;
     }
 
     if (payload.adminContact) {
@@ -249,7 +242,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (adminContact.isFailure || adminContact.getValue() === null) {
         return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
       }
-      wrappedOrganization.admin_contact = adminContact.getValue();
+      wrappedOrganization.admin_contact = adminContact;
     }
 
     if (payload.parent) {
@@ -363,6 +356,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
         .getAdminClient()
         .groups.findOne({ id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') });
 
+      console.log(fetchedorganization.kcid, { subGroups: groups.subGroups });
+
       if (groups.subGroups.length !== 1) {
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }
@@ -377,9 +372,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.dao.remove(fetchedorganization);
     return Result.ok<number>(organizationId);
   }
-
-  //Organization Settings Services
-
   /* Get all the settings of an organization ,
    *
    * @param id of the requested organization
@@ -436,14 +428,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const organizationValue = fetchedOrganization.getValue();
     const oldSetting = organizationValue.settings;
-    const newSettings = this.organizationSettingsService.wrapEntity(
-      oldSetting,
-      {
-        ...oldSetting,
-        ...payload,
-      },
-      false,
-    );
+    const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
+      ...oldSetting,
+      ...payload,
+    });
 
     await this.organizationSettingsService.update(newSettings);
 

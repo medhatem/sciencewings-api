@@ -15,6 +15,7 @@ import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { Result } from '@/utils/Result';
 import { AddressType } from '@/modules/address/models/Address';
+import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationService: SinonStubbedInstance<OrganizationService>;
@@ -54,6 +55,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       phones: {} as PhoneRO[],
       addresses: {} as AddressRO[],
       labels: ['0'],
+      type: OrganizationType.SERVICE,
       members: [1],
       direction: 1,
       socialFacebook: 'test',

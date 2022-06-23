@@ -1,7 +1,5 @@
 export * from './Organization';
 export * from './Bank';
-export * from './OrganizationCategory';
-export * from './OrganizationType';
 export * from './ConfigSettings';
 export * from './Country';
 export * from './CountryGroup';

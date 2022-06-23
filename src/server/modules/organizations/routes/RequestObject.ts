@@ -1,50 +1,8 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
+
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
-
-@JsonObject()
-@unique
-export class OrganizationSettingsRO {
-  @JsonProperty()
-  approversCanEditReservations?: boolean;
-  @JsonProperty()
-  requireReasonWhenEditingReservation?: boolean;
-  @JsonProperty()
-  hideOrganizationCalendar?: boolean;
-  @JsonProperty()
-  hideAccountNumberWhenMakingReservation?: boolean;
-  @JsonProperty()
-  showResourceImagesInReservation?: boolean;
-  @JsonProperty()
-  confirmationEmailWhenMakingReservation?: string;
-  @JsonProperty()
-  attachedIcsCalendarFeeds?: boolean;
-  @JsonProperty()
-  emailAddressToReceiveReservationReplyMessages?: string[];
-  @JsonProperty()
-  membersCanEditBillingAddress?: boolean;
-  @JsonProperty()
-  defaultInvoiceDueDateUnit?: string;
-  @JsonProperty()
-  defaultInvoiceDueDate?: number;
-  @JsonProperty()
-  roundTaxOnPerItemBasisInsteadOfOnceOnSubtotal?: boolean;
-  @JsonProperty()
-  lockInvoicedReservationsAndRequests?: boolean;
-  @JsonProperty()
-  anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
-  @JsonProperty()
-  joinCode?: string;
-  @JsonProperty()
-  yourOrganizationWillNeverAppearInSearchResults?: boolean;
-  @JsonProperty()
-  notifyAdministratorsWhenMembersJoinOrganization?: boolean;
-  @JsonProperty()
-  listResourceToNonMembers?: boolean;
-  @JsonProperty()
-  messageSentToNewMembers?: string;
-}
 
 @JsonObject()
 @unique
@@ -62,6 +20,8 @@ export class CreateOrganizationRO {
     type: PhoneRO,
   })
   phones?: Array<PhoneRO>;
+  @JsonProperty()
+  type: string;
 
   @JsonProperty({
     type: AddressRO,
@@ -115,11 +75,6 @@ export class UpdateOrganizationRO {
   @JsonProperty()
   labels?: Array<string>;
 
-  @JsonProperty({
-    type: PhoneRO,
-  })
-  phones?: Array<PhoneRO>;
-
   @JsonProperty()
   direction?: number;
 
@@ -161,7 +116,6 @@ export class UserResendPassword {
   @JsonProperty()
   orgId: number;
 }
-
 @JsonObject()
 @unique
 export class OrganizationMemberSettingsRO {

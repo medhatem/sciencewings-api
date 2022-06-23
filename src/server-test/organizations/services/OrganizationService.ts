@@ -22,6 +22,7 @@ import { mockMethodWithResult } from '@/utils/utilities';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
+import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
@@ -131,6 +132,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       name: 'testingground2',
       description: '',
       email: 'testingground1@gmail.com',
+      type: OrganizationType.SERVICE,
       phones: [
         {
           phoneLabel: 'personal',
