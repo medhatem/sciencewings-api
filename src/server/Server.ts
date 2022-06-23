@@ -1,3 +1,5 @@
+import '@/decorators/events';
+
 import * as BodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as dotevnv from 'dotenv';
@@ -7,18 +9,19 @@ import * as morgan from 'morgan';
 import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
 import { container, provideSingleton } from '@/di';
+
+import { HttpError } from 'typescript-rest/dist/server/model/errors';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { Keycloak } from '@/sdks/keycloak';
+import { MemberEvent } from './modules/hr/events/MemberEvent';
 import { RequestHandler } from 'express';
-import { Server as RestServer } from 'typescript-rest';
+import { RestServer } from './RestServer';
 import { RestServiceFactory } from '@/di/ServiceFactory';
 import { Router } from 'express-serve-static-core';
 import { join } from 'path';
 import { startDB } from './db';
+
 import swaggerUi = require('swagger-ui-express');
-import { HttpError } from 'typescript-rest/dist/server/model/errors';
-import '@/decorators/events';
-import { MemberEvent } from './modules/hr/events/MemberEvent';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -120,6 +123,8 @@ export class Server {
   private configureAuthenticator() {
     const keyCloakAuth = container.get(KeyCloakToken);
     // register the default authenticator which will be the keycloak jwt token
+    /* eslint-disable-next-line */
+    // @ts-ignore
     RestServer.registerAuthenticator(keyCloakAuth);
   }
 
