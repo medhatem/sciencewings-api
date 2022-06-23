@@ -48,10 +48,11 @@ export class Security {
     }
 
     if (!groupMemberships.includes(`/${groupById.getValue().name}/${GROUP_PREFIX}-members`)) {
+      //substring to remove the prefix-  aka org- from the group's name
       return Result.fail(
         `The user ${
           tokenInformation.name
-        } Does not have access since they are not a member of ${groupById.getValue().name.substring(3)} `, // remove the prefix-  aka org- from the group's name
+        } Does not have access since they are not a member of ${groupById.getValue().name.substring(3)} `,
       );
     }
     // only keep groups and get rid of the organizations
