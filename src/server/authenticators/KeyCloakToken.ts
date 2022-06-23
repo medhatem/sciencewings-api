@@ -24,21 +24,24 @@ export class KeyCloakToken implements ServiceAuthenticator {
           });
           response.end();
         } else {
+          if (roles.length === 0) {
+            next(); // the route requires no roles
+          }
           const token = req.headers.authorization as string;
           // validate the roles
           const canUserAccess = await this.securityLayer.validateAccess(token, roles);
           if (canUserAccess.isFailure) {
             response.status(403).json({
               error: {
-                message: result.error.message,
-                statusCode: result.error.statusCode,
+                message: canUserAccess.error.message,
+                statusCode: canUserAccess.error.statusCode,
               },
             });
             response.end();
           } else if (!canUserAccess.getValue()) {
             response.status(403).json({
               error: {
-                message: 'Anauthorized',
+                message: 'Unauthorized',
                 statusCode: 403,
               },
             });

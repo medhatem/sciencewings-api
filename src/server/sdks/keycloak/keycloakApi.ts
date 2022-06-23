@@ -12,7 +12,7 @@ export type UserInformationFromToken = {
   name: string;
   groups: string[];
   roles: string[];
-  current_company: string;
+  current_org: string;
   preferred_username: string;
   given_name: string;
   family_name: string;
@@ -47,18 +47,6 @@ export class KeycloakApi {
     return await res.json();
   }
 
-  /**
-   * retrieve a group's details by criterias
-   *
-   *
-   * @param criteria to search for example {name: test, path: grp/test }
-   * @param token the token to use an auth
-   */
-  @safeGuard()
-  async getGroupByName(name: string): Promise<Result<GroupRepresentation>> {
-    const groups = await this.keycloak.getAdminClient().groups.find({ realm: this.realm, search: name });
-    return Result.ok<GroupRepresentation>(groups[0]);
-  }
   /**
    * retrieve a group's details by id
    *

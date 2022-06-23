@@ -26,32 +26,33 @@ export class Security {
    */
   @safeGuard()
   async validateAccess(token: string, permissions: string[]): Promise<Result<boolean>> {
+    if (permissions.length === 0) {
+      return Result.fail('No permissions to validate');
+    }
+
     const tokenInformation = await this.keycloakApi.extractInformationFromToken(token);
     //validate that the user is part of the current-org
-    const currentOrganization = tokenInformation['current_company'];
-    if (!currentOrganization) {
+
+    const currentOrganizationId = tokenInformation['current_org'];
+    if (!currentOrganizationId) {
       return Result.fail('No current company is given to validate the access');
     }
+
+    const groupById = await this.keycloakApi.getGroupById(currentOrganizationId);
+    if (groupById.error || !groupById.getValue()) {
+      return Result.fail(`No keycloak group found with id ${currentOrganizationId}`);
+    }
     const groupMemberships = tokenInformation.groups;
-    if (groupMemberships.includes(`/${ORG_PREFIX}-${currentOrganization}/${GROUP_PREFIX}-admins`)) {
+    if (groupMemberships.includes(`/${groupById.getValue().name}/${GROUP_PREFIX}-admins`)) {
       return Result.ok(true); // the user is an admin which means he does have access to the given resource
     }
 
-    if (!groupMemberships.includes(`/${ORG_PREFIX}-${currentOrganization}/${GROUP_PREFIX}-members`)) {
+    if (!groupMemberships.includes(`/${groupById.getValue().name}/${GROUP_PREFIX}-members`)) {
       return Result.fail(
-        `The user ${tokenInformation.name} Does not have access since they are not a member of ${currentOrganization} `,
+        `The user ${
+          tokenInformation.name
+        } Does not have access since they are not a member of ${groupById.getValue().name.substring(3)} `, // remove the prefix-  aka org- from the group's name
       );
-    }
-
-    const groupDetails = await this.keycloakApi.getGroupByName(`${ORG_PREFIX}-${currentOrganization}`);
-    if (groupDetails.error || !groupDetails.getValue()) {
-      return Result.fail(`No keycloak group found with name ${ORG_PREFIX}-${currentOrganization}`);
-    }
-
-    const groupById = await this.keycloakApi.getGroupById(groupDetails.getValue().id);
-
-    if (groupById.error || !groupById.getValue()) {
-      return Result.fail(`No keycloak group found with id ${groupDetails.getValue().id}`);
     }
     // only keep groups and get rid of the organizations
     const subGroups = groupById.getValue().subGroups.filter((sub) => sub.name.startsWith(GROUP_PREFIX));
