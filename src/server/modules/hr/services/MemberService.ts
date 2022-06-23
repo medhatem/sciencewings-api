@@ -143,15 +143,15 @@ export class MemberService extends BaseService<Member> implements IMemberService
     
     const orgKcGroupe = await this.keycloak.
     getAdminClient().groups.
-    findOne({ id: organization.id, realm: getConfig('keycloak.clientValidation.realmName')});
+    findOne({ id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName')});
     if (!orgKcGroupe) {
       return Result.notFound(`organization with ${orgId} does not exists.`);
     }
     
      await this.keycloak.
      getAdminClient().users.
-     update({ id: user.id, realm: getConfig('keycloak.clientValidation.realmName')},
-     {attributes: {current_company: orgKcGroupe.name}});
+     update({ id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName')},
+     {attributes: {current_org: orgKcGroupe.id}});
 
     return Result.ok<number>(fetchedUser.id);
   }
