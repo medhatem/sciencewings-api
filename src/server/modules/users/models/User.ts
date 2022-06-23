@@ -68,7 +68,4 @@ export class User extends BaseModel<User> {
 
   @Property({ nullable: true })
   status?: userStatus;
-
-  @Property({ nullable: true })
-  currentOrganization?: string;
 }
