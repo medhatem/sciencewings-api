@@ -74,11 +74,5 @@ export class ProjectRO {
   dateEnd?: Date;
 
   @JsonProperty()
-  tags: ProjectTagRO[];
-
-  @JsonProperty()
-  tasks: ProjectTaskRO[];
-
-  @JsonProperty()
   organization: number;
 }
