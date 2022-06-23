@@ -139,7 +139,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       const kcMemberGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
-          name: 'member',
+          name: 'grp-member',
         },
       );
       kcMemberGroupId = kcMemberGroupCreated.id;
@@ -162,7 +162,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const groupEvent = new GroupEvent();
     groupEvent.createGroup(kcAdminGroupId, organization, 'admin');
-    groupEvent.createGroup(kcMemberGroupId, organization, 'member');
+    groupEvent.createGroup(kcMemberGroupId, organization, 'grp-member');
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
