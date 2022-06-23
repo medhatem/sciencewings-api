@@ -119,19 +119,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: `org_${payload.name}`,
+            name: `org-${payload.name}`,
           },
         );
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-          name: `org_${payload.name}`,
+          name: `org-${payload.name}`,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
       const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
-          name: 'grp_admin',
+          name: 'grp-admin',
         },
       );
       kcGroupId = id;
@@ -151,7 +151,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const memberEvent = new MemberEvent();
     memberEvent.createMember(user, organization);
     const groupEvent = new GroupEvent();
-    groupEvent.createGroup(kcGroupId, organization, 'admin');
+    groupEvent.createGroup(kcGroupId, organization, 'grp-admin');
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
@@ -220,7 +220,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: `org_${payload.name}`,
+            name: `org-${payload.name}`,
           },
         );
       } catch (error) {
