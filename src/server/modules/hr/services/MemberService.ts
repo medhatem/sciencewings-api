@@ -145,7 +145,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     getAdminClient().groups.
     findOne({ id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName')});
     if (!orgKcGroupe) {
-      return Result.notFound(`organization with ${orgId} does not exists.`);
+      return Result.notFound(`Keycloak org-group for organization with ${orgId} does not exists.`);
     }
     //change the KcUser current_org attribute 
      await this.keycloak.
