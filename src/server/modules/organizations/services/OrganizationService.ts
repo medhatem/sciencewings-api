@@ -30,6 +30,7 @@ import { Phone } from '@/modules/users';
 import { Address } from '@/modules/address';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
+import { grpPrifix } from '@/modules/prifixConstants';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -129,6 +130,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
+      ////create an admin group "grp-admin" to each new org in Kc
       const kcAdminGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
@@ -136,10 +138,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
         },
       );
       kcAdminGroupId = kcAdminGroupCreated.id;
+      //create a member group "grp-member" to each new org in Kc
       const kcMemberGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
-          name: 'grp-member',
+          name: `${grpPrifix}member`,
         },
       );
       kcMemberGroupId = kcMemberGroupCreated.id;
@@ -162,7 +165,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const groupEvent = new GroupEvent();
     groupEvent.createGroup(kcAdminGroupId, organization, 'admin');
-    groupEvent.createGroup(kcMemberGroupId, organization, 'grp-member');
+    groupEvent.createGroup(kcMemberGroupId, organization, `${grpPrifix}member`);
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
