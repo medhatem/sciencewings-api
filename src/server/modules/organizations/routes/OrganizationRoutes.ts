@@ -5,6 +5,7 @@ import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE } fro
 import { CreateOrganizationRO, UpdateOrganizationRO } from './RequestObject';
 import { UserRequest } from '@/types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { UserOrganizationsDTO } from '@/modules/organizations/dtos/UserOrganizationsDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
@@ -175,16 +176,16 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('getUserOrganizations/:id')
   @Security()
   @LoggerStorage()
-  @Response<OrganizationDTO>(200, 'Return Organization that the users belongs to, Successfully')
+  @Response<UserOrganizationsDTO>(200, 'Return Organization that the users belongs to, Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getUserOrganizations(@PathParam('id') id: number): Promise<OrganizationDTO> {
+  public async getUserOrganizations(@PathParam('id') id: number): Promise<UserOrganizationsDTO> {
     const result = await this.OrganizationService.getUserOrganizations(id);
 
     if (result.isFailure) {
-      throw result.error;
+      return new UserOrganizationsDTO({ body: { organizations: [], statusCode: 200 } });
     }
 
-    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 200 } });
+    return new UserOrganizationsDTO({ body: { organizations: result.getValue(), statusCode: 200 } });
   }
 }

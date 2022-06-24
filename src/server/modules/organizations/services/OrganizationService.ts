@@ -25,10 +25,10 @@ import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/Addre
 import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
-import { Phone } from '@/modules/users';
-import { Address } from '@/modules/address';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
+import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
+import { AddressType } from '@/modules/address/models/Address';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -111,29 +111,39 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.direction = direction;
     wrappedOrganization.admin_contact = adminContact;
 
-    let kcGroupId = null;
+    let kcAdminGroupId = null;
+    let kcMemberGroupId = null;
     try {
       let keycloakGroup = null;
       if (payload.parent) {
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `${orgPrifix}${payload.name}`,
           },
         );
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-          name: payload.name,
+          name: `${orgPrifix}${payload.name}`,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
-      const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
+      ////create an admin group "grp-admin" to each new org in Kc
+      const kcAdminGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
-          name: 'admin',
+          name: `${grpPrifix}admin`,
         },
       );
-      kcGroupId = id;
+      kcAdminGroupId = kcAdminGroupCreated.id;
+      //create a member group "grp-member" to each new org in Kc
+      const kcMemberGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
+        { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
+        {
+          name: `${grpPrifix}member`,
+        },
+      );
+      kcMemberGroupId = kcMemberGroupCreated.id;
       wrappedOrganization.kcid = keycloakGroup.id;
     } catch (error) {
       return catchKeycloackError(error, payload.name);
@@ -150,47 +160,37 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const memberEvent = new MemberEvent();
     const memberOwnerResult = await memberEvent.createMember(user, organization);
     const groupEvent = new GroupEvent();
-    groupEvent.createGroup(kcGroupId, organization, 'admin');
+    groupEvent.createGroup(kcAdminGroupId, organization, `${grpPrifix}admin`);
+    groupEvent.createGroup(kcMemberGroupId, organization, `${grpPrifix}member`);
 
     organization.members.add(memberOwnerResult.getValue());
     this.update(organization);
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
-      groupId: kcGroupId,
+      groupId: kcAdminGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-
     await applyToAll(payload.addresses, async (address) => {
-      const wrappedAddress = this.addressService.wrapEntity(
-        new Address(),
-        {
-          city: address.city,
-          apartment: address.apartment,
-          country: address.country,
-          code: address.code,
-          province: address.province,
-          street: address.street,
-          type: address.type,
-        },
-        false,
-      );
-      wrappedAddress.organization = organization;
-      await this.addressService.create(wrappedAddress);
+      await this.addressService.create({
+        city: address.city,
+        apartment: address.apartment,
+        country: address.country,
+        code: address.code,
+        province: address.province,
+        street: address.street,
+        type: AddressType.ORGANIZATION,
+        organization,
+      });
     });
 
     await applyToAll(payload.phones, async (phone) => {
-      const wrappedPhone = this.phoneService.wrapEntity(
-        new Phone(),
-        {
-          phoneLabel: phone.phoneLabel,
-          phoneCode: phone.phoneCode,
-          phoneNumber: phone.phoneNumber,
-        },
-        false,
-      );
-      wrappedPhone.organization = organization;
-      await this.phoneService.create({ wrappedPhone });
+      await this.addressService.create({
+        phoneLabel: phone.phoneLabel,
+        phoneCode: phone.phoneCode,
+        phoneNumber: phone.phoneNumber,
+        organization,
+      });
     });
 
     if (payload.labels?.length) {
@@ -223,7 +223,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `${orgPrifix}${payload.name}`,
           },
         );
       } catch (error) {

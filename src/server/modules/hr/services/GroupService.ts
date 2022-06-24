@@ -13,9 +13,10 @@ import { IOrganizationService } from '@/modules/organizations/interfaces/IOrgani
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateGroupSchema, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
-import { FETCH_STRATEGY } from '@/modules/base';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { applyToAll } from '@/utils/utilities';
+import { grpPrifix } from '@/modules/prifixConstants';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -80,12 +81,11 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
       { id: fetchedorganizationValue.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
-        name: payload.name,
+        name: `${grpPrifix}${payload.name}`,
       },
     );
     wrappedGroup.kcid = id;
     const createdGroup = await this.dao.create(wrappedGroup);
-
     if (payload.members) {
       await createdGroup.members.init();
       await applyToAll(payload.members, async (member) => {
@@ -131,7 +131,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `${grpPrifix}${payload.name}`,
           },
         );
       } catch (e) {

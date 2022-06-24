@@ -23,6 +23,7 @@ import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
 import { Collection } from '@mikro-orm/core';
 import { Member } from '@/modules/hr/models/Member';
+import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
@@ -135,7 +136,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           phoneNumber: '541110222',
         },
       ],
-      type: 'Public',
+      type: OrganizationType.PUBLIC,
       labels: ['x', 'y', 'z'],
       members: [] as any,
       direction: 1,
@@ -264,11 +265,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve(Result.ok({})));
       stub(GroupEvent.prototype, 'createGroup').returns({} as any);
       // set address creation
-      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(addressService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set phone creation
-      mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(phoneService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set label creation
       mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
 
