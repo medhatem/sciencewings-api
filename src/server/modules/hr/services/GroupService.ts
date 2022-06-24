@@ -16,6 +16,7 @@ import { CreateGroupSchema, UpdateGroupSchema } from '@/modules/hr/schemas/Group
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { applyToAll } from '@/utils/utilities';
+import { grpPrifix } from '@/modules/prifixConstants';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -80,7 +81,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
       { id: fetchedorganizationValue.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
-        name: `grp-${payload.name}`,
+        name: `${grpPrifix}${payload.name}`,
       },
     );
     wrappedGroup.kcid = id;
@@ -130,7 +131,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: `grp-${payload.name}`,
+            name: `${grpPrifix}${payload.name}`,
           },
         );
       } catch (e) {
