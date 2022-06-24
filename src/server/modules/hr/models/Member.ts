@@ -105,7 +105,7 @@ export class Member extends BaseModel<Member> {
   coach?: Member;
 
   @Property()
-  memberType!: string;
+  memberType!: MemberTypeEnum;
 
   @Property({ columnType: 'date', nullable: true })
   birthday?: Date;
