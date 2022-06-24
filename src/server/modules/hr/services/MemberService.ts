@@ -127,7 +127,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
     return Result.ok<number>(user.id);
   }
   /**
-   * switching between user organizations
+   * switch between different organizations by adding a current_org attribute
+   *  in keycloak for the logged in user.
    * @param orgId
    * @param userId
    */
