@@ -26,11 +26,10 @@ import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/Addre
 import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
-import { Phone } from '@/modules/users';
-import { Address } from '@/modules/address';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
 import { grpPrifix } from '@/modules/prifixConstants';
+import { AddressType } from '@/modules/address/models/Address';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -172,29 +171,26 @@ export class OrganizationService extends BaseService<Organization> implements IO
       groupId: kcAdminGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-
     await applyToAll(payload.addresses, async (address) => {
-      const wrappedAddress = this.addressService.wrapEntity(Address.getInstance(), {
+      await this.addressService.create({
         city: address.city,
         apartment: address.apartment,
         country: address.country,
         code: address.code,
         province: address.province,
         street: address.street,
-        type: address.type,
+        type: AddressType.ORGANIZATION,
+        organization,
       });
-      wrappedAddress.organization = organization;
-      await this.addressService.create(wrappedAddress);
     });
 
     await applyToAll(payload.phones, async (phone) => {
-      const wrappedPhone = this.phoneService.wrapEntity(Phone.getInstance(), {
+      await this.addressService.create({
         phoneLabel: phone.phoneLabel,
         phoneCode: phone.phoneCode,
         phoneNumber: phone.phoneNumber,
+        organization,
       });
-      wrappedPhone.organization = organization;
-      await this.phoneService.create({ wrappedPhone });
     });
 
     if (payload.labels?.length) {
