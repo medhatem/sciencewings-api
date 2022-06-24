@@ -3,7 +3,7 @@ import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@/utils/Email';
-import { EmailMessage } from '@/types/types';
+import { EmailMessage, MemberKey } from '@/types/types';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -129,7 +129,12 @@ export class MemberService extends BaseService<Member> implements IMemberService
     this.emailService.sendEmail(emailMessage);
     return Result.ok<number>(user.id);
   }
-
+  /**
+   * the user can accpet, reject his membership
+   * updating the staus of membership
+   * @param payload the status of membership
+   * @userId @orgId primary keys of member
+   */
   @log()
   @safeGuard()
   @validate
@@ -137,23 +142,21 @@ export class MemberService extends BaseService<Member> implements IMemberService
     @validateParam(MemberSchema) payload: MemberRO,
     userId: number,
     orgId: number,
-  ): Promise<Result<any>> {
+  ): Promise<Result<MemberKey>> {
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure || !fetchedUser.getValue()) {
-      return Result.notFound(`User with id: ${userId} does not exists.`);
+      return Result.notFound(`User with id: ${userId} does not exist.`);
     }
     const fetchedOrg = await this.organizationService.get(orgId);
     if (fetchedOrg.isFailure || !fetchedOrg.getValue()) {
-      return Result.notFound(`organization with id: ${orgId} does not exists.`);
+      return Result.notFound(`organization with id: ${orgId} does not exist.`);
     }
     const fetchedMember = (await this.dao.getByCriteria(
       { organization: orgId, user: userId },
       FETCH_STRATEGY.SINGLE,
     )) as Member;
     if (!fetchedMember) {
-      return Result.notFound(
-        `membership of user with id: ${userId} in organization with id: ${orgId} does not exists.`,
-      );
+      return Result.notFound(`membership of user with id: ${userId} in organization with id: ${orgId} does not exist.`);
     }
     const member = this.wrapEntity(fetchedMember, {
       ...fetchedMember,
