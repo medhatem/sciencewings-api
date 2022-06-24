@@ -227,6 +227,4 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.getValue()).to.eql(Result.ok([{}]));
     });
   });
-﻿
-  
 });

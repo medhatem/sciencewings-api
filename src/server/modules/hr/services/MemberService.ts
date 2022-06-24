@@ -125,7 +125,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     this.emailService.sendEmail(emailMessage);
     return Result.ok<number>(user.id);
   }
-
+  
   @log()
   @safeGuard()
   public async getUserMemberships(userId: number): Promise<Result<Member[]>> {
@@ -136,5 +136,4 @@ export class MemberService extends BaseService<Member> implements IMemberService
     
     return Result.ok(fetchedMembers as Member[]);
   }
-
 }
