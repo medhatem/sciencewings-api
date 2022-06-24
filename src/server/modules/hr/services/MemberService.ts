@@ -131,8 +131,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
   public async getUserMemberships(userId: number): Promise<Result<Member[]>> {
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure) {
-      return Result.notFound(`User with id: ${userId} does not exists.`);
-    }
+      return Result.notFound(`User with id: ${userId} does not exist.`);    }
     const fetchedMembers = await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL);
     
     return Result.ok(fetchedMembers as Member[]);

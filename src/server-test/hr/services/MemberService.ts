@@ -207,37 +207,26 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get user members', () => {
     const userId = 1;
-    test('Should fail user does not exist', async () => {
-      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.notFound(null)));
-
+    test('Should fail on retriving user', async () => {
+      mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.notFound(null)));
       const result = await container.get(MemberService).getUserMemberships(userId);
 
       expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`User with id: ${userId} does not exists.`);
+      expect(result.error.message).to.equal(`User with id: ${userId} does not exist.`);
     });
-    test('Should fail on can not get memberships for user', async () => {
-      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(memberDao, 'getByCriteria', [userId, FETCH_STRATEGY.ALL, { refresh: true }], null);
-
-      const result = await container.get(MemberService).getUserMemberships(userId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`can not fetched membership for this user ${userId}.`);
-    });
-    test('Should return user memberships', async () => {
-      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+    test('Should return array of members', async () => {
+      mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.ok({})));
       mockMethodWithResult(
         memberDao,
         'getByCriteria',
-        [{ user: userId }, FETCH_STRATEGY.ALL, { refresh: true }],
-        Promise.resolve([1]),
+        [{ user: userId }, FETCH_STRATEGY.ALL],
+        Promise.resolve(Result.ok([{}])),
       );
-
       const result = await container.get(MemberService).getUserMemberships(userId);
-
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql([{}]);
+      expect(result.getValue()).to.eql(Result.ok([{}]));
     });
   });
+﻿
   
 });

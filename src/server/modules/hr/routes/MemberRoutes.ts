@@ -70,27 +70,25 @@ export class MemberRoutes extends BaseRoutes<Member> {
       body: { statusCode: 201, id: result.getValue() },
     });
   }
-
-  /**
-   * get all user memberships 
+/**
+   * get all user memberships
    *
    * @param userId userId
    */
-   @GET
-   @Path('/:userId/memberships')
-   @Security()
-   @LoggerStorage()
-   @Response<getAllMembershipsBodyDTO>(200, 'Resource Retrived Successfully')
-   @Response<InternalServerError>(500, 'Internal Server Error')
-   @Response<NotFoundError>(404, 'Not Found Error')
-   public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
-     const result = await this.MemberService.getUserMemberships(userId);
- 
-     if (result.isFailure) {
-       throw result.error;
-     }
-     
-     return new getMembershipDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+ @GET
+ @Path('/:userId/memberships')
+ @Security()
+ @LoggerStorage()
+ @Response<getAllMembershipsBodyDTO>(200, 'Resource Retrived Successfully')
+ @Response<InternalServerError>(500, 'Internal Server Error')
+ @Response<NotFoundError>(404, 'Not Found Error')
+ public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
+   const result = await this.MemberService.getUserMemberships(userId);
+
+   if (result.isFailure) {
+     throw result.error;
    }
- 
+
+   return new getMembershipDTO({ body: { data: [result.getValue()], statusCode: 200 } });
+ }
 }
