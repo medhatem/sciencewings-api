@@ -29,7 +29,7 @@ import {
   GetOrganizationSettingsDTO,
   UpdateOrganizationSettingsBodyDTO,
   UpdateOrganizationSettingsDTO,
-} from '@/modules/organizations/dtos/OrganizationSettingsDto';
+} from '@/modules/organizations/dtos/OrganizationSettingsDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -207,14 +207,16 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * @param organizationId organization id
    */
   @GET
-  @Path('settings/:id')
+  @Path('settings/:organizationId')
   @Security()
   @LoggerStorage()
   @Response<GetOrganizationSettingsBodyDTO>(200, 'Organization Settings Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOgranizationSettings(@PathParam('id') id: number): Promise<GetOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.getOrganizationSettingsById(id);
+  public async getOgranizationSettings(
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<GetOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.getOrganizationSettingsById(organizationId);
     if (result.isFailure) {
       throw result.error;
     }
@@ -225,11 +227,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section members
    *
    * @param payload
-   * @param id of the requested resource
+   * @param organizationId of the requested resource
    *
    */
   @PUT
-  @Path('settings/member/:id')
+  @Path('settings/member/:organizationId')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
@@ -237,9 +239,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnMembersProperties(
     payload: OrganizationMemberSettingsRO,
-    @PathParam('id') id: number,
+    @PathParam('organizationId') organizationId: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
     if (result.isFailure) {
       throw result.error;
@@ -251,11 +253,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section reservation
    *
    * @param payload
-   * @param id is the is of requested resource
+   * @param organizationId is the is of requested resource
    *
    */
   @PUT
-  @Path('settings/reservation/:id')
+  @Path('settings/reservation/:organizationId')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
@@ -263,9 +265,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnReservationProperties(
     payload: OrganizationReservationSettingsRO,
-    @PathParam('id') id: number,
+    @PathParam('organizationId') organizationId: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
     if (result.isFailure) {
       throw result.error;
@@ -276,11 +278,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section invoices
    *
    * @param payload
-   * @param id is the is of the resource
+   * @param organizationId is the is of the resource
    *
    */
   @PUT
-  @Path('settings/invoices/:id')
+  @Path('settings/invoices/:organizationId')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization invoices settings updated Successfully')
@@ -288,9 +290,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnInvoicesProperties(
     payload: OrganizationInvoicesSettingsRO,
-    @PathParam('id') id: number,
+    @PathParam('organizationId') organizationId: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
     if (result.isFailure) {
       throw result.error;
@@ -301,11 +303,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   /* Update a organization settings, section access
    *
    * @param payload
-   * @param id is the is of requested resource
+   * @param organizationId is the is of requested resource
    *
    */
   @PUT
-  @Path('settings/access/:id')
+  @Path('settings/access/:organizationId')
   @Security()
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization access  settings updated Successfully')
@@ -313,9 +315,9 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganizationsSettingsnAccessProperties(
     payload: OrganizationAccessSettingsRO,
-    @PathParam('id') id: number,
+    @PathParam('organizationId') organizationId: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
-    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, id);
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
     if (result.isFailure) {
       throw result.error;

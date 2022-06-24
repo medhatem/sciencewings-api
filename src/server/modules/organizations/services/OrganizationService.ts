@@ -386,22 +386,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     const fetchedOrganizationValue = fetchedOrganization.getValue();
-    const organization = {
-      name: fetchedOrganizationValue.name,
-      description: fetchedOrganizationValue.description,
-      phones: fetchedOrganizationValue.phones,
-      email: fetchedOrganizationValue.email,
-      type: fetchedOrganizationValue.type,
-      direction: fetchedOrganizationValue.direction,
-      note: fetchedOrganizationValue.note,
-    } as any;
-
-    if (fetchedOrganizationValue.phone) {
-      organization.phone = fetchedOrganizationValue.phone[0];
-    }
 
     return Result.ok({
-      organization,
       settings: fetchedOrganizationValue.settings,
     });
   }
