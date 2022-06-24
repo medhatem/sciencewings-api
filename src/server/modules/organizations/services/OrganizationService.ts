@@ -28,7 +28,7 @@ import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
-import { grpPrifix } from '@/modules/prifixConstants';
+import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
 
 @provideSingleton(IOrganizationService)
@@ -120,12 +120,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `${orgPrifix}${payload.name}`,
           },
         );
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-          name: payload.name,
+          name: `${orgPrifix}${payload.name}`,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
@@ -133,7 +133,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       const kcAdminGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
-          name: 'admin',
+          name: `${grpPrifix}admin`,
         },
       );
       kcAdminGroupId = kcAdminGroupCreated.id;
@@ -163,7 +163,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     memberEvent.createMember(user, organization);
 
     const groupEvent = new GroupEvent();
-    groupEvent.createGroup(kcAdminGroupId, organization, 'admin');
+    groupEvent.createGroup(kcAdminGroupId, organization, `${grpPrifix}admin`);
     groupEvent.createGroup(kcMemberGroupId, organization, `${grpPrifix}member`);
 
     await this.keycloak.getAdminClient().users.addToGroup({
@@ -222,7 +222,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `${orgPrifix}${payload.name}`,
           },
         );
       } catch (error) {
