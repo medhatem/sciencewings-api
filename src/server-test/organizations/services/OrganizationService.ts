@@ -272,11 +272,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(MemberEvent.prototype, 'createMember').returns({} as any);
       stub(GroupEvent.prototype, 'createGroup').returns({} as any);
       // set address creation
-      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(addressService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set phone creation
-      mockMethodWithResult(phoneService, 'create', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(phoneService, 'wrapEntity', [], Promise.resolve({ organization: {} }));
+      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set label creation
       mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
 
