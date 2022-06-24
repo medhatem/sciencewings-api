@@ -28,6 +28,8 @@ import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
+import { orgPrifix, grpPrifix } from '@/modules/prifixConstants';
+
 import { AddressType } from '@/modules/address/models/Address';
 
 @provideSingleton(IOrganizationService)
@@ -118,19 +120,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `${orgPrifix}${payload.name}`,
           },
         );
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-          name: payload.name,
+          name: `${orgPrifix}${payload.name}`,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
       const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
-          name: 'admin',
+          name: `${grpPrifix}admin`,
         },
       );
       kcGroupId = id;
@@ -150,7 +152,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const memberEvent = new MemberEvent();
     memberEvent.createMember(user, organization);
     const groupEvent = new GroupEvent();
-    groupEvent.createGroup(kcGroupId, organization, 'admin');
+    groupEvent.createGroup(kcGroupId, organization, `${grpPrifix}admin`);
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
@@ -208,7 +210,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         await this.keycloak.getAdminClient().groups.update(
           { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: payload.name,
+            name: `${orgPrifix}${payload.name}`,
           },
         );
       } catch (error) {
