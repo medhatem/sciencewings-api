@@ -29,7 +29,7 @@ import {
   GetOrganizationSettingsDTO,
   UpdateOrganizationSettingsBodyDTO,
   UpdateOrganizationSettingsDTO,
-} from '../dtos/OrganizationSettingsDto';
+} from '@/modules/organizations/dtos/OrganizationSettingsDto';
 
 @provideSingleton()
 @Path('organization')

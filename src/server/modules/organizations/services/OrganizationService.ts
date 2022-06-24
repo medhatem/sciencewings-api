@@ -36,7 +36,7 @@ import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
 import { AddressType } from '@/modules/address/models/Address';
-import { OrganizationSettingsService } from './OrganizationSettingsService';
+import { OrganizationSettingsService } from '@/modules/organizations/services/OrganizationSettingsService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
