@@ -73,9 +73,9 @@ export class MemberRoutes extends BaseRoutes<Member> {
   }
 
   /**
-   * update the current_org user attribute when switching between orgs 
+   * update the current_org 
    *
-   * @param orgId  id of the switch to organization
+   * @param orgId  id of the organization to switch to
    *
    */
    @PUT

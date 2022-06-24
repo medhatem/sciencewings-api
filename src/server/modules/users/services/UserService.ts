@@ -229,5 +229,4 @@ export class UserService extends BaseService<User> implements IUserService {
     }
     return Result.ok<User>(user);
   }
-  
 }

@@ -126,6 +126,11 @@ export class MemberService extends BaseService<Member> implements IMemberService
     this.emailService.sendEmail(emailMessage);
     return Result.ok<number>(user.id);
   }
+  /**
+   * switching between user organizations
+   * @param orgId
+   * @param userId
+   */
   @log()
   @safeGuard()
   public async switchOrganization(orgId: number, userId: number): Promise<Result<number>> {
@@ -133,25 +138,26 @@ export class MemberService extends BaseService<Member> implements IMemberService
     const user = fetchedUser.getValue();
     const fetchedOrganization = await this.organizationService.get(orgId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`organization with ${orgId} does not exists.`);
+      return Result.notFound(`organization with id: ${orgId} does not exist.`);
     }
     const organization = fetchedOrganization.getValue();
     const fetchedMember = await this.dao.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
     if (!fetchedMember) {
-      return Result.notFound(`User with ${userId} does not exist ${orgId}.`);
+      return Result.notFound(`User with id: ${userId} is not member in that org`);
     }
     //retrieve the organization keycloak group 
-    const orgKcGroupe = await this.keycloak.
-    getAdminClient().groups.
-    findOne({ id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName')});
+    const orgKcGroupe = await this.keycloak
+      .getAdminClient()
+      .groups.findOne({ id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName')});
+
     if (!orgKcGroupe) {
-      return Result.notFound(`Keycloak org-group for organization with ${orgId} does not exists.`);
+      return Result.notFound(`organization with id: ${orgId} does not exist.`);
     }
     //change the KcUser current_org attribute 
-     await this.keycloak.
-     getAdminClient().users.
-     update({ id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName')},
-     {attributes: {current_org: orgKcGroupe.id}});
+    await this.keycloak
+      .getAdminClient()
+      .users.update({ id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName')},
+      {attributes: {current_org: orgKcGroupe.id}});
 
     return Result.ok<number>(fetchedUser.id);
   }

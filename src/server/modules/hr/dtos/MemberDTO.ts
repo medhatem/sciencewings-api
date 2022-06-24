@@ -48,5 +48,4 @@ export class CreateMemberDTO extends BaseRequestDTO {
 export class UpdateMemberDTO extends BaseRequestDTO {
   @JsonProperty()
   public error?: BaseErrorDTO;
-
 }
