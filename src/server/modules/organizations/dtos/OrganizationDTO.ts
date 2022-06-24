@@ -5,9 +5,11 @@ import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
-class OrganizationBaseBodyGetDTO extends BaseBodyDTO {
+export class OrganizationBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
+  @JsonProperty()
+  name?: string;
 }
 
 @JsonObject()
