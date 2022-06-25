@@ -48,3 +48,35 @@ export class UserDTO extends BaseRequestDTO {
   @JsonProperty()
   public error?: BaseErrorDTO;
 }
+
+@JsonObject()
+@unique
+export class membershipBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  groupId: string;
+  @JsonProperty()
+  orgId: string;
+
+  @JsonProperty()
+  membershipStatus: string;
+}
+
+@JsonObject()
+@unique
+export class GetMembershipBodyDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: membershipBodyDTO,
+    beforeDeserialize,
+  })
+  data: Array<membershipBodyDTO>;
+}
+
+@JsonObject()
+@unique
+export class MembershipDto extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetMembershipBodyDTO;
+}
+

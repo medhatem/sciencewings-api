@@ -17,4 +17,6 @@ export abstract class IUserService extends IBaseService<any> {
   updateUserByKeycloakId: (user: UserRO, keycloakId: string) => Promise<Result<User>>;
 
   getUserByKeycloakId: (payload: string) => Promise<Result<User>>;
+
+  
 }
