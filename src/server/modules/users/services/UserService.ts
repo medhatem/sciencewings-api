@@ -187,7 +187,6 @@ export class UserService extends BaseService<User> implements IUserService {
       });
 
       this.dao.repository.flush();
-
       const fetchdUser: User = await this.dao.get(createdUser.id);
       return Result.ok<User>(fetchdUser);
     } catch (error) {

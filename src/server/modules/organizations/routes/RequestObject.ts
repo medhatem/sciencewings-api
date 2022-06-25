@@ -116,3 +116,68 @@ export class UserResendPassword {
   @JsonProperty()
   orgId: number;
 }
+@JsonObject()
+@unique
+export class OrganizationMemberSettingsRO {
+  @JsonProperty()
+  membersCanEditAccountNumbers: boolean;
+  @JsonProperty()
+  promptForAccouantNumbers: boolean;
+  @JsonProperty()
+  acountNumberNote: string;
+  @JsonProperty()
+  allowMembersToSeeAllOtherMembers: boolean;
+}
+
+@JsonObject()
+@unique
+export class OrganizationReservationSettingsRO {
+  @JsonProperty()
+  approversCanEditReservations?: boolean;
+  @JsonProperty()
+  requireReasonWhenEditingReservation?: boolean;
+  @JsonProperty()
+  hideOrganizationCalendar?: boolean;
+  @JsonProperty()
+  hideAccountNumberWhenMakingReservation?: boolean;
+  @JsonProperty()
+  showResourceImagesInReservation?: boolean;
+  @JsonProperty()
+  confirmationEmailWhenMakingReservation?: string;
+  @JsonProperty()
+  attachedIcsCalendarFeeds?: boolean;
+  @JsonProperty()
+  emailAddressToReceiveReservationReplyMessages?: string[];
+}
+
+@JsonObject()
+@unique
+export class OrganizationInvoicesSettingsRO {
+  @JsonProperty()
+  membersCanEditBillingAddress?: boolean;
+  @JsonProperty()
+  defaultInvoiceDueDateUnit?: string;
+  @JsonProperty()
+  defaultInvoiceDueDate?: number;
+  @JsonProperty()
+  roundTaxOnPerItemBasisInsteadOfOnceOnSubtotal?: boolean;
+  @JsonProperty()
+  lockInvoicedReservationsAndRequests?: boolean;
+}
+
+@JsonObject()
+@unique
+export class OrganizationAccessSettingsRO {
+  @JsonProperty()
+  anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
+  @JsonProperty()
+  joinCode?: string;
+  @JsonProperty()
+  yourOrganizationWillNeverAppearInSearchResults?: boolean;
+  @JsonProperty()
+  notifyAdministratorsWhenMembersJoinOrganization?: boolean;
+  @JsonProperty()
+  listResourceToNonMembers?: boolean;
+  @JsonProperty()
+  messageSentToNewMembers?: string;
+}
