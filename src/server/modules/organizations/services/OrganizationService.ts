@@ -155,7 +155,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       );
       kcMemberGroupId = kcMemberGroupCreated.id;
       wrappedOrganization.kcid = keycloakGroup.id;
-
+      //adding owner in the group attributes
+      await this.keycloak
+        .getAdminClient()
+        .groups.update(
+          { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
+          { attributes: { owner: direction.keycloakId } },
+        );
     } catch (error) {
       return catchKeycloackError(error, payload.name);
     }
