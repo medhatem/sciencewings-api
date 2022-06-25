@@ -9,6 +9,7 @@ import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { UserService } from '@/modules/users/services/UserService';
 import { PhoneService } from '@/modules/phones/services/PhoneService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
+import { OrganizationSettingsService } from '@/modules/organizations/services/OrganizationSettingsService';
 import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
 import { AddressType } from '@/modules/address/models/Address';
 import { container } from '@/di';
@@ -25,6 +26,7 @@ import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
+  let organizationSettingsService: SinonStubbedInstance<OrganizationSettingsService>;
   let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
   let addressService: SinonStubbedInstance<AddressService>;
@@ -67,6 +69,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       .returns(
         new OrganizationService(
           organizationDAO,
+          organizationSettingsService,
           userService,
           labelService,
           addressService,
@@ -80,6 +83,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   beforeEach(() => {
     createStubInstance(Configuration);
     organizationDAO = createStubInstance(OrganizationDao);
+    organizationSettingsService = createStubInstance(OrganizationSettingsService);
     userService = createStubInstance(UserService);
     emailService = createStubInstance(Email);
     addressService = createStubInstance(AddressService);
@@ -102,6 +106,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       .returns(
         new OrganizationService(
           organizationDAO,
+          organizationSettingsService,
           userService,
           labelService,
           addressService,
@@ -127,14 +132,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       name: 'testingground2',
       description: '',
       email: 'testingground1@gmail.com',
+      type: OrganizationType.SERVICE,
       phones: [
         {
           phoneLabel: 'personal',
           phoneCode: '+213',
           phoneNumber: '541110222',
-        },
+        } as any,
       ],
-      type: OrganizationType.PUBLIC,
       labels: ['x', 'y', 'z'],
       members: [] as any,
       direction: 1,
@@ -231,6 +236,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       // prepare base
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stub(BaseService.prototype, 'create').resolves(Result.fail('stackTrace'));
@@ -253,6 +260,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       // prepare base
       organizationDAO['repository'] = { flush: stub() } as any;
       stub(BaseService.prototype, 'wrapEntity').returns({});
@@ -426,7 +435,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       phoneLabel: 'personal',
       phoneCode: '+213',
       phoneNumber: '541110222',
-    };
+    } as any;
     test('Should fail on organization not found', async () => {
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       const result = await container.get(OrganizationService).addPhoneToOrganization(payload, orgId);
