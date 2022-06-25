@@ -16,6 +16,7 @@ import { Result } from '@/utils/Result';
 import { userStatus } from '@/modules/users/models/User';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Keycloak } from '@/sdks/keycloak';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let memberDao: SinonStubbedInstance<MemberDao>;
@@ -202,6 +203,29 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       expect(result.isSuccess).to.be.true;
       expect(result.getValue()).to.equal(1);
+    });
+  });
+
+  suite('get user members', () => {
+    const userId = 1;
+    test('Should fail on retriving user', async () => {
+      mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.notFound(null)));
+      const result = await container.get(MemberService).getUserMemberships(userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`User with id: ${userId} does not exist.`);
+    });
+    test('Should return array of members', async () => {
+      mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(
+        memberDao,
+        'getByCriteria',
+        [{ user: userId }, FETCH_STRATEGY.ALL],
+        Promise.resolve(Result.ok([{}])),
+      );
+      const result = await container.get(MemberService).getUserMemberships(userId);
+      expect(result.isSuccess).to.be.true;
+      expect(result.getValue()).to.eql(Result.ok([{}]));
     });
   });
 });
