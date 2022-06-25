@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import { MemberBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
-import { POST, Path, Security, ContextRequest, PathParam, PUT } from 'typescript-rest';
-=======
-import { getMembershipDTO, getAllMembershipsBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
-import { POST, Path, Security, PathParam, GET } from 'typescript-rest';
->>>>>>> 1d2bd3375e45231a2f11e3fd1bc974908ec2a6ac
+import { getAllMembershipsBodyDTO, getMembershipDTO, MemberBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
+import { POST, Path, Security, ContextRequest, PathParam, PUT, GET } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -76,7 +71,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
       body: { statusCode: 201, id: result.getValue() },
     });
   }
-<<<<<<< HEAD
 
   /**
    * update the current_org 
@@ -102,7 +96,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
      }
      return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
    }
-=======
 /**
    * get all user memberships
    *
@@ -124,5 +117,4 @@ export class MemberRoutes extends BaseRoutes<Member> {
 
    return new getMembershipDTO({ body: { data: [result.getValue()], statusCode: 200 } });
  }
->>>>>>> 1d2bd3375e45231a2f11e3fd1bc974908ec2a6ac
 }
