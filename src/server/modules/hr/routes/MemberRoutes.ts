@@ -1,4 +1,5 @@
-import { getAllMembershipsBodyDTO, getMembershipDTO, MemberBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
+import { getAllMembershipsBodyDTO, getMembershipDTO} from '@/modules/hr/dtos/MemberDTO';
+import {MemberBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { POST, Path, Security, ContextRequest, PathParam, PUT, GET } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
