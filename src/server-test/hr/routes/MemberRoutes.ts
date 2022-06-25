@@ -94,4 +94,25 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.body.statusCode).to.equal(201);
     });
   });
+
+  suite('GET members/:userId/memberships', () => {
+    test('Should fail on throw error', async () => {
+      mockMethodWithResult(
+        memberService,
+        'getUserMemberships',
+        [1],
+        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+      );
+      try {
+        await memberRoutes.getUserMemberships(1);
+      } catch (error) {
+        expect(error).to.equal('throwing error');
+      }
+    });
+    test('Should success at returning the right value', async () => {
+      mockMethodWithResult(memberService, 'getUserMemberships', [], Result.ok(1));
+      const result = await memberRoutes.getUserMemberships(1);
+      expect(result.body.statusCode).to.equal(200);
+    });
+  });
 });
