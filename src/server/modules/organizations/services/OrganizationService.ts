@@ -2,7 +2,14 @@ import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import {
+  CreateOrganizationRO,
+  OrganizationAccessSettingsRO,
+  OrganizationInvoicesSettingsRO,
+  OrganizationMemberSettingsRO,
+  OrganizationReservationSettingsRO,
+  UpdateOrganizationRO,
+} from '@/modules/organizations/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -30,11 +37,13 @@ import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
+import { OrganizationSettingsService } from '@/modules/organizations/services/OrganizationSettingsService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
+    public organizationSettingsService: OrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
@@ -364,6 +373,57 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return catchKeycloackError(error, fetchedorganization.name);
     }
     await this.dao.remove(fetchedorganization);
+    return Result.ok<number>(organizationId);
+  }
+  /* Get all the settings of an organization ,
+   *
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  @safeGuard()
+  public async getOrganizationSettingsById(organizationId: number): Promise<Result<any>> {
+    const fetchedOrganization = await this.get(organizationId);
+
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
+    }
+    const fetchedOrganizationValue = fetchedOrganization.getValue();
+
+    return Result.ok({
+      settings: fetchedOrganizationValue.settings,
+    });
+  }
+
+  /* Update the reservation, invoices or access settings of an organization ,
+   *
+   * @param payload
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  @safeGuard()
+  public async updateOrganizationsSettingsProperties(
+    payload:
+      | OrganizationMemberSettingsRO
+      | OrganizationReservationSettingsRO
+      | OrganizationInvoicesSettingsRO
+      | OrganizationAccessSettingsRO,
+    organizationId: number,
+  ): Promise<Result<number>> {
+    const fetchedOrganization = await this.get(organizationId);
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
+    }
+    const organizationValue = fetchedOrganization.getValue();
+    const oldSetting = organizationValue.settings;
+    const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
+      ...oldSetting,
+      ...payload,
+    });
+
+    await this.organizationSettingsService.update(newSettings);
+
     return Result.ok<number>(organizationId);
   }
 }
