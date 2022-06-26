@@ -11,9 +11,6 @@ export class CreateOrganizationRO {
   name: string;
 
   @JsonProperty()
-  description: string;
-
-  @JsonProperty()
   email: string;
 
   @JsonProperty({

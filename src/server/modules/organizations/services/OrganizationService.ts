@@ -37,13 +37,13 @@ import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
-import { OrganizationSettingsService } from '@/modules/organizations/services/OrganizationSettingsService';
+import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
-    public organizationSettingsService: OrganizationSettingsService,
+    public organizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
@@ -86,27 +86,30 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const user = fetchedUser.getValue();
 
-    let adminContact;
-    if (payload.adminContact) {
-      adminContact = await this.userService.get(payload.adminContact);
-      if (adminContact.isFailure || adminContact.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
-      }
-      adminContact = adminContact.getValue();
-    }
+    //TODO: check if admin contact is needed from front-end
 
-    let direction;
-    if (payload.direction) {
-      direction = await this.userService.get(payload.direction);
-      if (direction.isFailure || direction.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.direction} does not exist.`);
-      }
-      direction = direction.getValue();
-    }
+    // let adminContact;
+    // if (payload.adminContact) {
+    //   adminContact = await this.userService.get(payload.adminContact);
+    //   if (adminContact.isFailure || adminContact.getValue() === null) {
+    //     return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
+    //   }
+    //   adminContact = adminContact.getValue();
+    // }
+
+    //TODO: check if direction is needed from front-end
+
+    // let direction;
+    // if (payload.direction) {
+    //   direction = await this.userService.get(payload.direction);
+    //   if (direction.isFailure || direction.getValue() === null) {
+    //     return Result.notFound(`User with id: ${payload.direction} does not exist.`);
+    //   }
+    //   direction = direction.getValue();
+    // }
 
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
-      description: payload.description,
       email: payload.email,
       type: payload.type,
       socialFacebook: payload.socialFacebook || null,
@@ -118,23 +121,24 @@ export class OrganizationService extends BaseService<Organization> implements IO
     });
     wrappedOrganization.parent = parent;
 
-    wrappedOrganization.direction = direction;
-    wrappedOrganization.admin_contact = adminContact;
+    wrappedOrganization.direction = user;
+    wrappedOrganization.admin_contact = user;
 
     let kcAdminGroupId = null;
     let kcMemberGroupId = null;
     try {
       let keycloakGroup = null;
+      const groupName = `${orgPrifix}${payload.name}`;
       if (payload.parent) {
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: `${orgPrifix}${payload.name}`,
+            name: groupName,
           },
         );
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-          name: `${orgPrifix}${payload.name}`,
+          name: groupName,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
@@ -160,7 +164,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         .getAdminClient()
         .groups.update(
           { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
-          { attributes: { owner: direction.keycloakId } },
+          { attributes: { owner: [user.keycloakId] }, name: groupName },
         );
     } catch (error) {
       return catchKeycloackError(error, payload.name);
