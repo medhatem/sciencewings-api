@@ -1,21 +1,22 @@
+import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { AddressType } from '@/modules/address/models/Address';
+import { Configuration } from '@/configuration/Configuration';
+import { LocalStorage } from '@/utils/LocalStorage';
+import { Logger } from '@/utils/Logger';
+import { OrganizationRoutes } from '@/modules/organizations/routes/OrganizationRoutes';
+import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
+import { OrganizationType } from '@/modules/organizations/models/Organization';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { Result } from '@/utils/Result';
+import { container } from '@/di';
 import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
+import { mockMethodWithResult } from '@/utils/utilities';
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
-import { OrganizationRoutes } from '@/modules/organizations/routes/OrganizationRoutes';
-import { LocalStorage } from '@/utils/LocalStorage';
-import { mockMethodWithResult } from '@/utils/utilities';
-import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
-import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
-import { AddressRO } from '@/modules/address/routes/AddressRO';
-import { Result } from '@/utils/Result';
-import { AddressType } from '@/modules/address/models/Address';
-import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationService: SinonStubbedInstance<OrganizationService>;
@@ -50,7 +51,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   suite('POST organization/createOrganization', () => {
     const payload: CreateOrganizationRO = {
       name: 'test',
-      description: 'test',
       email: 'test',
       phones: {} as PhoneRO[],
       addresses: {} as AddressRO[],

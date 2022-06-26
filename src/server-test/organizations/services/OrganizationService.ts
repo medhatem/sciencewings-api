@@ -132,7 +132,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const userId = 1;
     const payload: CreateOrganizationRO = {
       name: 'testingground2',
-      description: '',
       email: 'testingground1@gmail.com',
       type: OrganizationType.SERVICE,
       phones: [
