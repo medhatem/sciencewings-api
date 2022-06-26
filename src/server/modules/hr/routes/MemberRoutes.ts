@@ -7,8 +7,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { Response } from 'typescript-rest-swagger';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { InviteUserBodyDTO, InviteUserDTO } from '@/modules/organizations/dtos/InviteUserDTO';
-import { UserIdDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
-import { UserInviteToOrgRO } from '@/modules/users/routes/RequstObjects';
+import { UserIdDTO, UserInviteToOrgRO } from '@/modules/users';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 
