@@ -146,7 +146,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       );
       kcMemberGroupId = kcMemberGroupCreated.id;
       wrappedOrganization.kcid = keycloakGroup.id;
-
     } catch (error) {
       return catchKeycloackError(error, payload.name);
     }
@@ -339,7 +338,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   public async getUserOrganizations(userId: number): Promise<Result<Organization[]>> {
     const organizations: Organization[] = (await this.dao.getByCriteria(
-      { owner: userId },
+      { direction: userId },
       FETCH_STRATEGY.ALL,
     )) as Organization[];
     return Result.ok<Organization[]>(organizations);
