@@ -89,7 +89,6 @@ export class Server {
     this.expressApp.use(this.bodyParser.urlencoded({ extended: false }));
     this.expressApp.use(this.expressCors());
     this.expressApp.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
-
     dotevnv.config(); // init the environement
   }
 

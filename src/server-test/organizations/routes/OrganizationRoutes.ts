@@ -15,6 +15,7 @@ import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { Result } from '@/utils/Result';
 import { AddressType } from '@/modules/address/models/Address';
+import { OrganizationType } from '@/modules/organizations/models/Organization';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationService: SinonStubbedInstance<OrganizationService>;
@@ -52,9 +53,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       description: 'test',
       email: 'test',
       phones: {} as PhoneRO[],
-      type: 'test',
       addresses: {} as AddressRO[],
       labels: ['0'],
+      type: OrganizationType.SERVICE,
       members: [1],
       direction: 1,
       socialFacebook: 'test',
@@ -128,14 +129,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
   });
   suite('POST organization/phone/:id', () => {
-    const payload: PhoneRO = {
+    const payload = {
       phoneLabel: 'test',
       phoneCode: 'test',
       phoneNumber: 'test',
       userId: 1,
       organizationId: 1,
       memberId: 1,
-    };
+    } as any;
 
     test('Should fail on throw error', async () => {
       mockMethodWithResult(

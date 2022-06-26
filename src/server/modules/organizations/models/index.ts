@@ -7,4 +7,5 @@ export * from './CountryCountryGroupRel';
 export * from './CountryState';
 export * from './Currency';
 export * from './CurrencyRate';
+export * from './OrganizationSettings';
 export * from './OrganizationUsersRel';
