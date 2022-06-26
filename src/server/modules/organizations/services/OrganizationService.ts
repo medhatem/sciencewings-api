@@ -354,7 +354,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @safeGuard()
   public async getUserOrganizations(userId: number): Promise<Result<Organization[]>> {
     const organizations: Organization[] = (await this.dao.getByCriteria(
-      { owner: userId },
+      { direction: userId },
       FETCH_STRATEGY.ALL,
     )) as Organization[];
     return Result.ok<Organization[]>(organizations);
