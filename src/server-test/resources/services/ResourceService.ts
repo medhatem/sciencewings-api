@@ -30,7 +30,8 @@ import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { BaseService } from '@/modules/base/services/BaseService';
 import Sinon = require('sinon');
 import { Collection } from '@mikro-orm/core';
-import { ResourceStatusHistoryService, ResourceStatusService } from '@/modules/resources';
+import { ResourceStatusHistoryService } from '@/modules/resources/services/ResourceStatusHistoryService';
+import { ResourceStatusService } from '@/modules/resources/services/ResourceStatusService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceDao: SinonStubbedInstance<ResourceDao>;
