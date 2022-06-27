@@ -42,8 +42,6 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     }
 
     const groups = await this.dao.getByCriteria({ organization: fetchedorganization.getValue() }, FETCH_STRATEGY.ALL);
-    console.log({ groups });
-
     return Result.ok(groups);
   }
 
