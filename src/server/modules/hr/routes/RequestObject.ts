@@ -4,6 +4,7 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 import { userStatus } from '@/modules/users/models/User';
+import { MembershipStatus } from '@/modules/hr/models/Member';
 
 @JsonObject()
 @unique
@@ -102,9 +103,9 @@ export class MemberRO {
   @JsonProperty()
   id?: number;
   @JsonProperty()
-  resource!: number;
+  resource?: number;
   @JsonProperty()
-  organization!: number;
+  organization?: number;
   @JsonProperty()
   name?: string;
   @JsonProperty()
@@ -122,7 +123,7 @@ export class MemberRO {
   @JsonProperty()
   workLocation?: AddressRO;
   @JsonProperty()
-  memberType!: string;
+  memberType?: string;
   @JsonProperty()
   addressHome?: AddressRO;
   @JsonProperty()
@@ -173,6 +174,8 @@ export class MemberRO {
   departureDate?: Date;
   @JsonProperty()
   status?: userStatus;
+  @JsonProperty()
+  membership?: MembershipStatus;
 }
 
 @JsonObject()
@@ -197,7 +200,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   workLocation?: AddressRO;
   @JsonProperty()
-  memberType!: string;
+  memberType?: string;
   @JsonProperty()
   identificationId?: string;
   @JsonProperty()
