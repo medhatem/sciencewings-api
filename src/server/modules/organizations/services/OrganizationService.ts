@@ -105,7 +105,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       let keycloakGroup = null;
       const groupName = `${orgPrifix}${payload.name}`;
       if (payload.parent) {
-        console.log('payload.parent');
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
@@ -113,7 +112,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
           },
         );
       } else {
-        console.log('else');
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
           name: groupName,
           realm: getConfig('keycloak.clientValidation.realmName'),
@@ -126,7 +124,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
           name: `${grpPrifix}admin`,
         },
       );
-      console.log('kcAdminGroupCreated=', kcAdminGroupCreated);
       kcAdminGroupId = kcAdminGroupCreated.id;
       //create a member group "grp-member" to each new org in Kc
       const kcMemberGroupCreated = await this.keycloak.getAdminClient().groups.setOrCreateChild(
@@ -136,7 +133,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         },
       );
       kcMemberGroupId = kcMemberGroupCreated.id;
-      console.log('kcMemberGroupId= ', kcMemberGroupId);
       wrappedOrganization.kcid = keycloakGroup.id;
       //adding owner in the group attributes
       await this.keycloak
@@ -345,8 +341,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       const groups = await this.keycloak
         .getAdminClient()
         .groups.findOne({ id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') });
-
-      console.log(fetchedorganization.kcid, { subGroups: groups.subGroups });
 
       if (groups.subGroups.length !== 1) {
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
