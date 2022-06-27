@@ -103,7 +103,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       socialLinkedin: 'test',
       socialYoutube: 'test',
       socialInstagram: 'test',
-      adminContact: 1,
       parent: 1,
     };
 

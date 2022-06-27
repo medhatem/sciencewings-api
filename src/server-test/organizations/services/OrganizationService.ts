@@ -254,8 +254,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve(null));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // prepare base
@@ -268,25 +266,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization with id 1 does not exist.`);
     });
 
-    test('Should fail on find the adminContact', async () => {
-      const mackPayload = { ...payload };
-      mackPayload.adminContact = 2;
-      // set organization to exist
-      mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
-      // set owner to exist
-      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to null
-      mockMethodWithResult(userService, 'get', [mackPayload.adminContact], Promise.resolve(Result.ok(null)));
-
-      stub(BaseService.prototype, 'wrapEntity').returns({});
-      stubKeyclockInstanceWithBaseService([]);
-
-      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`User with id: ${mackPayload.adminContact} does not exist.`);
-    });
-
     test('Should fail on find the direction', async () => {
       const mackPayload = { ...payload };
       mackPayload.direction = 2;
@@ -294,8 +273,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [mackPayload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to null
       mockMethodWithResult(userService, 'get', [mackPayload.direction], Promise.resolve(Result.ok(null)));
 
@@ -329,8 +306,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // prepare base
