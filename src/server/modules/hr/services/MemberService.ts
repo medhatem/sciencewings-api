@@ -179,7 +179,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     }
     const fetchedMembers = await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL);
 
-    console.log('members inside service = ', fetchedMembers);
     return Result.ok(fetchedMembers as Member[]);
   }
 }

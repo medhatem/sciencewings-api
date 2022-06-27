@@ -117,7 +117,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
   public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
     const result = await this.MemberService.getUserMemberships(userId);
 
-    console.log('members inside route = ', result.getValue());
     if (result.isFailure) {
       throw result.error;
     }
