@@ -7,3 +7,8 @@ export type EmailMessage = {
 };
 
 export type Json = { [key: string]: any };
+
+export type MemberKey = {
+  userId: number;
+  orgId: number;
+};

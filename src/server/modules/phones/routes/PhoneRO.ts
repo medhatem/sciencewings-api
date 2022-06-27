@@ -6,7 +6,7 @@ import { unique } from '@/decorators/unique';
 @unique
 export class PhoneRO {
   @JsonProperty()
-  id: number;
+  id?: number;
 
   @JsonProperty()
   phoneLabel: string;

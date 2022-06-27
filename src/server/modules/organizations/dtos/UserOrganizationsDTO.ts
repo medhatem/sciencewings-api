@@ -1,7 +1,8 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-import { unique } from '@/decorators/unique';
+
 import { beforeDeserialize } from '@/utils/utilities';
+import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
@@ -10,7 +11,7 @@ class UserOrganizationBaseBodyGetDTO extends BaseBodyDTO {
   id: number;
 
   @JsonProperty()
-  name: number;
+  name: string;
 }
 
 @JsonObject()
