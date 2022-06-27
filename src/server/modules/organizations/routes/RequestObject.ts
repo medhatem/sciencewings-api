@@ -32,9 +32,6 @@ export class CreateOrganizationRO {
   members: Array<number>;
 
   @JsonProperty()
-  direction: number;
-
-  @JsonProperty()
   socialFacebook?: string;
   @JsonProperty()
   socialTwitter?: string;
@@ -46,9 +43,6 @@ export class CreateOrganizationRO {
   socialYoutube?: string;
   @JsonProperty()
   socialInstagram?: string;
-
-  @JsonProperty()
-  adminContact: number;
 
   @JsonProperty()
   parent?: number;

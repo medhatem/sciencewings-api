@@ -86,28 +86,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const user = fetchedUser.getValue();
 
-    //TODO: check if admin contact is needed from front-end
-
-    // let adminContact;
-    // if (payload.adminContact) {
-    //   adminContact = await this.userService.get(payload.adminContact);
-    //   if (adminContact.isFailure || adminContact.getValue() === null) {
-    //     return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
-    //   }
-    //   adminContact = adminContact.getValue();
-    // }
-
-    //TODO: check if direction is needed from front-end
-
-    // let direction;
-    // if (payload.direction) {
-    //   direction = await this.userService.get(payload.direction);
-    //   if (direction.isFailure || direction.getValue() === null) {
-    //     return Result.notFound(`User with id: ${payload.direction} does not exist.`);
-    //   }
-    //   direction = direction.getValue();
-    // }
-
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       email: payload.email,

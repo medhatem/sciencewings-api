@@ -15,6 +15,7 @@ import { Result } from '@/utils/Result';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
+
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
 
@@ -57,14 +58,12 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       labels: ['0'],
       type: OrganizationType.SERVICE,
       members: [1],
-      direction: 1,
       socialFacebook: 'test',
       socialTwitter: 'test',
       socialGithub: 'test',
       socialLinkedin: 'test',
       socialYoutube: 'test',
       socialInstagram: 'test',
-      adminContact: 1,
       parent: 1,
     };
     const request = {
