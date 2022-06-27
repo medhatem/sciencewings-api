@@ -177,7 +177,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       throw result.error;
     }
 
-    return new OrganizationMembersDTO({ body: { members: result.getValue(), statusCode: 200 } });
+    return new OrganizationMembersDTO({ body: { data: result.getValue(), statusCode: 200 } });
   }
 
   /**

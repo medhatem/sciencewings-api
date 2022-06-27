@@ -9,6 +9,8 @@ import { Configuration } from '@/configuration/Configuration';
 import { Email } from '@/utils/Email';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
+import { Collection } from '@mikro-orm/core';
+import { Member } from '@/modules/hr/models/Member';
 import { Logger } from '@/utils/Logger';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
@@ -224,11 +226,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // prepare base
       organizationDAO['repository'] = { flush: stub() } as any;
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1 }));
+      stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1, members: { add: stub() } }));
       stubKeyclockInstanceWithBaseService([{}]);
 
       // set member creation
-      stub(MemberEvent.prototype, 'createMember').returns({} as any);
+      stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve(Result.ok({})));
       stub(GroupEvent.prototype, 'createGroup').returns({} as any);
       // set address creation
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
@@ -406,10 +408,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization with id ${orgId} does not exist.`);
     });
     test('Should return collection of members', async () => {
-      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({ members: [] }));
+      mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve({ members: new Collection(Member) }));
       const result = await container.get(OrganizationService).getMembers(orgId);
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql([]);
     });
   });
 

@@ -6,10 +6,8 @@ import { OrganizationBaseBodyGetDTO, OrganizationDTO } from '@/modules/organizat
 import { beforeDeserialize } from '@/utils/utilities';
 
 @JsonObject()
+@unique
 export class MemberBodyDTO extends BaseBodyDTO {
-  @JsonProperty()
-  id: number;
-
   @JsonProperty()
   name: string;
 
@@ -18,6 +16,18 @@ export class MemberBodyDTO extends BaseBodyDTO {
 
   @JsonProperty()
   organization: OrganizationDTO;
+
+  @JsonProperty()
+  status: string;
+
+  @JsonProperty()
+  active: boolean;
+
+  @JsonProperty()
+  joinDate: Date;
+
+  @JsonProperty()
+  workEmail: string;
 }
 
 @JsonObject()

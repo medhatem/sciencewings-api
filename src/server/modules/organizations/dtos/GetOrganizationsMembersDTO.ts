@@ -12,7 +12,7 @@ class OrganizationMembersBodyDTO extends BaseBodyDTO {
     type: MemberBodyDTO,
     beforeDeserialize,
   })
-  members: Array<MemberBodyDTO>;
+  data: Array<MemberBodyDTO>;
 }
 
 @JsonObject()

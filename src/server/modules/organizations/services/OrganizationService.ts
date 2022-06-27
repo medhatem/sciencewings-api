@@ -23,9 +23,8 @@ import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IO
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { IAddressService } from '@/modules/address/interfaces/IAddressService';
-import { FETCH_STRATEGY } from '@/modules/base';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { Collection } from '@mikro-orm/core';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
@@ -151,11 +150,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const organization = await createdOrg.getValue();
 
     const memberEvent = new MemberEvent();
-    memberEvent.createMember(user, organization);
-
+    const memberOwnerResult = await memberEvent.createMember(user, organization);
     const groupEvent = new GroupEvent();
     groupEvent.createGroup(kcAdminGroupId, organization, `${grpPrifix}admin`);
     groupEvent.createGroup(kcMemberGroupId, organization, `${grpPrifix}member`);
+
+    organization.members.add(memberOwnerResult.getValue());
+    this.update(organization);
 
     await this.keycloak.getAdminClient().users.addToGroup({
       id: user.keycloakId,
@@ -185,6 +186,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
+
     this.dao.repository.flush();
     return Result.ok<number>(organization.id);
   }
@@ -306,14 +308,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Collection<Member>>> {
+  public async getMembers(orgId: number): Promise<Result<Member[]>> {
     const existingOrg = await this.dao.get(orgId);
 
     if (!existingOrg) {
       return Result.notFound(`Organization with id ${orgId} does not exist.`);
     }
 
-    return Result.ok<any>(existingOrg.members);
+    if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
+
+    const members = existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
+    return Result.ok<any>(members);
   }
 
   @log()
