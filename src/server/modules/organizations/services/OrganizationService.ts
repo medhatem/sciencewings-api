@@ -100,7 +100,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.parent = parent;
 
     wrappedOrganization.direction = user;
-    wrappedOrganization.admin_contact = user;
 
     let kcAdminGroupId = null;
     let kcMemberGroupId = null;
@@ -237,14 +236,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
       wrappedOrganization.direction = direction;
-    }
-
-    if (payload.adminContact) {
-      const adminContact = await this.userService.get(payload.adminContact);
-      if (adminContact.isFailure || adminContact.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
-      }
-      wrappedOrganization.admin_contact = adminContact;
     }
 
     if (payload.parent) {

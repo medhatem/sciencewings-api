@@ -83,9 +83,6 @@ export class UpdateOrganizationRO {
   socialInstagram?: string;
 
   @JsonProperty()
-  adminContact?: number;
-
-  @JsonProperty()
   parent?: number;
 }
 
