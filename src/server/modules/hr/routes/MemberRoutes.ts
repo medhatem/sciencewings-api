@@ -1,6 +1,12 @@
-import { getAllMembershipsBodyDTO, getMembershipDTO} from '@/modules/hr/dtos/MemberDTO';
-import {MemberBodyDTO, MemberDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
-import { POST, Path, Security, ContextRequest, PathParam, PUT, GET } from 'typescript-rest';
+import {
+  MemberDTO,
+  UpdateMemberBodyDTO,
+  getMembershipDTO,
+  getAllMembershipsBodyDTO,
+  UpdateMemberDTO,
+  MemberBodyDTO,
+} from '@/modules/hr/dtos/MemberDTO';
+import { POST, Path, Security, PUT, PathParam, GET, ContextRequest } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -12,6 +18,7 @@ import { UserIdDTO, UserInviteToOrgRO } from '@/modules/users';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { UserRequest } from '@/types/UserRequest';
+import { MemberRO } from './RequestObject';
 
 @provideSingleton()
 @Path('members')
@@ -97,24 +104,51 @@ export class MemberRoutes extends BaseRoutes<Member> {
      return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
    }
 /**
+  /**
+   * Update a Membership status in the database
+   *
+   * @param payload
+   * Should contain Resource data that include Resource data with its id
+   * @param id
+   * id of the requested resource
+   */
+  @PUT
+  @Path('/:userId/:orgId/membership')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateMemberBodyDTO>(204, 'Resource updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateMembershipStatus(
+    payload: MemberRO,
+    @PathParam('userId') userId: number,
+    @PathParam('orgId') orgId: number,
+  ): Promise<UpdateMemberDTO> {
+    const result = await this.MemberService.updateMembershipStatus(payload, userId, orgId);
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new UpdateMemberDTO({ body: { ...result.getValue(), statusCode: 204 } });
+  }
+  /**
    * get all user memberships
    *
    * @param userId userId
    */
- @GET
- @Path('/:userId/memberships')
- @Security()
- @LoggerStorage()
- @Response<getAllMembershipsBodyDTO>(200, 'Resource Retrived Successfully')
- @Response<InternalServerError>(500, 'Internal Server Error')
- @Response<NotFoundError>(404, 'Not Found Error')
- public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
-   const result = await this.MemberService.getUserMemberships(userId);
+  @GET
+  @Path('/:userId/memberships')
+  @Security()
+  @LoggerStorage()
+  @Response<getAllMembershipsBodyDTO>(200, 'Resource Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
+    const result = await this.MemberService.getUserMemberships(userId);
 
-   if (result.isFailure) {
-     throw result.error;
-   }
+    if (result.isFailure) {
+      throw result.error;
+    }
 
-   return new getMembershipDTO({ body: { data: [result.getValue()], statusCode: 200 } });
- }
+    return new getMembershipDTO({ body: { data: [result.getValue()], statusCode: 200 } });
+  }
 }

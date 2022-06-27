@@ -132,7 +132,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const userId = 1;
     const payload: CreateOrganizationRO = {
       name: 'testingground2',
-      description: '',
       email: 'testingground1@gmail.com',
       type: OrganizationType.SERVICE,
       phones: [
@@ -144,8 +143,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       ],
       labels: ['x', 'y', 'z'],
       members: [] as any,
-      direction: 1,
-      adminContact: 1,
       addresses: [
         {
           country: 'Canada',
@@ -193,51 +190,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`User with id: ${userId} does not exist`);
     });
 
-    test('Should fail on find the adminContact', async () => {
-      // set organization to not exist
-      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
-      // set owner to exist
-      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to null
-      payload.adminContact = 2;
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok(null)));
-
-      const result = await container.get(OrganizationService).createOrganization(payload, userId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`User with id: ${payload.adminContact} does not exist.`);
-
-      payload.adminContact = 1;
-    });
-
-    test('Should fail on find the direction', async () => {
-      // set organization to not exist
-      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
-      // set owner to exist
-      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
-      // set direction to null
-      payload.direction = 2;
-      mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok(null)));
-
-      const result = await container.get(OrganizationService).createOrganization(payload, userId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`User with id: ${payload.direction} does not exist.`);
-
-      payload.direction = 1;
-    });
-
     test('Should fail on organization creation', async () => {
       // set organization to not exist
       mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
-      // set direction to exist
-      mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // mock settings
       mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       // prepare base
@@ -259,9 +216,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
       // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
+      // mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
-      mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
+      // mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // mock settings
       mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
       // prepare base
@@ -279,9 +236,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       // set label creation
       mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
-
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
-
       expect(result.isSuccess).to.be.true;
       expect(result.getValue()).to.equal(1);
     });
@@ -299,8 +254,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve(null));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // prepare base
@@ -313,25 +266,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`Organization with id 1 does not exist.`);
     });
 
-    test('Should fail on find the adminContact', async () => {
-      const mackPayload = { ...payload };
-      mackPayload.adminContact = 2;
-      // set organization to exist
-      mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
-      // set owner to exist
-      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to null
-      mockMethodWithResult(userService, 'get', [mackPayload.adminContact], Promise.resolve(Result.ok(null)));
-
-      stub(BaseService.prototype, 'wrapEntity').returns({});
-      stubKeyclockInstanceWithBaseService([]);
-
-      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`User with id: ${mackPayload.adminContact} does not exist.`);
-    });
-
     test('Should fail on find the direction', async () => {
       const mackPayload = { ...payload };
       mackPayload.direction = 2;
@@ -339,8 +273,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [mackPayload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to null
       mockMethodWithResult(userService, 'get', [mackPayload.direction], Promise.resolve(Result.ok(null)));
 
@@ -374,8 +306,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve({}));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
       // set direction to exist
       mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // prepare base

@@ -37,13 +37,13 @@ import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { catchKeycloackError } from '@/utils/keycloack';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
-import { OrganizationSettingsService } from '@/modules/organizations/services/OrganizationSettingsService';
+import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
-    public organizationSettingsService: OrganizationSettingsService,
+    public organizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
@@ -80,33 +80,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       parent = org;
     }
     const fetchedUser = await this.userService.get(userId);
-
     if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
       return Result.notFound(`User with id: ${userId} does not exist`);
     }
     const user = fetchedUser.getValue();
-
-    let adminContact;
-    if (payload.adminContact) {
-      adminContact = await this.userService.get(payload.adminContact);
-      if (adminContact.isFailure || adminContact.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
-      }
-      adminContact = adminContact.getValue();
-    }
-
-    let direction;
-    if (payload.direction) {
-      direction = await this.userService.get(payload.direction);
-      if (direction.isFailure || direction.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.direction} does not exist.`);
-      }
-      direction = direction.getValue();
-    }
-
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
-      description: payload.description,
       email: payload.email,
       type: payload.type,
       socialFacebook: payload.socialFacebook || null,
@@ -118,23 +97,23 @@ export class OrganizationService extends BaseService<Organization> implements IO
     });
     wrappedOrganization.parent = parent;
 
-    wrappedOrganization.direction = direction;
-    wrappedOrganization.admin_contact = adminContact;
+    wrappedOrganization.direction = user;
 
     let kcAdminGroupId = null;
     let kcMemberGroupId = null;
     try {
       let keycloakGroup = null;
+      const groupName = `${orgPrifix}${payload.name}`;
       if (payload.parent) {
         keycloakGroup = await this.keycloak.getAdminClient().groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
-            name: `${orgPrifix}${payload.name}`,
+            name: groupName,
           },
         );
       } else {
         keycloakGroup = await this.keycloak.getAdminClient().groups.create({
-          name: `${orgPrifix}${payload.name}`,
+          name: groupName,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
@@ -160,18 +139,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
         .getAdminClient()
         .groups.update(
           { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
-          { attributes: { owner: direction.keycloakId } },
+          { attributes: { owner: [user.keycloakId] }, name: groupName },
         );
     } catch (error) {
       return catchKeycloackError(error, payload.name);
     }
-
     const createdOrg = await this.create(wrappedOrganization);
-
     if (createdOrg.isFailure) {
       return createdOrg;
     }
-
     const organization = await createdOrg.getValue();
 
     const memberEvent = new MemberEvent();
@@ -198,7 +174,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         organization,
       });
     });
-
     await applyToAll(payload.phones, async (phone) => {
       await this.addressService.create({
         phoneLabel: phone.phoneLabel,
@@ -207,7 +182,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         organization,
       });
     });
-
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
@@ -255,14 +229,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
       wrappedOrganization.direction = direction;
-    }
-
-    if (payload.adminContact) {
-      const adminContact = await this.userService.get(payload.adminContact);
-      if (adminContact.isFailure || adminContact.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.adminContact} does not exist.`);
-      }
-      wrappedOrganization.admin_contact = adminContact;
     }
 
     if (payload.parent) {
@@ -375,8 +341,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       const groups = await this.keycloak
         .getAdminClient()
         .groups.findOne({ id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') });
-
-      console.log(fetchedorganization.kcid, { subGroups: groups.subGroups });
 
       if (groups.subGroups.length !== 1) {
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);

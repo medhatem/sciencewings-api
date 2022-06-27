@@ -1,10 +1,9 @@
 import { Member, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
-
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@/utils/Email';
-import { EmailMessage } from '@/types/types';
+import { EmailMessage, MemberKey } from '@/types/types';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -14,6 +13,10 @@ import { Result } from '@/utils/Result';
 import { getConfig } from '@/configuration/Configuration';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
+import { MemberRO } from '@/modules/hr/routes/RequestObject';
+import { validate } from '@/decorators/validate';
+import { validateParam } from '@/decorators/validateParam';
+import { MemberSchema } from '@/modules/hr/schemas/MemberSchema';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -126,16 +129,57 @@ export class MemberService extends BaseService<Member> implements IMemberService
     this.emailService.sendEmail(emailMessage);
     return Result.ok<number>(user.id);
   }
-  
+  /**
+   * the user can accpet, reject his membership
+   * updating the staus of membership
+   * @param payload the status of membership
+   * @userId @orgId primary keys of member
+   */
+  @log()
+  @safeGuard()
+  @validate
+  public async updateMembershipStatus(
+    @validateParam(MemberSchema) payload: MemberRO,
+    userId: number,
+    orgId: number,
+  ): Promise<Result<MemberKey>> {
+    const fetchedUser = await this.userService.get(userId);
+    if (fetchedUser.isFailure || !fetchedUser.getValue()) {
+      return Result.notFound(`User with id: ${userId} does not exist.`);
+    }
+    const fetchedOrg = await this.organizationService.get(orgId);
+    if (fetchedOrg.isFailure || !fetchedOrg.getValue()) {
+      return Result.notFound(`organization with id: ${orgId} does not exist.`);
+    }
+    const fetchedMember = (await this.dao.getByCriteria(
+      { organization: orgId, user: userId },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+    if (!fetchedMember) {
+      return Result.notFound(`membership of user with id: ${userId} in organization with id: ${orgId} does not exist.`);
+    }
+    const member = this.wrapEntity(fetchedMember, {
+      ...fetchedMember,
+      ...payload,
+    });
+
+    const updatedMember = await this.dao.update(member);
+    if (!updatedMember) {
+      return Result.fail(`membership of user with id: ${userId} in organization with id: ${orgId} can not be updated.`);
+    }
+    return Result.ok<any>({ userId, orgId });
+  }
   @log()
   @safeGuard()
   public async getUserMemberships(userId: number): Promise<Result<Member[]>> {
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure) {
-      return Result.notFound(`User with id: ${userId} does not exist.`);    }
+      return Result.notFound(`User with id: ${userId} does not exist.`);
+    }
     const fetchedMembers = await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL);
 
-    return Result.ok(fetchedMembers as Member[]);}
+    return Result.ok(fetchedMembers as Member[]);
+  }
   /**
    * switch between different organizations by adding a current_org attribute
    *  in keycloak for the logged in user.

@@ -15,13 +15,11 @@ const organizationSchema = Joi.object({
 });
 
 export const CreateOrganizationSchema = organizationSchema.keys({
+  description: Joi.string().allow(''),
   name: Joi.string().required(),
-  description: Joi.string().allow('').required(),
   email: Joi.string().email().required(),
   phones: Joi.array().required(),
   labels: Joi.array().required(),
-  direction: Joi.number().required(),
-  adminContact: Joi.number().required(),
   parent: Joi.number().allow(null),
   settings: Joi.object(),
 });
