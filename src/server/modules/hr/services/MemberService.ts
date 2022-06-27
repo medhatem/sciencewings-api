@@ -169,6 +169,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     }
     return Result.ok<any>({ userId, orgId });
   }
+
   @log()
   @safeGuard()
   public async getUserMemberships(userId: number): Promise<Result<Member[]>> {
@@ -178,6 +179,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     }
     const fetchedMembers = await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL);
 
+    console.log('members inside service = ', fetchedMembers);
     return Result.ok(fetchedMembers as Member[]);
   }
 }
