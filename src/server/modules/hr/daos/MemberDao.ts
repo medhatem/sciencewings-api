@@ -5,7 +5,7 @@ import { Member } from '@/modules/hr/models/Member';
 
 @provideSingleton()
 export class MemberDao extends BaseDao<Member> {
-  private constructor(public model: Member = Member.getInstance()) {
+  private constructor(public model: Member) {
     super(model);
   }
 

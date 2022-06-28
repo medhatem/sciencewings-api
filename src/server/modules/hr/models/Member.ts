@@ -15,7 +15,8 @@ import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatus
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 
 export enum MemberTypeEnum {
-  Regular = 'regular',
+  ADMIN = 'admin',
+  REGULAR = 'regular',
 }
 
 export enum MembershipStatus {
@@ -115,6 +116,7 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   identificationId?: string;
 
+  @Property({ nullable: true })
   certificate?: string;
 
   @Property({ nullable: true })
@@ -134,6 +136,9 @@ export class Member extends BaseModel<Member> {
 
   @Property({ columnType: 'date', nullable: true })
   departureDate?: Date;
+
+  @Property({ columnType: 'timestamp', nullable: true })
+  joinDate?: Date = new Date();
 
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;

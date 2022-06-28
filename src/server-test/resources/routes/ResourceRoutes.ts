@@ -20,7 +20,7 @@ import {
   ResourceTimerRestrictionRO,
 } from '@/modules/resources/routes/RequestObject';
 import { Result } from '@/utils/Result';
-import { Resource } from '@/modules/resources';
+import { Resource } from '@/modules/resources/models/Resource';
 import { LocalStorage } from '@/utils/LocalStorage';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
@@ -133,8 +133,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         expect(error).to.equal('throwing error');
       }
     });
-    test('Should success at eturning the right value', async () => {
-      mockMethodWithResult(resourceService, 'getResourcesOfAGivenOrganizationById', [], Result.ok([] as Resource[]));
+    test('Should success at returning the right value', async () => {
+      mockMethodWithResult(resourceService, 'getResourcesOfAGivenOrganizationById', [], Result.ok([]));
       const result = await resourceRoute.getOgranizationResources(1);
       expect(result.body.statusCode).to.equal(200);
     });
@@ -425,8 +425,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         expect(error).to.equal('throwing error');
       }
     });
-    test('Should success at eturning the right value', async () => {
-      mockMethodWithResult(resourceService, 'getResourceSettings', [], Result.ok([] as Resource[]));
+    test('Should success atr eturning the right value', async () => {
+      mockMethodWithResult(resourceService, 'getResourceSettings', [], Result.ok());
       const result = await resourceRoute.getResourceSettings(1);
       expect(result.body.statusCode).to.equal(200);
     });
