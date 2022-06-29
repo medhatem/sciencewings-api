@@ -141,7 +141,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     } catch (error) {
       return catchKeycloackError(error, payload.name);
     }
-    // wrappedOrganization.kcid = '123456';
+
     const createdOrg = await this.create(wrappedOrganization);
     if (createdOrg.isFailure) {
       return createdOrg;
