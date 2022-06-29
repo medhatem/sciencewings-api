@@ -35,10 +35,16 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
   @log()
   @safeGuard()
-  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
-    const existingUser = await this.keycloak
-      .getAdminClient()
-      .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
+  async inviteUserByEmail(email: string, orgId: number): Promise<Result<Member>> {
+    let existingUser;
+    try {
+      existingUser = await (await this.keycloak.getAdminClient()).users.find({
+        email,
+        realm: getConfig('keycloak.clientValidation.realmName'),
+      });
+    } catch (error) {
+      return Result.fail('Something went wrong when retriving the user.');
+    }
 
     if (existingUser.length > 0) {
       return Result.fail('The user already exist.');
@@ -52,7 +58,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existingOrgValue = existingOrg.getValue();
 
-    const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
+    const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
       email,
       firstName: '',
       lastName: '',
@@ -70,12 +76,18 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (savedUser.isFailure) {
       return savedUser;
     }
+    const savedUserValue = savedUser.getValue();
     // create member for the organization
     const wrappedMember = this.wrapEntity(new Member(), {
-      memberType: MemberTypeEnum.Regular,
+      memberType: MemberTypeEnum.REGULAR,
     });
-    wrappedMember.user = savedUser.getValue();
+    wrappedMember.user = savedUserValue;
+    wrappedMember.name = savedUserValue.firstname + ' ' + savedUserValue.lastname;
+    wrappedMember.workEmail = savedUserValue.email;
+    wrappedMember.status = userStatus.INVITATION_PENDING;
+    wrappedMember.joinDate = new Date();
     wrappedMember.organization = existingOrgValue;
+
     const createdMemberResult = await this.dao.create(wrappedMember);
 
     existingOrgValue.members.add(createdMemberResult);
@@ -92,8 +104,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     this.emailService.sendEmail(emailMessage);
     user.status = userStatus.INVITATION_PENDING;
     await this.userService.update(user);
-
-    return Result.ok<number>(savedUser.getValue().id);
+    return Result.ok<Member>(createdMemberResult);
   }
 
   @log()
@@ -201,16 +212,16 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound(`User with id: ${userId} is not member in that org`);
     }
     //retrieve the organization keycloak group 
-    const orgKcGroupe = await this.keycloak
-      .getAdminClient()
+    const orgKcGroupe = await (await this.keycloak
+      .getAdminClient())
       .groups.findOne({ id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName')});
 
     if (!orgKcGroupe) {
       return Result.notFound(`organization with id: ${orgId} does not exist.`);
     }
     //change the KcUser current_org attribute 
-    await this.keycloak
-      .getAdminClient()
+    await (await this.keycloak
+      .getAdminClient())
       .users.update({ id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName')},
       {attributes: {current_org: orgKcGroupe.id}});
 

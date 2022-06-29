@@ -12,8 +12,6 @@ import { container, provideSingleton } from '@/di';
 
 import { HttpError } from 'typescript-rest/dist/server/model/errors';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
-import { Keycloak } from '@/sdks/keycloak';
-import { MemberEvent } from './modules/hr/events/MemberEvent';
 import { RequestHandler } from 'express';
 import { RestServer } from './RestServer';
 import { RestServiceFactory } from '@/di/ServiceFactory';
@@ -77,8 +75,6 @@ export class Server {
     this.configureServiceFactory();
     this.addMiddlewares();
     this.addRoutes();
-    this.startKeycloakAdmin();
-    new MemberEvent();
   }
 
   /**
@@ -127,9 +123,6 @@ export class Server {
     RestServer.registerAuthenticator(keyCloakAuth);
   }
 
-  private startKeycloakAdmin() {
-    Keycloak.getInstance().init(); // initialize the keyCloak admin instance
-  }
   /**
    * configure the IOC module for typescript-rest to
    * define how the Routes will be initialized

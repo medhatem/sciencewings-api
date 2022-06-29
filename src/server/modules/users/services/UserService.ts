@@ -69,9 +69,10 @@ export class UserService extends BaseService<User> implements IUserService {
   @safeGuard()
   async registerUser(userInfo: KeycloakUserInfo): Promise<Result<number>> {
     // get the userKeyCloakId
-    const users = await this.keycloak
-      .getAdminClient()
-      .users.find({ email: userInfo.email, realm: getConfig('keycloak.clientValidation.realmName') });
+    const users = await (await this.keycloak.getAdminClient()).users.find({
+      email: userInfo.email,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
 
     if (!users || !users.length) {
       return Result.notFound<number>('No user found');
@@ -83,7 +84,6 @@ export class UserService extends BaseService<User> implements IUserService {
     user.keycloakId = users[0].id;
     let createdUser: { [key: string]: any } = { id: null };
     createdUser = await this.dao.create(user);
-
     return Result.ok<number>(createdUser.id);
   }
 
@@ -120,7 +120,7 @@ export class UserService extends BaseService<User> implements IUserService {
       return Result.notFound<string>(`user with email: ${payload.email} does not exist.`);
     }
 
-    await this.keycloak.getAdminClient().users.resetPassword({
+    await (await this.keycloak.getAdminClient()).users.resetPassword({
       realm: getConfig('keycloak.clientValidation.realmName'),
       id: user.keycloakId,
       credential: {

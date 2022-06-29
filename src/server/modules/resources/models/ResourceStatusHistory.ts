@@ -1,6 +1,6 @@
 import { container, provide } from '@/di';
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Member } from '@/modules/hr';
+import { Member } from '@/modules/hr/models/Member';
 import { Entity, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Resource } from './Resource';
 import { ResourceStatus } from './ResourceStatus';
