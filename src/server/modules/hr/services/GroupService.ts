@@ -76,7 +76,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
     wrappedGroup.organization = fetchedorganizationValue;
 
-    const { id } = await this.keycloak.getAdminClient().groups.setOrCreateChild(
+    const { id } = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
       { id: fetchedorganizationValue.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         name: `${grpPrifix}${payload.name}`,
@@ -98,7 +98,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
           const fetchedMemberValue = fetchedMember.getValue();
 
           createdGroup.members.add(fetchedMemberValue);
-          await this.keycloak.getAdminClient().users.addToGroup({
+          await (await this.keycloak.getAdminClient()).users.addToGroup({
             id: fetchedMemberValue.user.keycloakId,
             groupId: wrappedGroup.kcid,
             realm: getConfig('keycloak.clientValidation.realmName'),
@@ -126,7 +126,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
     if (fetchedGroup.name !== payload.name) {
       try {
-        await this.keycloak.getAdminClient().groups.update(
+        await (await this.keycloak.getAdminClient()).groups.update(
           { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
             name: `${grpPrifix}${payload.name}`,
@@ -152,7 +152,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       return Result.notFound(`group with id ${groupId} does not exist.`);
     }
     try {
-      await this.keycloak.getAdminClient().groups.del({
+      await (await this.keycloak.getAdminClient()).groups.del({
         id: fetchedGroup.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });

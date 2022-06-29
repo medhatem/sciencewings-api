@@ -56,7 +56,7 @@ export class KeycloakApi {
    */
   @safeGuard()
   async getGroupById(id: string): Promise<Result<GroupRepresentation>> {
-    const group = await this.keycloak.getAdminClient().groups.findOne({ id, realm: this.realm });
+    const group = await (await this.keycloak.getAdminClient()).groups.findOne({ id, realm: this.realm });
     return Result.ok<GroupRepresentation>(group);
   }
 }

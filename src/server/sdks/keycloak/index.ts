@@ -21,7 +21,10 @@ export class Keycloak {
     return container.get(Keycloak);
   }
 
-  getAdminClient() {
+  async getAdminClient() {
+    if (!this.kcAdminClient.keycloak || this.kcAdminClient.keycloak.isTokenExpired()) {
+      await this.init(); //authenticate again since token is expired
+    }
     return this.kcAdminClient;
   }
 
