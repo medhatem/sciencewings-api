@@ -38,9 +38,10 @@ export class MemberService extends BaseService<Member> implements IMemberService
   async inviteUserByEmail(email: string, orgId: number): Promise<Result<Member>> {
     let existingUser;
     try {
-      existingUser = await this.keycloak
-        .getAdminClient()
-        .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
+      existingUser = await (await this.keycloak.getAdminClient()).users.find({
+        email,
+        realm: getConfig('keycloak.clientValidation.realmName'),
+      });
     } catch (error) {
       return Result.fail('Something went wrong when retriving the user.');
     }
@@ -57,7 +58,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existingOrgValue = existingOrg.getValue();
 
-    const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
+    const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
       email,
       firstName: '',
       lastName: '',
