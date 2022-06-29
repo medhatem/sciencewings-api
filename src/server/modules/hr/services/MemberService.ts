@@ -3,7 +3,7 @@ import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@/utils/Email';
-import { EmailMessage, MemberKey } from '@/types/types';
+import { EmailMessage, MemberKey, OrgKey } from '@/types/types';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -38,7 +38,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
   async inviteUserByEmail(email: string, orgId: number): Promise<Result<Member>> {
     let existingUser;
     try {
-      existingUser = await (await this.keycloak.getAdminClient()).users.find({
+      existingUser = await (
+        await this.keycloak.getAdminClient()
+      ).users.find({
         email,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -58,7 +60,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existingOrgValue = existingOrg.getValue();
 
-    const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
+    const createdKeyCloakUser = await (
+      await this.keycloak.getAdminClient()
+    ).users.create({
       email,
       firstName: '',
       lastName: '',
@@ -183,13 +187,17 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
   @log()
   @safeGuard()
-  public async getUserMemberships(userId: number): Promise<Result<Member[]>> {
+  public async getUserMemberships(userId: number): Promise<Result<OrgKey[]>> {
     const fetchedUser = await this.userService.get(userId);
     if (fetchedUser.isFailure) {
       return Result.notFound(`User with id: ${userId} does not exist.`);
     }
-    const fetchedMembers = await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL);
+    const fetchedMembers = (await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL)) as Member[];
+    let organizations: OrgKey[] = [];
+    fetchedMembers.forEach((member) => {
+      organizations.push({ orgId: member.organization.id, orgName: member.organization.name });
+    });
 
-    return Result.ok(fetchedMembers as Member[]);
+    return Result.ok(organizations);
   }
 }
