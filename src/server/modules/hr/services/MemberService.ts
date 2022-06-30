@@ -191,4 +191,40 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     return Result.ok(fetchedMembers as Member[]);
   }
+  /**
+   * switch between different organizations by adding a current_org attribute
+   *  in keycloak for the logged in user.
+   * @param orgId
+   * @param userId
+   */
+  @log()
+  @safeGuard()
+  public async switchOrganization(orgId: number, userId: number): Promise<Result<number>> {
+    const fetchedUser = await this.userService.get(userId);
+    const user = fetchedUser.getValue();
+    const fetchedOrganization = await this.organizationService.get(orgId);
+    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+      return Result.notFound(`organization with id: ${orgId} does not exist.`);
+    }
+    const organization = fetchedOrganization.getValue();
+    const fetchedMember = await this.dao.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+    if (!fetchedMember) {
+      return Result.notFound(`User with id: ${userId} is not member in that org`);
+    }
+    //retrieve the organization keycloak group 
+    const orgKcGroupe = await (await this.keycloak
+      .getAdminClient())
+      .groups.findOne({ id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName')});
+
+    if (!orgKcGroupe) {
+      return Result.notFound(`organization with id: ${orgId} does not exist.`);
+    }
+    //change the KcUser current_org attribute 
+    await (await this.keycloak
+      .getAdminClient())
+      .users.update({ id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName')},
+      {attributes: {current_org: orgKcGroupe.id}});
+
+    return Result.ok<number>(fetchedUser.id);
+  }
 }
