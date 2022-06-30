@@ -7,6 +7,7 @@ import { Member } from '@/modules/hr/models/Member';
 export abstract class IMemberService extends IBaseService<any> {
   inviteUserByEmail: (email: string, orgId: number) => Promise<Result<Member>>;
   resendInvite: (id: number, orgId: number) => Promise<Result<number>>;
+  switchOrganization: (orgId: number, userId: number) => Promise<Result<number>>;
   updateMembershipStatus: (payload: MemberRO, userId: number, orgId: number) => Promise<Result<MemberKey>>;
   getUserMemberships: (userId: number) => Promise<Result<OrgKey[]>>;
 }

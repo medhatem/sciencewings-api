@@ -1,5 +1,11 @@
-import { MemberDTO, UpdateMemberBodyDTO, getMembershipDTO, UpdateMemberDTO } from '@/modules/hr/dtos/MemberDTO';
-import { POST, Path, Security, PUT, PathParam, GET } from 'typescript-rest';
+import {
+  MemberDTO,
+  UpdateMemberBodyDTO,
+  getMembershipDTO,
+  UpdateMemberDTO,
+  MemberBodyDTO,
+} from '@/modules/hr/dtos/MemberDTO';
+import { POST, Path, Security, PUT, PathParam, GET, ContextRequest } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -10,6 +16,7 @@ import { InviteUserBodyDTO, InviteUserDTO } from '@/modules/organizations/dtos/I
 import { UserIdDTO, UserInviteToOrgRO } from '@/modules/users';
 import { UserResendPassword } from '@/modules/organizations/routes/RequestObject';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
+import { UserRequest } from '@/types/UserRequest';
 import { MemberRO } from './RequestObject';
 
 @provideSingleton()
@@ -70,6 +77,32 @@ export class MemberRoutes extends BaseRoutes<Member> {
       body: { statusCode: 201, id: result.getValue() },
     });
   }
+
+  /**
+   * update the current_org
+   *
+   * @param orgId  id of the organization to switch to
+   *
+   */
+  @PUT
+  @Path('switchOrganization/:orgId')
+  @Security()
+  @LoggerStorage()
+  @Response<MemberBodyDTO>(204, 'Organization updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async switchOrganization(
+    @PathParam('orgId') orgId: number,
+    @ContextRequest request: UserRequest,
+  ): Promise<MemberDTO> {
+    const result = await this.MemberService.switchOrganization(orgId, request.userId);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+  /**
   /**
    * Update a Membership status in the database
    *
