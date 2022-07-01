@@ -205,7 +205,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
   });
 
-  suite('get user members', () => {
+  suite('get user memberships', () => {
     const userId = 1;
     test('Should fail on retriving user', async () => {
       mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.notFound(null)));
