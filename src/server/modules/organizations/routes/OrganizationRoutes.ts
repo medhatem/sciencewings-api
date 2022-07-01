@@ -12,7 +12,6 @@ import {
 } from './RequestObject';
 import { UserRequest } from '@/types/UserRequest';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
-import { UserOrganizationsDTO } from '@/modules/organizations/dtos/UserOrganizationsDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
@@ -180,27 +179,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     return new OrganizationMembersDTO({ body: { data: result.getValue(), statusCode: 200 } });
   }
 
-  /**
-   * retrieve all the organizations owned by a given user
-   *
-   * @param id: user id
-   */
-  @GET
-  @Path('getUserOrganizations/:id')
-  @Security()
-  @LoggerStorage()
-  @Response<UserOrganizationsDTO>(200, 'Return Organization that the users belongs to, Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async getUserOrganizations(@PathParam('id') id: number): Promise<UserOrganizationsDTO> {
-    const result = await this.OrganizationService.getUserOrganizations(id);
-
-    if (result.isFailure) {
-      return new UserOrganizationsDTO({ body: { organizations: [], statusCode: 200 } });
-    }
-
-    return new UserOrganizationsDTO({ body: { organizations: result.getValue(), statusCode: 200 } });
-  }
   /**
    * retrieve Organization settings by organization id
    *

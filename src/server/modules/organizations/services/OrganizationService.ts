@@ -104,20 +104,26 @@ export class OrganizationService extends BaseService<Organization> implements IO
       let keycloakGroup = null;
       const groupName = `${orgPrifix}${payload.name}`;
       if (payload.parent) {
-        keycloakGroup = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
+        keycloakGroup = await (
+          await this.keycloak.getAdminClient()
+        ).groups.setOrCreateChild(
           { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
             name: groupName,
           },
         );
       } else {
-        keycloakGroup = await (await this.keycloak.getAdminClient()).groups.create({
+        keycloakGroup = await (
+          await this.keycloak.getAdminClient()
+        ).groups.create({
           name: groupName,
           realm: getConfig('keycloak.clientValidation.realmName'),
         });
       }
       ////create an admin group "grp-admin" to each new org in Kc
-      const kcAdminGroupCreated = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
+      const kcAdminGroupCreated = await (
+        await this.keycloak.getAdminClient()
+      ).groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
           name: `${grpPrifix}admin`,
@@ -125,7 +131,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       );
       kcAdminGroupId = kcAdminGroupCreated.id;
       //create a member group "grp-member" to each new org in Kc
-      const kcMemberGroupCreated = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
+      const kcMemberGroupCreated = await (
+        await this.keycloak.getAdminClient()
+      ).groups.setOrCreateChild(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         {
           name: `${grpPrifix}member`,
@@ -134,7 +142,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       kcMemberGroupId = kcMemberGroupCreated.id;
       wrappedOrganization.kcid = keycloakGroup.id;
       //adding owner in the group attributes
-      await (await this.keycloak.getAdminClient()).groups.update(
+      await (
+        await this.keycloak.getAdminClient()
+      ).groups.update(
         { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
         { attributes: { owner: [user.keycloakId] }, name: groupName },
       );
@@ -156,8 +166,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     organization.members.add(memberOwnerResult.getValue());
     this.update(organization);
-
-    await (await this.keycloak.getAdminClient()).users.addToGroup({
+    // add the owner to admin group in keycloak
+    await (
+      await this.keycloak.getAdminClient()
+    ).users.addToGroup({
       id: user.keycloakId,
       groupId: kcAdminGroupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
@@ -211,7 +223,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (fetchedorganization.name !== payload.name) {
       try {
-        await (await this.keycloak.getAdminClient()).groups.update(
+        await (
+          await this.keycloak.getAdminClient()
+        ).groups.update(
           { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
             name: `${orgPrifix}${payload.name}`,
@@ -322,16 +336,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return Result.ok<any>(members);
   }
 
-  @log()
-  @safeGuard()
-  public async getUserOrganizations(userId: number): Promise<Result<Organization[]>> {
-    const organizations: Organization[] = (await this.dao.getByCriteria(
-      { direction: userId },
-      FETCH_STRATEGY.ALL,
-    )) as Organization[];
-    return Result.ok<Organization[]>(organizations);
-  }
-
   /**
    * Delete organization
    * @param organizationId organization id
@@ -344,7 +348,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     try {
-      const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
+      const groups = await (
+        await this.keycloak.getAdminClient()
+      ).groups.findOne({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -353,7 +359,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }
 
-      await (await this.keycloak.getAdminClient()).groups.del({
+      await (
+        await this.keycloak.getAdminClient()
+      ).groups.del({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });

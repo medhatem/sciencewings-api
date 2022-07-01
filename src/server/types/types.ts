@@ -12,3 +12,8 @@ export type MemberKey = {
   userId: number;
   orgId: number;
 };
+
+export type OrgKey = {
+  orgId: number;
+  orgName: string;
+};

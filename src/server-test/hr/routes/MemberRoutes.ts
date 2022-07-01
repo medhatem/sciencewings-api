@@ -110,7 +110,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(memberService, 'getUserMemberships', [], Result.ok(1));
+      mockMethodWithResult(memberService, 'getUserMemberships', [], Result.ok([{}]));
       const result = await memberRoutes.getUserMemberships(1);
       expect(result.body.statusCode).to.equal(200);
     });

@@ -52,7 +52,6 @@ export class Organization extends BaseModel<Organization> {
   description!: string;
 
   @Property()
-  @Unique()
   email!: string;
 
   @ManyToMany({
