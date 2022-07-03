@@ -209,24 +209,4 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.body.statusCode).to.equal(200);
     });
   });
-  suite('GET gorganization/getUserOrganizations/:id', () => {
-    test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        organizationService,
-        'getUserOrganizations',
-        [1],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
-      try {
-        await organizationRoutes.getUserOrganizations(1);
-      } catch (error) {
-        expect(error).to.equal('throwing error');
-      }
-    });
-    test('Should success at eturning the right value', async () => {
-      mockMethodWithResult(organizationService, 'getUserOrganizations', [], Result.ok(1));
-      const result = await organizationRoutes.getUserOrganizations(1);
-      expect(result.body.statusCode).to.equal(200);
-    });
-  });
 });

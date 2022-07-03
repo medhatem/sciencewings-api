@@ -1008,14 +1008,4 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isSuccess).to.be.true;
     });
   });
-
-  suite('get user organizations', () => {
-    const userId = 1;
-    test('Should return array of organization', async () => {
-      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ direction: userId }], Promise.resolve([]));
-      const result = await container.get(OrganizationService).getUserOrganizations(userId);
-      expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql([]);
-    });
-  });
 });

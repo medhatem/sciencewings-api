@@ -2,7 +2,6 @@ import {
   MemberDTO,
   UpdateMemberBodyDTO,
   getMembershipDTO,
-  getAllMembershipsBodyDTO,
   UpdateMemberDTO,
   MemberBodyDTO,
 } from '@/modules/hr/dtos/MemberDTO';
@@ -80,30 +79,30 @@ export class MemberRoutes extends BaseRoutes<Member> {
   }
 
   /**
-   * update the current_org 
+   * update the current_org
    *
    * @param orgId  id of the organization to switch to
    *
    */
-   @PUT
-   @Path('switchOrganization/:orgId')
-   @Security()
-   @LoggerStorage()
-   @Response<MemberBodyDTO>(204, 'Organization updated Successfully')
-   @Response<InternalServerError>(500, 'Internal Server Error')
-   @Response<NotFoundError>(404, 'Not Found Error')
-   public async switchOrganization(
-     @PathParam('orgId') orgId: number,
-     @ContextRequest request: UserRequest,
-   ): Promise<MemberDTO> {
-     const result = await this.MemberService.switchOrganization(orgId, request.userId);
- 
-     if (result.isFailure) {
-       throw result.error;
-     }
-     return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
-   }
-/**
+  @PUT
+  @Path('switchOrganization/:orgId')
+  @Security()
+  @LoggerStorage()
+  @Response<MemberBodyDTO>(204, 'Organization updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async switchOrganization(
+    @PathParam('orgId') orgId: number,
+    @ContextRequest request: UserRequest,
+  ): Promise<MemberDTO> {
+    const result = await this.MemberService.switchOrganization(orgId, request.userId);
+
+    if (result.isFailure) {
+      throw result.error;
+    }
+    return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
+  }
+  /**
   /**
    * Update a Membership status in the database
    *
@@ -139,7 +138,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Path('/:userId/memberships')
   @Security()
   @LoggerStorage()
-  @Response<getAllMembershipsBodyDTO>(200, 'Resource Retrived Successfully')
+  @Response<getMembershipDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
@@ -149,6 +148,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
       throw result.error;
     }
 
-    return new getMembershipDTO({ body: { data: [result.getValue()], statusCode: 200 } });
+    return new getMembershipDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
   }
 }

@@ -356,16 +356,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return Result.ok<any>(members);
   }
 
-  @log()
-  @safeGuard()
-  public async getUserOrganizations(userId: number): Promise<Result<Organization[]>> {
-    const organizations: Organization[] = (await this.dao.getByCriteria(
-      { direction: userId },
-      FETCH_STRATEGY.ALL,
-    )) as Organization[];
-    return Result.ok<Organization[]>(organizations);
-  }
-
   /**
    * Delete organization
    * @param organizationId organization id
