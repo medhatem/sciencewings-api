@@ -165,7 +165,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const groupEvent = new GroupEvent();
     // create the admin and member groups in the db
     // add the owner as a member to the organization
-    let [adminGroupResult, memberGroupResult] = await Promise.all([
+    const [adminGroupResult, memberGroupResult] = await Promise.all([
       groupEvent.createGroup(adminGroup.getValue(), organization, `${grpPrifix}admin`),
       groupEvent.createGroup(membersGroup.getValue(), organization, `${grpPrifix}member`),
     ]);

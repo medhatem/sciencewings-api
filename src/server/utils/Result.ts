@@ -19,7 +19,7 @@ export class Result<T> {
   private _value: T;
   public logger: Logger;
 
-  private constructor(isSuccess: boolean, error?: HttpError, value?: T, bubble: boolean = false) {
+  private constructor(isSuccess: boolean, error?: HttpError, value?: T, bubble = false) {
     if (isSuccess && error) {
       throw new Error(`InvalidOperation: A result cannot be 
           successful and contain an error`);
@@ -54,25 +54,25 @@ export class Result<T> {
     return new Result<U>(true, null, value);
   }
 
-  public static fail<U>(error: string, bubble: boolean = false): Result<U> {
+  public static fail<U>(error: string, bubble = false): Result<U> {
     return new Result<U>(false, new InternalServerError(error), null, bubble);
   }
-  public static notFound<U>(error: string, bubble: boolean = false): Result<U> {
+  public static notFound<U>(error: string, bubble = false): Result<U> {
     return new Result<U>(false, new NotFoundError(error), null, bubble);
   }
-  public static badRequestError<U>(error: string, bubble: boolean = false): Result<U> {
+  public static badRequestError<U>(error: string, bubble = false): Result<U> {
     return new Result<U>(false, new BadRequestError(error), null, bubble);
   }
-  public static forbiddenError<U>(error: string, bubble: boolean = false): Result<U> {
+  public static forbiddenError<U>(error: string, bubble = false): Result<U> {
     return new Result<U>(false, new ForbiddenError(error), null, bubble);
   }
-  public static unauthorizedError<U>(error: string, bubble: boolean = false): Result<U> {
+  public static unauthorizedError<U>(error: string, bubble = false): Result<U> {
     return new Result<U>(false, new UnauthorizedError(error), null, bubble);
   }
-  public static notImplementedError<U>(error: string, bubble: boolean = false): Result<U> {
+  public static notImplementedError<U>(error: string, bubble = false): Result<U> {
     return new Result<U>(false, new NotImplementedError(error), null, bubble);
   }
-  public static methodNotAllowedError<U>(error: string, bubble: boolean = false): Result<U> {
+  public static methodNotAllowedError<U>(error: string, bubble = false): Result<U> {
     return new Result<U>(false, new MethodNotAllowedError(error), null, bubble);
   }
   public static combine(results: Result<any>[]): Result<any> {

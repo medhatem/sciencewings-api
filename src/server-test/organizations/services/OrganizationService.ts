@@ -226,7 +226,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`User with id: ${userId} does not exist`);
     });
 
-    test('Should fail on organization creation GIVEN keycloak group creation fail AND bubble keycloak error', async () => {
+    test(`Should fail on organization creation 
+          GIVEN keycloak group creation fail AND bubble keycloak error`, async () => {
       // set organization to not exist
       mockMethodWithResult(
         organizationDAO,
@@ -810,7 +811,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           Result.ok({
             id: 555,
             members: {
-              add: (...args: any[]) => {},
+              add: (...args: any[]) => {
+                return args;
+              },
             },
           }),
         ),
