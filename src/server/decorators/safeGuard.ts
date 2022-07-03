@@ -27,7 +27,6 @@ export function safeGuard<T>(
               return Result.fail(`HTTP 401 Unauthorized.`);
             } else if (error.response.data.errorMessage.includes('already exists')) {
               const extractedName = new RegExp(/(?<=-)([\w]*)/g).exec(error.response.data.errorMessage);
-              console.log('extratced ', extractedName[0]);
               return Result.fail(`${extractedName[0]} already exist.`, true);
             }
           }
