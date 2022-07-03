@@ -1,4 +1,3 @@
-import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -37,6 +36,7 @@ import { catchKeycloackError } from '@/utils/keycloack';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
 import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -49,6 +49,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public phoneService: IPhoneService,
     public emailService: Email,
     public keycloak: Keycloak,
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -57,8 +58,22 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return container.get(IOrganizationService);
   }
 
-  // Oranization methods
-
+  /**
+   * create a new organization in multiple steps
+   * step1: create the organization as a group in keycloak
+   * step2: create the admin group and members group under the organization group in keycloak
+   * step3: add the owner attribute to the organization group in keycloak
+   * step4: create the organization in the database
+   * step5: add the owner as a member of the created organization
+   * step6: create the admin and member groups of the organization in the database
+   * step6: persist addresses and phones and labels
+   *
+   * if any of the steps fail rollback all creations on keyclaok and database
+   *
+   *
+   * @param payload represents the organization information to persist
+   * @param userId id of the organization owner
+   */
   @log()
   @safeGuard()
   @validate
@@ -66,8 +81,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<Result<number>> {
-    const existingOrg = await this.dao.getByCriteria({ name: payload.name });
+    const existingOrg = (await this.dao.getByCriteria({
+      $or: [{ name: payload.name }, { email: payload.email }],
+    })) as Organization;
     if (existingOrg) {
+      if (existingOrg.email === payload.email) {
+        return Result.fail(`email ${payload.email} is already in use.`);
+      }
       return Result.fail(`Organization ${payload.name} already exist.`);
     }
     let parent: Organization;
@@ -98,93 +118,107 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     wrappedOrganization.direction = user;
 
-    let kcAdminGroupId = null;
-    let kcMemberGroupId = null;
-    try {
-      let keycloakGroup = null;
-      const groupName = `${orgPrifix}${payload.name}`;
-      if (payload.parent) {
-        keycloakGroup = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
-          { id: parent.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
-          {
-            name: groupName,
-          },
-        );
-      } else {
-        keycloakGroup = await (await this.keycloak.getAdminClient()).groups.create({
-          name: groupName,
-          realm: getConfig('keycloak.clientValidation.realmName'),
-        });
-      }
-      ////create an admin group "grp-admin" to each new org in Kc
-      const kcAdminGroupCreated = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
-        { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
-        {
-          name: `${grpPrifix}admin`,
-        },
-      );
-      kcAdminGroupId = kcAdminGroupCreated.id;
-      //create a member group "grp-member" to each new org in Kc
-      const kcMemberGroupCreated = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
-        { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
-        {
-          name: `${grpPrifix}member`,
-        },
-      );
-      kcMemberGroupId = kcMemberGroupCreated.id;
-      wrappedOrganization.kcid = keycloakGroup.id;
-      //adding owner in the group attributes
-      await (await this.keycloak.getAdminClient()).groups.update(
-        { id: keycloakGroup.id, realm: getConfig('keycloak.clientValidation.realmName') },
-        { attributes: { owner: [user.keycloakId] }, name: groupName },
-      );
-    } catch (error) {
-      return catchKeycloackError(error, payload.name);
+    const groupName = `${orgPrifix}${payload.name}`;
+    // create keycloak organization
+    const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
+    if (keycloakOrganization.isFailure) {
+      return keycloakOrganization.bubble
+        ? Result.fail(keycloakOrganization.error.message)
+        : Result.fail('Could not create organization.');
     }
+    /**
+     * create keycloak admin group as well as members group
+     * and add the owner attribute to the organization in keycloak
+     */
+    const [adminGroup, membersGroup, ownership] = await Promise.all([
+      this.keycloakUtils.createGroup(`${grpPrifix}admin`, keycloakOrganization.getValue()),
+      this.keycloakUtils.createGroup(`${grpPrifix}members`, keycloakOrganization.getValue()),
+      this.keycloakUtils.addOwnerToGroup(keycloakOrganization.getValue(), groupName, user.keycloakId),
+    ]);
+    if (adminGroup.isFailure || membersGroup.isFailure || ownership.isFailure) {
+      await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
+      return Result.fail('Organization could not be created');
+    }
+    const addeddMember = await this.keycloakUtils.addMemberToGroup(adminGroup.getValue(), user.keycloakId);
+    if (addeddMember.isFailure) {
+      await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
+      return Result.fail('Organization could not be created');
+    }
+
+    wrappedOrganization.kcid = keycloakOrganization.getValue();
 
     const createdOrg = await this.create(wrappedOrganization);
     if (createdOrg.isFailure) {
-      return createdOrg;
+      //revert the keycloak created organization as well
+      await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
+      return Result.fail('Organization could not be created');
     }
     const organization = await createdOrg.getValue();
 
     const memberEvent = new MemberEvent();
     const memberOwnerResult = await memberEvent.createMember(user, organization);
+    if (memberOwnerResult.isFailure) {
+      // rollback created organization
+      await Promise.all([this.keycloakUtils.deleteGroup(keycloakOrganization.getValue()), this.remove(organization)]);
+      return Result.fail('Organization could not be created');
+    }
     const groupEvent = new GroupEvent();
-    await groupEvent.createGroup(kcAdminGroupId, organization, `${grpPrifix}admin`);
-    await groupEvent.createGroup(kcMemberGroupId, organization, `${grpPrifix}member`);
+    // create the admin and member groups in the db
+    // add the owner as a member to the organization
+    let [adminGroupResult, memberGroupResult] = await Promise.all([
+      groupEvent.createGroup(adminGroup.getValue(), organization, `${grpPrifix}admin`),
+      groupEvent.createGroup(membersGroup.getValue(), organization, `${grpPrifix}member`),
+    ]);
 
+    if (adminGroupResult.isFailure || memberGroupResult.isFailure) {
+      if (adminGroupResult.isFailure && !memberGroupResult.isFailure) {
+        await groupEvent.removeGroup(memberGroupResult.getValue().id); // rollback member group
+      } else if (!adminGroupResult.isFailure && memberGroupResult.isFailure) {
+        await groupEvent.removeGroup(adminGroupResult.getValue().id); //rollback admin group
+      }
+      // rollback all the rest
+      await memberEvent.deleteMember({
+        user: memberOwnerResult.getValue().user,
+        organization: memberOwnerResult.getValue().organization,
+      });
+      await Promise.all([
+        this.keycloakUtils.deleteGroup(keycloakOrganization.getValue()),
+        this.remove(organization.id),
+      ]);
+      return Result.fail('Organization could not be created');
+    }
+
+    // TODO: to be removed since the member model is in a one on one relation with organization
+    // update also the organizaion model by removing the many to many relation with members
     organization.members.add(memberOwnerResult.getValue());
     this.update(organization);
 
-    await (await this.keycloak.getAdminClient()).users.addToGroup({
-      id: user.keycloakId,
-      groupId: kcAdminGroupId,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    await Promise.all(
+      payload.addresses.map((address) =>
+        this.addressService.create({
+          city: address.city,
+          apartment: address.apartment,
+          country: address.country,
+          code: address.code,
+          province: address.province,
+          street: address.street,
+          type: AddressType.ORGANIZATION,
+          organization,
+        }),
+      ),
+    );
 
-    //create user addresses
-    await applyToAll(payload.addresses, async (address) => {
-      await this.addressService.create({
-        city: address.city,
-        apartment: address.apartment,
-        country: address.country,
-        code: address.code,
-        province: address.province,
-        street: address.street,
-        type: AddressType.ORGANIZATION,
-        organization,
-      });
-    });
-    // create user phones
-    await applyToAll(payload.phones, async (phone) => {
-      await this.phoneService.create({
-        phoneLabel: phone.phoneLabel,
-        phoneCode: phone.phoneCode,
-        phoneNumber: phone.phoneNumber,
-        organization,
-      });
-    });
+    await Promise.all(
+      payload.phones.map((phone) => {
+        this.phoneService.create({
+          phoneLabel: phone.phoneLabel,
+          phoneCode: phone.phoneCode,
+          phoneNumber: phone.phoneNumber,
+          organization,
+        });
+      }),
+    );
+
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }

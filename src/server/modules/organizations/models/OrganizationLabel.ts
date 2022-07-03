@@ -1,5 +1,6 @@
-import { Entity, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
+
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
 
@@ -15,9 +16,6 @@ export class OrganizationLabel extends BaseModel<OrganizationLabel> {
   }
 
   @PrimaryKey()
-  id?: number;
-
-  @Unique()
   @Property()
   name!: string;
 
@@ -25,6 +23,9 @@ export class OrganizationLabel extends BaseModel<OrganizationLabel> {
     entity: () => Organization,
     onDelete: 'cascade',
     nullable: true,
+    primary: true,
   })
   organization: Organization;
+
+  [PrimaryKeyType]?: [Organization, string];
 }

@@ -4,6 +4,6 @@ import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLa
 import { Result } from '@/utils/Result';
 
 export abstract class IOrganizationLabelService extends IBaseService<any> {
-  createLabel: (payload: OrganizationLabel) => Promise<Result<number>>;
+  createLabel: (payload: OrganizationLabel) => Promise<Result<OrganizationLabel>>;
   createBulkLabel: (payload: string[], organization: Organization) => Promise<Result<number>>;
 }

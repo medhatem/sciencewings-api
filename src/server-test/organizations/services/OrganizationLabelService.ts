@@ -1,16 +1,18 @@
-import intern from 'intern';
-import { stub, restore, createStubInstance, SinonStubbedInstance } from 'sinon';
-const { suite, test } = intern.getPlugin('interface.tdd');
-const { expect } = intern.getPlugin('chai');
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
+
+import { BaseService } from '@/modules/base/services/BaseService';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationLabelDao';
 import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
+import { container } from '@/di';
+import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
-import { BaseService } from '@/modules/base/services/BaseService';
+
+const { suite, test } = intern.getPlugin('interface.tdd');
+const { expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let organizationLabelDAO: SinonStubbedInstance<OrganizationLabelDao>;
@@ -42,11 +44,11 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('create Label', () => {
     test('Should success on label creation', async () => {
-      mockMethodWithResult(organizationLabelDAO, 'create', [], Promise.resolve({ id: 1 }));
+      mockMethodWithResult(organizationLabelDAO, 'create', [{ name: 'test' }], Promise.resolve({ name: 'test' }));
 
-      const result = await container.get(OrganizationLabelService).createLabel({} as any);
+      const result = await container.get(OrganizationLabelService).createLabel({ name: 'test' } as any);
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.equal(1);
+      expect(result.getValue()).to.deep.equal({ name: 'test' });
     });
   });
 
