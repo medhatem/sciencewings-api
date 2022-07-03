@@ -26,6 +26,7 @@ export function safeGuard<T>(
             } else if (error.response.data.error === 'HTTP 401 Unauthorized') {
               return Result.fail(`HTTP 401 Unauthorized.`);
             } else if (error.response.data.errorMessage.includes('already exists')) {
+              //extract the name of the resource that already exist
               const extractedName = new RegExp(/(?<=-)([\w]*)/g).exec(error.response.data.errorMessage);
               return Result.fail(`${extractedName[0]} already exist.`, true);
             }
