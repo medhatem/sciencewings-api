@@ -276,7 +276,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.parent = parent;
     }
 
-    await this.dao.update(wrappedOrganization);
+    const updateResult = await this.dao.update(wrappedOrganization);
+    if(!updateResult){
+      if(fetchedorganization.name !== payload.name){
+         //rolback the keyclock updated org name 
+         await (await this.keycloak.getAdminClient()).groups.update(
+          { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
+          {
+            name: `${orgPrifix}${fetchedorganization.name}`,
+          },
+        );
+         return Result.fail('Organization name could not be updated ');
+      }
+      return Result.fail('Organization could not be updated');
+    }
     return Result.ok<number>(orgId);
   }
 
