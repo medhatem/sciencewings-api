@@ -245,7 +245,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (fetchedorganization.name !== payload.name) {
       //update the Kc group name 
-      const updatedOrg =  await this.keycloakUtils.updateKcGroupName(fetchedorganization.kcid,`${orgPrifix}${payload.name}`);
+      const updatedOrg =  await this.keycloakUtils.
+      updateKcGroupName(fetchedorganization.kcid,`${orgPrifix}${payload.name}`);
       if (updatedOrg.isFailure){
         return Result.fail('Organization name could not be updated');
       }
