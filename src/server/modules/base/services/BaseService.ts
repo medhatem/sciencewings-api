@@ -76,6 +76,13 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   @safeGuard()
+  public async removeWithCriteria(payload: { [key: string]: any }): Promise<Result<number>> {
+    const entity = (await this.dao.getByCriteria(payload)) as T;
+    return Result.ok<any>(await this.dao.removeEntity(entity));
+  }
+
+  @log()
+  @safeGuard()
   public async removeRoute(id: number): Promise<Result<number>> {
     const currentEntity = await this.dao.get(id);
     if (!currentEntity) {

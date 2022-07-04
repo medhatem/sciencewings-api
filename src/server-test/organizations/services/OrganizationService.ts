@@ -1,17 +1,19 @@
 import { CreateOrganizationRO, UpdateOrganizationRO } from '@/modules/organizations/routes/RequestObject';
 import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 
 import { AddressService } from '@/modules/address/services/AddressService';
 import { AddressType } from '@/modules/address/models/Address';
 import { BaseService } from '@/modules/base/services/BaseService';
+import { Collection } from '@mikro-orm/core';
 import { Configuration } from '@/configuration/Configuration';
 import { Email } from '@/utils/Email';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
-import { Collection } from '@mikro-orm/core';
-import { Member } from '@/modules/hr/models/Member';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Logger } from '@/utils/Logger';
+import { Member } from '@/modules/hr/models/Member';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
@@ -25,6 +27,8 @@ import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
 
+import Sinon = require('sinon');
+
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
 
@@ -36,6 +40,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let addressService: SinonStubbedInstance<AddressService>;
   let phoneService: SinonStubbedInstance<PhoneService>;
   let labelService: SinonStubbedInstance<OrganizationLabelService>;
+  let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
@@ -80,6 +85,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           phoneService,
           emailService,
           Keycloak.getInstance(),
+          keycloakUtil,
         ),
       );
   }
@@ -93,6 +99,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     addressService = createStubInstance(AddressService);
     phoneService = createStubInstance(PhoneService);
     labelService = createStubInstance(OrganizationLabelService);
+    keycloakUtil = createStubInstance(KeycloakUtil);
 
     containerStub = stub(container, 'get');
     containerStub.withArgs(Configuration).returns({
@@ -117,6 +124,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           phoneService,
           emailService,
           Keycloak.getInstance(),
+          keycloakUtil,
         ),
       );
   });
@@ -158,13 +166,39 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       ],
     };
 
-    test('Should fail on organization already existe', async () => {
+    test('Should fail on organization already exist', async () => {
       // set organization to not exist
-      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve({}));
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          {
+            $or: [{ name: payload.name }, { email: payload.email }],
+          },
+        ],
+        Promise.resolve({}),
+      );
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`Organization ${payload.name} already exist.`);
+    });
+    test('Should fail on email already exist', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          {
+            $or: [{ name: payload.name }, { email: payload.email }],
+          },
+        ],
+        Promise.resolve({ email: payload.email }),
+      );
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal(`email ${payload.email} is already in use.`);
     });
 
     test('Should fail on organization parent does not existe', async () => {
@@ -192,55 +226,616 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.error.message).to.equal(`User with id: ${userId} does not exist`);
     });
 
-    test('Should fail on organization creation', async () => {
+    test(`Should fail on organization creation 
+          GIVEN keycloak group creation fail AND bubble keycloak error`, async () => {
       // set organization to not exist
-      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
       // mock settings
       mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.fail('with bubbled keycloak message', true)),
+      );
       // prepare base
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      stub(BaseService.prototype, 'create').resolves(Result.fail('stackTrace'));
-      stubKeyclockInstanceWithBaseService([]);
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('with bubbled keycloak message');
+    });
+    test('Should fail on organization creation GIVEN keycloak group creation fail ', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.fail('unknown error', false)),
+      );
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
 
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
 
       expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal('stackTrace');
+      expect(result.error.message).to.equal('Could not create organization.');
     });
-
-    test('Should success on organization creation', async () => {
+    test('Should fail on organization GIVEN keycloak admin group creation failiure', async () => {
       // set organization to not exist
-      mockMethodWithResult(organizationDAO, 'getByCriteria', [{ name: payload.name }], Promise.resolve(null));
-
-      // mockMethodWithResult(organizationDAO., 'repository', [], { flush: stub() });
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
-      // set adminContact to exist
-      // mockMethodWithResult(userService, 'get', [payload.adminContact], Promise.resolve(Result.ok({})));
-      // set direction to exist
-      // mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve(Result.ok({})));
       // mock settings
       mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}admin`, '123'],
+        Promise.resolve(Result.fail('Failed')),
+      );
+      //mock members group creation to succceed
+      mockMethodWithResult(keycloakUtil, 'createGroup', [`${grpPrifix}members`, '123'], Promise.resolve(Result.ok()));
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok()),
+      ); // mock delete group
       // prepare base
-      organizationDAO['repository'] = { flush: stub() } as any;
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      stub(BaseService.prototype, 'create').resolves(Result.ok({ id: 1, members: { add: stub() } }));
-      stubKeyclockInstanceWithBaseService([{}]);
 
-      // set member creation
-      stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve(Result.ok({})));
-      stub(GroupEvent.prototype, 'createGroup').returns({} as any);
-      // set address creation
-      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
-      // set phone creation
-      mockMethodWithResult(addressService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
-      // set label creation
-      mockMethodWithResult(labelService, 'createBulkLabel', [], Promise.resolve(Result.ok({})));
       const result = await container.get(OrganizationService).createOrganization(payload, userId);
-      expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.equal(1);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+    test('Should fail on organization GIVEN keycloak members group creation failiure', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(keycloakUtil, 'createGroup', [`${grpPrifix}admin`, '123'], Promise.resolve(Result.ok()));
+      //mock members group creation to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}members`, '123'],
+        Promise.resolve(Result.fail('Failed')),
+      );
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok()),
+      ); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+    test('Should fail on organization GIVEN organization owner attribute failiure', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(keycloakUtil, 'createGroup', [`${grpPrifix}admin`, '123'], Promise.resolve(Result.ok()));
+      //mock members group creation to succeed
+      mockMethodWithResult(keycloakUtil, 'createGroup', [`${grpPrifix}members`, '123'], Promise.resolve(Result.ok()));
+      //mock organization owner attribute to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.fail('')),
+      ); // mock delete group
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+
+    test('Should fail on create organization WHEN adding owner to admin group', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}admin`, '123'],
+        Promise.resolve(Result.ok('244')),
+      );
+      //mock members group creation to succeed
+      mockMethodWithResult(keycloakUtil, 'createGroup', [`${grpPrifix}members`, '123'], Promise.resolve(Result.ok()));
+      //mock organization owner attribute to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok()),
+      );
+      //make adding user to keycloak admin group fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addMemberToGroup',
+        ['244', undefined],
+        Promise.resolve(Result.fail('Failed')),
+      );
+      // mock delete group
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+
+    test('Should fail on create organization WHEN persisting to db', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}admin`, '123'],
+        Promise.resolve(Result.ok('244')),
+      );
+      //mock members group creation to succeed
+      mockMethodWithResult(keycloakUtil, 'createGroup', [`${grpPrifix}members`, '123'], Promise.resolve(Result.ok()));
+      //mock organization owner attribute to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok('')),
+      );
+      //make adding user to keycloak admin
+      mockMethodWithResult(keycloakUtil, 'addMemberToGroup', ['244', undefined], Promise.resolve(Result.ok()));
+      // mock delete group
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').returns(Promise.resolve(Result.fail('')));
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+
+    test('Should fail on create organization WHEN persisting owner as member in db', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}admin`, '123'],
+        Promise.resolve(Result.ok('244')),
+      );
+      //mock members group creation to succeed
+      mockMethodWithResult(keycloakUtil, 'createGroup', [`${grpPrifix}members`, '123'], Promise.resolve(Result.ok()));
+      //mock organization owner attribute to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok()),
+      );
+      //make adding user to keycloak admin
+      mockMethodWithResult(keycloakUtil, 'addMemberToGroup', ['244', undefined], Promise.resolve(Result.ok()));
+      // mock delete group
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').returns(Promise.resolve(Result.ok({})));
+      stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve(Result.fail('Failed')));
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+    test('Should fail on create organization WHEN creating group member in db', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}admin`, '123'],
+        Promise.resolve(Result.ok('244')),
+      );
+      //mock members group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}members`, '123'],
+        Promise.resolve(Result.ok('255')),
+      );
+      //mock organization owner attribute to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok()),
+      );
+      //make adding user to keycloak admin
+      mockMethodWithResult(keycloakUtil, 'addMemberToGroup', ['244', undefined], Promise.resolve(Result.ok()));
+      // mock delete group
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').returns(Promise.resolve(Result.ok({}))); // mock organization creation
+      stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve(Result.ok({ user: {}, organization: {} })));
+      //mock admon group creation to fail
+      const createGroupStub = stub(GroupEvent.prototype, 'createGroup');
+
+      createGroupStub
+        .withArgs('244', Sinon.match.any, `${grpPrifix}admin`)
+        .returns(Promise.resolve(Result.ok({ id: 111 })));
+
+      createGroupStub
+        .withArgs('255', Sinon.match.any, `${grpPrifix}member`)
+        .returns(Promise.resolve(Result.fail('Failed')));
+
+      stub(GroupEvent.prototype, 'removeGroup').withArgs(111).returns(Promise.resolve(Result.ok()));
+      //mock delete member when foing the rollback
+      stub(MemberEvent.prototype, 'deleteMember').returns(Promise.resolve(Result.ok()));
+      stub(BaseService.prototype, 'remove').returns(Promise.resolve(Result.ok())); // mock organization creation
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+
+    test('Should fail on create organization WHEN creating group admin in db', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}admin`, '123'],
+        Promise.resolve(Result.ok('244')),
+      );
+      //mock members group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}members`, '123'],
+        Promise.resolve(Result.ok('255')),
+      );
+      //mock organization owner attribute to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok()),
+      );
+      //make adding user to keycloak admin
+      mockMethodWithResult(keycloakUtil, 'addMemberToGroup', ['244', undefined], Promise.resolve(Result.ok()));
+      // mock delete group
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').returns(Promise.resolve(Result.ok({}))); // mock organization creation
+      stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve(Result.ok({ user: {}, organization: {} })));
+      //mock admon group creation to fail
+      const createGroupStub = stub(GroupEvent.prototype, 'createGroup');
+
+      createGroupStub
+        .withArgs('244', Sinon.match.any, `${grpPrifix}admin`)
+        .returns(Promise.resolve(Result.fail('Failed')));
+
+      createGroupStub
+        .withArgs('255', Sinon.match.any, `${grpPrifix}member`)
+        .returns(Promise.resolve(Result.ok({ id: 111 })));
+
+      stub(GroupEvent.prototype, 'removeGroup').withArgs(111).returns(Promise.resolve(Result.ok()));
+      //mock delete member when foing the rollback
+      stub(MemberEvent.prototype, 'deleteMember').returns(Promise.resolve(Result.ok()));
+      stub(BaseService.prototype, 'remove').returns(Promise.resolve(Result.ok())); // mock organization creation
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.true;
+      expect(result.error.message).to.equal('Organization could not be created');
+    });
+    test('Should succeed on create organization', async () => {
+      // set organization to not exist
+      mockMethodWithResult(
+        organizationDAO,
+        'getByCriteria',
+        [
+          [
+            {
+              $or: [{ name: payload.name }, { email: payload.email }],
+            },
+          ],
+        ],
+        Promise.resolve(null),
+      );
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
+      // mock settings
+      mockMethodWithResult(organizationSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('123')),
+      );
+      //mock admin group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}admin`, '123'],
+        Promise.resolve(Result.ok('244')),
+      );
+      //mock members group creation to succeed
+      mockMethodWithResult(
+        keycloakUtil,
+        'createGroup',
+        [`${grpPrifix}members`, '123'],
+        Promise.resolve(Result.ok('255')),
+      );
+      //mock organization owner attribute to fail
+      mockMethodWithResult(
+        keycloakUtil,
+        'addOwnerToGroup',
+        ['123', `${orgPrifix}${payload.name}`, undefined],
+        Promise.resolve(Result.ok()),
+      );
+      //make adding user to keycloak admin
+      mockMethodWithResult(keycloakUtil, 'addMemberToGroup', ['244', undefined], Promise.resolve(Result.ok()));
+      // mock delete group
+      mockMethodWithResult(keycloakUtil, 'deleteGroup', ['123'], Promise.resolve(Result.ok())); // mock delete group
+      // prepare base
+      stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'create').returns(
+        Promise.resolve(
+          Result.ok({
+            id: 555,
+            members: {
+              add: (...args: any[]) => {
+                return args;
+              },
+            },
+          }),
+        ),
+      ); // mock organization creation
+      stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve(Result.ok({ user: {}, organization: {} })));
+      //mock admon group creation to fail
+      const createGroupStub = stub(GroupEvent.prototype, 'createGroup');
+
+      createGroupStub
+        .withArgs('244', Sinon.match.any, `${grpPrifix}admin`)
+        .returns(Promise.resolve(Result.ok({ id: 111 })));
+
+      createGroupStub
+        .withArgs('255', Sinon.match.any, `${grpPrifix}member`)
+        .returns(Promise.resolve(Result.ok({ id: 112 })));
+
+      stub(BaseService.prototype, 'update').returns(Promise.resolve(Result.ok({}))); // mock update organization
+
+      const result = await container.get(OrganizationService).createOrganization(payload, userId);
+
+      expect(result.isFailure).to.be.false;
+      expect(result.getValue()).to.equal(555);
     });
   });
 

@@ -21,9 +21,9 @@ export class OrganizationLabelService extends BaseService<OrganizationLabel> imp
 
   @log()
   @safeGuard()
-  async createLabel(payload: OrganizationLabel): Promise<Result<number>> {
+  async createLabel(payload: OrganizationLabel): Promise<Result<OrganizationLabel>> {
     const phone = await this.dao.create(payload);
-    return Result.ok<number>(phone.id);
+    return Result.ok(phone);
   }
 
   @log()

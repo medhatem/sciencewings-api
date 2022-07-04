@@ -1,11 +1,14 @@
-import { MemberService } from '@/modules/hr/services/MemberService';
-import { on } from '@/decorators/events';
-import { Organization } from '@/modules/organizations/models/Organization';
+import { MemberTypeEnum, MembershipStatus } from '@/modules/hr/models/Member';
 import { User, userStatus } from '@/modules/users/models/User';
-import { MembershipStatus, MemberTypeEnum } from '@/modules/hr/models/Member';
+
+import { MemberService } from '@/modules/hr/services/MemberService';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { on } from '@/decorators/events';
+import { safeGuard } from '@/decorators/safeGuard';
 
 export class MemberEvent {
   @on('create-member')
+  @safeGuard()
   async createMember(user: User, organization: Organization) {
     const memberService = MemberService.getInstance();
     return await memberService.create({
@@ -19,5 +22,11 @@ export class MemberEvent {
       joinDate: new Date(),
       workEmail: user.email,
     });
+  }
+  @on('delete-member')
+  @safeGuard()
+  async deleteMember(payload: { [key: string]: any }) {
+    const memberService = MemberService.getInstance();
+    return await memberService.removeWithCriteria(payload);
   }
 }
