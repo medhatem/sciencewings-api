@@ -127,4 +127,22 @@ export class KeycloakUtil {
     });
     return Result.ok(addedMember);
   }
+
+  /**
+   *
+   * update a Kc group name 
+   *
+   * @param KcGroupid of the group
+   * @param newName of the group
+   */
+   @safeGuard()
+   async updateKcGroupName(KcGroupid: string, newName: string): Promise<Result<any>> {
+    await (await this.keycloak.getAdminClient()).groups.update(
+      { id: KcGroupid, realm: getConfig('keycloak.clientValidation.realmName') },
+      {
+        name: newName,
+      },
+    );
+     return Result.ok();
+   }
 }
