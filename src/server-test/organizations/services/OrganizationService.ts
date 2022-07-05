@@ -841,6 +841,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('update Organization Generale Properties', () => {
     const userId = 1;
+    const OrgId = 1;
     const payload: UpdateOrganizationRO = {
       name: 'testinggroundupdate',
       description: 'qsdwxcaze',
@@ -848,7 +849,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     test('Should fail on organization update', async () => {
       // set organization to not exist
-      mockMethodWithResult(organizationDAO, 'get', [1], Promise.resolve(null));
+      mockMethodWithResult(organizationDAO, 'get', [OrgId], Promise.resolve(null));
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
       // set direction to exist
@@ -867,13 +868,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       const mackPayload = { ...payload };
       mackPayload.direction = 2;
       // set organization to exist
-      mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
-      //mock keycloak organization creation
+      mockMethodWithResult(organizationDAO, 'get', [OrgId], Promise.resolve({}));
+      //mock keycloak organization update
       mockMethodWithResult(
         keycloakUtil,
         'updateKcGroupName',
-        [[],`${orgPrifix}${payload.name}`],
-        Promise.resolve(Result.ok({})),
+        [[OrgId],`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok('organization name updated!')),
+        //Promise.resolve(Result.ok()),
       );
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
