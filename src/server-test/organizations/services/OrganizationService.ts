@@ -868,6 +868,13 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mackPayload.direction = 2;
       // set organization to exist
       mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
+      //mock keycloak organization creation
+      mockMethodWithResult(
+        keycloakUtil,
+        'updateKcGroupName',
+        [[],`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok()),
+      );
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
       // set direction to null
