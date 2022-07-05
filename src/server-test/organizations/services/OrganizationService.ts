@@ -865,6 +865,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     test('Should fail on find the direction', async () => {
       const mackPayload = { ...payload };
+      const KcId = '123';
       mackPayload.direction = 2;
       // set organization to exist
       mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
@@ -872,7 +873,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(
         keycloakUtil,
         'updateKcGroupName',
-        [[],`${orgPrifix}${payload.name}`],
+        [KcId,`${orgPrifix}${payload.name}`],
         Promise.resolve(Result.ok()),
       );
       // set owner to exist
@@ -885,7 +886,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
 
-      expect(result.isFailure).to.be.true;
+      expect(result.isSuccess).to.be.false;
       expect(result.error.message).to.equal(`User with id: ${mackPayload.direction} does not exist.`);
     });
 
