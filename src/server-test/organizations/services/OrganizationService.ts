@@ -865,7 +865,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     test('Should fail on find the direction', async () => {
       const mackPayload = { ...payload };
-      const KcId = '123';
       mackPayload.direction = 2;
       // set organization to exist
       mockMethodWithResult(organizationDAO, 'get', [], Promise.resolve({}));
@@ -873,8 +872,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(
         keycloakUtil,
         'updateKcGroupName',
-        [KcId,`${orgPrifix}${payload.name}`],
-        Promise.resolve(Result.ok()),
+        [[],`${orgPrifix}${payload.name}`],
+        Promise.resolve(Result.ok({})),
       );
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve(Result.ok({})));
