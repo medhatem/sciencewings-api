@@ -79,11 +79,8 @@ export const beforeDeserialize: (property: any, currentInstance?: any) => any = 
 
 export const mockMethodWithResult = (
   className: SinonStubbedInstance<any>,
-
   methodToStub: any,
-
   args: any,
-
   returnValue: any,
 ) => {
   if (args.length === 0) {

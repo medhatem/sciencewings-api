@@ -244,10 +244,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (fetchedorganization.name !== payload.name) {
-      //update the Kc group name 
-      const updatedOrg =  await this.keycloakUtils.
-      updateKcGroupName(fetchedorganization.kcid,`${orgPrifix}${payload.name}`);
-      if (updatedOrg.isFailure){
+      //update the Kc group name
+      const updatedOrg = await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+        name: `${orgPrifix}${payload.name}`,
+      });
+      console.log('updated ORg', updatedOrg);
+      if (updatedOrg.isFailure) {
         return Result.fail('Organization name could not be updated');
       }
     }
@@ -258,6 +260,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (payload.direction) {
       const direction = await this.userService.get(payload.direction);
+      console.log('payload direction', payload.direction, direction);
       if (direction.isFailure || direction.getValue() === null) {
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
@@ -273,12 +276,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     const updateResult = await this.dao.update(wrappedOrganization);
-    if(!updateResult){
+    if (!updateResult) {
       //in case we update the name of the org
-      if(fetchedorganization.name !== payload.name){
-         //rolback the keyclock updated group name 
-         await this.keycloakUtils.updateKcGroupName(fetchedorganization.kcid,`${orgPrifix}${fetchedorganization.name}`);
-         return Result.fail('Organization name could not be updated ');
+      if (fetchedorganization.name !== payload.name) {
+        //rolback the keyclock updated group name
+        await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+          name: `${orgPrifix}${fetchedorganization.name}`,
+        });
+        return Result.fail('Organization name could not be updated ');
       }
       return Result.fail('Organization could not be updated');
     }
@@ -373,7 +378,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     try {
-      const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
+      const groups = await (
+        await this.keycloak.getAdminClient()
+      ).groups.findOne({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -382,7 +389,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }
 
-      await (await this.keycloak.getAdminClient()).groups.del({
+      await (
+        await this.keycloak.getAdminClient()
+      ).groups.del({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
