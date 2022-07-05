@@ -876,7 +876,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stubKeyclockInstanceWithBaseService([]);
 
-      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 1);
+      const result = await container.get(OrganizationService).updateOrganizationGeneraleProperties(mackPayload, 2);
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`User with id: ${mackPayload.direction} does not exist.`);
