@@ -248,7 +248,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       const updatedOrg = await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
         name: `${orgPrifix}${payload.name}`,
       });
-      console.log('updated ORg', updatedOrg);
       if (updatedOrg.isFailure) {
         return Result.fail('Organization name could not be updated');
       }
@@ -260,7 +259,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (payload.direction) {
       const direction = await this.userService.get(payload.direction);
-      console.log('payload direction', payload.direction, direction);
       if (direction.isFailure || direction.getValue() === null) {
         return Result.notFound(`User with id: ${payload.direction} does not exist.`);
       }
