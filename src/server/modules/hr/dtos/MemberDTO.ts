@@ -1,8 +1,7 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
-import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
-import { UserDTO } from '@/modules/users/dtos/UserDTO';
+import { OrganizationBaseBodyGetDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { UserBaseBodyGetDTO } from '@/modules/users/dtos/UserDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
@@ -13,10 +12,10 @@ export class MemberBodyDTO extends BaseBodyDTO {
   name: string;
 
   @JsonProperty()
-  user: UserDTO;
+  user: UserBaseBodyGetDTO;
 
   @JsonProperty()
-  organization: OrganizationDTO;
+  organization: OrganizationBaseBodyGetDTO;
 
   @JsonProperty()
   status: string;

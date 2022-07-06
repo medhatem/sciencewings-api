@@ -42,6 +42,33 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     return container.get(ResourceRoutes);
   }
 
+  // @override the default service
+  @GET
+  @Path('/getById/:id')
+  @Security()
+  @Response<ResourceDTO>(200, 'success')
+  public async getById(@PathParam('id') id: number): Promise<ResourceDTO> {
+    const result = await this.ResourceService.get(id);
+    const resourceDTO = new ResourceDTO();
+    if (result.isFailure) {
+      return resourceDTO.deserialize({
+        error: { statusCode: 500, message: result.error },
+      });
+    }
+    const value = result.getValue();
+    if (!value.managers.isInitialized()) {
+      value.managers = await value.managers.init();
+    }
+    if (!value.tags.isInitialized()) {
+      value.tags = await value.tags.init();
+    }
+    console.log({ value: value.managers[0] });
+
+    return resourceDTO.deserialize({
+      body: { statusCode: 200, data: [value] },
+    });
+  }
+
   /**
    * Registers a new resource in the database
    *

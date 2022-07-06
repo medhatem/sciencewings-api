@@ -125,13 +125,6 @@ export class ResourceService extends BaseService<Resource> {
         managers.push(fetcheManager.getValue());
       }
     }
-    const resourceStatusSetting = await this.resourceStatusService.get(1);
-    const resourceSetting = await this.resourceSettingsService.create({
-      resourceType: resourceStatusSetting.getValue(),
-    });
-    if (resourceSetting.isFailure || !resourceSetting.getValue()) {
-      return Result.fail(`Can not create settings for resource.`);
-    }
 
     const createdResourceResult = await this.dao.create({
       name: payload.name,
@@ -141,7 +134,7 @@ export class ResourceService extends BaseService<Resource> {
       resourceClass: payload.resourceClass,
       timezone: payload.timezone,
       organization,
-      settings: resourceSetting.getValue(),
+      settings: (await this.resourceStatusService.get(1)).getValue(),
     });
 
     if (!createdResourceResult) {
