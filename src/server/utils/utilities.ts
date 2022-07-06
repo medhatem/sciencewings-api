@@ -58,7 +58,10 @@ export const applyToAll = async <T, G>(
  */
 export const beforeDeserialize: (property: any, currentInstance?: any) => any = (prop: any) => {
   if (prop instanceof Collection) {
-    return prop.toJSON();
+    const result = prop.toJSON();
+
+    console.log('pros is ', result, prop.toArray());
+    return result;
   }
   return prop;
 };

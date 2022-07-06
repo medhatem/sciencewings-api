@@ -1,9 +1,10 @@
 import {
-  MemberDTO,
+  SwitchedMemberDTO,
   UpdateMemberBodyDTO,
   getMembershipDTO,
   UpdateMemberDTO,
   MemberBodyDTO,
+  MemberRequestDTO,
 } from '@/modules/hr/dtos/MemberDTO';
 import { POST, Path, Security, PUT, PathParam, GET, ContextRequest } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
@@ -23,7 +24,7 @@ import { MemberRO } from './RequestObject';
 @Path('members')
 export class MemberRoutes extends BaseRoutes<Member> {
   constructor(private MemberService: IMemberService) {
-    super(MemberService as any, new MemberDTO(), new UpdateMemberDTO());
+    super(MemberService as any, new MemberRequestDTO(), new UpdateMemberDTO());
   }
 
   static getInstance(): MemberRoutes {
@@ -94,13 +95,13 @@ export class MemberRoutes extends BaseRoutes<Member> {
   public async switchOrganization(
     @PathParam('orgId') orgId: number,
     @ContextRequest request: UserRequest,
-  ): Promise<MemberDTO> {
+  ): Promise<SwitchedMemberDTO> {
     const result = await this.MemberService.switchOrganization(orgId, request.userId);
 
     if (result.isFailure) {
       throw result.error;
     }
-    return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new SwitchedMemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
   /**
   /**

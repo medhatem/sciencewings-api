@@ -1,4 +1,4 @@
-import { Member, MemberTypeEnum } from '@/modules/hr/models/Member';
+import { Member, MembershipStatus, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -46,7 +46,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     } catch (error) {
       return Result.fail('Something went wrong when retriving the user.');
     }
-
     if (existingUser.length > 0) {
       return Result.fail('The user already exist.');
     }
@@ -67,26 +66,28 @@ export class MemberService extends BaseService<Member> implements IMemberService
     });
 
     //save created keycloak user in the database
-    const user = new User();
+    const user = User.getInstance();
     user.firstname = '';
     user.lastname = '';
     user.email = email;
     user.keycloakId = createdKeyCloakUser.id;
-    const wrappedUser = this.userService.wrapEntity(new User(), user);
+    user.status = userStatus.INVITATION_PENDING;
+    const wrappedUser = this.userService.wrapEntity(User.getInstance(), user);
     const savedUser = await this.userService.create(wrappedUser);
     if (savedUser.isFailure) {
       return savedUser;
     }
     const savedUserValue = savedUser.getValue();
-    // create member for the organization
-    const wrappedMember = this.wrapEntity(new Member(), {
+
+    const wrappedMember = this.wrapEntity(Member.getInstance(), {
+      name: savedUserValue.firstname + ' ' + savedUserValue.lastname,
+      workEmail: savedUserValue.email,
+      status: userStatus.INVITATION_PENDING,
+      membership: MembershipStatus.PENDING,
+      joinDate: new Date(),
       memberType: MemberTypeEnum.REGULAR,
     });
     wrappedMember.user = savedUserValue;
-    wrappedMember.name = savedUserValue.firstname + ' ' + savedUserValue.lastname;
-    wrappedMember.workEmail = savedUserValue.email;
-    wrappedMember.status = userStatus.INVITATION_PENDING;
-    wrappedMember.joinDate = new Date();
     wrappedMember.organization = existingOrgValue;
 
     const createdMemberResult = await this.dao.create(wrappedMember);
@@ -103,8 +104,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     };
 
     this.emailService.sendEmail(emailMessage);
-    user.status = userStatus.INVITATION_PENDING;
-    await this.userService.update(user);
     return Result.ok<Member>(createdMemberResult);
   }
 
