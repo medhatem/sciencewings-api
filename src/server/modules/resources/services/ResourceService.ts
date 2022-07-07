@@ -184,18 +184,49 @@ export class ResourceService extends BaseService<Resource> {
       organization = fetchedOrganization.getValue();
     }
 
+    const managers: Member[] = [];
+    const delManagers: Member[] = [];
+    if (payload.managers) {
+      for await (const { organization, user } of payload.managers) {
+        console.log({ organization, user });
+
+        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
+        if (fetcheManager.isFailure || !fetcheManager.getValue()) {
+          delManagers.push(fetcheManager.getValue());
+        }
+        managers.push(fetcheManager.getValue());
+      }
+    }
+
     const resource = this.wrapEntity(fetchedResource, {
       ...fetchedResource,
-      ...payload,
+      name: payload.name || fetchedResource.name,
+      description: payload.description || fetchedResource.description,
+      active: payload.active || fetchedResource.active,
+      resourceType: payload.resourceType || fetchedResource.resourceType,
+      resourceClass: payload.resourceClass || fetchedResource.resourceClass,
+      timezone: payload.timezone || fetchedResource.timezone,
       organization,
     });
 
-    const createdResource = await this.dao.update(resource);
-    if (!createdResource) {
-      return Result.fail(`resource with id ${resourceId} can not be updated.`);
+    for (const manager of managers) {
+      for (const existingManager of resource.managers) {
+        if (manager.user.id == existingManager.user.id && manager.organization.id == existingManager.organization.id) {
+          break;
+        }
+      }
+      resource.managers.add(manager);
+    }
+    for (const manager of delManagers) {
+      resource.managers.remove(manager);
     }
 
-    const id = createdResource.id;
+    const updatedResource = await this.dao.update(resource);
+
+    if (!updatedResource) {
+      return Result.fail(`resource with id ${resourceId} can not be updated.`);
+    }
+    const id = updatedResource.id;
     return Result.ok<number>(id);
   }
 

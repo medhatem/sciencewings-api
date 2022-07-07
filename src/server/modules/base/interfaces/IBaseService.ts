@@ -6,7 +6,7 @@ import { Result } from '@/utils/Result';
 export abstract class IBaseService<T> {
   static getInstance: () => any;
 
-  public get: (id: number) => Promise<any>;
+  public get: (id: number, options?: FindOneOptions<T>) => Promise<any>;
 
   public getAll: () => Promise<Result<any[]>>;
 

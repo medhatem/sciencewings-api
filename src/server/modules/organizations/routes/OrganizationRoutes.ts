@@ -253,6 +253,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
+
   /* Update a organization settings, section invoices
    *
    * @param payload
@@ -278,6 +279,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
+
   /* Update a organization settings, section access
    *
    * @param payload

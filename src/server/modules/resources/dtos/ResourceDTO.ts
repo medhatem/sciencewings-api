@@ -46,7 +46,7 @@ export class ResourceTagDTO extends BaseDTO {
 
 @JsonObject()
 @unique
-export class ResourceBodyDTO extends BaseBodyDTO {
+export class ResourceDTO {
   @JsonProperty()
   id: number;
 
@@ -101,15 +101,15 @@ export class CreatedResourceBodyDTO extends BaseBodyDTO {
 @unique
 export class GetResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty({
-    type: ResourceBodyDTO,
+    type: ResourceDTO,
     beforeDeserialize,
   })
-  data: Array<ResourceBodyDTO>;
+  data: Array<ResourceDTO>;
 }
 
 @JsonObject()
 @unique
-export class ResourceDTO extends BaseRequestDTO {
+export class ResourceGetDTO extends BaseRequestDTO {
   @JsonProperty()
   body: GetResourceBodyDTO;
 }

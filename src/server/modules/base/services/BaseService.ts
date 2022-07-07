@@ -1,4 +1,4 @@
-import { AssignOptions, wrap } from '@mikro-orm/core';
+import { AssignOptions, FindOneOptions, wrap } from '@mikro-orm/core';
 
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -25,8 +25,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   @safeGuard()
-  public async get(id: number): Promise<Result<any>> {
-    return Result.ok<any>(await this.dao.get(id));
+  public async get(id: number, options?: FindOneOptions<T>): Promise<Result<any>> {
+    return Result.ok<any>(await this.dao.get(id, options));
   }
 
   @log()

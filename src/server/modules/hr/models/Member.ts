@@ -36,8 +36,8 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
-  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index', nullable: true })
-  resource?: Resource;
+  @ManyToMany({ entity: () => Resource, index: 'hr_member_resource_id_index', nullable: true })
+  resource? = new Collection<Resource>(this);
 
   @OneToOne({
     entity: () => Organization,
