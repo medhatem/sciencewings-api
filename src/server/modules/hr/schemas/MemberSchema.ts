@@ -33,3 +33,8 @@ export const CreateMemberSchema = MemberSchema.keys({
 export const UpdateMemberSchema = MemberSchema.keys({
   organization: Joi.number(),
 });
+
+export const InviteMemberSchema = MemberSchema.keys({
+  organizationId: Joi.number().required(),
+  email: Joi.string().email().required().error(new Error('invalid email')),
+});

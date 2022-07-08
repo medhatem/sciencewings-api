@@ -1,9 +1,10 @@
 import {
-  MemberDTO,
+  SwitchedMemberDTO,
   UpdateMemberBodyDTO,
   getMembershipDTO,
   UpdateMemberDTO,
   MemberBodyDTO,
+  MemberRequestDTO,
 } from '@/modules/hr/dtos/MemberDTO';
 import { POST, Path, Security, PUT, PathParam, GET, ContextRequest } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
@@ -23,7 +24,7 @@ import { MemberRO } from './RequestObject';
 @Path('members')
 export class MemberRoutes extends BaseRoutes<Member> {
   constructor(private MemberService: IMemberService) {
-    super(MemberService as any, new MemberDTO(), new UpdateMemberDTO());
+    super(MemberService as any, new MemberRequestDTO(), new UpdateMemberDTO());
   }
 
   static getInstance(): MemberRoutes {
@@ -44,7 +45,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Security()
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
-    const result = await this.MemberService.inviteUserByEmail(payload.email, payload.organizationId);
+    const result = await this.MemberService.inviteUserByEmail(payload);
     if (result.isFailure) {
       throw result.error;
     }
@@ -69,7 +70,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @LoggerStorage()
   public async resendInvite(payload: UserResendPassword): Promise<InviteUserDTO> {
     const result = await this.MemberService.resendInvite(payload.userId, payload.orgId);
-
     if (result.isFailure) {
       throw result.error;
     }
@@ -94,13 +94,13 @@ export class MemberRoutes extends BaseRoutes<Member> {
   public async switchOrganization(
     @PathParam('orgId') orgId: number,
     @ContextRequest request: UserRequest,
-  ): Promise<MemberDTO> {
+  ): Promise<SwitchedMemberDTO> {
     const result = await this.MemberService.switchOrganization(orgId, request.userId);
 
     if (result.isFailure) {
       throw result.error;
     }
-    return new MemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new SwitchedMemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
   /**
   /**
@@ -143,7 +143,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
     const result = await this.MemberService.getUserMemberships(userId);
-
     if (result.isFailure) {
       throw result.error;
     }

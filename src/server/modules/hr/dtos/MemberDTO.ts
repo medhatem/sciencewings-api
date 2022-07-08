@@ -1,22 +1,34 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
-import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
-export class MemberBodyDTO extends BaseBodyDTO {
+export class MemberDTO extends BaseBodyDTO {
   @JsonProperty()
   name: string;
 
-  @JsonProperty()
-  user: UserDTO;
+  @JsonProperty({
+    beforeDeserialize: (prop: any) => {
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
+    },
+  })
+  user?: number;
 
-  @JsonProperty()
-  organization: OrganizationDTO;
+  @JsonProperty({
+    beforeDeserialize: (prop: any) => {
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
+    },
+  })
+  organization?: number;
 
   @JsonProperty()
   status: string;
@@ -33,9 +45,33 @@ export class MemberBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class MemberDTO extends BaseRequestDTO {
+export class MemberBodyDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: MemberDTO,
+    beforeDeserialize,
+  })
+  data: Array<MemberDTO>;
+}
+
+@JsonObject()
+@unique
+export class MemberRequestDTO extends BaseRequestDTO {
   @JsonProperty()
   body: MemberBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class SwitchedMemberBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
+
+@JsonObject()
+@unique
+export class SwitchedMemberDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: SwitchedMemberBodyDTO;
 }
 
 @JsonObject()
