@@ -142,7 +142,9 @@ cellspacing="0" width="100%" border="0">
         
 <div align="center">
    <p>
-    <a href="http://localhost:8080/auth/realms/sciencewings-web/login-actions/reset-credentials?client_id=web" style="text-decoration:none;
+    <a
+        href="http://localhost:8080/auth/realms/sciencewings-web/login-actions/reset-credentials?client_id=web" 
+        style="text-decoration:none;
         width: 200px; padding: 15px; box-shadow: 6px 6px 5px; 
         font-weight: MEDIUM; background: #3ebfac; color: #000000; 
         cursor: pointer; border-radius: 10px; border: 1px solid #D9D9D9; 
