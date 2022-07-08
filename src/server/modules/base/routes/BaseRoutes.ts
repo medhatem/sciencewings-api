@@ -30,9 +30,8 @@ export class BaseRoutes<T extends BaseModel<T>> {
     if (result.isFailure) {
       throw result.error;
     }
-
     return this.getDTOMapper.deserialize({
-      body: { statusCode: 200, data: [...(result.getValue() || [])] },
+      body: { statusCode: 200, data: [...([result.getValue()] || [])] },
     });
   }
 

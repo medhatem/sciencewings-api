@@ -45,7 +45,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Security()
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
-    const result = await this.MemberService.inviteUserByEmail(payload.email, payload.organizationId);
+    const result = await this.MemberService.inviteUserByEmail(payload);
     if (result.isFailure) {
       throw result.error;
     }

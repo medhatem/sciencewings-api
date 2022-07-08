@@ -19,6 +19,7 @@ export const CreateOrganizationSchema = organizationSchema.keys({
   name: Joi.string().required(),
   email: Joi.string().email().required(),
   phones: Joi.array().required(),
+  addresses: Joi.array().required(),
   labels: Joi.array().required(),
   parent: Joi.number().allow(null),
   settings: Joi.object(),

@@ -12,17 +12,23 @@ export class MemberDTO extends BaseBodyDTO {
 
   @JsonProperty({
     beforeDeserialize: (prop: any) => {
-      return prop.id;
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
     },
   })
-  user: number;
+  user?: number;
 
   @JsonProperty({
     beforeDeserialize: (prop: any) => {
-      return prop.id;
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
     },
   })
-  organization: number;
+  organization?: number;
 
   @JsonProperty()
   status: string;

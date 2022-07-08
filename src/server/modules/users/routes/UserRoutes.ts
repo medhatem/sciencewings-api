@@ -5,7 +5,7 @@ import { Response } from 'typescript-rest-swagger';
 import { User } from '@/modules/users/models/User';
 import { UserRequest } from '@/types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
-import { UserDTO } from '@/modules/users/dtos/UserDTO';
+import { UserGetDTO } from '@/modules/users/dtos/UserDTO';
 import { ResetPasswordRO, UserRO } from './RequstObjects';
 import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
 import { Result } from '@/utils/Result';
@@ -19,7 +19,7 @@ import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/
 @Path('users')
 export class UserRoutes extends BaseRoutes<User> {
   constructor(private userService: IUserService) {
-    super(userService as any, new UserDTO(), new UpdateUserDTO());
+    super(userService as any, new UserGetDTO(), new UpdateUserDTO());
   }
 
   static getInstance(): UserRoutes {
@@ -171,16 +171,16 @@ export class UserRoutes extends BaseRoutes<User> {
   @Path('getUserByKeycloakId')
   @LoggerStorage()
   @Security()
-  @Response<UserDTO>(200, 'Return User Successfully')
+  @Response<UserGetDTO>(200, 'Return User Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserDTO> {
+  public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserGetDTO> {
     const result = await this.userService.getUserByKeycloakId(request.keycloakUser.sub);
 
     if (result.isFailure) {
       throw result.error;
     }
     const user = result.getValue();
-    return new UserDTO({ body: { ...user, statusCode: 200 } });
+    return new UserGetDTO({ body: { data: [...([user] || [])], statusCode: 200 } });
   }
 }
