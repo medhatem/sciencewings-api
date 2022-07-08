@@ -65,26 +65,17 @@ export const beforeDeserialize: (property: any, currentInstance?: any) => any = 
 };
 
 /**
-
  * stub a method with args and results
-
  * @param className class to be stubed
-
  * @param methodToStub method to be stubed
-
  * @param args argument passed to the stub method
-
  * @param returnValue stub method result
-
  */
 
 export const mockMethodWithResult = (
   className: SinonStubbedInstance<any>,
-
   methodToStub: any,
-
   args: any,
-
   returnValue: any,
 ) => {
   if (args.length === 0) {

@@ -70,7 +70,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @LoggerStorage()
   public async resendInvite(payload: UserResendPassword): Promise<InviteUserDTO> {
     const result = await this.MemberService.resendInvite(payload.userId, payload.orgId);
-
     if (result.isFailure) {
       throw result.error;
     }
@@ -144,7 +143,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
     const result = await this.MemberService.getUserMemberships(userId);
-
     if (result.isFailure) {
       throw result.error;
     }
