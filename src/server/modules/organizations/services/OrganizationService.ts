@@ -144,8 +144,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
       await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
       return Result.fail('Organization could not be created');
     }
-
+    //storing the KC groups ids
     wrappedOrganization.kcid = keycloakOrganization.getValue();
+    wrappedOrganization.adminGroupkcid = adminGroup.getValue();
+    wrappedOrganization.memberGroupkcid = membersGroup.getValue();
 
     const createdOrg = await this.create(wrappedOrganization);
     if (createdOrg.isFailure) {
@@ -245,7 +247,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (fetchedorganization.name !== payload.name) {
       try {
-        await (await this.keycloak.getAdminClient()).groups.update(
+        await (
+          await this.keycloak.getAdminClient()
+        ).groups.update(
           { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
           {
             name: `${orgPrifix}${payload.name}`,
@@ -368,7 +372,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     try {
-      const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
+      const groups = await (
+        await this.keycloak.getAdminClient()
+      ).groups.findOne({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -377,7 +383,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }
 
-      await (await this.keycloak.getAdminClient()).groups.del({
+      await (
+        await this.keycloak.getAdminClient()
+      ).groups.del({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
