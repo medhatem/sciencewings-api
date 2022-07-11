@@ -198,7 +198,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.fail(`membership of user with id: ${userId} in organization with id: ${orgId} can not be updated.`);
     }
     //adding the user to the org Kc member group
-    await this.keycloakUtils.addMemberToGroup(fetchedOrg.adminGroupkcid, fetchedUser.keycloakId);
+    await this.keycloakUtils.addMemberToGroup(fetchedOrg.getValue().adminGroupkcid, fetchedUser.getValue().keycloakId);
 
     return Result.ok<any>({ userId, orgId });
   }
