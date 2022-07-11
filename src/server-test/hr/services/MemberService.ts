@@ -16,7 +16,6 @@ import intern from 'intern';
 import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { userStatus } from '@/modules/users/models/User';
-import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import sinon = require('sinon');
 
 const { suite, test } = intern.getPlugin('interface.tdd');
