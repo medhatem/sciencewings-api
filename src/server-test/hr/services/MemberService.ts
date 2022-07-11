@@ -16,6 +16,8 @@ import intern from 'intern';
 import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { userStatus } from '@/modules/users/models/User';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+import sinon = require('sinon');
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -226,17 +228,17 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`User with id: ${userId} does not exist.`);
     });
-    /*     test('Should return array of organizations', async () => {
+    test('Should return array of organizations', async () => {
       mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(
-        memberDao,
-        'getByCriteria',
-        [{ user: userId }, FETCH_STRATEGY.ALL],
-        Promise.resolve(Result.ok([{}] as Member[])),
-      );
+      mockMethodWithResult(memberDao, 'getByCriteria', [{ user: userId }], [{}]);
+      sinon.spy([{}]);
+      sinon.stub(Array.prototype, 'map').returns([{}]);
+      mockMethodWithResult(organizationService, 'get', [1], Promise.resolve(Result.ok({})));
+      sinon.spy([{}]);
+      sinon.stub(Array.prototype, 'filter').returns([{}]);
       const result = await container.get(MemberService).getUserMemberships(userId);
       expect(result.isSuccess).to.be.true;
       expect(result.getValue()).to.eql(Result.ok([{}]));
-    }); */
+    });
   });
 });
