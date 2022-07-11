@@ -200,8 +200,6 @@ export class ResourceService extends BaseService<Resource> {
     const delManagers: Member[] = [];
     if (payload.managers) {
       for await (const { organization, user } of payload.managers) {
-        console.log({ organization, user });
-
         const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
         if (fetcheManager.isFailure || !fetcheManager.getValue()) {
           delManagers.push(fetcheManager.getValue());
