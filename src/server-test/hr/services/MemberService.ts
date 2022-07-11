@@ -68,8 +68,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService
-      keycloakUtil));
+      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
   });
 
   afterEach(() => {

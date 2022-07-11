@@ -28,8 +28,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
     public dao: MemberDao,
     public userService: IUserService,
     public organizationService: IOrganizationService,
-    public keycloakUtils: KeycloakUtil,
     public emailService: Email,
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -203,7 +203,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     } catch (error) {
       return Result.fail(error.ressp);
     }
-
     return Result.ok<any>({ userId, orgId });
   }
 
