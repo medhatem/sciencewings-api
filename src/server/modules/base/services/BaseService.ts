@@ -3,6 +3,7 @@ import { AssignOptions, FindOneOptions, wrap } from '@mikro-orm/core';
 import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { FETCH_STRATEGY } from '../daos/BaseDao';
+import { FindOptions } from '@mikro-orm/core/drivers/IDatabaseDriver';
 import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@/sdks/keycloak';
 import { Logger } from '@/utils/Logger';
@@ -25,7 +26,7 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   @safeGuard()
-  public async get(id: number, options?: FindOneOptions<T>): Promise<Result<any>> {
+  public async get(id: number, options?: FindOptions<T>): Promise<Result<any>> {
     return Result.ok<any>(await this.dao.get(id, options));
   }
 

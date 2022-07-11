@@ -126,9 +126,8 @@ cellspacing="0" width="100%" border="0">
       font-family:arial,helvetica,sans-serif;" align="left">
         
   <div style="line-height: 140%; text-align: left; word-wrap: break-word;">
-    <p style="font-size: 14px; line-height: 140%;">You where invited by to join the ${org} organization.</p>
+    <p style="font-size: 14px; line-height: 140%;">You were invited to join ${org} organization.</p>
   </div>
-
       </td>
     </tr>
   </tbody>
@@ -142,15 +141,16 @@ cellspacing="0" width="100%" border="0">
       font-family:arial,helvetica,sans-serif;" align="left">
         
 <div align="center">
-    <a href="localhost:3000/user/resetPassword" target="_blank" style="box-sizing: border-box;
-    display: inline-block;font-family:arial,helvetica,sans-serif;text-decoration: none;
-    -webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #3AAEE0; 
-    border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; 
-    max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
-      <span style="display:block;padding:10px 20px;line-height:120%;">Reset password<br /></span>
-    </a>
+   <p>
+    <a
+        href="http://localhost:8080/auth/realms/sciencewings-web/login-actions/reset-credentials?client_id=web" 
+        style="text-decoration:none;
+        width: 200px; padding: 15px; box-shadow: 6px 6px 5px; 
+        font-weight: MEDIUM; background: #3ebfac; color: #000000; 
+        cursor: pointer; border-radius: 10px; border: 1px solid #D9D9D9; 
+        font-size: 110%;">START NOW</a>
+</p>
 </div>
-
       </td>
     </tr>
   </tbody>

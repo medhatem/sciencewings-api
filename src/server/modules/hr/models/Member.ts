@@ -1,18 +1,19 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { User, userStatus } from '@/modules/users/models/User';
 import { container, provide } from '@/di/index';
+
+import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
 import { Job } from './Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { Project } from '@/modules/projects/models/Project';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { User, userStatus } from '@/modules/users/models/User';
-import { WorkLocation } from './WorkLocation';
-import { BaseModel } from '@/modules/base/models/BaseModel';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
-import { ProjectTask } from '@/modules/projects/models/ProjectTask';
+import { WorkLocation } from './WorkLocation';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',
@@ -136,6 +137,9 @@ export class Member extends BaseModel<Member> {
 
   @Property({ columnType: 'date', nullable: true })
   departureDate?: Date;
+
+  @Property({ columnType: 'date', nullable: true })
+  joinedDate?: Date;
 
   @Property({ columnType: 'timestamp', nullable: true })
   joinDate?: Date = new Date();

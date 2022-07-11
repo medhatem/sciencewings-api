@@ -1,15 +1,43 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
+import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
+import { PhoneInformationDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
-export class OrganizationBaseBodyGetDTO extends BaseBodyDTO {
+export class OrganizationInformationDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
   @JsonProperty()
   name?: string;
+  @JsonProperty()
+  email?: string;
+  @JsonProperty()
+  description?: string;
+  @JsonProperty()
+  type?: string;
+  @JsonProperty({
+    type: AddressDTO,
+    beforeDeserialize,
+  })
+  address?: Array<AddressDTO>;
+  @JsonProperty({
+    type: PhoneInformationDTO,
+    beforeDeserialize,
+  })
+  phones?: Array<PhoneInformationDTO>;
+}
+@JsonObject()
+@unique
+export class OrganizationBaseBodyGetDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: OrganizationInformationDTO,
+    beforeDeserialize,
+  })
+  data: Array<OrganizationInformationDTO>;
 }
 
 @JsonObject()

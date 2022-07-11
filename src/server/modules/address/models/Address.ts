@@ -1,4 +1,4 @@
-import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -45,7 +45,7 @@ export class Address extends BaseModel<Address> {
     entity: () => Organization,
     nullable: true,
   })
-  organization?: Organization;
+  organization? = new Collection<Organization>(this);
 
   @ManyToMany({ entity: () => User, nullable: true })
   user?: User;

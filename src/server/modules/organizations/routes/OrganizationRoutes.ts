@@ -11,6 +11,7 @@ import {
   UpdateOrganizationRO,
 } from './RequestObject';
 import { UserRequest } from '@/types/UserRequest';
+import { CreateOrganizationDTO } from '@/modules/organizations/dtos/CreateOrganizationDTO';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
@@ -45,20 +46,20 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('createOrganization')
   @Security()
   @LoggerStorage()
-  @Response<OrganizationDTO>(201, 'Organization created Successfully')
+  @Response<CreateOrganizationDTO>(201, 'Organization created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createOrganization(
     payload: CreateOrganizationRO,
     @ContextRequest request: UserRequest,
-  ): Promise<OrganizationDTO> {
+  ): Promise<CreateOrganizationDTO> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
     if (result.isFailure) {
       throw result.error;
     }
 
-    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateOrganizationDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
   /**
    * Update an organization in the database
@@ -71,19 +72,19 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Path('updateOrganization/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdateResourceBodyDTO>(204, 'Organization updated Successfully')
+  @Response<UpdateOrganizationDTO>(204, 'Organization updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateOrganization(
     payload: UpdateOrganizationRO,
     @PathParam('id') id: number,
-  ): Promise<OrganizationDTO> {
+  ): Promise<UpdateOrganizationDTO> {
     const result = await this.OrganizationService.updateOrganizationGeneraleProperties(payload, id);
 
     if (result.isFailure) {
       throw result.error;
     }
-    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateOrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
   }
   /**
    * Delete an organization in the database

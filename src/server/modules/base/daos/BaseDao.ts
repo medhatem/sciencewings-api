@@ -28,7 +28,7 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   @log()
-  public async get(id: number, options?: FindOneOptions<T>): Promise<T> {
+  public async get(id: number, options?: FindOptions<T>): Promise<T> {
     return (this.repository as any).findOne(id, options);
   }
 
