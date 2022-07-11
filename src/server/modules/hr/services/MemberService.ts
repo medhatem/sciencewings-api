@@ -210,16 +210,12 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (fetchedUser.isFailure) {
       return Result.notFound(`User with id: ${userId} does not exist.`);
     }
-    console.log('213');
     const fetchedMembers = (await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL)) as Member[];
-    console.log('210');
     const orgs = await Promise.all(
       fetchedMembers.map((member: any) => {
-        console.log('213');
         return this.organizationService.get(member.organization.id);
       }),
     );
-    console.log('217');
     return Result.ok(orgs.filter((o: Result<any>) => !o.isFailure).map((o) => o.getValue()));
   }
   /**
