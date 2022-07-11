@@ -1,7 +1,7 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-import { MemberBodyDTO } from '@/modules/hr/dtos/MemberDTO';
+import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
@@ -9,10 +9,10 @@ import { unique } from '@/decorators/unique';
 @unique
 class OrganizationMembersBodyDTO extends BaseBodyDTO {
   @JsonProperty({
-    type: MemberBodyDTO,
+    type: MemberDTO,
     beforeDeserialize,
   })
-  data: Array<MemberBodyDTO>;
+  data: Array<MemberDTO>;
 }
 
 @JsonObject()

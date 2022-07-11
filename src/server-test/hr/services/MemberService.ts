@@ -1,22 +1,24 @@
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { BaseService } from '@/modules/base/services/BaseService';
+import { Configuration } from '@/configuration/Configuration';
+import { Email } from '@/utils/Email';
+import { Keycloak } from '@/sdks/keycloak';
+import { Logger } from '@/utils/Logger';
+import { MemberDao } from '@/modules/hr/daos/MemberDao';
+import { MemberService } from '@/modules/hr/services/MemberService';
+import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
+import { Result } from '@/utils/Result';
+import { UserService } from '@/modules/users/services/UserService';
+import { container } from '@/di';
 import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
+import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
+import { mockMethodWithResult } from '@/utils/utilities';
+import { userStatus } from '@/modules/users/models/User';
+
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { MemberService } from '@/modules/hr/services/MemberService';
-import { MemberDao } from '@/modules/hr/daos/MemberDao';
-import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
-import { UserService } from '@/modules/users/services/UserService';
-import { Email } from '@/utils/Email';
-import { mockMethodWithResult } from '@/utils/utilities';
-import { Result } from '@/utils/Result';
-import { userStatus } from '@/modules/users/models/User';
-import { BaseService } from '@/modules/base/services/BaseService';
-import { Keycloak } from '@/sdks/keycloak';
-import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let memberDao: SinonStubbedInstance<MemberDao>;
@@ -66,7 +68,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
+      .returns(new MemberService(memberDao, userService, organizationService, emailService
+      keycloakUtil));
   });
 
   afterEach(() => {
@@ -79,19 +82,12 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
 
   suite('invite User By Email', async () => {
-    const email = 'aze@aze.com',
-      orgId = 1;
-    test('Should fail on user already exist', async () => {
-      stubKeyclockInstanceWithBaseService([{}]);
-      const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`The user already exist.`);
-    });
+    const email = 'aze@aze.com';
+    const orgId = 1;
     test('Should fail on retriving organization', async () => {
       stubKeyclockInstanceWithBaseService([]);
       mockMethodWithResult(organizationService, 'get', [orgId], Promise.resolve(Result.ok(null)));
-      const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
+      const result = await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId });
 
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`The organization to add the user to does not exist.`);
@@ -101,10 +97,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationService, 'get', [orgId], Promise.resolve(Result.ok({})));
       mockMethodWithResult(userService, 'create', [], Promise.resolve(Result.fail('StackTrace')));
 
-      const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
+      const result = await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId });
 
       expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`StackTrace`);
+      expect(result.error.message).to.equal(`Could not create the User with email ${email}`);
     });
     test('Should success on invite user', async () => {
       stubKeyclockInstanceWithBaseService([]);
@@ -114,18 +110,34 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         [orgId],
         Promise.resolve(
           Result.ok({
+            name: 'org',
             members: {
               add: stub(),
             },
           }),
         ),
       );
+      const memberService = container.get(MemberService);
       mockMethodWithResult(userService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       mockMethodWithResult(memberDao, 'create', [], Promise.resolve({ user: 1, organization: orgId }));
       stub(BaseService.prototype, 'wrapEntity').returns({});
+      stub(BaseService.prototype, 'getByCriteria').returns(Promise.resolve(Result.ok(null)));
+      mockMethodWithResult(
+        emailService,
+        'sendEmail',
+        [
+          {
+            from: memberService.emailService.from,
+            to: email,
+            text: 'Sciencewings - reset password',
+            html: inviteNewMemberTemplate('org'),
+            subject: ' reset password',
+          },
+        ],
+        Promise.resolve(''),
+      );
 
-      const result = await container.get(MemberService).inviteUserByEmail(email, orgId);
-
+      const result = await memberService.inviteUserByEmail({ email, organizationId: orgId });
       expect(result.isSuccess).to.be.true;
       expect(result.getValue().user).to.equal(1);
       expect(result.getValue().organization).to.equal(orgId);

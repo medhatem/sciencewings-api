@@ -1,11 +1,11 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
-export class RegisterUserFromTokenBodyDTO extends BaseBodyDTO {
+export class CreateOrganizationBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
@@ -14,8 +14,5 @@ export class RegisterUserFromTokenBodyDTO extends BaseBodyDTO {
 @unique
 export class CreateOrganizationDTO extends BaseRequestDTO {
   @JsonProperty()
-  body?: RegisterUserFromTokenBodyDTO = new RegisterUserFromTokenBodyDTO();
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
+  body?: CreateOrganizationBodyDTO;
 }

@@ -58,32 +58,24 @@ export const applyToAll = async <T, G>(
  */
 export const beforeDeserialize: (property: any, currentInstance?: any) => any = (prop: any) => {
   if (prop instanceof Collection) {
-    return prop.toJSON();
+    const result = prop.toJSON();
+    return result;
   }
   return prop;
 };
 
 /**
-
  * stub a method with args and results
-
  * @param className class to be stubed
-
  * @param methodToStub method to be stubed
-
  * @param args argument passed to the stub method
-
  * @param returnValue stub method result
-
  */
 
 export const mockMethodWithResult = (
   className: SinonStubbedInstance<any>,
-
   methodToStub: any,
-
   args: any,
-
   returnValue: any,
 ) => {
   if (args.length === 0) {
