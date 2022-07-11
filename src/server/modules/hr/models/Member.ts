@@ -1,7 +1,6 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provide } from '@/di/index';
-
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
@@ -37,9 +36,6 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
-  @ManyToMany({ entity: () => Resource, index: 'hr_member_resource_id_index', nullable: true })
-  resource? = new Collection<Resource>(this);
-
   @OneToOne({
     entity: () => Organization,
     onDelete: 'set null',
@@ -66,7 +62,6 @@ export class Member extends BaseModel<Member> {
     entity: () => ResourceCalendar,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_member_resource_calendar_id_index',
   })
   resourceCalendar?: ResourceCalendar;
 

@@ -2,8 +2,8 @@ import { BaseBodyDTO, BaseDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDT
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
-import { OrganizationBaseBodyGetDTO } from '@/modules/organizations/dtos/OrganizationDTO';
-import { UserBaseBodyGetDTO } from '@/modules/users/dtos/UserDTO';
+import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { UserDTO } from '@/modules/users/dtos/UserDTO';
 
 @JsonObject()
 @unique
@@ -28,10 +28,10 @@ export class ResourceCalendarDTO extends BaseBodyDTO {
 @unique
 export class ResourceManagerDTO extends BaseDTO {
   @JsonProperty()
-  user: UserBaseBodyGetDTO;
+  user: UserDTO;
 
   @JsonProperty()
-  organization: OrganizationBaseBodyGetDTO;
+  organization: OrganizationInformationDTO;
 
   @JsonProperty()
   name: string;

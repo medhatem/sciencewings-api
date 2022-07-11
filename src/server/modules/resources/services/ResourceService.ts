@@ -126,6 +126,18 @@ export class ResourceService extends BaseService<Resource> {
       }
     }
 
+    const resourceStatusSetting = await this.resourceStatusService.get(1);
+    if (resourceStatusSetting.isFailure) {
+      return Result.fail(`Can not create settings for resource.`);
+    }
+
+    const resourceSetting = await this.resourceSettingsService.create({
+      resourceType: resourceStatusSetting.getValue(),
+    });
+    if (resourceSetting.isFailure || !resourceSetting.getValue()) {
+      return Result.fail(`Can not create settings for resource.`);
+    }
+
     const createdResourceResult = await this.dao.create({
       name: payload.name,
       description: payload.description,
@@ -134,7 +146,7 @@ export class ResourceService extends BaseService<Resource> {
       resourceClass: payload.resourceClass,
       timezone: payload.timezone,
       organization,
-      settings: (await this.resourceStatusService.get(1)).getValue(),
+      settings: resourceStatusSetting.getValue(),
     });
 
     if (!createdResourceResult) {
