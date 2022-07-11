@@ -1,10 +1,9 @@
-import { AssignOptions, FindOneOptions, wrap } from '@mikro-orm/core';
-
-import { BaseDao } from '../daos/BaseDao';
+import { AssignOptions, wrap } from '@mikro-orm/core';
+import { BaseDao } from '@/modules/base/daos/BaseDao';
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { FETCH_STRATEGY } from '../daos/BaseDao';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { FindOptions } from '@mikro-orm/core/drivers/IDatabaseDriver';
-import { IBaseService } from '../interfaces/IBaseService';
+import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Keycloak } from '@/sdks/keycloak';
 import { Logger } from '@/utils/Logger';
 import { Result } from '@/utils/Result';
