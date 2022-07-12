@@ -1,4 +1,4 @@
-import { Member, MemberTypeEnum } from '@/modules/hr/models/Member';
+import { Member, MembershipStatus, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -16,8 +16,10 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { MemberRO } from '@/modules/hr/routes/RequestObject';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
-import { MemberSchema } from '@/modules/hr/schemas/MemberSchema';
+import { InviteMemberSchema, MemberSchema } from '@/modules/hr/schemas/MemberSchema';
 import { Organization } from '@/modules/organizations/models/Organization';
+import { UserInviteToOrgRO } from '@/modules/organizations/routes/RequestObject';
+import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -36,57 +38,69 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
   @log()
   @safeGuard()
-  async inviteUserByEmail(email: string, orgId: number): Promise<Result<Member>> {
-    let existingUser;
-    try {
-      existingUser = await (await this.keycloak.getAdminClient()).users.find({
-        email,
-        realm: getConfig('keycloak.clientValidation.realmName'),
-      });
-    } catch (error) {
-      return Result.fail('Something went wrong when retriving the user.');
-    }
-
-    if (existingUser.length > 0) {
-      return Result.fail('The user already exist.');
-    }
-
-    const existingOrg = await this.organizationService.get(orgId);
+  @validate
+  async inviteUserByEmail(@validateParam(InviteMemberSchema) payload: UserInviteToOrgRO): Promise<Result<Member>> {
+    const existingOrg = await this.organizationService.get(payload.organizationId);
 
     if (existingOrg.isFailure || existingOrg.getValue() === null) {
       return Result.notFound('The organization to add the user to does not exist.');
     }
 
-    const existingOrgValue = existingOrg.getValue();
-
-    const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
-      email,
-      firstName: '',
-      lastName: '',
+    let existingUser;
+    existingUser = await (await this.keycloak.getAdminClient()).users.find({
+      email: payload.email,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
 
-    //save created keycloak user in the database
-    const user = new User();
-    user.firstname = '';
-    user.lastname = '';
-    user.email = email;
-    user.keycloakId = createdKeyCloakUser.id;
-    const wrappedUser = this.userService.wrapEntity(new User(), user);
-    const savedUser = await this.userService.create(wrappedUser);
-    if (savedUser.isFailure) {
-      return savedUser;
+    let user = null;
+    if (existingUser.length > 0) {
+      // fetch the existing user
+      existingUser = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
+      user = existingUser;
+    } else {
+      const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
+        email: payload.email,
+        firstName: '',
+        lastName: '',
+        realm: getConfig('keycloak.clientValidation.realmName'),
+      });
+      //save created keycloak user in the database
+      const wrappedUser = this.userService.wrapEntity(User.getInstance(), {
+        firstname: '',
+        lastname: '',
+        email: payload.email,
+        keycloakId: createdKeyCloakUser.id,
+        status: userStatus.INVITATION_PENDING,
+      });
+
+      user = await this.userService.create(wrappedUser);
+      if (user.isFailure) {
+        return Result.fail(`Could not create the User with email ${payload.email}`, true);
+      }
     }
-    const savedUserValue = savedUser.getValue();
-    // create member for the organization
-    const wrappedMember = this.wrapEntity(new Member(), {
+
+    const existingOrgValue = existingOrg.getValue();
+    const savedUserValue = user.getValue();
+    // check whether the user is already a member of the organization
+    const isAlreadyMember = await this.getByCriteria({ user: savedUserValue, organization: existingOrg.getValue() });
+
+    if (isAlreadyMember.isFailure) {
+      return Result.fail('Internal server error');
+    }
+
+    if (isAlreadyMember.getValue() !== null) {
+      return Result.fail(`${payload.email} is already a member of ${existingOrg.getValue().name}.`);
+    }
+
+    const wrappedMember = this.wrapEntity(Member.getInstance(), {
+      name: savedUserValue.firstname + ' ' + savedUserValue.lastname,
+      workEmail: savedUserValue.email,
+      status: userStatus.INVITATION_PENDING,
+      membership: MembershipStatus.PENDING,
+      joinDate: new Date(),
       memberType: MemberTypeEnum.REGULAR,
     });
     wrappedMember.user = savedUserValue;
-    wrappedMember.name = savedUserValue.firstname + ' ' + savedUserValue.lastname;
-    wrappedMember.workEmail = savedUserValue.email;
-    wrappedMember.status = userStatus.INVITATION_PENDING;
-    wrappedMember.joinDate = new Date();
     wrappedMember.organization = existingOrgValue;
 
     const createdMemberResult = await this.dao.create(wrappedMember);
@@ -96,15 +110,13 @@ export class MemberService extends BaseService<Member> implements IMemberService
     await this.dao.update(existingOrgValue);
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
-      to: email,
+      to: payload.email,
       text: 'Sciencewings - reset password',
-      html: '<html><body>Reset password</body></html>',
+      html: inviteNewMemberTemplate(existingOrg.getValue().name),
       subject: ' reset password',
     };
 
     this.emailService.sendEmail(emailMessage);
-    user.status = userStatus.INVITATION_PENDING;
-    await this.userService.update(user);
     return Result.ok<Member>(createdMemberResult);
   }
 

@@ -1,17 +1,19 @@
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { UserInviteToOrgRO, UserResendPassword } from '@/modules/organizations/routes/RequestObject';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+
+import { Configuration } from '@/configuration/Configuration';
+import { LocalStorage } from '@/utils/LocalStorage';
+import { Logger } from '@/utils/Logger';
+import { MemberRoutes } from '@/modules/hr/routes/MemberRoutes';
+import { MemberService } from '@/modules/hr/services/MemberService';
+import { Result } from '@/utils/Result';
+import { container } from '@/di';
 import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
+import { mockMethodWithResult } from '@/utils/utilities';
+
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { LocalStorage } from '@/utils/LocalStorage';
-import { mockMethodWithResult } from '@/utils/utilities';
-import { UserInviteToOrgRO, UserResendPassword } from '@/modules/organizations/routes/RequestObject';
-import { Result } from '@/utils/Result';
-import { MemberService } from '@/modules/hr/services/MemberService';
-import { MemberRoutes } from '@/modules/hr/routes/MemberRoutes';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let memberService: SinonStubbedInstance<MemberService>;
@@ -61,7 +63,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         expect(error).to.equal('throwing error');
       }
     });
-    test('Should success at returning the right value', async () => {
+    test('Should succeed at returning the right value', async () => {
       mockMethodWithResult(memberService, 'resendInvite', [payload.userId, payload.orgId], Result.ok(1));
       const result = await memberRoutes.resendInvite(payload);
       expect(result.body.id).to.equal(1);
@@ -71,14 +73,13 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   suite('POST members/inviteUserToOrganization', () => {
     const payload: UserInviteToOrgRO = {
       organizationId: 1,
-
       email: 'test',
     };
     test('Should fail on throw error', async () => {
       mockMethodWithResult(
         memberService,
         'inviteUserByEmail',
-        [payload.email, payload.organizationId],
+        [{ email: payload.email, organizationId: payload.organizationId }],
         Promise.resolve({ isFailure: true, error: 'throwing error' }),
       );
       try {
@@ -87,8 +88,13 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         expect(error).to.equal('throwing error');
       }
     });
-    test('Should success at returning the right value', async () => {
-      mockMethodWithResult(memberService, 'inviteUserByEmail', [payload.email, payload.organizationId], Result.ok(1));
+    test('Should succeed at returning the right value', async () => {
+      mockMethodWithResult(
+        memberService,
+        'inviteUserByEmail',
+        [{ email: payload.email, organizationId: payload.organizationId }],
+        Result.ok(1),
+      );
       const result = await memberRoutes.inviteUserToOrganization(payload);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
@@ -109,8 +115,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         expect(error).to.equal('throwing error');
       }
     });
-    test('Should success at returning the right value', async () => {
-      mockMethodWithResult(memberService, 'getUserMemberships', [], Result.ok([{}]));
+    test('Should succeed at returning the right value', async () => {
+      mockMethodWithResult(memberService, 'getUserMemberships', [1], Result.ok([{}]));
       const result = await memberRoutes.getUserMemberships(1);
       expect(result.body.statusCode).to.equal(200);
     });

@@ -1,4 +1,4 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
@@ -8,7 +8,7 @@ import { unique } from '@/decorators/unique';
 
 @unique
 @JsonObject()
-export class UserBaseBodyGetDTO extends BaseBodyDTO {
+export class UserDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 
@@ -41,12 +41,19 @@ export class UserBaseBodyGetDTO extends BaseBodyDTO {
 
 @unique
 @JsonObject()
-export class UserDTO extends BaseRequestDTO {
+export class UserBaseBodyGetDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: UserDTO,
+    beforeDeserialize,
+  })
+  public data: Array<UserDTO>;
+}
+
+@unique
+@JsonObject()
+export class UserGetDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: UserBaseBodyGetDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
 }
 
 @JsonObject()
@@ -79,4 +86,3 @@ export class MembershipDto extends BaseRequestDTO {
   @JsonProperty()
   body: GetMembershipBodyDTO;
 }
-

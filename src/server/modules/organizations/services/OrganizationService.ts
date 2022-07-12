@@ -246,17 +246,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (fetchedorganization.name !== payload.name) {
-      try {
-        await (
-          await this.keycloak.getAdminClient()
-        ).groups.update(
-          { id: fetchedorganization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
-          {
-            name: `${orgPrifix}${payload.name}`,
-          },
-        );
-      } catch (error) {
-        return catchKeycloackError(error, payload.name);
+      //update the Kc group name
+      const updatedOrg = await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+        name: `${orgPrifix}${payload.name}`,
+      });
+      if (updatedOrg.isFailure) {
+        return Result.fail('Organization name could not be updated');
       }
     }
 
@@ -280,7 +275,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.parent = parent;
     }
 
-    await this.dao.update(wrappedOrganization);
+    const updateResult = await this.dao.update(wrappedOrganization);
+    if (!updateResult) {
+      //in case we update the name of the org
+      if (fetchedorganization.name !== payload.name) {
+        //rolback the keyclock updated group name
+        await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+          name: `${orgPrifix}${fetchedorganization.name}`,
+        });
+        return Result.fail('Organization name could not be updated ');
+      }
+      return Result.fail('Organization could not be updated');
+    }
     return Result.ok<number>(orgId);
   }
 
