@@ -16,7 +16,6 @@ import intern from 'intern';
 import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { userStatus } from '@/modules/users/models/User';
-import sinon = require('sinon');
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -229,15 +228,17 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
     test('Should return array of organizations', async () => {
       mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(memberDao, 'getByCriteria', [{ user: userId }], [{}]);
-      sinon.spy([{}]);
-      sinon.stub(Array.prototype, 'map').returns([{}]);
+      mockMethodWithResult(
+        memberDao,
+        'getByCriteria',
+        [{ user: userId }],
+        [{ organization: { id: 1 } }, { organization: { id: 2 } }],
+      );
       mockMethodWithResult(organizationService, 'get', [1], Promise.resolve(Result.ok({})));
-      sinon.spy([{}]);
-      sinon.stub(Array.prototype, 'filter').returns([{}]);
+      mockMethodWithResult(organizationService, 'get', [2], Promise.resolve(Result.ok({})));
       const result = await container.get(MemberService).getUserMemberships(userId);
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql(Result.ok([{}]));
+      expect(result.getValue()).to.eql([{}, {}]);
     });
   });
 });
