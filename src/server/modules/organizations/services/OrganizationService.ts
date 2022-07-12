@@ -144,8 +144,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
       await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
       return Result.fail('Organization could not be created');
     }
-
+    //storing the KC groups ids
     wrappedOrganization.kcid = keycloakOrganization.getValue();
+    wrappedOrganization.adminGroupkcid = adminGroup.getValue();
+    wrappedOrganization.memberGroupkcid = membersGroup.getValue();
 
     const createdOrg = await this.create(wrappedOrganization);
     if (createdOrg.isFailure) {
