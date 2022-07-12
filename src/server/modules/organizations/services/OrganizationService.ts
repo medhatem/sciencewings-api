@@ -165,22 +165,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const groupEvent = new GroupEvent();
     // create the admin and member groups in the db
     // add the owner as a member to the organization
-    const [adminGroupResult, memberGroupResult] = await Promise.all([
+    let [adminGroupResult, memberGroupResult] = await Promise.all([
       groupEvent.createGroup(adminGroup.getValue(), organization, `${grpPrifix}admin`),
       groupEvent.createGroup(membersGroup.getValue(), organization, `${grpPrifix}member`),
     ]);
-
     if (adminGroupResult.isFailure || memberGroupResult.isFailure) {
-      if (adminGroupResult.isFailure && !memberGroupResult.isFailure) {
-        await groupEvent.removeGroup(memberGroupResult.getValue().id); // rollback member group
-      } else if (!adminGroupResult.isFailure && memberGroupResult.isFailure) {
-        await groupEvent.removeGroup(adminGroupResult.getValue().id); //rollback admin group
-      }
-      // rollback all the rest
-      await memberEvent.deleteMember({
-        user: memberOwnerResult.getValue().user,
-        organization: memberOwnerResult.getValue().organization,
-      });
       await Promise.all([
         this.keycloakUtils.deleteGroup(keycloakOrganization.getValue()),
         this.remove(organization.id),

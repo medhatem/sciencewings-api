@@ -1,6 +1,8 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
+import { AddressDTO } from '@/modules/address';
+import { PhoneInformationDTO } from '@/modules/phones';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 
@@ -129,4 +131,33 @@ export class getAllMembershipsBodyDTO extends BaseBodyDTO {
 export class getMembershipDTO extends BaseRequestDTO {
   @JsonProperty()
   body: getAllMembershipsBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class MemberProfile extends BaseBodyDTO {
+  @JsonProperty()
+  address: AddressDTO;
+
+  @JsonProperty()
+  jobTitle: string;
+
+  @JsonProperty()
+  workPhone: PhoneInformationDTO;
+
+  @JsonProperty()
+  workEmail: string;
+
+  @JsonProperty()
+  name: string;
+
+  @JsonProperty()
+  status: string;
+}
+
+@JsonObject()
+@unique
+export class MemberProfileBodyDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: MemberProfile;
 }
