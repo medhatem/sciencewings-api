@@ -221,7 +221,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
         return this.organizationService.get(member.organization.id);
       }),
     );
-
     return Result.ok(orgs.filter((o: Result<any>) => !o.isFailure).map((o) => o.getValue()));
   }
   /**
