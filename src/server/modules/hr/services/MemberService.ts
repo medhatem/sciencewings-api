@@ -188,6 +188,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (!fetchedMember) {
       return Result.notFound(`membership of user with id: ${userId} in organization with id: ${orgId} does not exist.`);
     }
+    if (!(fetchedMember.membership === MembershipStatus.PENDING)) {
+      return Result.fail(`The invitation has been already answered.`);
+    }
     const member = this.wrapEntity(fetchedMember, {
       ...fetchedMember,
       ...payload,
