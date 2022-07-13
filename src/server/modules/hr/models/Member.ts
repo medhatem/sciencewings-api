@@ -143,10 +143,10 @@ export class Member extends BaseModel<Member> {
   contract?: Contract;
 
   @ManyToMany(() => Project, (project) => project.managers)
-  managers? = new Collection<Project>(this);
+  porjectManagers? = new Collection<Project>(this);
 
   @ManyToMany(() => Project, (project) => project.participants)
-  participants? = new Collection<Project>(this);
+  projectParticipants? = new Collection<Project>(this);
 
   @Property({ nullable: true })
   status?: userStatus;
