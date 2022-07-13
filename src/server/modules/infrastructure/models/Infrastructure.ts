@@ -25,9 +25,9 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   @Property({ nullable: true })
   description!: string;
 
-  @Unique({ key: 'infrastructure_key_uniq' })
+  @Unique()
   @Property()
-  key!: string;
+  key!: number;
 
   @OneToOne({
     entity: () => User,
