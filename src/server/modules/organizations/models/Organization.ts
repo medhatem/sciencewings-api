@@ -44,6 +44,12 @@ export class Organization extends BaseModel<Organization> {
   @Property()
   kcid!: string;
 
+  @Property()
+  memberGroupkcid!: string;
+
+  @Property()
+  adminGroupkcid!: string;
+
   @Unique({ name: 'organization_name_uniq' })
   @Property()
   name!: string;
