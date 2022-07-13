@@ -20,6 +20,7 @@ import { Phone } from '@/modules/phones/models/Phone';
 import { Resource } from '@/modules/resources/models/Resource';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
+import { Infrastructure } from '@/modules/infrastructure/models';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -147,4 +148,7 @@ export class Organization extends BaseModel<Organization> {
     eager: false,
   })
   public children? = new Collection<Organization>(this);
+
+  @OneToMany({ entity: () => Infrastructure, mappedBy: (infra) => infra.organization, nullable: true })
+  infrastructure? = new Collection<Infrastructure>(this);
 }
