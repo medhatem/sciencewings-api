@@ -20,6 +20,7 @@ import { InviteMemberSchema, MemberSchema } from '@/modules/hr/schemas/MemberSch
 import { Organization } from '@/modules/organizations/models/Organization';
 import { UserInviteToOrgRO } from '@/modules/organizations/routes/RequestObject';
 import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -28,6 +29,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     public userService: IUserService,
     public organizationService: IOrganizationService,
     public emailService: Email,
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -195,6 +197,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (!updatedMember) {
       return Result.fail(`membership of user with id: ${userId} in organization with id: ${orgId} can not be updated.`);
     }
+    //adding the user to the org Kc member group
+    await this.keycloakUtils.addMemberToGroup(fetchedOrg.getValue().memberGroupkcid, fetchedUser.getValue().keycloakId);
+
     return Result.ok<any>({ userId, orgId });
   }
 

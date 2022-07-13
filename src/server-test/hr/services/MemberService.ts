@@ -1,6 +1,6 @@
 import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Configuration } from '@/configuration/Configuration';
 import { Email } from '@/utils/Email';
@@ -25,6 +25,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
+  let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
@@ -44,7 +45,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     containerStub.withArgs(BaseService).returns(new BaseService({} as any));
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService));
+      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
   }
 
   beforeEach(() => {
@@ -67,7 +68,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService));
+      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
   });
 
   afterEach(() => {
