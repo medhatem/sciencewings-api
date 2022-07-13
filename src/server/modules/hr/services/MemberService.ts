@@ -20,6 +20,7 @@ import { InviteMemberSchema, MemberSchema } from '@/modules/hr/schemas/MemberSch
 import { Organization } from '@/modules/organizations/models/Organization';
 import { UserInviteToOrgRO } from '@/modules/organizations/routes/RequestObject';
 import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -28,6 +29,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     public userService: IUserService,
     public organizationService: IOrganizationService,
     public emailService: Email,
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -47,7 +49,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
     }
 
     let existingUser;
-    existingUser = await (await this.keycloak.getAdminClient()).users.find({
+    existingUser = await (
+      await this.keycloak.getAdminClient()
+    ).users.find({
       email: payload.email,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -58,7 +62,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
       existingUser = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
       user = existingUser;
     } else {
-      const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
+      const createdKeyCloakUser = await (
+        await this.keycloak.getAdminClient()
+      ).users.create({
         email: payload.email,
         firstName: '',
         lastName: '',
@@ -191,6 +197,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (!updatedMember) {
       return Result.fail(`membership of user with id: ${userId} in organization with id: ${orgId} can not be updated.`);
     }
+    //adding the user to the org Kc member group
+    await this.keycloakUtils.addMemberToGroup(fetchedOrg.getValue().memberGroupkcid, fetchedUser.getValue().keycloakId);
+
     return Result.ok<any>({ userId, orgId });
   }
 
@@ -236,7 +245,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound(`User with id: ${userId} is not member in that org`);
     }
     //retrieve the organization keycloak group
-    const orgKcGroupe = await (await this.keycloak.getAdminClient()).groups.findOne({
+    const orgKcGroupe = await (
+      await this.keycloak.getAdminClient()
+    ).groups.findOne({
       id: organization.kcid,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -245,7 +256,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound(`organization with id: ${orgId} does not exist.`);
     }
     //change the KcUser current_org attribute
-    await (await this.keycloak.getAdminClient()).users.update(
+    await (
+      await this.keycloak.getAdminClient()
+    ).users.update(
       { id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName') },
       { attributes: { current_org: orgKcGroupe.id } },
     );
