@@ -46,8 +46,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound('The organization to add the user to does not exist.');
     }
 
-    let existingUser;
-    existingUser = await (await this.keycloak.getAdminClient()).users.find({
+    const existingUser = await (await this.keycloak.getAdminClient()).users.find({
       email: payload.email,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
