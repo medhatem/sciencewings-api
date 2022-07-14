@@ -6,7 +6,7 @@ import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { CreateInfrustructureDTO, UpdateInfrustructureDTO } from '@/modules/infrastructure/dtos/InfrustructureDTO';
 
 @provideSingleton()
-@Path('infrustructur')
+@Path('infrustructure')
 export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   constructor(InfrastructureService: IInfrastructureService) {
     super(InfrastructureService as any, new CreateInfrustructureDTO(), new UpdateInfrustructureDTO());

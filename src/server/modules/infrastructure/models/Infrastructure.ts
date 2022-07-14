@@ -1,9 +1,9 @@
-import { Collection, Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { User } from '@/modules/users/models/User';
 import { Resource } from '@/modules/resources/models/Resource';
+import { Member } from '@/modules/hr/models/Member';
 
 @provide()
 @Entity()
@@ -29,11 +29,14 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   @Property()
   key!: number;
 
-  @OneToOne({
-    entity: () => User,
-    unique: false,
+  @ManyToMany({
+    entity: () => Member,
+    nullable: true,
+    mappedBy: (entity) => entity.Infrastructures,
+    lazy: true,
+    eager: false,
   })
-  public responsable!: User;
+  public responsables? = new Collection<Member>(this);
 
   @ManyToOne({
     entity: () => Infrastructure,
