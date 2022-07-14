@@ -1,6 +1,6 @@
 import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Configuration } from '@/configuration/Configuration';
 import { Email } from '@/utils/Email';
@@ -25,6 +25,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
   let emailService: SinonStubbedInstance<Email>;
+  let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
@@ -44,7 +45,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     containerStub.withArgs(BaseService).returns(new BaseService({} as any));
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService));
+      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
   }
 
   beforeEach(() => {
@@ -67,7 +68,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService));
+      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
   });
 
   afterEach(() => {
@@ -226,17 +227,19 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`User with id: ${userId} does not exist.`);
     });
-    /*     test('Should return array of organizations', async () => {
+    test('Should return array of organizations', async () => {
       mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.ok({})));
       mockMethodWithResult(
         memberDao,
         'getByCriteria',
-        [{ user: userId }, FETCH_STRATEGY.ALL],
-        Promise.resolve(Result.ok([{}] as Member[])),
+        [{ user: userId }],
+        [{ organization: { id: 1 } }, { organization: { id: 2 } }],
       );
+      mockMethodWithResult(organizationService, 'get', [1], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [2], Promise.resolve(Result.ok({})));
       const result = await container.get(MemberService).getUserMemberships(userId);
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql(Result.ok([{}]));
-    }); */
+      expect(result.getValue()).to.eql([{}, {}]);
+    });
   });
 });
