@@ -39,9 +39,6 @@ export class BaseRequestDTO {
 
   @JsonProperty()
   public body?: BaseBodyDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
 }
 
 @JsonObject()

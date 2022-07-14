@@ -48,10 +48,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound('The organization to add the user to does not exist.');
     }
 
-    let existingUser;
-    existingUser = await (
-      await this.keycloak.getAdminClient()
-    ).users.find({
+    const existingUser = await (await this.keycloak.getAdminClient()).users.find({
       email: payload.email,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -59,12 +56,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
     let user = null;
     if (existingUser.length > 0) {
       // fetch the existing user
-      existingUser = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
-      user = existingUser;
+      user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
     } else {
-      const createdKeyCloakUser = await (
-        await this.keycloak.getAdminClient()
-      ).users.create({
+      const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
         email: payload.email,
         firstName: '',
         lastName: '',
@@ -247,9 +241,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound(`User with id: ${userId} is not member in that org`);
     }
     //retrieve the organization keycloak group
-    const orgKcGroupe = await (
-      await this.keycloak.getAdminClient()
-    ).groups.findOne({
+    const orgKcGroupe = await (await this.keycloak.getAdminClient()).groups.findOne({
       id: organization.kcid,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -258,13 +250,66 @@ export class MemberService extends BaseService<Member> implements IMemberService
       return Result.notFound(`organization with id: ${orgId} does not exist.`);
     }
     //change the KcUser current_org attribute
-    await (
-      await this.keycloak.getAdminClient()
-    ).users.update(
+    await (await this.keycloak.getAdminClient()).users.update(
       { id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName') },
       { attributes: { current_org: orgKcGroupe.id } },
     );
 
     return Result.ok<number>(fetchedUser.id);
+  }
+
+  /**
+   * fetch a member profile information
+   * since the member is identified by their userId and organizationId
+   * we need these two values to properly complete the fetch
+   */
+  @log()
+  @safeGuard()
+  async getMemberProfile(payload: { [key: string]: any }): Promise<Result<Member>> {
+    const memberResult = await this.getByCriteria(
+      { user: payload.userId, organization: payload.orgId },
+      FETCH_STRATEGY.SINGLE,
+      { populate: true },
+    );
+
+    if (memberResult.isFailure) {
+      return Result.fail('Internal Server Error');
+    }
+    if (memberResult.getValue() === null) {
+      return Result.notFound(`The requested member does not exist.`);
+    }
+
+    return memberResult as Result<Member>;
+  }
+
+  /**
+   *
+   * override of the base update method
+   * this allows to update the member using their userID and orgID
+   *
+   *
+   * @param memberIds the identifiers of a member which are userID and orgID
+   * @param payload
+   */
+  @log()
+  @safeGuard()
+  async updateMemberByUserIdAndOrgId(
+    memberIds: { [key: string]: any },
+    payload: { [key: string]: any },
+  ): Promise<Result<number>> {
+    const memberResult = await this.getMemberProfile(memberIds);
+    if (memberResult.isFailure) {
+      return Result.fail(memberResult.error.message);
+    }
+
+    const entity = this.wrapEntity(memberResult.getValue(), {
+      ...memberResult.getValue(),
+      ...payload,
+    });
+    const result = await this.dao.update(entity);
+    if (!result) {
+      return Result.fail(`Member could not be updated.`);
+    }
+    return Result.ok();
   }
 }
