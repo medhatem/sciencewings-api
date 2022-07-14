@@ -55,8 +55,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     let user = null;
     if (existingUser.length > 0) {
       // fetch the existing user
-      existingUser = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
-      user = existingUser;
+      user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
     } else {
       const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
         email: payload.email,
@@ -264,6 +263,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     const memberResult = await this.getByCriteria(
       { user: payload.userId, organization: payload.orgId },
       FETCH_STRATEGY.SINGLE,
+      { populate: true },
     );
 
     if (memberResult.isFailure) {
@@ -300,7 +300,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
       ...memberResult.getValue(),
       ...payload,
     });
-
     const result = await this.dao.update(entity);
     if (!result) {
       return Result.fail(`Member could not be updated.`);
