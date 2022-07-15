@@ -12,4 +12,9 @@ export abstract class IMemberService extends IBaseService<any> {
   switchOrganization: (orgId: number, userId: number) => Promise<Result<number>>;
   updateMembershipStatus: (payload: MemberRO, userId: number, orgId: number) => Promise<Result<MemberKey>>;
   getUserMemberships: (userId: number) => Promise<Result<Organization[]>>;
+  getMemberProfile: (payload: { [key: string]: any }) => Promise<Result<Member>>;
+  updateMemberByUserIdAndOrgId: (
+    memberIds: { [key: string]: any },
+    payload: { [key: string]: any },
+  ) => Promise<Result<number>>;
 }

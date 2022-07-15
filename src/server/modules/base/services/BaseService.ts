@@ -1,9 +1,10 @@
 import { AssignOptions, wrap } from '@mikro-orm/core';
-import { BaseDao } from '@/modules/base/daos/BaseDao';
+import { FindOneOptions, FindOptions } from '@mikro-orm/core/drivers/IDatabaseDriver';
+
+import { BaseDao } from '../daos/BaseDao';
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
-import { FindOptions } from '@mikro-orm/core/drivers/IDatabaseDriver';
-import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { FETCH_STRATEGY } from '../daos/BaseDao';
+import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@/sdks/keycloak';
 import { Logger } from '@/utils/Logger';
 import { Result } from '@/utils/Result';
@@ -94,11 +95,12 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   @safeGuard()
-  async getByCriteria(
+  async getByCriteria<Y extends keyof typeof FETCH_STRATEGY>(
     criteria: { [key: string]: any },
     fetchStrategy = FETCH_STRATEGY.SINGLE,
+    options?: Y extends FETCH_STRATEGY.SINGLE ? FindOneOptions<T, never> : FindOptions<T, never>,
   ): Promise<Result<T | T[]>> {
-    return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy));
+    return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy, options));
   }
 
   /**

@@ -38,7 +38,7 @@ export class Member extends BaseModel<Member> {
 
   @OneToOne({
     entity: () => Organization,
-    onDelete: 'set null',
+    onDelete: 'cascade',
     primary: true,
     unique: false,
   })
