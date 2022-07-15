@@ -167,7 +167,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const groupEvent = new GroupEvent();
     // create the admin and member groups in the db
     // add the owner as a member to the organization
-    let [adminGroupResult, memberGroupResult] = await Promise.all([
+    const [adminGroupResult, memberGroupResult] = await Promise.all([
       groupEvent.createGroup(adminGroup.getValue(), organization, `${grpPrifix}admin`),
       groupEvent.createGroup(membersGroup.getValue(), organization, `${grpPrifix}member`),
     ]);
@@ -367,9 +367,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     try {
-      const groups = await (
-        await this.keycloak.getAdminClient()
-      ).groups.findOne({
+      const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -378,9 +376,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }
 
-      await (
-        await this.keycloak.getAdminClient()
-      ).groups.del({
+      await (await this.keycloak.getAdminClient()).groups.del({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });

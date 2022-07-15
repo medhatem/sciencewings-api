@@ -20,6 +20,7 @@ import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
+import { ResourceSettingsService, StatusCases } from './modules';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -60,6 +61,7 @@ export class Server {
       const port = getConfig('baseConfig.port');
       await this.configureServer();
       this.expressApp.listen(port);
+      await this.seeding();
       console.log(`server available at http://localhost:${port}`);
     } catch (error) {
       this.serverHealthStatus = false;
@@ -113,6 +115,18 @@ export class Server {
         res.status(500).json({ error: err.message, statusCode: 500 });
       }
     });
+  }
+
+  /**
+   * method that adds all the base data
+   */
+  private async seeding() {
+    const resourceService = ResourceSettingsService.getInstance();
+    const fetch = await resourceService.get(1);
+
+    if (fetch.getValue() === null) {
+      await resourceService.create({ resourceType: { title: StatusCases.OPERATIONAL } });
+    }
   }
 
   private configureAuthenticator() {

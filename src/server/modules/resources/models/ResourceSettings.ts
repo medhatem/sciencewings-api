@@ -62,6 +62,7 @@ export class ResourceSettings extends BaseModel<ResourceSettings> {
 
   @OneToOne({
     entity: () => ResourceStatus,
+    unique: false,
   })
   resourceType: ResourceStatus;
 
