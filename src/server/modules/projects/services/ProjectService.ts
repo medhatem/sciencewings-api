@@ -33,10 +33,15 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   }
   @log()
   @safeGuard()
-  public async getAllProjects(): Promise<Result<Project[]>> {
-    const fetchedProjects = await this.dao.getAll();
+  public async getAllProjects(id: number): Promise<Result<Project[]>> {
+    const fetchedOrganization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
+    if (fetchedOrganization.isFailure) {
+      return Result.fail(`Organization with id ${id} does not exist.`);
+    }
 
-    return Result.ok(fetchedProjects);
+    const organizaion = await fetchedOrganization.getValue();
+    const fetchedProjects = await this.dao.getByCriteria({ organizaion }, FETCH_STRATEGY.SINGLE);
+    return Result.ok(fetchedProjects as Project[]);
   }
   @log()
   @safeGuard()

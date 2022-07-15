@@ -25,15 +25,20 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   static getInstance(): ProjectRoutes {
     return container.get(ProjectRoutes);
   }
+  /**
+   * Retrieve organization projects
+   *
+   * @param id of organization
+   */
   @GET
-  @Path('getProjects')
+  @Path('getProjects/:id')
   @Security()
   @LoggerStorage()
   @Response<getProjectsDTO>(200, 'Projects extract Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllProjects(): Promise<getProjectsDTO> {
-    const result = await this.projectService.getAllProjects();
+  public async getAllProjects(@PathParam('id') id: number): Promise<getProjectsDTO> {
+    const result = await this.projectService.getAllProjects(id);
 
     if (result.isFailure) {
       throw result.error;

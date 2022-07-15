@@ -6,5 +6,5 @@ import { Project } from '@/modules/projects/models/Project';
 export abstract class IProjectService extends IBaseService<any> {
   createProject: (payload: ProjectRO) => Promise<Result<number>>;
   updateProject: (payload: ProjectRO, projetcId: number) => Promise<Result<number>>;
-  getAllProjects: () => Promise<Result<Project[]>>;
+  getAllProjects: (id: number) => Promise<Result<Project[]>>;
 }
