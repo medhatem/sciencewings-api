@@ -1,10 +1,10 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
+import { MemberTypeEnum, MembershipStatus } from '@/modules/hr/models/Member';
 
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 import { userStatus } from '@/modules/users/models/User';
-import { MembershipStatus } from '@/modules/hr/models/Member';
 
 @JsonObject()
 @unique
@@ -123,7 +123,7 @@ export class MemberRO {
   @JsonProperty()
   workLocation?: AddressRO;
   @JsonProperty()
-  memberType?: string;
+  memberType?: MemberTypeEnum;
   @JsonProperty()
   addressHome?: AddressRO;
   @JsonProperty()

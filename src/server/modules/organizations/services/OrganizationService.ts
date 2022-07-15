@@ -171,18 +171,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       groupEvent.createGroup(adminGroup.getValue(), organization, `${grpPrifix}admin`),
       groupEvent.createGroup(membersGroup.getValue(), organization, `${grpPrifix}member`),
     ]);
-
     if (adminGroupResult.isFailure || memberGroupResult.isFailure) {
-      if (adminGroupResult.isFailure && !memberGroupResult.isFailure) {
-        await groupEvent.removeGroup(memberGroupResult.getValue().id); // rollback member group
-      } else if (!adminGroupResult.isFailure && memberGroupResult.isFailure) {
-        await groupEvent.removeGroup(adminGroupResult.getValue().id); //rollback admin group
-      }
-      // rollback all the rest
-      await memberEvent.deleteMember({
-        user: memberOwnerResult.getValue().user,
-        organization: memberOwnerResult.getValue().organization,
-      });
       await Promise.all([
         this.keycloakUtils.deleteGroup(keycloakOrganization.getValue()),
         this.remove(organization.id),
@@ -378,9 +367,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     try {
-      const groups = await (
-        await this.keycloak.getAdminClient()
-      ).groups.findOne({
+      const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -389,9 +376,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }
 
-      await (
-        await this.keycloak.getAdminClient()
-      ).groups.del({
+      await (await this.keycloak.getAdminClient()).groups.del({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });

@@ -11,7 +11,7 @@ import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import {
   CreateResourceDTO,
-  ResourceDTO,
+  ResourceGetDTO,
   UpdateResourceBodyDTO,
   UpdateResourceDTO,
   GetResourceSettingsBodyDTO,
@@ -35,7 +35,7 @@ import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dto
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: IResourceService) {
-    super(ResourceService as any, new ResourceDTO(), new UpdateResourceDTO());
+    super(ResourceService as any, new ResourceGetDTO(), new UpdateResourceDTO());
   }
 
   static getInstance(): ResourceRoutes {
@@ -98,13 +98,13 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceDTO> {
+  public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceGetDTO> {
     const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(organizationId);
 
     if (result.isFailure) {
       throw result.error;
     }
-    return new ResourceDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+    return new ResourceGetDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
   }
 
   /**

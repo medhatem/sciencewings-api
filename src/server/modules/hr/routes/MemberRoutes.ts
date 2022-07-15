@@ -5,6 +5,7 @@ import {
   UpdateMemberDTO,
   MemberBodyDTO,
   MemberRequestDTO,
+  MemberProfileBodyDTO,
 } from '@/modules/hr/dtos/MemberDTO';
 import { POST, Path, Security, PUT, PathParam, GET, ContextRequest } from 'typescript-rest';
 import { container, provideSingleton } from '@/di/index';
@@ -148,5 +149,57 @@ export class MemberRoutes extends BaseRoutes<Member> {
     }
 
     return new getMembershipDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+  }
+
+  /**
+   * get a member profile details
+   * the member is identified with an organization id and a user id
+   *
+   * @param orgId organization that the member belongs to
+   * @param userId that the member refers to
+   */
+  @GET
+  @Path('/getMemberProfile/:orgId/:userId')
+  @Security()
+  @LoggerStorage()
+  @Response<MemberProfileBodyDTO>(200, 'Resource Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getMemberProfile(
+    @PathParam('orgId') orgId: number,
+    @PathParam('userId') userId: number,
+  ): Promise<MemberProfileBodyDTO> {
+    const result = await this.MemberService.getMemberProfile({ orgId, userId });
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new MemberProfileBodyDTO({ body: result.getValue(), statusCode: 200 });
+  }
+  /**
+   * override the base update
+   * since the member is identified with a userId and an organizationId
+   *
+   * @param orgId organization that the member belongs to
+   * @param userId that the member refers to
+   */
+  @PUT
+  @Path('/:orgId/:userId')
+  @Security()
+  @LoggerStorage()
+  @Response<MemberProfileBodyDTO>(200, 'Resource Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateMember(
+    @PathParam('orgId') orgId: number,
+    @PathParam('userId') userId: number,
+    payload: MemberRO,
+  ): Promise<MemberProfileBodyDTO> {
+    const result = await this.MemberService.updateMemberByUserIdAndOrgId({ orgId, userId }, payload);
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new MemberProfileBodyDTO({ body: result.getValue(), statusCode: 200 });
   }
 }
