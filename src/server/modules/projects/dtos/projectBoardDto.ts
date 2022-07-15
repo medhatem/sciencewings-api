@@ -4,20 +4,20 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 @JsonObject()
 @unique
-export class ProjectTagDTO extends BaseRequestDTO {}
+export class ProjectBoardDTO extends BaseRequestDTO {}
 
 @JsonObject()
 @unique
-export class ProjectTagBaseBodyGetDTO extends BaseBodyDTO {
+export class ProjectBoardBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
 
 @JsonObject()
 @unique
-export class CreateProjectTagDTO extends BaseRequestDTO {
+export class CreateProjectBoardDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: ProjectTagBaseBodyGetDTO;
+  public body?: ProjectBoardBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;
@@ -25,9 +25,9 @@ export class CreateProjectTagDTO extends BaseRequestDTO {
 
 @JsonObject()
 @unique
-export class UpdateProjectTagDTO extends BaseRequestDTO {
+export class UpdateProjectBoardDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: ProjectTagBaseBodyGetDTO;
+  public body?: ProjectBoardBaseBodyGetDTO;
 
   @JsonProperty()
   public error?: BaseErrorDTO;

@@ -15,6 +15,7 @@ import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskI
 import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInterfaces';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
   constructor(
@@ -30,7 +31,13 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   static getInstance(): IProjectService {
     return container.get(IProjectService);
   }
+  @log()
+  @safeGuard()
+  public async getAllProjects(): Promise<Result<Project[]>> {
+    const fetchedProjects = await this.dao.getAll();
 
+    return Result.ok(fetchedProjects);
+  }
   @log()
   @safeGuard()
   @validate

@@ -2,10 +2,11 @@ import { Project } from '@/modules/projects/models/Project';
 import { container, provideSingleton } from '@/di/index';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import {
   CreateProjectDTO,
+  getProjectsDTO,
   ProjectBaseBodyGetDTO,
   ProjectDTO,
   UpdateProjectDTO,
@@ -24,7 +25,22 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   static getInstance(): ProjectRoutes {
     return container.get(ProjectRoutes);
   }
+  @GET
+  @Path('getProjects')
+  @Security()
+  @LoggerStorage()
+  @Response<getProjectsDTO>(200, 'Projects extract Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllProjects(): Promise<getProjectsDTO> {
+    const result = await this.projectService.getAllProjects();
 
+    if (result.isFailure) {
+      throw result.error;
+    }
+
+    return new getProjectsDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+  }
   /**
    * Containing data related to the project to be saved in the database
    *
