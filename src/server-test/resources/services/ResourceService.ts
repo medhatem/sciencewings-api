@@ -126,17 +126,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       );
     });
 
-    test('Should fail on can not create settings for resource', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
-      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));
-      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok()));
-
-      const result = await container.get(ResourceService).createResource(payload);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Can not create settings for resource.`);
-    });
-
     test('Should fail on create resource', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));

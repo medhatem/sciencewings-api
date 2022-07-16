@@ -68,6 +68,6 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   timezone!: string;
 
-  @OneToOne({ entity: () => ResourceSettings, nullable: true })
+  @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
   settings: ResourceSettings;
 }
