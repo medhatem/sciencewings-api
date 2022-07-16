@@ -39,8 +39,9 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       return Result.fail(`Organization with id ${id} does not exist.`);
     }
 
-    const organizaion = await fetchedOrganization.getValue();
-    const fetchedProjects = await this.dao.getByCriteria({ organizaion }, FETCH_STRATEGY.SINGLE);
+    const organization = await fetchedOrganization.getValue();
+    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
+
     return Result.ok(fetchedProjects as Project[]);
   }
   @log()
@@ -79,7 +80,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       dateStart: payload.dateStart,
       managers: managers,
       participants: participants,
-      organizations: organization,
+      organization: organization,
     });
     if (!createdProject) {
       return Result.fail(`fail to create project.`);
@@ -105,7 +106,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       if (fetchedOrganization.isFailure) {
         return Result.fail(`Organization with id ${payload.organization} does not exist.`);
       }
-      project.organizations = await fetchedOrganization.getValue();
+      project.organization = await fetchedOrganization.getValue();
     }
 
     if (payload.managers) {

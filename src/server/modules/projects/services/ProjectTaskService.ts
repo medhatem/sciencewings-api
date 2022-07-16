@@ -35,7 +35,7 @@ export class ProjectTaskService extends BaseService<ProjectTask> implements IPro
     const projectTasks = await Promise.all(
       payloads.map(async (payload) => {
         const assignedMembers = await this.memberService.getByCriteria(
-          { organization: project.organizations, user: payload.assigned },
+          { organization: project.organization, user: payload.assigned },
           FETCH_STRATEGY.ALL,
           { refresh: true },
         );

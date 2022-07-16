@@ -61,8 +61,6 @@ export class Project extends BaseModel<Project> {
   })
   public projectBoard? = new Collection<ProjectBoard>(this);
 
-  @ManyToOne({
-    entity: () => Organization,
-  })
-  public organizations? = new Collection<Organization>(this);
+  @ManyToOne({ entity: () => Organization, nullable: true })
+  organization?: Organization;
 }

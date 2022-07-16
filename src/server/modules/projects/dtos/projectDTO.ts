@@ -2,12 +2,9 @@ import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/B
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
-import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
-import { ProjectTagBaseBodyGetDTO } from './projectTagDTO';
-import { ProjectTaskDTO } from './projectTaskDTO';
-import { ProjectBoardBaseBodyGetDTO } from './projectBoardDto';
+import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 
 @JsonObject()
 @unique
@@ -30,6 +27,7 @@ export class ProjectBaseBodyGetDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   managers: Array<MemberDTO>;
+
   @JsonProperty({
     type: MemberDTO,
     beforeDeserialize,
@@ -46,28 +44,10 @@ export class ProjectBaseBodyGetDTO extends BaseBodyDTO {
   dateEnd?: Date;
 
   @JsonProperty({
-    type: ProjectTagBaseBodyGetDTO,
-    beforeDeserialize,
-  })
-  projectTags?: Array<ProjectTagBaseBodyGetDTO>;
-
-  @JsonProperty({
-    type: ProjectTaskDTO,
-    beforeDeserialize,
-  })
-  ProjectTask?: Array<ProjectTaskDTO>;
-
-  @JsonProperty({
-    type: ProjectBoardBaseBodyGetDTO,
-    beforeDeserialize,
-  })
-  projectBoard?: Array<ProjectBoardBaseBodyGetDTO>;
-
-  @JsonProperty({
     type: OrganizationInformationDTO,
     beforeDeserialize,
   })
-  organizations?: Array<OrganizationInformationDTO>;
+  organization?: OrganizationInformationDTO;
 }
 
 @JsonObject()
