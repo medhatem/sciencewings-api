@@ -1,15 +1,9 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
 import { unique } from '@/decorators/unique';
-import { Infrastructure } from '../models/Infrastructure';
-import { Resource } from '@/modules/resources/models/Resource';
-import { Organization } from '@/modules/organizations';
-import { Member } from '@/modules/hr/models/Member';
 
 @JsonObject()
 @unique
 export class InfrustructureRO {
-
   @JsonProperty()
   name!: string;
 
@@ -20,21 +14,21 @@ export class InfrustructureRO {
   key!: number;
 
   @JsonProperty()
-  public responsables? = Array<Member>;
+  public responsables?: Array<number>;
 
   @JsonProperty()
-  public parent?: Infrastructure;
+  public parent?: number;
 
   @JsonProperty()
-  resources!: Array<Resource>;
+  resources!: Array<number>;
 
   @JsonProperty()
-  organization!: Organization;
+  organization!: number;
 }
 @JsonObject()
 @unique
 export class UpdateinfrastructureRO {
-   @JsonProperty()
+  @JsonProperty()
   name?: string;
 
   @JsonProperty()
@@ -44,14 +38,14 @@ export class UpdateinfrastructureRO {
   key?: number;
 
   @JsonProperty()
-  public responsables? = Array<Member>;
+  public responsables?: Array<number>;
 
   @JsonProperty()
-  public parent?: Infrastructure;
+  public parent?: number;
 
   @JsonProperty()
-  resources?: Array<Resource>;
-  
+  resources?: Array<number>;
+
   @JsonProperty()
-  organization?: Organization;
+  organization?: number;
 }

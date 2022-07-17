@@ -31,7 +31,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
 
     let organization = null;
     if (payload.organization) {
-      const fetchedOrganization = await this.organizationService.get(payload.organization.id);
+      const fetchedOrganization = await this.organizationService.get(payload.organization);
       if (!fetchedOrganization) {
         return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
