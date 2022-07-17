@@ -3,7 +3,11 @@ import { Path, PathParam, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
-import { CreateInfrustructureDTO, UpdateInfrustructureDTO } from '@/modules/infrastructure/dtos/InfrustructureDTO';
+import {
+  CreateInfrustructureDTO,
+  UpdateInfrustructureBodyDTO,
+  UpdateInfrustructureDTO,
+} from '@/modules/infrastructure/dtos/InfrustructureDTO';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
@@ -32,7 +36,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Path('update/:id')
   @Security()
   @LoggerStorage()
-  @Response<UpdateInfrustructureDTO>(204, 'infrastructure updated Successfully')
+  @Response<UpdateInfrustructureBodyDTO>(204, 'infrastructure updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateinfrastructure(

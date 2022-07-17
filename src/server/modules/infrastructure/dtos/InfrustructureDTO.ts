@@ -23,13 +23,13 @@ export class CreateInfrustructureDTO extends BaseRequestDTO {
   @JsonProperty()
   public error?: BaseErrorDTO;
 }
-
 @JsonObject()
 @unique
+export class UpdateInfrustructureBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
 export class UpdateInfrustructureDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: InfrustructureBaseBodyGetDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
+  body: UpdateInfrustructureBodyDTO;
 }
