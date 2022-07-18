@@ -5,7 +5,7 @@ import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
-export class InfrustructureDTO extends BaseBodyDTO {
+export class InfrastructureDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
@@ -14,19 +14,19 @@ export class InfrustructureDTO extends BaseBodyDTO {
 @unique
 export class infrastructureGetDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: InfrustructureDTO;
+  public body?: InfrastructureDTO;
 }
 
 @JsonObject()
 @unique
-export class CreateInfrustructureDTO extends BaseRequestDTO {
+export class CreateInfrastructureDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: InfrustructureDTO;
+  public body?: InfrastructureDTO;
 }
 
 @JsonObject()
 @unique
-export class UpdateInfrustructureDTO extends BaseRequestDTO {
+export class UpdateInfrastructureDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: InfrustructureDTO;
+  public body?: InfrastructureDTO;
 }

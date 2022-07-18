@@ -1,1 +1,1 @@
-export * from './InfrustructureDTO';
+export * from './InfrastructureDTO';
