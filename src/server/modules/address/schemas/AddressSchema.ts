@@ -1,5 +1,4 @@
 import Joi = require('joi');
-import { AddressType } from '@/modules/address/models/Address';
 
 const organizationAddressSchema = Joi.object({
   apartment: Joi.string(),
@@ -11,9 +10,7 @@ export const CreateOrganizationAddressSchema = organizationAddressSchema.keys({
   country: Joi.string().required(),
   province: Joi.string().required(),
   code: Joi.string().required(),
-  type: Joi.string()
-    .valid(...Object.values(AddressType))
-    .required(),
+  type: Joi.string().required(),
   city: Joi.string().required(),
   street: Joi.string().required(),
 });
@@ -23,7 +20,7 @@ export const UpdateOrganizationAddressSchema = organizationAddressSchema.keys({
   country: Joi.string(),
   province: Joi.string(),
   code: Joi.string(),
-  type: Joi.string().valid(...Object.values(AddressType)),
+  type: Joi.string(),
   city: Joi.string(),
   street: Joi.string(),
 });

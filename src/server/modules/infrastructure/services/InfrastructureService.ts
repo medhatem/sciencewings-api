@@ -15,6 +15,7 @@ import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base';
+import { Organization } from '@/modules/organizations';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -25,6 +26,9 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     public userService: IUserService,
   ) {
     super(dao);
+  }
+  static getInstance(): IInfrastructureService {
+    return container.get(IInfrastructureService);
   }
 
   @log()
@@ -41,13 +45,13 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
 
     const responsables = payload.responsables;
     const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
-      const fetchedUser = (await this.userService.get(responsable.userId)).getValue();
+      const fetchedUser = (await this.userService.get(responsable)).getValue();
       const fetchedRes = await this.memberService.getByCriteria(
         { user: fetchedUser, organization: organization },
         FETCH_STRATEGY.SINGLE,
       );
       if (fetchedRes.isFailure) {
-        return Result.notFound(`User with id ${responsable.userId} is not member in org with id ${organization.id}.`);
+        return Result.notFound(`User with id ${responsable} is not member in org with id ${organization.id}.`);
       }
       return fetchedRes.getValue();
     });
@@ -99,10 +103,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   ): Promise<Result<number>> {
     const fetchedInfrastructure = await this.dao.get(infraId);
     if (!fetchedInfrastructure) {
-      return Result.notFound(`Resource with id ${infraId} does not exist.`);
+      return Result.notFound(`infrustructure with id ${infraId} does not exist.`);
     }
 
-    let organization = null;
+    let organization = Organization.getInstance();
     if (payload.organization) {
       const fetchedOrganization = await this.organizationService.get(payload.organization);
       if (!fetchedOrganization) {
@@ -111,10 +115,53 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       organization = fetchedOrganization.getValue();
     }
 
+    const responsables = payload.responsables;
+    const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
+      const fetchedUser = (await this.userService.get(responsable)).getValue();
+      const fetchedRes = await this.memberService.getByCriteria(
+        { user: fetchedUser, organization: organization },
+        FETCH_STRATEGY.SINGLE,
+      );
+      if (fetchedRes.isFailure) {
+        return Result.notFound(`User with id ${responsable} is not member in org with id ${organization.id}.`);
+      }
+      return fetchedRes.getValue();
+    });
+    // check if the key is unique
+    const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
+    if (!fetchedKey) {
+      return Result.fail(`Infrustructure key ${payload.key} alredy exist.`);
+    }
+
+    // check the existance of the resources
+    let fetchedResources;
+    if (!payload.resources) {
+      const resources = payload.resources;
+      fetchedResources = await applyToAll(resources, async (resource) => {
+        const fetchedResource = await this.memberService.get(resource);
+        if (fetchedResource.isFailure) {
+          return Result.notFound(`Resource with id ${resource} does not exist.`);
+        }
+        return fetchedResource.getValue();
+      });
+    }
+
+    // check the existance of the parent
+    let fetchedParent;
+    if (!payload.parent) {
+      fetchedParent = await this.dao.get(payload.parent);
+      if (!fetchedParent) {
+        return Result.notFound(`Infrastructure with id: ${fetchedParent.id} does not exist.`);
+      }
+    }
+
     const infrustructure = this.wrapEntity(fetchedInfrastructure, {
       ...fetchedInfrastructure,
       ...payload,
       organization,
+      responsibles: fetchedResponsables,
+      resources: fetchedResources,
+      parent: fetchedParent,
     });
 
     const createdResource = await this.dao.update(infrustructure);
@@ -124,9 +171,5 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
 
     const id = createdResource.id;
     return Result.ok<number>(id);
-  }
-
-  static getInstance(): IInfrastructureService {
-    return container.get(IInfrastructureService);
   }
 }
