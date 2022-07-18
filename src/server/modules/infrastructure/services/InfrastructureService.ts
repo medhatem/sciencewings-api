@@ -8,19 +8,92 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
 import { validateParam } from '@/decorators/validateParam';
 import { Result } from '@/utils/Result';
-import { UpdateInfrastructureSchema } from '../schemas/ifrastructureSchemas';
+import { CreateOrganizationSchema, UpdateInfrastructureSchema } from '../schemas/ifrastructureSchemas';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { UpdateinfrastructureRO } from '../routes/RequestObject';
+import { InfrustructureRO, UpdateinfrastructureRO } from '../routes/RequestObject';
+import { applyToAll } from '@/utils/utilities';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { FETCH_STRATEGY } from '@/modules/base';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
-  constructor(public dao: infrastructureDAO, public organizationService: IOrganizationService) {
+  constructor(
+    public dao: infrastructureDAO,
+    public organizationService: IOrganizationService,
+    public memberService: IMemberService,
+    public userService: IUserService,
+  ) {
     super(dao);
   }
+
   @log()
   @safeGuard()
   @validate
-  public async updateinfrastructure(
+  public async createInfrustructure(
+    @validateParam(CreateOrganizationSchema) payload: InfrustructureRO,
+  ): Promise<Result<number>> {
+    const fetchedOrganization = await this.organizationService.get(payload.organization);
+    if (!fetchedOrganization) {
+      return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+    }
+    const organization = fetchedOrganization.getValue();
+
+    const responsables = payload.responsables;
+    const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
+      const fetchedUser = (await this.userService.get(responsable.userId)).getValue();
+      const fetchedRes = await this.memberService.getByCriteria(
+        { user: fetchedUser, organization: organization },
+        FETCH_STRATEGY.SINGLE,
+      );
+      if (fetchedRes.isFailure) {
+        return Result.notFound(`User with id ${responsable.userId} is not member in org with id ${organization.id}.`);
+      }
+      return fetchedRes.getValue();
+    });
+    // check if the key is unique
+    const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
+    if (!fetchedKey) {
+      return Result.fail(`Infrustructure key ${payload.key} alredy exist.`);
+    }
+
+    // check the existance of the resources
+    let fetchedResources;
+    if (!payload.resources) {
+      const resources = payload.resources;
+      fetchedResources = await applyToAll(resources, async (resource) => {
+        const fetchedResource = await this.memberService.get(resource);
+        if (fetchedResource.isFailure) {
+          return Result.notFound(`Resource with id ${resource} does not exist.`);
+        }
+        return fetchedResource.getValue();
+      });
+    }
+
+    // check the existance of the parent
+    let fetchedParent;
+    if (!payload.parent) {
+      fetchedParent = await this.dao.get(payload.parent);
+      if (!fetchedParent) {
+        return Result.notFound(`Infrastructure with id: ${fetchedParent.id} does not exist.`);
+      }
+    }
+
+    const createdInfustructure = this.wrapEntity(Infrastructure.getInstance(), {
+      ...payload,
+      organization,
+      responsibles: fetchedResponsables,
+      resources: fetchedResources,
+      parent: fetchedParent,
+    });
+    await this.dao.create(createdInfustructure);
+    return Result.ok<number>(createdInfustructure.id);
+  }
+
+  @log()
+  @safeGuard()
+  @validate
+  public async updateInfrastructure(
     @validateParam(UpdateInfrastructureSchema) payload: UpdateinfrastructureRO,
     infraId: number,
   ): Promise<Result<number>> {

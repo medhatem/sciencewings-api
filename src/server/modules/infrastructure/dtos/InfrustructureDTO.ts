@@ -1,4 +1,4 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
@@ -19,9 +19,6 @@ export class InfrustructureBaseBodyGetDTO extends BaseBodyDTO {
 export class CreateInfrustructureDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: InfrustructureBaseBodyGetDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
 }
 @JsonObject()
 @unique

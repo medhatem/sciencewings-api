@@ -1,5 +1,6 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
+import { MemberKey } from '@/types/types';
 
 @JsonObject()
 @unique
@@ -14,10 +15,10 @@ export class InfrustructureRO {
   key!: number;
 
   @JsonProperty()
-  public responsables?: Array<number>;
+  responsables?: Array<MemberKey>;
 
   @JsonProperty()
-  public parent?: number;
+  parent?: number;
 
   @JsonProperty()
   resources!: Array<number>;
@@ -38,10 +39,10 @@ export class UpdateinfrastructureRO {
   key?: number;
 
   @JsonProperty()
-  public responsables?: Array<number>;
+  responsables?: Array<number>;
 
   @JsonProperty()
-  public parent?: number;
+  parent?: number;
 
   @JsonProperty()
   resources?: Array<number>;
