@@ -4,7 +4,7 @@ export const CreateOrganizationSchema = Joi.object({
   name: Joi.string().required(),
   key: Joi.string().required(),
   resources: Joi.array(),
-  responsables: Joi.array().required(),
+  responsables: Joi.array(),
   parent: Joi.number().allow(null),
   organization: Joi.number().required(),
 });

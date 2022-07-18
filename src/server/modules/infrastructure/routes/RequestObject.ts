@@ -20,7 +20,7 @@ export class InfrustructureRO {
   parent?: number;
 
   @JsonProperty()
-  resources!: Array<number>;
+  resources?: Array<number>;
 
   @JsonProperty()
   organization!: number;
