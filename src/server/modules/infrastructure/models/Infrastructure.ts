@@ -47,6 +47,6 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   @OneToMany({ entity: () => Resource, mappedBy: (res) => res.infrastructure, nullable: true })
   resources? = new Collection<Resource>(this);
 
-  @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
   organization!: Organization;
 }
