@@ -1,5 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
+
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
@@ -27,7 +28,7 @@ export class Group extends BaseModel<Group> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => Organization })
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
   organization!: Organization;
 
   @ManyToOne({

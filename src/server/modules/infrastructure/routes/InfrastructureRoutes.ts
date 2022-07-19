@@ -3,13 +3,13 @@ import { Path } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
-import { CreateInfrustructureDTO, UpdateInfrustructureDTO } from '@/modules/infrastructure/dtos/InfrustructureDTO';
+import { CreateInfrastructureDTO, infrastructureGetDTO } from '@/modules/infrastructure/dtos/InfrastructureDTO';
 
 @provideSingleton()
-@Path('infrustructure')
+@Path('infrastructure')
 export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   constructor(InfrastructureService: IInfrastructureService) {
-    super(InfrastructureService as any, new CreateInfrustructureDTO(), new UpdateInfrustructureDTO());
+    super(InfrastructureService as any, new CreateInfrastructureDTO(), new infrastructureGetDTO());
   }
 
   static getInstance(): InfrastructureRoutes {

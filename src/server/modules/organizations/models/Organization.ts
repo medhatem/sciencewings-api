@@ -132,7 +132,7 @@ export class Organization extends BaseModel<Organization> {
   })
   public direction!: User;
 
-  @OneToMany({ entity: () => Resource, nullable: true, mappedBy: (entity) => entity.organization, eager: false })
+  @OneToMany({ entity: () => Resource, nullable: true, mappedBy: (entity) => entity.organization })
   resources? = new Collection<Resource>(this);
 
   @ManyToOne({
