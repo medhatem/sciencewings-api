@@ -1,0 +1,5 @@
+{
+   "SOMETHING_WENT_WRONG":"Something Went Wrong",
+   "HTTP_401_UNAUTHORIZED":"HTTP 401 Non Authorized",
+   "{{name}} ALREADY_EXISTS":"{{name}} Already Exists."
+ }
