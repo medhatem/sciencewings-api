@@ -8,7 +8,7 @@ import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@/sdks/keycloak';
 import { Logger } from '@/utils/Logger';
 import { Result } from '@/utils/Result';
-import { ServerError } from '@/errors/ServerError';
+import { ServerError } from '@/Exceptions/ServerError';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
 import { safeGuard } from '@/decorators/safeGuard';
