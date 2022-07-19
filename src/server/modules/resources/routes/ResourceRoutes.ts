@@ -6,6 +6,7 @@ import {
   ResourceSettingsGeneralPropertiesRO,
   ResourceSettingsGeneralStatusRO,
   ResourceRO,
+  UpdateResourceRO,
 } from './RequestObject';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
@@ -35,7 +36,7 @@ import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dto
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: IResourceService) {
-    super(ResourceService as any, new ResourceGetDTO(), new UpdateResourceDTO());
+    super(ResourceService as any, new CreateResourceDTO(), new ResourceGetDTO());
   }
 
   static getInstance(): ResourceRoutes {
@@ -78,7 +79,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<UpdateResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
+  public async updateResource(payload: UpdateResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResource(payload, id);
     if (result.isFailure) {
       throw result.error;
