@@ -1,7 +1,6 @@
-import { Unauthorized } from '@/errors/Unauthorized';
-import { UserRequest } from '@/types/UserRequest';
 import { Request } from 'express';
-
+import { Unauthorized } from '@/Exceptions/Unauthorized';
+import { UserRequest } from '@/types/UserRequest';
 import { fetchKeyclockUserGivenToken } from './fetchKeyclockUserGivenToken';
 
 export const validateKeyclockUser = async (request: Request) => {
@@ -13,5 +12,5 @@ export const validateKeyclockUser = async (request: Request) => {
     throw new Unauthorized('Not Authorized');
   }
 
-  (request as any as UserRequest).keycloakUser = result;
+  ((request as any) as UserRequest).keycloakUser = result;
 };

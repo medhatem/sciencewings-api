@@ -227,17 +227,19 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.isFailure).to.be.true;
       expect(result.error.message).to.equal(`User with id: ${userId} does not exist.`);
     });
-    /*     test('Should return array of organizations', async () => {
+    test('Should return array of organizations', async () => {
       mockMethodWithResult(userService, 'get', [1], Promise.resolve(Result.ok({})));
       mockMethodWithResult(
         memberDao,
         'getByCriteria',
-        [{ user: userId }, FETCH_STRATEGY.ALL],
-        Promise.resolve(Result.ok([{}] as Member[])),
+        [{ user: userId }],
+        [{ organization: { id: 1 } }, { organization: { id: 2 } }],
       );
+      mockMethodWithResult(organizationService, 'get', [1], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [2], Promise.resolve(Result.ok({})));
       const result = await container.get(MemberService).getUserMemberships(userId);
       expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql(Result.ok([{}]));
-    }); */
+      expect(result.getValue()).to.eql([{}, {}]);
+    });
   });
 });

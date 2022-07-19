@@ -3,7 +3,7 @@ import { FindOneOptions, FindOptions, GetRepository } from '@mikro-orm/core';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Logger } from '@/utils/Logger';
-import { ServerError } from '@/errors/ServerError';
+import { ServerError } from '@/Exceptions/ServerError';
 import { connection } from '@/db/index';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di/index';

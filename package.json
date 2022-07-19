@@ -32,7 +32,7 @@
     "@/authenticators": "dist/server/authenticators",
     "@/configuration": "dist/server/configuration",
     "@types": "dist/server/types",
-    "@/errors": "dist/server/errors",
+    "@/Exceptions": "dist/server/Exceptions",
     "@/interface": "dist/server/interface/*",
     "@/models": "dist/server/models",
     "@/routes": "dist/server/routes",
