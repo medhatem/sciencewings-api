@@ -8,9 +8,10 @@ import * as morgan from 'morgan';
 
 import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
+import { ResourceSettingsService, StatusCases } from './modules';
 import { container, provideSingleton } from '@/di';
 
-import { HttpError } from 'typescript-rest/dist/server/model/errors';
+import { ErrorHandler } from './Exceptions/GlobalErrorHandler';
 import { KeyCloakToken } from './authenticators/KeyCloakToken';
 import { RequestHandler } from 'express';
 import { RestServer } from './RestServer';
@@ -20,7 +21,6 @@ import { join } from 'path';
 import { startDB } from './db';
 
 import swaggerUi = require('swagger-ui-express');
-import { ResourceSettingsService, StatusCases } from './modules';
 
 export interface ExpressBodyParser {
   json(options: OptionsJson): RequestHandler;
@@ -42,14 +42,17 @@ export class Server {
   private expressCors: ExpressCors;
   private expressRouter: ExpressRouter;
   private serverHealthStatus = true;
+  private errorHandler: ErrorHandler;
   constructor(
     config: Configuration,
     app: express.Application = express(),
     bodyParser: ExpressBodyParser = BodyParser,
     expressCors: ExpressCors = cors,
     expressRouter: ExpressRouter = express.Router,
+    errorHandler = ErrorHandler.getInstance(),
   ) {
     this.expressApp = app;
+    this.errorHandler = errorHandler;
     this.bodyParser = bodyParser;
     this.expressCors = expressCors;
     this.expressRouter = expressRouter;
@@ -102,18 +105,14 @@ export class Server {
     this.expressApp.use('/swagger', express.static(__dirname));
     RestServer.buildServices(this.expressApp);
     this.expressApp.use((err: Error, req: any, res: any, next: any) => {
-      if (err instanceof HttpError) {
-        if (res.headersSent) {
-          // important to allow default error handler to close connection if headers already sent
-          return next(err);
-        }
-        console.error(err.stack);
-        res.set('Content-Type', 'application/json');
-        res.status(err.statusCode);
-        res.json({ error: err.message, statusCode: err.statusCode });
-      } else {
-        res.status(500).json({ error: err.message, statusCode: 500 });
+      if (res.headersSent) {
+        // important to allow default error handler to close connection if headers already sent
+        return next(err);
       }
+      const result = this.errorHandler.handle(err);
+      res.set('Content-Type', 'application/json');
+      res.status(result.statusCode);
+      res.json(result);
     });
   }
 
