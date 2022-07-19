@@ -31,7 +31,7 @@ export class ErrorHandler {
           //extract the name of the resource that already exist
           const extractedName = new RegExp(/(?<=-)([\w]*)/g).exec(response.data.errorMessage);
           message = `${extractedName[0]} already exist.`;
-          status = response.status;
+          statusCode = response.status;
         } else {
           message = 'Something went wrong';
         }
@@ -44,6 +44,7 @@ export class ErrorHandler {
         `${error.isOperational ? 'Operational' : 'Non Operational'} with name ${error.name} and code ${error.statusCode}
         stackTrace: ${error.stack}`,
       );
+
       if (error.isOperational) {
         return { error: error.message, statusCode: error.statusCode, isOperational: true };
       }
