@@ -19,7 +19,7 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateUserSchema, UpdateUserSchema } from '@/modules/users/schemas/UserSchema';
 import { validate } from '@/decorators/validate';
-
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
   constructor(
@@ -28,6 +28,7 @@ export class UserService extends BaseService<User> implements IUserService {
     public phoneService: IPhoneService,
     public keycloak: Keycloak = Keycloak.getInstance(),
     public emailService = Email.getInstance(),
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -69,10 +70,8 @@ export class UserService extends BaseService<User> implements IUserService {
   @safeGuard()
   async registerUser(userInfo: KeycloakUserInfo): Promise<Result<number>> {
     // get the userKeyCloakId
-    const users = await (await this.keycloak.getAdminClient()).users.find({
-      email: userInfo.email,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    const getUsersResult = await this.keycloakUtils.getUsersByEmail(userInfo.email);
+    const users = getUsersResult.getValue();
 
     if (!users || !users.length) {
       return Result.notFound<number>('No user found');
@@ -120,15 +119,7 @@ export class UserService extends BaseService<User> implements IUserService {
       return Result.notFound<string>(`user with email: ${payload.email} does not exist.`);
     }
 
-    await (await this.keycloak.getAdminClient()).users.resetPassword({
-      realm: getConfig('keycloak.clientValidation.realmName'),
-      id: user.keycloakId,
-      credential: {
-        temporary: false,
-        type: 'password',
-        value: payload.password,
-      },
-    });
+    await this.keycloakUtils.resetPassword(user.keycloakId, payload.password);
     user.status = userStatus.ACTIVE;
     return Result.ok<string>('Password reset successful');
   }

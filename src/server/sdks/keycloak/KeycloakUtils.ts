@@ -5,6 +5,7 @@ import { Keycloak } from '../keycloak';
 import { Result } from '@/utils/Result';
 import { getConfig } from '@/configuration/Configuration';
 import { safeGuard } from '@/decorators/safeGuard';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 
 /**
  * utilities class containing keycloak specific actions
@@ -157,6 +158,45 @@ export class KeycloakUtil {
         ...payload,
       },
     );
+    return Result.ok();
+  }
+
+  /*
+   * fetches a keycloak users by email
+   *
+   * @param email to get users by
+   */
+  @safeGuard()
+  async getUsersByEmail(email: string): Promise<Result<UserRepresentation[]>> {
+    const users = await (
+      await this.keycloak.getAdminClient()
+    ).users.find({
+      email,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+
+    return Result.ok(users);
+  }
+
+  /*
+   * reset a keycloak user password
+   *
+   * @param id of the user to fetch
+   * @param newPassword the new password
+   */
+  @safeGuard()
+  async resetPassword(id: string, newPassword: string): Promise<Result<any>> {
+    await (
+      await this.keycloak.getAdminClient()
+    ).users.resetPassword({
+      realm: getConfig('keycloak.clientValidation.realmName'),
+      id,
+      credential: {
+        temporary: false,
+        type: 'password',
+        value: newPassword,
+      },
+    });
     return Result.ok();
   }
 }
