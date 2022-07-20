@@ -350,9 +350,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    const key: any = 'k';
-    if (key === 'accepted') {
-    }
     const members = existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
     return Result.ok<any>(members);
   }
