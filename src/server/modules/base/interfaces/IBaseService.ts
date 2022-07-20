@@ -6,17 +6,17 @@ import { Result } from '@/utils/Result';
 export abstract class IBaseService<T> {
   static getInstance: () => any;
 
-  public get: (id: number, options?: FindOneOptions<T>) => Promise<any>;
+  public get: (id: number, options?: FindOneOptions<T>) => Promise<T>;
 
   public getAll: () => Promise<Result<any[]>>;
 
-  public create: (entry: T) => Promise<Result<any>>;
+  public create: (entry: T) => Promise<T>;
 
   public update: (entry: T) => Promise<Result<any>>;
 
   public updateRoute: (id: number, payload: any) => Promise<Result<any>>;
 
-  public remove: (id: number) => Promise<Result<number>>;
+  public remove: (id: number) => Promise<T>;
   public removeWithCriteria: (payload: { [key: string]: any }) => Promise<Result<number>>;
 
   public removeRoute: (id: number) => Promise<Result<number>>;

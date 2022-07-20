@@ -34,11 +34,7 @@ export class JobRoutes extends BaseRoutes<Job> {
   public async createJob(payload: JobRO): Promise<CreateJobDTO> {
     const result = await this.jobService.createJob(payload);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new CreateJobDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateJobDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**
