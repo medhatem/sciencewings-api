@@ -350,7 +350,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-
+    const key: any = 'k';
+    if (key === 'accepted') {
+    }
     const members = existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
     return Result.ok<any>(members);
   }
@@ -367,7 +369,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return Result.notFound(`Organization with id ${organizationId} does not exist.`);
     }
     try {
-      const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
+      const groups = await (
+        await this.keycloak.getAdminClient()
+      ).groups.findOne({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -376,7 +380,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
         return Result.fail(`This Organization has sub groups that need to be deleted first !`);
       }
 
-      await (await this.keycloak.getAdminClient()).groups.del({
+      await (
+        await this.keycloak.getAdminClient()
+      ).groups.del({
         id: fetchedorganization.kcid,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });

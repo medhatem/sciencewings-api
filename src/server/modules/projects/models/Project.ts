@@ -61,6 +61,6 @@ export class Project extends BaseModel<Project> {
   })
   public projectBoard? = new Collection<ProjectBoard>(this);
 
-  @ManyToOne({ entity: () => Organization, nullable: true })
+  @ManyToOne({ entity: () => Organization, nullable: true, onDelete: 'cascade' })
   organization?: Organization;
 }

@@ -4,13 +4,7 @@ import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import {
-  CreateProjectDTO,
-  getProjectsDTO,
-  ProjectBaseBodyGetDTO,
-  ProjectDTO,
-  UpdateProjectDTO,
-} from '@/modules/projects/dtos/projectDTO';
+import { CreateProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
 import { ProjectRO } from './RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
@@ -31,20 +25,20 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    * @param id of organization
    */
   @GET
-  @Path('getProjects/:id')
+  @Path('getOrganizationProjects/:id')
   @Security()
   @LoggerStorage()
-  @Response<getProjectsDTO>(200, 'Projects extract Successfully')
+  @Response<ProjectGetDTO>(200, 'Projects extract Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllProjects(@PathParam('id') id: number): Promise<getProjectsDTO> {
-    const result = await this.projectService.getAllProjects(id);
+  public async getOrganizationProjects(@PathParam('id') id: number): Promise<ProjectGetDTO> {
+    const result = await this.projectService.getOrganizationProjects(id);
 
-    if (result.isFailure) {
+    if (result.isFailure || !result.getValue) {
       throw result.error;
     }
 
-    return new getProjectsDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+    return new ProjectGetDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
   }
   /**
    * Containing data related to the project to be saved in the database
@@ -56,17 +50,17 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Path('create')
   @Security()
   @LoggerStorage()
-  @Response<ProjectDTO>(201, 'Project created Successfully')
+  @Response<CreateProjectDTO>(201, 'Project created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async createProject(payload: ProjectRO): Promise<ProjectDTO> {
+  public async createProject(payload: ProjectRO): Promise<CreateProjectDTO> {
     const result = await this.projectService.createProject(payload);
 
     if (result.isFailure) {
       throw result.error;
     }
 
-    return new ProjectDTO({ body: { projectId: result.getValue(), statusCode: 201 } });
+    return new CreateProjectDTO({ body: { id: result.getValue(), statusCode: 201 } });
   }
 
   /**
@@ -79,16 +73,16 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Path('/update/:id')
   @Security()
   @LoggerStorage()
-  @Response<ProjectBaseBodyGetDTO>(204, 'Project updated Successfully')
+  @Response<UpdateProjectDTO>(204, 'Project updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateProject(payload: ProjectRO, @PathParam('id') id: number): Promise<ProjectDTO> {
+  public async updateProject(payload: ProjectRO, @PathParam('id') id: number): Promise<UpdateProjectDTO> {
     const result = await this.projectService.updateProject(payload, id);
 
     if (result.isFailure) {
       throw result.error;
     }
 
-    return new ProjectDTO({ body: { projectId: result.getValue(), statusCode: 204 } });
+    return new UpdateProjectDTO({ body: { projectId: result.getValue(), statusCode: 204 } });
   }
 }

@@ -31,14 +31,21 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   static getInstance(): IProjectService {
     return container.get(IProjectService);
   }
+  /**
+   * Retrieve organization projects
+   *
+   * @param id of organization
+   */
   @log()
   @safeGuard()
-  public async getAllProjects(id: number): Promise<Result<Project[]>> {
+  public async getOrganizationProjects(id: number): Promise<Result<Project[]>> {
     const fetchedOrganization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
     if (fetchedOrganization.isFailure) {
-      return Result.fail(`Organization with id ${id} does not exist.`);
+      return Result.fail(`Fail to retrieve organization with id: ${id};`);
     }
-
+    if (!fetchedOrganization.getValue()) {
+      return Result.notFound(`Organization with id ${id} does not exist.`);
+    }
     const organization = await fetchedOrganization.getValue();
     const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
 
