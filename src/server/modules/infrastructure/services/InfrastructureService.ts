@@ -16,6 +16,7 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base';
 import { Organization } from '@/modules/organizations';
+import { IResourceService } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -24,13 +25,17 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
     public userService: IUserService,
+    public resourceService: IResourceService,
   ) {
     super(dao);
   }
   static getInstance(): IInfrastructureService {
     return container.get(IInfrastructureService);
   }
-
+  /**
+   * create an infrastructure
+   * @param payload represents the infrastructure information to persist
+   */
   @log()
   @safeGuard()
   @validate
@@ -38,7 +43,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     @validateParam(CreateOrganizationSchema) payload: InfrustructureRO,
   ): Promise<Result<number>> {
     const fetchedOrganization = await this.organizationService.get(payload.organization);
-    if (!fetchedOrganization) {
+    if (fetchedOrganization.isFailure) {
+      return Result.fail(`failed to retreive org with id ${payload.organization}`);
+    }
+    if (!fetchedOrganization.getValue()) {
       return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
     }
     const organization = fetchedOrganization.getValue();
@@ -46,19 +54,32 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     const responsables = payload.responsables;
     const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
       const fetchedUser = (await this.userService.get(responsable)).getValue();
+      if (fetchedUser.isFailure) {
+        return Result.fail(`fail to retreive user with id ${responsable}.`);
+      }
+      if (!fetchedUser.getValue()) {
+        return Result.notFound(`user with id ${responsable} does not exist.`);
+      }
       const fetchedRes = await this.memberService.getByCriteria(
         { user: fetchedUser, organization: organization },
         FETCH_STRATEGY.SINGLE,
       );
       if (fetchedRes.isFailure) {
+        return Result.fail(
+          `fail to retreive the membeship of user ${responsable} with id on org with id${organization} `,
+        );
+      }
+      if (!fetchedRes.getValue()) {
         return Result.notFound(`User with id ${responsable} is not member in org with id ${organization.id}.`);
       }
+
       return fetchedRes.getValue();
     });
     // check if the key is unique
     const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
-    if (!fetchedKey) {
-      return Result.fail(`Infrustructure key ${payload.key} alredy exist.`);
+
+    if (fetchedKey) {
+      return Result.fail(`Infrustructure key ${payload.key} already exist.`);
     }
 
     // check the existance of the resources
@@ -66,8 +87,11 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!payload.resources) {
       const resources = payload.resources;
       fetchedResources = await applyToAll(resources, async (resource) => {
-        const fetchedResource = await this.memberService.get(resource);
+        const fetchedResource = await this.resourceService.get(resource);
         if (fetchedResource.isFailure) {
+          return Result.fail(`fail in retreive Resource with id ${resource}`);
+        }
+        if (!fetchedResource) {
           return Result.notFound(`Resource with id ${resource} does not exist.`);
         }
         return fetchedResource.getValue();
@@ -94,6 +118,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     return Result.ok<number>(createdInfustructure.id);
   }
 
+  /**
+   * update an infrastructure
+   * @param payload represents the infrastructure information to update
+   */
   @log()
   @safeGuard()
   @validate
@@ -109,37 +137,54 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     let organization = Organization.getInstance();
     if (payload.organization) {
       const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (!fetchedOrganization) {
+      if (fetchedOrganization.isFailure) {
+        return Result.fail(`failed to retreive org with id ${payload.organization}`);
+      }
+      if (!fetchedOrganization.getValue()) {
         return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
       }
       organization = fetchedOrganization.getValue();
     }
-
     const responsables = payload.responsables;
     const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
       const fetchedUser = (await this.userService.get(responsable)).getValue();
+      if (fetchedUser.isFailure) {
+        return Result.fail(`fail to retreive user with id ${responsable}.`);
+      }
+      if (!fetchedUser.getValue()) {
+        return Result.notFound(`user with id ${responsable} does not exist.`);
+      }
       const fetchedRes = await this.memberService.getByCriteria(
         { user: fetchedUser, organization: organization },
         FETCH_STRATEGY.SINGLE,
       );
       if (fetchedRes.isFailure) {
+        return Result.fail(
+          `fail to retreive the membeship of user ${responsable} with id on org with id${organization} `,
+        );
+      }
+      if (!fetchedRes.getValue()) {
         return Result.notFound(`User with id ${responsable} is not member in org with id ${organization.id}.`);
       }
+
       return fetchedRes.getValue();
     });
+
     // check if the key is unique
     const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
-    if (!fetchedKey) {
-      return Result.fail(`Infrustructure key ${payload.key} alredy exist.`);
+    if (fetchedKey) {
+      return Result.fail(`Infrustructure key ${payload.key} already exist.`);
     }
-
     // check the existance of the resources
     let fetchedResources;
     if (!payload.resources) {
       const resources = payload.resources;
       fetchedResources = await applyToAll(resources, async (resource) => {
-        const fetchedResource = await this.memberService.get(resource);
+        const fetchedResource = await this.resourceService.get(resource);
         if (fetchedResource.isFailure) {
+          return Result.fail(`fail in retreive Resource with id ${resource}`);
+        }
+        if (!fetchedResource) {
           return Result.notFound(`Resource with id ${resource} does not exist.`);
         }
         return fetchedResource.getValue();
