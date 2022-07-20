@@ -55,11 +55,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   ): Promise<CreateOrganizationDTO> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new CreateOrganizationDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateOrganizationDTO({ body: { id: result, statusCode: 201 } });
   }
   /**
    * Update an organization in the database

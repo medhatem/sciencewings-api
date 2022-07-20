@@ -1,4 +1,4 @@
-import { BaseHttpError, Vars } from './BaseHttpError';
+import { BaseHttpError, ErrorParamsOptions } from './BaseHttpError';
 
 /**
  * Represents a CONFLICT SERVER ERROR.the request could not be processed
@@ -6,8 +6,7 @@ import { BaseHttpError, Vars } from './BaseHttpError';
  * or the result of processing the request would create a conflict within the resource.
  */
 export class ConflictError extends BaseHttpError {
-  constructor(message: string, variables: Vars = null, isOperational = true) {
-    super(message, variables, isOperational);
-    this.statusCode = 409;
+  constructor(message: string, params: ErrorParamsOptions = {}) {
+    super(message, { ...params, statusCode: 409 });
   }
 }

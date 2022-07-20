@@ -25,24 +25,18 @@ export class KeycloakUtil {
    * @param name of the organization to create
    * @param parentId
    */
-  @safeGuard()
-  async createGroup(name: string, parentId?: string): Promise<Result<string>> {
+  async createGroup(name: string, parentId?: string): Promise<string> {
     let createdGroup: { id: string } = { id: null };
     if (parentId) {
       const subGroup = await this.createSubGroup(name, parentId);
-      if (subGroup.isFailure) {
-        return Result.fail('sub group could not be created');
-      }
-      createdGroup = { id: subGroup.getValue() };
+      createdGroup = { id: subGroup };
     } else {
-      createdGroup = await (
-        await this.keycloak.getAdminClient()
-      ).groups.create({
+      createdGroup = await (await this.keycloak.getAdminClient()).groups.create({
         name,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
     }
-    return Result.ok(createdGroup.id);
+    return createdGroup.id;
   }
   /**
    * creates a sub group in keycloak
@@ -51,17 +45,14 @@ export class KeycloakUtil {
    * @param name of the sub organization
    * @param parentId represents the id of the parent organization
    */
-  @safeGuard()
-  async createSubGroup(name: string, parentId: string): Promise<Result<string>> {
-    const result = await (
-      await this.keycloak.getAdminClient()
-    ).groups.setOrCreateChild(
+  async createSubGroup(name: string, parentId: string): Promise<string> {
+    const result = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
       { id: parentId, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         name,
       },
     );
-    return Result.ok(result.id);
+    return result.id;
   }
 
   /**
@@ -70,21 +61,14 @@ export class KeycloakUtil {
    *
    * @param id of the group to delete
    */
-  @safeGuard()
-  async deleteGroup(id: string): Promise<Result<string>> {
+  async deleteGroup(id: string): Promise<string> {
     // find the group before deleting it
     const groupToDelete = await this.getGroupById(id);
-
-    if (groupToDelete.isFailure) {
-      return Result.notFound(`group with id ${id} does not exist.`);
-    }
-    await (
-      await Keycloak.getInstance().getAdminClient()
-    ).groups.del({
+    await (await Keycloak.getInstance().getAdminClient()).groups.del({
       id,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-    return Result.ok(groupToDelete.getValue().name);
+    return groupToDelete.name;
   }
 
   /**
@@ -95,15 +79,11 @@ export class KeycloakUtil {
    * @param name of the group
    * @param owner of the organization
    */
-  @safeGuard()
-  async addOwnerToGroup(id: string, name: string, owner: string): Promise<Result<any>> {
-    await (
-      await this.keycloak.getAdminClient()
-    ).groups.update(
+  async addOwnerToGroup(id: string, name: string, owner: string): Promise<any> {
+    return await (await this.keycloak.getAdminClient()).groups.update(
       { id, realm: getConfig('keycloak.clientValidation.realmName') },
       { attributes: { owner: [owner] }, name },
     );
-    return Result.ok();
   }
 
   /**
@@ -111,15 +91,11 @@ export class KeycloakUtil {
    *
    * @param id of the group to fetch
    */
-  @safeGuard()
-  async getGroupById(id: string): Promise<Result<GroupRepresentation>> {
-    const group = await (
-      await this.keycloak.getAdminClient()
-    ).groups.findOne({
+  async getGroupById(id: string): Promise<GroupRepresentation> {
+    return await (await this.keycloak.getAdminClient()).groups.findOne({
       id,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-    return Result.ok(group);
   }
 
   /**
@@ -128,16 +104,12 @@ export class KeycloakUtil {
    * @param groupId id of the group to add a member to
    * @param userId of the member to add
    */
-  @safeGuard()
-  async addMemberToGroup(groupId: string, userId: string): Promise<Result<string>> {
-    const addedMember = await (
-      await this.keycloak.getAdminClient()
-    ).users.addToGroup({
+  async addMemberToGroup(groupId: string, userId: string): Promise<string> {
+    return await (await this.keycloak.getAdminClient()).users.addToGroup({
       id: userId,
       groupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
-    return Result.ok(addedMember);
   }
 
   /**
@@ -149,9 +121,7 @@ export class KeycloakUtil {
    */
   @safeGuard()
   async updateGroup(KcGroupid: string, payload: GroupRepresentation): Promise<Result<any>> {
-    await (
-      await this.keycloak.getAdminClient()
-    ).groups.update(
+    await (await this.keycloak.getAdminClient()).groups.update(
       { id: KcGroupid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         ...payload,

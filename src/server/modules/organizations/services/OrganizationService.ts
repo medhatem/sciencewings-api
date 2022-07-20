@@ -37,6 +37,8 @@ import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
 import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { ConflictError } from '@/Exceptions/ConflictError';
+import { InternalServerError, NotFoundError } from '@/Exceptions';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -75,34 +77,30 @@ export class OrganizationService extends BaseService<Organization> implements IO
    * @param userId id of the organization owner
    */
   @log()
-  @safeGuard()
   @validate
   public async createOrganization(
     @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const existingOrg = (await this.dao.getByCriteria({
-      $or: [{ name: payload.name }, { email: payload.email }],
+      name: payload.name,
     })) as Organization;
     if (existingOrg) {
-      if (existingOrg.email === payload.email) {
-        return Result.fail(`email ${payload.email} is already in use.`);
-      }
-      return Result.fail(`Organization ${payload.name} already exist.`);
+      throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: payload.name }, friendly: true });
     }
     let parent: Organization;
     if (payload.parent) {
       const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
       if (!org) {
-        return Result.notFound(`Organization parent with id ${payload.parent} does not exist`);
+        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
       parent = org;
     }
-    const fetchedUser = await this.userService.get(userId);
-    if (fetchedUser.isFailure || fetchedUser.getValue() === null) {
-      return Result.notFound(`User with id: ${userId} does not exist`);
+    const user = await this.userService.get(userId);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
-    const user = fetchedUser.getValue();
+
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       email: payload.email,
@@ -115,74 +113,54 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialLinkedin: payload.socialLinkedin || null,
     });
     wrappedOrganization.parent = parent;
-
     wrappedOrganization.direction = user;
-
     const groupName = `${orgPrifix}${payload.name}`;
     // create keycloak organization
     const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
-    if (keycloakOrganization.isFailure) {
-      return keycloakOrganization.bubble
-        ? Result.fail(keycloakOrganization.error.message)
-        : Result.fail('Could not create organization.');
-    }
     /**
      * create keycloak admin group as well as members group
      * and add the owner attribute to the organization in keycloak
      */
-    const [adminGroup, membersGroup, ownership] = await Promise.all([
-      this.keycloakUtils.createGroup(`${grpPrifix}admin`, keycloakOrganization.getValue()),
-      this.keycloakUtils.createGroup(`${grpPrifix}members`, keycloakOrganization.getValue()),
-      this.keycloakUtils.addOwnerToGroup(keycloakOrganization.getValue(), groupName, user.keycloakId),
-    ]);
-    if (adminGroup.isFailure || membersGroup.isFailure || ownership.isFailure) {
-      await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
-      return Result.fail('Organization could not be created');
-    }
-    const addeddMember = await this.keycloakUtils.addMemberToGroup(adminGroup.getValue(), user.keycloakId);
-    if (addeddMember.isFailure) {
-      await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
-      return Result.fail('Organization could not be created');
-    }
-    //storing the KC groups ids
-    wrappedOrganization.kcid = keycloakOrganization.getValue();
-    wrappedOrganization.adminGroupkcid = adminGroup.getValue();
-    wrappedOrganization.memberGroupkcid = membersGroup.getValue();
-
-    const createdOrg = await this.create(wrappedOrganization);
-    if (createdOrg.isFailure) {
-      //revert the keycloak created organization as well
-      await this.keycloakUtils.deleteGroup(keycloakOrganization.getValue());
-      return Result.fail('Organization could not be created');
-    }
-    const organization = await createdOrg.getValue();
-
-    const memberEvent = new MemberEvent();
-    const memberOwnerResult = await memberEvent.createMember(user, organization);
-    if (memberOwnerResult.isFailure) {
-      // rollback created organization
-      await Promise.all([this.keycloakUtils.deleteGroup(keycloakOrganization.getValue()), this.remove(organization)]);
-      return Result.fail('Organization could not be created');
-    }
-    const groupEvent = new GroupEvent();
-    // create the admin and member groups in the db
-    // add the owner as a member to the organization
-    const [adminGroupResult, memberGroupResult] = await Promise.all([
-      groupEvent.createGroup(adminGroup.getValue(), organization, `${grpPrifix}admin`),
-      groupEvent.createGroup(membersGroup.getValue(), organization, `${grpPrifix}member`),
-    ]);
-    if (adminGroupResult.isFailure || memberGroupResult.isFailure) {
-      await Promise.all([
-        this.keycloakUtils.deleteGroup(keycloakOrganization.getValue()),
-        this.remove(organization.id),
+    let adminGroup;
+    let membersGroup;
+    let organization: Organization;
+    try {
+      [adminGroup, membersGroup] = await Promise.all([
+        this.keycloakUtils.createGroup(`${grpPrifix}admin`, keycloakOrganization),
+        this.keycloakUtils.createGroup(`${grpPrifix}members`, keycloakOrganization),
+        this.keycloakUtils.addOwnerToGroup(keycloakOrganization, groupName, user.keycloakId),
       ]);
-      return Result.fail('Organization could not be created');
+      await this.keycloakUtils.addMemberToGroup(adminGroup, user.keycloakId);
+
+      //storing the KC groups ids
+      wrappedOrganization.kcid = keycloakOrganization;
+      wrappedOrganization.adminGroupkcid = adminGroup;
+      wrappedOrganization.memberGroupkcid = membersGroup;
+
+      organization = await this.create(wrappedOrganization);
+      const memberEvent = new MemberEvent();
+      await memberEvent.createMember(user, organization);
+
+      const groupEvent = new GroupEvent();
+      // create the admin and member groups in the db
+      // add the owner as a member to the organization
+      await Promise.all([
+        groupEvent.createGroup(adminGroup, organization, `${grpPrifix}admin`),
+        groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
+      ]);
+    } catch (error) {
+      await Promise.all<any>(
+        [
+          keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
+          organization && this.remove(organization.id),
+        ].filter(Boolean),
+      );
+      throw new InternalServerError('SOMETHING_WENT_WRONG');
     }
 
-    // TODO: to be removed since the member model is in a one on one relation with organization
-    // update also the organizaion model by removing the many to many relation with members
-    organization.members.add(memberOwnerResult.getValue());
-    this.update(organization);
+    if (payload.labels?.length) {
+      await this.labelService.createBulkLabel(payload.labels, organization);
+    }
 
     await Promise.all(
       payload.addresses.map((address) =>
@@ -209,12 +187,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         });
       }),
     );
-
-    if (payload.labels?.length) {
-      await this.labelService.createBulkLabel(payload.labels, organization);
-    }
-
-    return Result.ok<number>(organization.id);
+    return organization.id;
   }
 
   /**

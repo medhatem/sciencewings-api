@@ -4,11 +4,9 @@ import { User, userStatus } from '@/modules/users/models/User';
 import { MemberService } from '@/modules/hr/services/MemberService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { on } from '@/decorators/events';
-import { safeGuard } from '@/decorators/safeGuard';
 
 export class MemberEvent {
   @on('create-member')
-  @safeGuard()
   async createMember(user: User, organization: Organization) {
     const memberService = MemberService.getInstance();
     return await memberService.create({
@@ -24,7 +22,6 @@ export class MemberEvent {
     });
   }
   @on('delete-member')
-  @safeGuard()
   async deleteMember(payload: { [key: string]: any }) {
     const memberService = MemberService.getInstance();
     return await memberService.removeWithCriteria(payload);
