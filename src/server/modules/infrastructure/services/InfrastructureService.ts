@@ -10,7 +10,7 @@ import { validateParam } from '@/decorators/validateParam';
 import { Result } from '@/utils/Result';
 import { CreateOrganizationSchema, UpdateInfrastructureSchema } from '../schemas/ifrastructureSchemas';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { InfrustructureRO, UpdateinfrastructureRO } from '../routes/RequestObject';
+import { InfrastructureRO, UpdateinfrastructureRO } from '../routes/RequestObject';
 import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
@@ -40,7 +40,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   @safeGuard()
   @validate
   public async createInfrustructure(
-    @validateParam(CreateOrganizationSchema) payload: InfrustructureRO,
+    @validateParam(CreateOrganizationSchema) payload: InfrastructureRO,
   ): Promise<Result<number>> {
     const fetchedOrganization = await this.organizationService.get(payload.organization);
     if (fetchedOrganization.isFailure) {

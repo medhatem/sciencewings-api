@@ -3,7 +3,7 @@ import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
-export class InfrustructureRO {
+export class InfrastructureRO {
   @JsonProperty()
   name!: string;
 

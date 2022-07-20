@@ -6,7 +6,7 @@ import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
-import { InfrustructureRO, UpdateinfrastructureRO } from './RequestObject';
+import { InfrastructureRO, UpdateinfrastructureRO } from './RequestObject';
 import {
   CreateInfrastructureDTO,
   infrastructureGetDTO,
@@ -39,7 +39,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<infrastructureGetDTO>(204, 'infrastructure created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async createInfrastructure(payload: InfrustructureRO): Promise<CreateInfrastructureDTO> {
+  public async createInfrastructure(payload: InfrastructureRO): Promise<CreateInfrastructureDTO> {
     const result = await this.InfrastructureService.createInfrustructure(payload);
     if (result.isFailure) {
       throw result.error;
