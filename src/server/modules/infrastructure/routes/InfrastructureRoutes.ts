@@ -25,6 +25,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   }
 
   /**
+   * @override
    * create an infrustructure in the database
    *
    * @param payload
@@ -47,12 +48,14 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   }
 
   /**
+   * @override
    * Update a infrustructure in the database
    *
    * @param payload
    * Should contain infrustructure data that include infrustructure data with its id
    * @param id
    * id of the requested infrustructure
+   *
    */
   @PUT
   @Path('update/:id')
