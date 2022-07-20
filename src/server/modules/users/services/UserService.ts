@@ -13,7 +13,6 @@ import { Result } from '@/utils/Result';
 import { User, userStatus } from '@/modules/users/models/User';
 import { UserDao } from '@/modules/users/daos/UserDao';
 import { UserRO } from '@/modules/users/routes/RequstObjects';
-import { getConfig } from '@/configuration/Configuration';
 import { log } from '@/decorators/log';
 import { safeGuard } from '@/decorators/safeGuard';
 import { validateParam } from '@/decorators/validateParam';
