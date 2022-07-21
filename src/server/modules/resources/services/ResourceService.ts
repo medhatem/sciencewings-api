@@ -151,7 +151,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       },
       true,
     );
-
     await this.dao.update(createdResourceResult);
     return createdResourceResult.id;
   }
@@ -297,10 +296,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       resource,
       member,
     });
-
-    if (resourceStatusHistory.isFailure) {
-      return resourceStatusHistory;
-    }
 
     return resourceStatusHistory.id;
   }
@@ -455,9 +450,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       ...resourceRate,
       ...payload,
     });
-
     const updatedResourceRateResult = await this.resourceRateService.update(updatedResourceRate);
-
     return updatedResourceRateResult.id;
   }
 
