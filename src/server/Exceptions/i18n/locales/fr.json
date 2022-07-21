@@ -4,7 +4,7 @@
     "UNKNOWN_USER":"utilisateur inconnu",
     "{{name}} ALREADY_EXISTS":"{{name}} Existe Deja.",
 
-    "ORG.NON_EXISTANT_DATA {{org}}":"L'organisation {{data}} est introuvable.",
+    "ORG.NON_EXISTANT_DATA {{org}}":"L'organisation {{org}} est introuvable.",
     "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
 
     "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas",
@@ -16,7 +16,17 @@
     "KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}":"L'utilisateur {{user}} n'est pas membre de {{org}}",
 
 
+    "MEMBER.NON_EXISTANT":"membre introuvable",
 
-    "VALIDATION.NON_MATCHING_PASSWORD":"Les mots de passe ne matche pas."
+
+    "RESOURCE.NON_EXISTANT {{resource}}":"Resource: {{resource}} n'existe pas",
+    
+    
+    "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource not found",
+
+
+
+    "VALIDATION.NON_MATCHING_PASSWORD":"Les mots de passe ne matche pas.",
+    "required {{field}}":"{{field}} est requi"
 
  }

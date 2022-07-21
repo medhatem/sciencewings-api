@@ -84,11 +84,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     // check whether the user is already a member of the organization
     const isAlreadyMember = await this.getByCriteria({ user: savedUserValue, organization: existingOrg.getValue() });
 
-    if (isAlreadyMember.isFailure) {
-      return Result.fail('Internal server error');
-    }
-
-    if (isAlreadyMember.getValue() !== null) {
+    if (isAlreadyMember) {
       return Result.fail(`${payload.email} is already a member of ${existingOrg.getValue().name}.`);
     }
 
@@ -272,14 +268,11 @@ export class MemberService extends BaseService<Member> implements IMemberService
       { populate: true },
     );
 
-    if (memberResult.isFailure) {
-      return Result.fail('Internal Server Error');
-    }
-    if (memberResult.getValue() === null) {
+    if (!memberResult) {
       return Result.notFound(`The requested member does not exist.`);
     }
 
-    return memberResult as Result<Member>;
+    return Result.ok(memberResult) as Result<Member>;
   }
 
   /**

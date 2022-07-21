@@ -1,10 +1,11 @@
 import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Configuration } from '@/configuration/Configuration';
 import { Email } from '@/utils/Email';
 import { Keycloak } from '@/sdks/keycloak';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Logger } from '@/utils/Logger';
 import { MemberDao } from '@/modules/hr/daos/MemberDao';
 import { MemberService } from '@/modules/hr/services/MemberService';
@@ -120,7 +121,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
       mockMethodWithResult(memberDao, 'create', [], Promise.resolve({ user: 1, organization: orgId }));
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      stub(BaseService.prototype, 'getByCriteria').returns(Promise.resolve(Result.ok(null)));
+      stub(BaseService.prototype, 'getByCriteria').returns(Promise.resolve(null));
       mockMethodWithResult(
         emailService,
         'sendEmail',
