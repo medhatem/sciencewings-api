@@ -1,10 +1,21 @@
 {
    "SOMETHING_WENT_WRONG":"Something Went Wrong",
    "HTTP_401_UNAUTHORIZED":"HTTP 401 Non Authorized",
+   "UNKNOWN_USER":"Unknown user",
    "{{name}} ALREADY_EXISTS":"{{name}} Already Exists.",
+
    "ORG.NON_EXISTANT_DATA {{org}}":"Organization {{org}} is not found.",
    "ORG.NON_EXISTANT_PARENT_ORG": "Parent organization does not exist.",
+
    "USER.NON_EXISTANT_USER {{user}}": "User {{user}} does not exist",
-   "KEYCLOAK.GROUP_DELETION_SUB_GROUP":"Organization has sub groups that need to be deleted first!"
+
+   "KEYCLOAK.GROUP_DELETION_SUB_GROUP":"Organization has sub groups that need to be deleted first!",
+   "KEYCLOAK.NO_PERMISSIONS_PROVIDED": "NO permissions provided to validate",
+   "KEYCLOAK.NO_CURRENT_ORG_PROVIDED": "NO current organization provided",
+   "KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}":"NO keycloak group found with id: {{id}}",
+   "KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}":"User {{user}} is not a member of {{org}}",
+
+
+   "VALIDATION.NON_MATCHING_PASSWORD":"Passwords do not match."
 
  }
