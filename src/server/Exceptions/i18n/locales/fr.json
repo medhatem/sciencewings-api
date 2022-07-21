@@ -1,10 +1,22 @@
 {
     "SOMETHING_WENT_WRONG":"Une erreur est survenue",
     "HTTP_401_UNAUTHORIZED":"HTTP 401 Non Authorise",
+    "UNKNOWN_USER":"utilisateur inconnu",
     "{{name}} ALREADY_EXISTS":"{{name}} Existe Deja.",
+
     "ORG.NON_EXISTANT_DATA {{org}}":"L'organisation {{data}} est introuvable.",
     "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
+
     "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas",
-    "KEYCLOAK.GROUP_DELETION_SUB_GROUP":"L'organisation a des sous groups qui doivent etre supprimer en premier!"
+
+    "KEYCLOAK.GROUP_DELETION_SUB_GROUP":"L'organisation a des sous groups qui doivent etre supprimer en premier!",
+    "KEYCLOAK.NO_PERMISSIONS_PROVIDED": "Aucune permission a valider",
+    "KEYCLOAK.NO_CURRENT_ORG_PROVIDED": "Pas d'organisation currente trouve",
+    "KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}":"Aucun group trouve pour l'id: {{id}}",
+    "KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}":"L'utilisateur {{user}} n'est pas membre de {{org}}",
+
+
+
+    "VALIDATION.NON_MATCHING_PASSWORD":"Les mots de passe ne matche pas."
 
  }

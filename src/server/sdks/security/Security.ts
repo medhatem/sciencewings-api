@@ -1,8 +1,8 @@
+import { NotFoundError, Unauthorized } from '@/Exceptions';
 import { container, provideSingleton } from '@/di/index';
 
+import { BadRequest } from '@/Exceptions/BadRequestError';
 import { KeycloakApi } from '../keycloak/keycloakApi';
-import { Result } from '@/utils/Result';
-import { safeGuard } from '@/decorators/safeGuard';
 
 export const ORG_PREFIX = 'org';
 export const GROUP_PREFIX = 'grp';
@@ -24,10 +24,9 @@ export class Security {
    * @param token to use for auth
    * @param permissions array containing all the roles that allow accessing the resource
    */
-  @safeGuard()
-  async validateAccess(token: string, permissions: string[]): Promise<Result<boolean>> {
+  async validateAccess(token: string, permissions: string[]): Promise<boolean> {
     if (permissions.length === 0) {
-      return Result.fail('No permissions to validate');
+      throw new BadRequest('KEYCLOAK.NO_PERMISSIONS_PROVIDED');
     }
 
     const tokenInformation = await this.keycloakApi.extractInformationFromToken(token);
@@ -35,25 +34,23 @@ export class Security {
 
     const currentOrganizationId = tokenInformation['current_org'];
     if (!currentOrganizationId) {
-      return Result.fail('No current company is given to validate the access');
+      throw new BadRequest('KEYCLOAK.NO_CURRENT_ORG_PROVIDED');
     }
 
     const groupById = await this.keycloakApi.getGroupById(currentOrganizationId);
     if (groupById.error || !groupById.getValue()) {
-      return Result.fail(`No keycloak group found with id ${currentOrganizationId}`);
+      throw new NotFoundError('KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}');
     }
     const groupMemberships = tokenInformation.groups;
     if (groupMemberships.includes(`/${groupById.getValue().name}/${GROUP_PREFIX}-admins`)) {
-      return Result.ok(true); // the user is an admin which means he does have access to the given resource
+      return true; // the user is an admin which means he does have access to the given resource
     }
 
     if (!groupMemberships.includes(`/${groupById.getValue().name}/${GROUP_PREFIX}-members`)) {
       //substring to remove the prefix-  aka org- from the group's name
-      return Result.fail(
-        `The user ${
-          tokenInformation.name
-        } Does not have access since they are not a member of ${groupById.getValue().name.substring(3)} `,
-      );
+      throw new Unauthorized('KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}', {
+        variables: { user: `${tokenInformation.name}`, org: `${groupById.getValue().name.substring(3)}` },
+      });
     }
     // only keep groups and get rid of the organizations
     const subGroups = groupById.getValue().subGroups.filter((sub) => sub.name.startsWith(GROUP_PREFIX));
@@ -69,6 +66,6 @@ export class Security {
         }
       }
     }
-    return Result.ok(doesUserHaveAccess);
+    return doesUserHaveAccess;
   }
 }
