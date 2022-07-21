@@ -449,7 +449,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         variables: { rate: `${resourceRateId}` },
       });
     }
-    resourceRate = fetchedResourceRate.getValue();
+    resourceRate = fetchedResourceRate;
 
     const updatedResourceRate = this.resourceRateService.wrapEntity(resourceRate, {
       ...resourceRate,
