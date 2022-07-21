@@ -1,15 +1,17 @@
-import intern from 'intern';
-import { stub, restore, createStubInstance, SinonStubbedInstance } from 'sinon';
-const { suite, test } = intern.getPlugin('interface.tdd');
-const { expect } = intern.getPlugin('chai');
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
+
+import { AddressDao } from '@/modules/address/daos/AddressDAO';
+import { AddressService } from '@/modules/address/services/AddressService';
+import { BaseService } from '@/modules/base/services/BaseService';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
-import { AddressService } from '@/modules/address/services/AddressService';
-import { AddressDao } from '@/modules/address/daos/AddressDAO';
-import { BaseService } from '@/modules/base/services/BaseService';
+import { container } from '@/di';
+import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
+
+const { suite, test } = intern.getPlugin('interface.tdd');
+const { expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let addressDAO: SinonStubbedInstance<AddressDao>;
@@ -41,20 +43,20 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   suite('create Address', () => {
     test('Should fail on address creation', async () => {
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(addressDAO, 'create', [], Promise.reject('stackTrace'));
-
-      const result = await container.get(AddressService).createAddress({} as any);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal('stackTrace');
+      mockMethodWithResult(addressDAO, 'create', [], Promise.reject(new Error('Failed')));
+      try {
+        await container.get(AddressService).createAddress({} as any);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should success on address creation', async () => {
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(addressDAO, 'create', [], { id: 1 });
 
       const result = await container.get(AddressService).createAddress({} as any);
-
-      expect(result.isSuccess).to.be.true;
-      expect(result.getValue().id).to.equal(1);
+      expect(result.id).to.equal(1);
     });
   });
 });
