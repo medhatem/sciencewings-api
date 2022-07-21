@@ -97,10 +97,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   ): Promise<OrganizationDTO> {
     const result = await this.OrganizationService.deleteOrganization(id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new OrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new OrganizationDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -178,11 +175,8 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @PathParam('organizationId') organizationId: number,
   ): Promise<GetOrganizationSettingsDTO> {
     const result = await this.OrganizationService.getOrganizationSettingsById(organizationId);
-    if (result.isFailure) {
-      throw result.error;
-    }
 
-    return new GetOrganizationSettingsDTO({ body: { data: result.getValue(), statusCode: 200 } });
+    return new GetOrganizationSettingsDTO({ body: { data: result, statusCode: 200 } });
   }
 
   /* Update a organization settings, section members
@@ -204,11 +198,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   ): Promise<UpdateOrganizationSettingsDTO> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /* Update a organization settings, section reservation
@@ -230,11 +220,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   ): Promise<UpdateOrganizationSettingsDTO> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /* Update a organization settings, section invoices
@@ -256,11 +242,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   ): Promise<UpdateOrganizationSettingsDTO> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /* Update a organization settings, section access
@@ -282,10 +264,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   ): Promise<UpdateOrganizationSettingsDTO> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateOrganizationSettingsDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
   }
 }

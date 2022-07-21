@@ -12,9 +12,7 @@ import {
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
-import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
 import { Email } from '@/utils/Email';
 import { CreateOrganizationSchema, UpdateOrganizationSchema } from '@/modules/organizations/schemas/OrganizationSchema';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
@@ -32,7 +30,6 @@ import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
-import { catchKeycloackError } from '@/utils/keycloack';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
 import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
@@ -319,31 +316,30 @@ export class OrganizationService extends BaseService<Organization> implements IO
    * @param organizationId organization id
    */
   @log()
-  @safeGuard()
-  public async deleteOrganization(organizationId: number): Promise<Result<number>> {
+  public async deleteOrganization(organizationId: number): Promise<number> {
     const fetchedorganization = await this.dao.get(organizationId);
     if (!fetchedorganization) {
-      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
-    }
-    try {
-      const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
-        id: fetchedorganization.kcid,
-        realm: getConfig('keycloak.clientValidation.realmName'),
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
       });
-
-      if (groups.subGroups.length !== 1) {
-        return Result.fail(`This Organization has sub groups that need to be deleted first !`);
-      }
-
-      await (await this.keycloak.getAdminClient()).groups.del({
-        id: fetchedorganization.kcid,
-        realm: getConfig('keycloak.clientValidation.realmName'),
-      });
-    } catch (error) {
-      return catchKeycloackError(error, fetchedorganization.name);
     }
+    const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
+      id: fetchedorganization.kcid,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+
+    if (groups.subGroups.length !== 1) {
+      throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
+    }
+
+    await (await this.keycloak.getAdminClient()).groups.del({
+      id: fetchedorganization.kcid,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+
     await this.dao.remove(fetchedorganization);
-    return Result.ok<number>(organizationId);
+    return organizationId;
   }
   /* Get all the settings of an organization ,
    *
@@ -351,18 +347,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
    *
    */
   @log()
-  @safeGuard()
-  public async getOrganizationSettingsById(organizationId: number): Promise<Result<any>> {
+  public async getOrganizationSettingsById(organizationId: number): Promise<any> {
     const fetchedOrganization = await this.get(organizationId);
 
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
     }
     const fetchedOrganizationValue = fetchedOrganization.getValue();
 
-    return Result.ok({
+    return {
       settings: fetchedOrganizationValue.settings,
-    });
+    };
   }
 
   /* Update the reservation, invoices or access settings of an organization ,
@@ -372,7 +370,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
    *
    */
   @log()
-  @safeGuard()
   public async updateOrganizationsSettingsProperties(
     payload:
       | OrganizationMemberSettingsRO
@@ -380,10 +377,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       | OrganizationInvoicesSettingsRO
       | OrganizationAccessSettingsRO,
     organizationId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedOrganization = await this.get(organizationId);
     if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
     }
     const organizationValue = fetchedOrganization.getValue();
     const oldSetting = organizationValue.settings;
@@ -394,6 +394,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     await this.organizationSettingsService.update(newSettings);
 
-    return Result.ok<number>(organizationId);
+    return organizationId;
   }
 }

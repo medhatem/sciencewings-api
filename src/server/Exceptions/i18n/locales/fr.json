@@ -4,6 +4,7 @@
     "{{name}} ALREADY_EXISTS":"{{name}} Existe Deja.",
     "ORG.NON_EXISTANT_DATA {{org}}":"L'organisation {{data}} est introuvable.",
     "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
-    "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas"
+    "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas",
+    "KEYCLOAK.GROUP_DELETION_SUB_GROUP":"L'organisation a des sous groups qui doivent etre supprimer en premier!"
 
  }

@@ -4,6 +4,7 @@
    "{{name}} ALREADY_EXISTS":"{{name}} Already Exists.",
    "ORG.NON_EXISTANT_DATA {{org}}":"Organization {{org}} is not found.",
    "ORG.NON_EXISTANT_PARENT_ORG": "Parent organization does not exist.",
-   "USER.NON_EXISTANT_USER {{user}}": "User {{user}} does not exist"
+   "USER.NON_EXISTANT_USER {{user}}": "User {{user}} does not exist",
+   "KEYCLOAK.GROUP_DELETION_SUB_GROUP":"Organization has sub groups that need to be deleted first!"
 
  }
