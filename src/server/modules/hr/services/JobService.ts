@@ -11,6 +11,7 @@ import { Result } from '@/utils/Result';
 import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
+import { NotFoundError } from '@/Exceptions';
 
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {
@@ -22,12 +23,15 @@ export class JobService extends BaseService<Job> implements IJobService {
     return container.get(IJobService);
   }
 
-  private async getOrganization(organizationId: number): Promise<Result<any>> {
+  private async getOrganization(organizationId: number): Promise<any> {
     const fetchedOrganization = await this.organizationService.get(organizationId);
-    if (fetchedOrganization.isFailure || fetchedOrganization.getValue() === null) {
-      return Result.notFound(`Organization with id ${organizationId} does not exist`);
+    if (fetchedOrganization === null) {
+      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+        variables: { org: `${organizationId}` },
+        isOperational: true,
+      });
     }
-    return Result.ok(fetchedOrganization.getValue());
+    return fetchedOrganization;
   }
 
   /**
@@ -38,27 +42,19 @@ export class JobService extends BaseService<Job> implements IJobService {
   @log()
   @safeGuard()
   @validate
-  public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<Result<number>> {
+  public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<void> {
     let organization;
     if (payload.organization) {
       const fetchedOrganization = await this.getOrganization(payload.organization);
-      if (fetchedOrganization.isFailure) {
-        return fetchedOrganization;
-      }
       organization = fetchedOrganization.getValue();
     }
 
-    const createdJob = await this.create(
+    await this.create(
       this.wrapEntity(this.dao.model, {
         ...payload,
         organization,
       }),
     );
-
-    if (createdJob.isFailure) {
-      return createdJob;
-    }
-    return Result.ok(createdJob.getValue().id);
   }
 
   /**

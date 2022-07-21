@@ -25,9 +25,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   }
 
   @log()
-  @safeGuard()
-  public async get(id: number, options?: FindOptions<T>): Promise<Result<any>> {
-    return Result.ok<any>(await this.dao.get(id, options));
+  public async get(id: number, options?: FindOptions<T>): Promise<any> {
+    return await this.dao.get(id, options);
   }
 
   @log()
@@ -37,9 +36,8 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   }
 
   @log()
-  @safeGuard()
-  public async create(entry: T): Promise<Result<any>> {
-    return Result.ok<any>(await this.dao.create(entry));
+  public async create(entry: T): Promise<T> {
+    return await this.dao.create(entry);
   }
 
   @log()
@@ -69,10 +67,9 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   }
 
   @log()
-  @safeGuard()
-  public async remove(id: number): Promise<Result<number>> {
+  public async remove(id: number): Promise<T> {
     const entity = this.wrapEntity(this.dao.model, { id });
-    return Result.ok<any>(await this.dao.remove(entity));
+    return await this.dao.remove(entity);
   }
 
   @log()

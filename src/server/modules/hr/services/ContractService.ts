@@ -17,6 +17,7 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateContractSchema, UpdateContractSchema } from '@/modules/hr/schemas/ContractSchema';
+import { NotFoundError } from '@/Exceptions/NotFoundError';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -84,16 +85,17 @@ export class ContractService extends BaseService<Contract> implements IContractS
   @log()
   @safeGuard()
   @validate
-  public async createContract(@validateParam(CreateContractSchema) payload: ContractRO): Promise<Result<number>> {
+  public async createContract(@validateParam(CreateContractSchema) payload: ContractRO): Promise<number> {
     const organization = await this.origaniaztionService.get(payload.organization);
     if (organization.isFailure || organization.getValue() === null) {
-      return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+        variables: { org: `${payload.organization}` },
+        isOperational: true,
+      });
     }
 
     const resEntities = await this.checkForOptionalPropertiesInContract(payload);
-    if (resEntities.isFailure) {
-      return resEntities;
-    }
+
     const entities = await resEntities.getValue();
 
     const contract = {
@@ -103,11 +105,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     };
 
     const createdContract = await this.create(contract);
-
-    if (createdContract.isFailure) {
-      return createdContract;
-    }
-    return Result.ok(createdContract.getValue().id);
+    return createdContract.id;
   }
 
   /**

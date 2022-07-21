@@ -1,17 +1,18 @@
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+
+import { Configuration } from '@/configuration/Configuration';
+import { ContractRO } from '@/modules/hr/routes/RequestObject';
+import { JobRoutes } from '@/modules/hr/routes/JobRoutes';
+import { JobService } from '@/modules/hr/services/JobService';
+import { LocalStorage } from '@/utils/LocalStorage';
+import { Logger } from '@/utils/Logger';
+import { Result } from '@/utils/Result';
+import { container } from '@/di';
 import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
+import { mockMethodWithResult } from '@/utils/utilities';
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { JobRoutes } from '@/modules/hr/routes/JobRoutes';
-import { LocalStorage } from '@/utils/LocalStorage';
-import { mockMethodWithResult } from '@/utils/utilities';
-import { Result } from '@/utils/Result';
-import { ContractRO } from '@/modules/hr/routes/RequestObject';
-import { JobService } from '@/modules/hr/services/JobService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let jobService: SinonStubbedInstance<JobService>;
@@ -60,7 +61,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(jobService, 'createJob', [payload], Result.ok(1));
+      mockMethodWithResult(jobService, 'createJob', [payload], 1);
       const result = await jobRoutes.createJob(payload);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
