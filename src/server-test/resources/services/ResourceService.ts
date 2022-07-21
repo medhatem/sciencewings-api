@@ -219,10 +219,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
 
-      try {
-        await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
-        expect(result).to.eql([1]);
-      } catch (error) {}
+      await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
+      expect(result).to.eql([1]);
     });
   });
   suite('update resource', () => {

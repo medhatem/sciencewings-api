@@ -99,7 +99,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
   @log()
   @validate
   public async createResource(@validateParam(CreateResourceSchema) payload: ResourceRO): Promise<number> {
-    let organization: Organization = null;
+    const organization: Organization = null;
     if (payload.organization) {
       const organization = await this.organizationService.get(payload.organization);
       if (!organization) {
