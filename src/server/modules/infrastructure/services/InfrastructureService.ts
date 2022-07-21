@@ -8,9 +8,12 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
 import { validateParam } from '@/decorators/validateParam';
 import { Result } from '@/utils/Result';
-import { CreateOrganizationSchema, UpdateInfrastructureSchema } from '../schemas/ifrastructureSchemas';
+import {
+  CreateOrganizationSchema,
+  UpdateInfrastructureSchema,
+} from '@/modules/infrastructure/schemas/ifrastructureSchemas';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { InfrastructureRO, UpdateinfrastructureRO } from '../routes/RequestObject';
+import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructure/routes/RequestObject';
 import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
