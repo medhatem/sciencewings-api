@@ -37,13 +37,12 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   public async create(entry: T): Promise<T> {
-    return await this.dao.create(entry);
+    return this.dao.create(entry);
   }
 
   @log()
-  @safeGuard()
-  public async update(entry: T): Promise<Result<any>> {
-    return Result.ok<any>(this.dao.update(entry));
+  public async update(entry: T): Promise<any> {
+    return this.dao.update(entry);
   }
 
   @log()
@@ -91,13 +90,12 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   }
 
   @log()
-  @safeGuard()
   async getByCriteria<Y extends keyof typeof FETCH_STRATEGY>(
     criteria: { [key: string]: any },
     fetchStrategy = FETCH_STRATEGY.SINGLE,
     options?: Y extends FETCH_STRATEGY.SINGLE ? FindOneOptions<T, never> : FindOptions<T, never>,
-  ): Promise<Result<T | T[]>> {
-    return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy, options));
+  ): Promise<T | T[]> {
+    return await this.dao.getByCriteria(criteria, fetchStrategy, options);
   }
 
   /**

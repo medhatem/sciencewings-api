@@ -12,7 +12,7 @@ export abstract class IBaseService<T> {
 
   public create: (entry: T) => Promise<T>;
 
-  public update: (entry: T) => Promise<Result<any>>;
+  public update: (entry: T) => Promise<any>;
 
   public updateRoute: (id: number, payload: any) => Promise<Result<any>>;
 
@@ -25,7 +25,7 @@ export abstract class IBaseService<T> {
     criteria: { [key: string]: any },
     fetchStrategy: FETCH_STRATEGY,
     options?: FindOptions<T> | FindOneOptions<T>,
-  ) => Promise<Result<T>>;
+  ) => Promise<T>;
 
   public wrapEntity: (entity: T, payload: { [key: string]: any }, options?: AssignOptions) => T;
 }

@@ -3,8 +3,6 @@ import { BaseService } from '@/modules/base/services/BaseService';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
-import { safeGuard } from '@/decorators/safeGuard';
-import { Result } from '@/utils/Result';
 import {
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
@@ -50,9 +48,10 @@ import { IOrganizationService } from '@/modules/organizations/interfaces/IOrgani
 import { applyToAll } from '@/utils/utilities';
 import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IResourceStatusHistoryService';
 import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
+import { NotFoundError, ValidationError } from '@/Exceptions';
 
 @provideSingleton(IResourceService)
-export class ResourceService extends BaseService<Resource> {
+export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
     public dao: ResourceDao,
     public organizationService: IOrganizationService,
@@ -78,14 +77,13 @@ export class ResourceService extends BaseService<Resource> {
    * @return list of the resources that match the criteria
    */
   @log()
-  @safeGuard()
-  public async getResourcesOfAGivenOrganizationById(organizationId: number): Promise<Result<Resource[]>> {
+  public async getResourcesOfAGivenOrganizationById(organizationId: number): Promise<Resource[]> {
     if (!organizationId) {
-      return Result.fail(`Organization id should be provided.`);
+      throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
     }
     const fetchedOrganization = await this.organizationService.get(organizationId);
-    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
     }
     const resources = await this.dao.getByCriteria(
       {
@@ -94,49 +92,37 @@ export class ResourceService extends BaseService<Resource> {
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
-    if (!resources) {
-      return Result.fail(`can not get resources of organization with id ${organizationId}.`);
-    }
-    return Result.ok(resources as Resource[]);
+
+    return resources as Resource[];
   }
 
   @log()
-  @safeGuard()
   @validate
-  public async createResource(@validateParam(CreateResourceSchema) payload: ResourceRO): Promise<Result<number>> {
+  public async createResource(@validateParam(CreateResourceSchema) payload: ResourceRO): Promise<number> {
     let organization: Organization = null;
     if (payload.organization) {
-      const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+      const organization = await this.organizationService.get(payload.organization);
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
       }
-      organization = fetchedOrganization.getValue();
     }
 
     const managers: Member[] = [];
     if (payload.managers) {
       for await (const { organization, user } of payload.managers) {
         const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-        if (fetcheManager.isFailure || !fetcheManager.getValue()) {
-          return Result.notFound(
-            `Manager with user id ${user} in organization with id ${organization} does not exist.`,
-          );
+        if (!fetcheManager) {
+          throw new NotFoundError('MEMBER.NON_EXISTANT', { friendly: true });
         }
-        managers.push(fetcheManager.getValue());
+        managers.push(fetcheManager);
       }
     }
 
     const resourceStatusSetting = await this.resourceStatusService.get(1);
-    if (resourceStatusSetting.isFailure) {
-      return Result.fail(`Can not create settings for resource.`);
-    }
 
-    const resourceSetting = await this.resourceSettingsService.create({
-      resourceType: resourceStatusSetting.getValue(),
+    await this.resourceSettingsService.create({
+      resourceType: resourceStatusSetting,
     });
-    if (resourceSetting.isFailure || !resourceSetting.getValue()) {
-      return Result.fail(`Can not create settings for resource.`);
-    }
 
     const createdResourceResult = await this.dao.create({
       name: payload.name,
@@ -146,12 +132,8 @@ export class ResourceService extends BaseService<Resource> {
       resourceClass: payload.resourceClass,
       timezone: payload.timezone,
       organization,
-      settings: resourceStatusSetting.getValue(),
+      settings: resourceStatusSetting,
     });
-
-    if (!createdResourceResult) {
-      return Result.fail(`fail to create resource.`);
-    }
 
     await createdResourceResult.managers.init();
 
@@ -171,29 +153,27 @@ export class ResourceService extends BaseService<Resource> {
     );
 
     await this.dao.update(createdResourceResult);
-    const id = createdResourceResult.id;
-    return Result.ok<number>(id);
+    return createdResourceResult.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async updateResource(
     @validateParam(UpdateResourceSchema) payload: UpdateResourceRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
     }
 
     let organization = null;
     if (payload.organization) {
       const fetchedOrganization = await this.organizationService.get(payload.organization);
       if (!fetchedOrganization) {
-        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
       }
-      organization = fetchedOrganization.getValue();
+      organization = fetchedOrganization;
     }
 
     const managers: Member[] = [];
@@ -201,10 +181,10 @@ export class ResourceService extends BaseService<Resource> {
     if (payload.managers) {
       for await (const { organization, user } of payload.managers) {
         const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-        if (fetcheManager.isFailure || !fetcheManager.getValue()) {
-          delManagers.push(fetcheManager.getValue());
+        if (!fetcheManager) {
+          delManagers.push(fetcheManager);
         }
-        managers.push(fetcheManager.getValue());
+        managers.push(fetcheManager);
       }
     }
 
@@ -233,24 +213,19 @@ export class ResourceService extends BaseService<Resource> {
 
     const updatedResource = await this.dao.update(resource);
 
-    if (!updatedResource) {
-      return Result.fail(`resource with id ${resourceId} can not be updated.`);
-    }
-    const id = updatedResource.id;
-    return Result.ok<number>(id);
+    return updatedResource.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async createResourceCalendar(
     @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
-  ): Promise<Result<ResourceCalendar>> {
+  ): Promise<ResourceCalendar> {
     let organization = null;
     if (payload.organization) {
       organization = await this.organizationService.get(payload.organization);
       if (!organization) {
-        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
       }
     }
 
@@ -259,36 +234,32 @@ export class ResourceService extends BaseService<Resource> {
       organization,
     });
 
-    const createdResourceCalendar = await this.resourceCalendarService.create(resourceCalendar);
-    if (createdResourceCalendar.isFailure || !createdResourceCalendar.getValue()) {
-      return Result.fail(`fail to create resource calendar.`);
-    }
-    return Result.ok<any>(createdResourceCalendar);
+    return await this.resourceCalendarService.create(resourceCalendar);
   }
 
   @log()
-  @safeGuard()
-  public async getResourceSettings(resourceId: number): Promise<Result<any>> {
+  public async getResourceSettings(resourceId: number): Promise<any> {
     const fetchedResource = await this.dao.get(resourceId);
 
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
-    return Result.ok(fetchedResource.settings);
+    return fetchedResource.settings;
   }
 
   //Resource settings
   @log()
-  @safeGuard()
   @validate
   public async updateResourceReservationGeneral(
     @validateParam(ResourceReservationGeneralSchema) payload: ResourcesSettingsReservationGeneralRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
     }
 
     const resource = this.wrapEntity(fetchedResource, {
@@ -297,33 +268,30 @@ export class ResourceService extends BaseService<Resource> {
     });
 
     const updatedResourceResult = await this.dao.update(resource);
-    if (!updatedResourceResult) {
-      return Result.fail(`Reservation General setings of resource with id ${resourceId} can not be updated.`);
-    }
 
-    return Result.ok<number>(updatedResourceResult.id);
+    return updatedResourceResult.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async updateResourcesSettingsGeneralStatus(
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const resource = await this.dao.get(resourceId);
 
     if (!resource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
-    const fetchedMember = await this.memberService.get(payload.memberId);
+    const member = await this.memberService.get(payload.memberId);
 
-    if (fetchedMember.isFailure) {
-      return Result.notFound(`member with id ${resourceId} does not exist.`);
+    if (!member) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
 
-    const member = fetchedMember.getValue();
     const resourceStatusHistory = await this.resourceStatusHistoryService.create({
       ...payload,
       resource,
@@ -334,19 +302,20 @@ export class ResourceService extends BaseService<Resource> {
       return resourceStatusHistory;
     }
 
-    return Result.ok<number>(resourceStatusHistory.getValue().id);
+    return resourceStatusHistory.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async updateResourceReservationUnits(
     @validateParam(ResourceReservationUnitSchema) payload: ResourcesSettingsReservationUnitRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
     const resourceValue = fetchedResource;
 
@@ -356,20 +325,21 @@ export class ResourceService extends BaseService<Resource> {
     });
 
     const updatedResourceResult = await this.dao.update(resource);
-    if (!updatedResourceResult) {
-      return Result.fail(`Units General setings of resource with id ${resourceId} can not be updated.`);
-    }
 
-    return Result.ok<number>(updatedResourceResult.id);
+    return updatedResourceResult.id;
   }
 
+  @log()
+  @validate
   public async updateResourcesSettingsGeneralVisibility(
     @validateParam(ResourceGeneralVisibilitySchema) payload: ResourceSettingsGeneralVisibilityRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
     const resource = this.wrapEntity(fetchedResource, {
@@ -378,22 +348,21 @@ export class ResourceService extends BaseService<Resource> {
     });
 
     const updatedResourceResult = await this.dao.update(resource);
-    if (!updatedResourceResult) {
-      return Result.fail(`Visibility General setings of resource with id ${resourceId} can not be updated.`);
-    }
-    return Result.ok<number>(updatedResourceResult.id);
+
+    return updatedResourceResult.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async updateResourceReservationVisibility(
     @validateParam(ResourceReservationVisibilitySchema) payload: ResourceReservationVisibilityRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
     const resource = this.wrapEntity(fetchedResource, {
@@ -402,11 +371,8 @@ export class ResourceService extends BaseService<Resource> {
     });
 
     const updatedResourceResult = await this.dao.update(resource);
-    if (!updatedResourceResult) {
-      return Result.fail(`Visibility Reservation setings of resource with id ${resourceId} can not be updated.`);
-    }
 
-    return Result.ok<number>(updatedResourceResult.id);
+    return updatedResourceResult.id;
   }
 
   /**
@@ -416,15 +382,16 @@ export class ResourceService extends BaseService<Resource> {
    * @returns
    */
   @log()
-  @safeGuard()
   @validate
   public async updateResourcesSettingsnGeneralProperties(
     @validateParam(ResourceGeneralPropertiesSchema) payload: ResourceSettingsGeneralPropertiesRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
     const resource = this.wrapEntity(fetchedResource, {
@@ -433,65 +400,54 @@ export class ResourceService extends BaseService<Resource> {
     });
 
     const updatedResourceResult = await this.dao.update(resource);
-    if (!updatedResourceResult) {
-      return Result.fail(`General roperties settings of resource with id ${resourceId} can not be updated.`);
-    }
-    return Result.ok<number>(updatedResourceResult.id);
+    return updatedResourceResult.id;
   }
 
   @log()
-  @safeGuard()
-  public async getResourceRate(resourceId: number): Promise<Result<any>> {
+  public async getResourceRate(resourceId: number): Promise<any> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
-    const getResourceRateResult = await this.resourceRateService.getByCriteria(
-      { resource: fetchedResource },
-      FETCH_STRATEGY.ALL,
-    );
-    if (getResourceRateResult.isFailure || !getResourceRateResult.getValue()) {
-      return Result.fail(`Can not get resource rate.`);
-    }
-    const getResourceRate = getResourceRateResult.getValue();
-    return Result.ok<any>(getResourceRate);
+    return await this.resourceRateService.getByCriteria({ resource: fetchedResource }, FETCH_STRATEGY.ALL);
   }
 
   @log()
-  @safeGuard()
   @validate
   public async createResourceRate(
     @validateParam(CreateResourceRateSchema) payload: ResourceRateRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
     const createdResourceRateResult = await this.resourceRateService.create({
       ...payload,
       fetchedResource,
     });
-    if (createdResourceRateResult.isFailure || !createdResourceRateResult.getValue()) {
-      return Result.fail(`Resource Rate can not be created.`);
-    }
-    const createdResourceRate = createdResourceRateResult.getValue();
-    return Result.ok<number>(createdResourceRate.id);
+
+    return createdResourceRateResult.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async updateResourceRate(
     @validateParam(UpdateResourceRateSchema) payload: ResourceRateRO,
     resourceRateId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     let resourceRate: ResourceRate = null;
     const fetchedResourceRate = await this.resourceRateService.get(resourceRateId);
-    if (fetchedResourceRate.isFailure || !fetchedResourceRate.getValue()) {
-      return Result.notFound(`Resource Rate with id ${resourceRateId} does not exist.`);
+    if (!fetchedResourceRate) {
+      throw new NotFoundError('RESOURCE_RATE.NON_EXISTANT {{rate}}', {
+        variables: { rate: `${resourceRateId}` },
+      });
     }
     resourceRate = fetchedResourceRate.getValue();
 
@@ -501,23 +457,21 @@ export class ResourceService extends BaseService<Resource> {
     });
 
     const updatedResourceRateResult = await this.resourceRateService.update(updatedResourceRate);
-    if (updatedResourceRateResult.isFailure || !updatedResourceRateResult.getValue()) {
-      return Result.fail(`Resource rate with id ${resourceRateId} can not be updated.`);
-    }
-    const id = updatedResourceRateResult.getValue().id;
-    return Result.ok<number>(id);
+
+    return updatedResourceRateResult.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async updateResourceReservationTimerRestriction(
     @validateParam(UpdateResourceSchema) payload: ResourceTimerRestrictionRO,
     resourceId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
-      return Result.notFound(`Resource with id ${resourceId} does not exist.`);
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
     }
 
     const resource = this.wrapEntity(fetchedResource, {
@@ -526,9 +480,7 @@ export class ResourceService extends BaseService<Resource> {
     });
 
     const updatedResourceResult = await this.dao.update(resource);
-    if (!updatedResourceResult) {
-      return Result.fail(`Reservation time restriction of resource with id ${resourceId} can not be updated.`);
-    }
-    return Result.ok<number>(updatedResourceResult.id);
+
+    return updatedResourceResult.id;
   }
 }
