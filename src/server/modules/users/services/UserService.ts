@@ -137,7 +137,7 @@ export class UserService extends BaseService<User> implements IUserService {
       $or: [{ email: user.email }, { keycloakId: user.keycloakId }],
     })) as User;
     if (userExistingCheck) {
-      new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: 'user' } });
+      throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: 'user' }, friendly: true });
     }
     const userAddress = user.addresses;
     const userPhones = user.phones;
