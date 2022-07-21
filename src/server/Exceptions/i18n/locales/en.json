@@ -1,5 +1,9 @@
 {
    "SOMETHING_WENT_WRONG":"Something Went Wrong",
    "HTTP_401_UNAUTHORIZED":"HTTP 401 Non Authorized",
-   "{{name}} ALREADY_EXISTS":"{{name}} Already Exists."
+   "{{name}} ALREADY_EXISTS":"{{name}} Already Exists.",
+   "ORG.NON_EXISTANT_DATA {{org}}":"Organization {{org}} is not found.",
+   "ORG.NON_EXISTANT_PARENT_ORG": "Parent organization does not exist.",
+   "USER.NON_EXISTANT_USER {{user}}": "User {{user}} does not exist"
+
  }

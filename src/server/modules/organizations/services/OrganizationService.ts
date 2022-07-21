@@ -196,25 +196,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
    * @param orgId organization id
    */
   @log()
-  @safeGuard()
   @validate
   public async updateOrganizationGeneraleProperties(
     @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
     orgId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedorganization = await this.dao.get(orgId);
     if (!fetchedorganization) {
-      return Result.notFound(`Organization with id ${orgId} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
     if (fetchedorganization.name !== payload.name) {
       //update the Kc group name
-      const updatedOrg = await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+      await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
         name: `${orgPrifix}${payload.name}`,
       });
-      if (updatedOrg.isFailure) {
-        return Result.fail('Organization name could not be updated');
-      }
     }
 
     const wrappedOrganization = this.wrapEntity(fetchedorganization, {
@@ -223,8 +219,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (payload.direction) {
       const direction = await this.userService.get(payload.direction);
-      if (direction.isFailure || direction.getValue() === null) {
-        return Result.notFound(`User with id: ${payload.direction} does not exist.`);
+      if (!direction) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+          variables: { user: `${payload.direction}` },
+          friendly: false,
+        });
       }
       wrappedOrganization.direction = direction;
     }
@@ -232,7 +231,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.parent) {
       const parent = await this.dao.get(payload.parent);
       if (!parent) {
-        return Result.notFound(`Organization parent with id: ${payload.parent} does not exist.`);
+        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG');
       }
       wrappedOrganization.parent = parent;
     }
@@ -245,11 +244,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
         await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
           name: `${orgPrifix}${fetchedorganization.name}`,
         });
-        return Result.fail('Organization name could not be updated ');
       }
-      return Result.fail('Organization could not be updated');
     }
-    return Result.ok<number>(orgId);
+    return orgId;
   }
 
   /**
@@ -258,15 +255,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
    * @param orgId organization id
    */
   @log()
-  @safeGuard()
   @validate
   public async addPhoneToOrganization(
     @validateParam(CreateOrganizationPhoneSchema) payload: PhoneRO,
     orgId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedorganization = await this.dao.get(orgId);
     if (!fetchedorganization) {
-      return Result.notFound(`organization with id ${orgId} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
     const newPhone = await this.phoneService.create({
       phoneLabel: payload.phoneLabel,
@@ -275,10 +271,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       Organization: fetchedorganization,
     });
 
-    if (newPhone.isFailure) {
-      return Result.fail(`fail to create new phone.`);
-    }
-    return Result.ok<number>(newPhone.getValue().id);
+    return newPhone.id;
   }
 
   /**
@@ -287,15 +280,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
    * @param orgId organization id
    */
   @log()
-  @safeGuard()
   @validate
   public async addAddressToOrganization(
     @validateParam(CreateOrganizationAddressSchema) payload: AddressRO,
     orgId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedorganization = await this.dao.get(orgId);
     if (!fetchedorganization) {
-      return Result.notFound(`organization with id ${orgId} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
     const newAddress = await this.addressService.create({
       country: payload.country,
@@ -307,25 +299,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
       apartment: payload.apartment,
       organization: fetchedorganization,
     });
-    if (newAddress.isFailure) {
-      return Result.fail(`fail to create address`);
-    }
-    return Result.ok<number>(newAddress.getValue().id);
+
+    return newAddress.id;
   }
 
   @log()
-  @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Member[]>> {
+  public async getMembers(orgId: number): Promise<Member[]> {
     const existingOrg = await this.dao.get(orgId);
-
     if (!existingOrg) {
-      return Result.notFound(`Organization with id ${orgId} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-
-    const members = existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
-    return Result.ok<any>(members);
+    return existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
   }
 
   /**

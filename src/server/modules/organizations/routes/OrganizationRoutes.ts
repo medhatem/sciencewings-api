@@ -76,11 +76,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @PathParam('id') id: number,
   ): Promise<UpdateOrganizationDTO> {
     const result = await this.OrganizationService.updateOrganizationGeneraleProperties(payload, id);
-
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new UpdateOrganizationDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateOrganizationDTO({ body: { id: result, statusCode: 204 } });
   }
   /**
    * Delete an organization in the database
@@ -125,10 +121,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async CreateOrganizationPhone(payload: PhoneRO, @PathParam('id') id: number): Promise<PhoneDTO> {
     const result = await this.OrganizationService.addPhoneToOrganization(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new PhoneDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new PhoneDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -149,10 +142,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async CreateOrganizationAdress(payload: AddressRO, @PathParam('id') id: number): Promise<AddressBaseDTO> {
     const result = await this.OrganizationService.addAddressToOrganization(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new AddressBaseDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new AddressBaseDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -169,11 +159,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async getUsers(@PathParam('id') payload: number): Promise<OrganizationMembersDTO> {
     const result = await this.OrganizationService.getMembers(payload);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new OrganizationMembersDTO({ body: { data: result.getValue(), statusCode: 200 } });
+    return new OrganizationMembersDTO({ body: { data: result, statusCode: 200 } });
   }
 
   /**

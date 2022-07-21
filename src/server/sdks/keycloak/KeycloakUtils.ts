@@ -2,9 +2,7 @@ import { container, provide } from '@/di';
 
 import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import { Keycloak } from '../keycloak';
-import { Result } from '@/utils/Result';
 import { getConfig } from '@/configuration/Configuration';
-import { safeGuard } from '@/decorators/safeGuard';
 
 /**
  * utilities class containing keycloak specific actions
@@ -119,14 +117,12 @@ export class KeycloakUtil {
    * @param KcGroupid of the group
    * @param newName of the group
    */
-  @safeGuard()
-  async updateGroup(KcGroupid: string, payload: GroupRepresentation): Promise<Result<any>> {
-    await (await this.keycloak.getAdminClient()).groups.update(
+  async updateGroup(KcGroupid: string, payload: GroupRepresentation): Promise<any> {
+    return await (await this.keycloak.getAdminClient()).groups.update(
       { id: KcGroupid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         ...payload,
       },
     );
-    return Result.ok();
   }
 }
