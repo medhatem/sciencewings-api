@@ -45,6 +45,12 @@ export class ProjectDTO extends BaseBodyDTO {
   })
   organization?: OrganizationInformationDTO;
 }
+@JsonObject()
+@unique
+export class GETProjectDTO extends BaseRequestDTO {
+  @JsonProperty()
+  public body?: ProjectDTO;
+}
 
 @JsonObject()
 @unique

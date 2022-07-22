@@ -4,8 +4,8 @@ import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { CreateProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
-import { ProjectRO } from './RequestObject';
+import { CreateProjectDTO, GETProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
+import { ProjectRO } from '@/modules/projects/routes/RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 
@@ -13,7 +13,7 @@ import { IProjectService } from '@/modules/projects/interfaces/IProjectInterface
 @Path('projects')
 export class ProjectRoutes extends BaseRoutes<Project> {
   constructor(private projectService: IProjectService) {
-    super(projectService as any, new CreateProjectDTO(), new UpdateProjectDTO());
+    super(projectService as any, new GETProjectDTO(), new UpdateProjectDTO());
   }
 
   static getInstance(): ProjectRoutes {
@@ -38,7 +38,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
       throw result.error;
     }
 
-    return new ProjectGetDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+    return new ProjectGetDTO({ body: { data: [...(result.getValue() || [])], statusCode: 200 } });
   }
   /**
    * Containing data related to the project to be saved in the database
