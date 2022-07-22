@@ -9,7 +9,7 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
 import { Result } from '@/utils/Result';
 import { ProjectRO } from '@/modules/projects/routes/RequestObject';
-import { CreateProjectSchema, UpdateProjectSchema } from '../schemas';
+import { CreateProjectSchema, UpdateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
 import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInterfaces';

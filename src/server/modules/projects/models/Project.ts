@@ -4,9 +4,9 @@ import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { ProjectBoard } from './ProjectBoard';
-import { ProjectTag } from './ProjectTag';
-import { ProjectTask } from './ProjectTask';
+import { ProjectBoard } from '@/modules/projects/models/ProjectBoard';
+import { ProjectTag } from '@/modules/projects/models/ProjectTag';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 
 @provide()
 @Entity()

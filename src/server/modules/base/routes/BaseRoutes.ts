@@ -3,7 +3,7 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 import { provideSingleton } from '@/di/index';
 import { Path, GET, PUT, PathParam, DELETE, Security } from 'typescript-rest';
 import { Response } from 'typescript-rest-swagger';
-import { BaseRequestDTO } from '../dtos/BaseDTO';
+import { BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { Logger } from '@/utils/Logger';
 
 @provideSingleton()

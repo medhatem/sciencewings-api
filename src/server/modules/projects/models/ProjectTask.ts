@@ -3,9 +3,9 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
-import { TasksList } from './TasksList';
-import { Project } from './Project';
-import { Comment } from './Comment';
+import { TasksList } from '@/modules/projects/models/TasksList';
+import { Project } from '@/modules/projects/models/Project';
+import { Comment } from '@/modules/projects/models/Comment';
 
 export enum Priority {
   Lowest,
