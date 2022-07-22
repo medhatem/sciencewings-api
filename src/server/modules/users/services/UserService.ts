@@ -25,8 +25,8 @@ export class UserService extends BaseService<User> implements IUserService {
     public dao: UserDao,
     public addressService: IAddressService,
     public phoneService: IPhoneService,
-    public keycloak: Keycloak = Keycloak.getInstance(),
-    public emailService = Email.getInstance(),
+    public keycloak: Keycloak,
+    public emailService: Email,
     public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
