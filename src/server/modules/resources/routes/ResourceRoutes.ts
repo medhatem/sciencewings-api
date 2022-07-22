@@ -36,7 +36,7 @@ import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dto
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
   constructor(private ResourceService: IResourceService) {
-    super(ResourceService as any, new CreateResourceDTO(), new ResourceGetDTO());
+    super(ResourceService as any, new ResourceGetDTO(), new UpdateResourceDTO());
   }
 
   static getInstance(): ResourceRoutes {
