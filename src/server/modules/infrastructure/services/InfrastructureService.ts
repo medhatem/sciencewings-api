@@ -17,9 +17,9 @@ import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructu
 import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { FETCH_STRATEGY } from '@/modules/base';
-import { Organization } from '@/modules/organizations';
-import { IResourceService } from '@/modules/resources';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
