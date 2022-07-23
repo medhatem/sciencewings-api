@@ -37,11 +37,10 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    */
   @log()
   public async getOrganizationProjects(id: number): Promise<Project[]> {
-    const fetchedOrganization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
-    if (!fetchedOrganization) {
+    const organization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
-    const organization = await fetchedOrganization.getValue();
     const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
 
     return fetchedProjects as Project[];
