@@ -34,11 +34,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   public async getOrganizationProjects(@PathParam('id') id: number): Promise<ProjectGetDTO> {
     const result = await this.projectService.getOrganizationProjects(id);
 
-    if (result.isFailure || !result.getValue) {
-      throw result.error;
-    }
-
-    return new ProjectGetDTO({ body: { data: [...(result.getValue() || [])], statusCode: 200 } });
+    return new ProjectGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
   /**
    * Containing data related to the project to be saved in the database
@@ -56,11 +52,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   public async createProject(payload: ProjectRO): Promise<CreateProjectDTO> {
     const result = await this.projectService.createProject(payload);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new CreateProjectDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateProjectDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**
@@ -79,10 +71,6 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   public async updateProject(payload: ProjectRO, @PathParam('id') id: number): Promise<UpdateProjectDTO> {
     const result = await this.projectService.updateProject(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateProjectDTO({ body: { projectId: result.getValue(), statusCode: 204 } });
+    return new UpdateProjectDTO({ body: { projectId: result, statusCode: 204 } });
   }
 }

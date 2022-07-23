@@ -8,7 +8,6 @@ import { ProjectTagDao } from '@/modules/projects/daos/projectTagDAO';
 import { ProjectTagRO } from '@/modules/projects/routes/RequestObject';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IProjectTagService)
 export class ProjectTagService extends BaseService<ProjectTag> implements IProjectTagService {
@@ -28,7 +27,6 @@ export class ProjectTagService extends BaseService<ProjectTag> implements IProje
    * @returns
    */
   @log()
-  @safeGuard()
   public async createProjectTags(payload: ProjectTagRO[], project: Project): Promise<ProjectTask[]> {
     const tasks: ProjectTask[] = [];
     for (const tag of payload) {

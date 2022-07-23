@@ -25,6 +25,10 @@
     "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource not found",
 
 
+    "PROJECT.NON_EXISTANT {{project}}":"Projet: {{project}} est introuvable. ",
+
+
+
 
     "VALIDATION.NON_MATCHING_PASSWORD":"Les mots de passe ne matche pas.",
     "required {{field}}":"{{field}} est requi"
