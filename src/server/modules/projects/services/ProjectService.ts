@@ -9,12 +9,13 @@ import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
 import { Result } from '@/utils/Result';
 import { ProjectRO } from '@/modules/projects/routes/RequestObject';
-import { CreateProjectSchema, UpdateProjectSchema } from '../schemas';
+import { CreateProjectSchema, UpdateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
 import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInterfaces';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
   constructor(
@@ -30,7 +31,26 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   static getInstance(): IProjectService {
     return container.get(IProjectService);
   }
+  /**
+   * Retrieve organization projects
+   *
+   * @param id of organization
+   */
+  @log()
+  @safeGuard()
+  public async getOrganizationProjects(id: number): Promise<Result<Project[]>> {
+    const fetchedOrganization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
+    if (fetchedOrganization.isFailure) {
+      return Result.fail(`Fail to retrieve organization with id: ${id};`);
+    }
+    if (!fetchedOrganization.getValue()) {
+      return Result.notFound(`Organization with id ${id} does not exist.`);
+    }
+    const organization = await fetchedOrganization.getValue();
+    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
 
+    return Result.ok(fetchedProjects as Project[]);
+  }
   @log()
   @safeGuard()
   @validate
@@ -67,7 +87,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       dateStart: payload.dateStart,
       managers: managers,
       participants: participants,
-      organizations: organization,
+      organization: organization,
     });
     if (!createdProject) {
       return Result.fail(`fail to create project.`);
@@ -93,7 +113,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       if (fetchedOrganization.isFailure) {
         return Result.fail(`Organization with id ${payload.organization} does not exist.`);
       }
-      project.organizations = await fetchedOrganization.getValue();
+      project.organization = await fetchedOrganization.getValue();
     }
 
     if (payload.managers) {
