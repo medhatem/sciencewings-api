@@ -22,6 +22,9 @@
    "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Resource rate: {{rate}} not found",
 
 
+   "PROJECT.NON_EXISTANT {{project}}":"Project: {{project}} not found",
+
+
    "VALIDATION.NON_MATCHING_PASSWORD":"Passwords do not match.",
    "required {{field}}":"{{field}} is required"
 
