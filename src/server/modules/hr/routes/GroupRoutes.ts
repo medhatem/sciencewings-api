@@ -35,11 +35,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   public async getOrganizationGroup(@PathParam('organizationId') organizationId: number): Promise<GroupDTO> {
     const result = await this.groupService.getOrganizationGroup(organizationId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new GroupDTO({ body: { data: result.getValue(), statusCode: 201 } });
+    return new GroupDTO({ body: { ...result, statusCode: 201 } });
   }
 
   /**

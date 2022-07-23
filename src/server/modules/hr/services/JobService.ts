@@ -42,8 +42,7 @@ export class JobService extends BaseService<Job> implements IJobService {
   public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<void> {
     let organization;
     if (payload.organization) {
-      const fetchedOrganization = await this.getOrganization(payload.organization);
-      organization = fetchedOrganization.getValue();
+      organization = await this.getOrganization(payload.organization);
     }
 
     await this.create(

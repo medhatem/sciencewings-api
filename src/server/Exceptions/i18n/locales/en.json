@@ -4,6 +4,10 @@
    "UNKNOWN_USER":"Unknown user",
    "{{name}} ALREADY_EXISTS":"{{name}} Already Exists.",
 
+  "ENTITY.NON_EXISTANT":"entity not found",
+
+
+
    "ORG.NON_EXISTANT_DATA {{org}}":"Organization {{org}} is not found.",
    "ORG.NON_EXISTANT_PARENT_ORG": "Parent organization does not exist.",
 

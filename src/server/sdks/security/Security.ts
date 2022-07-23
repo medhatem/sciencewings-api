@@ -38,22 +38,22 @@ export class Security {
     }
 
     const groupById = await this.keycloakApi.getGroupById(currentOrganizationId);
-    if (groupById.error || !groupById.getValue()) {
+    if (!groupById) {
       throw new NotFoundError('KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}');
     }
     const groupMemberships = tokenInformation.groups;
-    if (groupMemberships.includes(`/${groupById.getValue().name}/${GROUP_PREFIX}-admins`)) {
+    if (groupMemberships.includes(`/${groupById.name}/${GROUP_PREFIX}-admins`)) {
       return true; // the user is an admin which means he does have access to the given resource
     }
 
-    if (!groupMemberships.includes(`/${groupById.getValue().name}/${GROUP_PREFIX}-members`)) {
+    if (!groupMemberships.includes(`/${groupById.name}/${GROUP_PREFIX}-members`)) {
       //substring to remove the prefix-  aka org- from the group's name
       throw new Unauthorized('KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}', {
-        variables: { user: `${tokenInformation.name}`, org: `${groupById.getValue().name.substring(3)}` },
+        variables: { user: `${tokenInformation.name}`, org: `${groupById.name.substring(3)}` },
       });
     }
     // only keep groups and get rid of the organizations
-    const subGroups = groupById.getValue().subGroups.filter((sub) => sub.name.startsWith(GROUP_PREFIX));
+    const subGroups = groupById.subGroups.filter((sub) => sub.name.startsWith(GROUP_PREFIX));
     let doesUserHaveAccess = false;
 
     for (const sub of subGroups) {

@@ -4,6 +4,10 @@
     "UNKNOWN_USER":"utilisateur inconnu",
     "{{name}} ALREADY_EXISTS":"{{name}} Existe Deja.",
 
+
+    "ENTITY.NON_EXISTANT":"entity not found",
+    
+
     "ORG.NON_EXISTANT_DATA {{org}}":"L'organisation {{org}} est introuvable.",
     "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
 
