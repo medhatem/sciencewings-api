@@ -1,25 +1,24 @@
 import { AssignOptions, FindOneOptions, FindOptions } from '@mikro-orm/core';
 
 import { FETCH_STRATEGY } from '../daos';
-import { Result } from '@/utils/Result';
 
 export abstract class IBaseService<T> {
   static getInstance: () => any;
 
   public get: (id: number, options?: FindOneOptions<T>) => Promise<T>;
 
-  public getAll: () => Promise<Result<any[]>>;
+  public getAll: () => Promise<T[]>;
 
   public create: (entry: T) => Promise<T>;
 
   public update: (entry: T) => Promise<any>;
 
-  public updateRoute: (id: number, payload: any) => Promise<Result<any>>;
+  public updateRoute: (id: number, payload: any) => Promise<any>;
 
   public remove: (id: number) => Promise<T>;
-  public removeWithCriteria: (payload: { [key: string]: any }) => Promise<Result<number>>;
+  public removeWithCriteria: (payload: { [key: string]: any }) => Promise<void>;
 
-  public removeRoute: (id: number) => Promise<Result<number>>;
+  public removeRoute: (id: number) => Promise<void>;
 
   getByCriteria: (
     criteria: { [key: string]: any },

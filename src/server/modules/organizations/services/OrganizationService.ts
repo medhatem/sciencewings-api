@@ -350,16 +350,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
   public async getOrganizationSettingsById(organizationId: number): Promise<any> {
     const fetchedOrganization = await this.get(organizationId);
 
-    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+    if (!fetchedOrganization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
         variables: { org: `${organizationId}` },
         friendly: false,
       });
     }
-    const fetchedOrganizationValue = fetchedOrganization.getValue();
 
     return {
-      settings: fetchedOrganizationValue.settings,
+      settings: fetchedOrganization.settings,
     };
   }
 
@@ -379,14 +378,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     organizationId: number,
   ): Promise<number> {
     const fetchedOrganization = await this.get(organizationId);
-    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
+    if (!fetchedOrganization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
         variables: { org: `${organizationId}` },
         friendly: false,
       });
     }
-    const organizationValue = fetchedOrganization.getValue();
-    const oldSetting = organizationValue.settings;
+    const oldSetting = fetchedOrganization.settings;
     const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
       ...oldSetting,
       ...payload,
