@@ -56,11 +56,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   public async createGroup(payload: GroupRO): Promise<GroupDTO> {
     const result = await this.groupService.createGroup(payload);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new GroupDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new GroupDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**
@@ -79,11 +75,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   public async updateGroup(payload: GroupRO, @PathParam('id') id: number): Promise<GroupDTO> {
     const result = await this.groupService.updateGroup(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new GroupDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -105,11 +97,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   ): Promise<GroupDTO> {
     const result = await this.groupService.addGroupMember(memberid, groupid);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new GroupDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -131,11 +119,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   ): Promise<GroupDTO> {
     const result = await this.groupService.deleteGroupMember(memberid, groupid);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new GroupDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -154,10 +138,6 @@ export class GroupRoutes extends BaseRoutes<Group> {
   public async deleteGroup(@PathParam('id') id: number): Promise<GroupDTO> {
     const result = await this.groupService.deleteGroup(id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new GroupDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
 }

@@ -7,10 +7,10 @@ import { ContractRoutes } from '@/modules/hr/routes/ContractRoutes';
 import { ContractService } from '@/modules/hr/services/ContractService';
 import { LocalStorage } from '@/utils/LocalStorage';
 import { Logger } from '@/utils/Logger';
-import { Result } from '@/utils/Result';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
+
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
 
@@ -72,20 +72,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload = new ContractRO();
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        contractService,
-        'updateContract',
-        [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(contractService, 'updateContract', [payload], Promise.reject(new Error('Failed')));
       try {
         await contractRoutes.createUpdateContract(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(contractService, 'updateContract', [payload], Result.ok(1));
+      mockMethodWithResult(contractService, 'updateContract', [payload], 1);
       const result = await contractRoutes.createUpdateContract(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);

@@ -53,10 +53,6 @@ export class JobRoutes extends BaseRoutes<Job> {
   public async updateJob(payload: JobRO, @PathParam('id') id: number): Promise<CreateJobDTO> {
     const result = await this.jobService.updateJob(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateJobDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateJobDTO({ body: { id: result, statusCode: 204 } });
   }
 }

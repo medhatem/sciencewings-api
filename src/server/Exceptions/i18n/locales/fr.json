@@ -8,6 +8,11 @@
     "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
 
     "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas",
+    "USER.ALREADY_MEMBER {{user}}":"L'utilisateur {{user}} est deja membre de l'organisation.",
+    "USER.NOT_MEMBER_OF_ORG":"L'utilisateur n'est pas membre de l'organisation",
+    "USER.CANNOT_RESEND_INVITE_TO_ACTIVE_USER":"Peut pas re-evnoyer une invitation a un utilisateur actif",
+    "USER.INVITATION_ALREADY_ANSWERED":"L'invitation a deja ete repondu",
+
 
     "KEYCLOAK.GROUP_DELETION_SUB_GROUP":"L'organisation a des sous groups qui doivent etre supprimer en premier!",
     "KEYCLOAK.NO_PERMISSIONS_PROVIDED": "Aucune permission a valider",
@@ -17,6 +22,8 @@
 
 
     "MEMBER.NON_EXISTANT":"membre introuvable",
+    "MEMBER.NON_EXISTANT {{member}}":"membre: {{member}} est introuvable",
+
 
 
     "RESOURCE.NON_EXISTANT {{resource}}":"Resource: {{resource}} n'existe pas",
@@ -25,7 +32,24 @@
     "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource not found",
 
 
+    "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}":"resource Calendar: {{calendar}} is not found",
+
+
     "PROJECT.NON_EXISTANT {{project}}":"Projet: {{project}} est introuvable. ",
+
+
+
+    
+    "GROUP.NON_EXISTANT {{group}}":"groupe: {{group}} est introuvable",
+
+
+    "JOB.NON_EXISTANT {{job}}":"Job: {{job}} est introuvable",
+    
+    
+    "CONTRACT.NON_EXISTANT {{contract}}":"Contract: {{contract}} is not found",
+
+
+
 
 
 

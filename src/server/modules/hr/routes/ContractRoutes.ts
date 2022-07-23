@@ -47,10 +47,6 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   public async createUpdateContract(payload: ContractRO, @PathParam('id') id: number): Promise<ContracBaseDTO> {
     const result = await this.contractService.updateContract(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new ContracBaseDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new ContracBaseDTO({ body: { id: result, statusCode: 204 } });
   }
 }

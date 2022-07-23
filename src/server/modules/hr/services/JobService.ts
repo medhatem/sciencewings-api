@@ -5,9 +5,7 @@ import { BaseService } from '@/modules/base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
-import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
-import { Result } from '@/utils/Result';
 import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
@@ -40,7 +38,6 @@ export class JobService extends BaseService<Job> implements IJobService {
    * @returns the created job id
    */
   @log()
-  @safeGuard()
   @validate
   public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<void> {
     let organization;
@@ -64,19 +61,15 @@ export class JobService extends BaseService<Job> implements IJobService {
    * @returns the updated job id
    */
   @log()
-  @safeGuard()
-  public async updateJob(payload: JobRO, jobId: number): Promise<Result<number>> {
+  public async updateJob(payload: JobRO, jobId: number): Promise<number> {
     const fetchedJob = await this.dao.get(jobId);
     if (!fetchedJob) {
-      return Result.notFound(`Job with id ${jobId} does not exist`);
+      throw new NotFoundError('JOB.NON_EXISTANT {{job}}', { variables: { job: `${jobId}` } });
     }
 
     if (payload.organization) {
-      const fetchedOrganization = await this.getOrganization(payload.organization);
-      if (fetchedOrganization.isFailure) {
-        return fetchedOrganization;
-      }
-      fetchedJob.organization = fetchedOrganization.getValue();
+      const organization = await this.getOrganization(payload.organization);
+      fetchedJob.organization = organization;
     }
 
     const updatedJob = await this.update(
@@ -86,9 +79,6 @@ export class JobService extends BaseService<Job> implements IJobService {
       }),
     );
 
-    if (updatedJob.isFailure) {
-      return updatedJob;
-    }
-    return Result.ok(updatedJob.getValue().id);
+    return updatedJob.id;
   }
 }
