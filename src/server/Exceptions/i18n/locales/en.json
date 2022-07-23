@@ -46,6 +46,19 @@
 
 
    "VALIDATION.NON_MATCHING_PASSWORD":"Passwords do not match.",
+   "VALIDATION.FIRSTNAME_REQUIRED":"firstname is required",
+   "VALIDATION.LASTNAME_REQUIRED":"lastname is required",
+   "VALIDATION.EMAIL_REQUIRED":"email is required",
+   "VALIDATION.PHONE_REQUIRED":"phone is required",
+   "VALIDATION.ADDRESS_REQUIRED":"address is required",
+   "VALIDATION.NAME_REQUIRED":"Name is required",
+   "VALIDATION.LABEL_REQUIRED":"Label is required",
+   "VALIDATION.DESCRIPTION_REQUIRED":"description is required",
+   "VALIDATION.RATE_REQUIRED":"rate is required",
+   "VALIDATION.CATEGORY_REQUIRED":"category is required",
+   "VALIDATION.DURATION_REQUIRED":"duration is required",
+   "VALIDATION.TITLE_REQUIRED":"Title is required",
+   "VALIDATION.DATESTART_REQUIRED":"Date start is required",
    "required {{field}}":"{{field}} is required"
 
  }

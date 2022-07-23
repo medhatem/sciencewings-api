@@ -56,9 +56,22 @@
 
 
 
-
-
     "VALIDATION.NON_MATCHING_PASSWORD":"Les mots de passe ne matche pas.",
+    "VALIDATION.FIRSTNAME_REQUIRED":"prenom est requis",
+    "VALIDATION.LASTNAME_REQUIRED":"Le nom est requis",
+    "VALIDATION.EMAIL_REQUIRED":"L'email est requis",
+    "VALIDATION.PHONE_REQUIRED":"Telephone est requis",
+    "VALIDATION.ADDRESS_REQUIRED":"L'adresse est requis",
+    "VALIDATION.NAME_REQUIRED":"Le nom est requis",
+    "VALIDATION.LABEL_REQUIRED":"Le label est requis",
+    "VALIDATION.DATEOFBIRTH_REQUIRED":"La date de naissance est requis",
+    "VALIDATION.DESCRIPTION_REQUIRED":"La description est requise",
+    "VALIDATION.RATE_REQUIRED":"Le taux est requis",
+    "VALIDATION.CATEGORY_REQUIRED":"La categorie est requise",
+    "VALIDATION.DURATION_REQUIRED":"La durée est requise",
+    "VALIDATION.TITLE_REQUIRED":"Le titre est requis",
+    "VALIDATION.DATESTART_REQUIRED":"La date du debut est requise",
+
     "required {{field}}":"{{field}} est requi"
 
  }
