@@ -1,27 +1,28 @@
-import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
-const { suite, test } = intern.getPlugin('interface.tdd');
-const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { ResourceService } from '@/modules/resources/services/ResourceService';
-import { ResourceRoutes } from '@/modules/resources/routes/ResourceRoutes';
-import { mockMethodWithResult } from '@/utils/utilities';
 import {
+  ResourceRO,
   ResourceRateRO,
   ResourceReservationVisibilityRO,
-  ResourceRO,
   ResourceSettingsGeneralPropertiesRO,
   ResourceSettingsGeneralVisibilityRO,
+  ResourceTimerRestrictionRO,
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
-  ResourceTimerRestrictionRO,
 } from '@/modules/resources/routes/RequestObject';
-import { Result } from '@/utils/Result';
-import { Resource } from '@/modules/resources/models/Resource';
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+
+import { Configuration } from '@/configuration/Configuration';
 import { LocalStorage } from '@/utils/LocalStorage';
+import { Logger } from '@/utils/Logger';
+import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceRoutes } from '@/modules/resources/routes/ResourceRoutes';
+import { ResourceService } from '@/modules/resources/services/ResourceService';
+import { container } from '@/di';
+import intern from 'intern';
+import { mockMethodWithResult } from '@/utils/utilities';
+
+const { suite, test } = intern.getPlugin('interface.tdd');
+const { expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceService: SinonStubbedInstance<ResourceService>;
@@ -67,20 +68,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     };
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        resourceService,
-        'createResource',
-        [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(resourceService, 'createResource', [payload], Promise.reject(new Error('Failed')));
       try {
         await resourceRoute.createResource(payload);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'createResource', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'createResource', [payload], 1);
       const result = await resourceRoute.createResource(payload);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
@@ -100,20 +96,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     };
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        resourceService,
-        'updateResource',
-        [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(resourceService, 'updateResource', [payload], Promise.reject(new Error('Failed')));
       try {
         await resourceRoute.updateResource(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResource', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResource', [payload], 1);
       const result = await resourceRoute.updateResource(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -125,16 +116,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'getResourcesOfAGivenOrganizationById',
         [1],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.getOgranizationResources(1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'getResourcesOfAGivenOrganizationById', [], Result.ok([]));
+      mockMethodWithResult(resourceService, 'getResourcesOfAGivenOrganizationById', [], []);
       const result = await resourceRoute.getOgranizationResources(1);
       expect(result.body.statusCode).to.equal(200);
     });
@@ -155,16 +146,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'updateResourceReservationGeneral',
         [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.updateResourcesSettingsReservationGeneral(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourceReservationGeneral', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourceReservationGeneral', [payload], 1);
       const result = await resourceRoute.updateResourcesSettingsReservationGeneral(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -181,16 +172,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'updateResourcesSettingsGeneralStatus',
         [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.updateResourcesSettingsGeneralStatus(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourcesSettingsGeneralStatus', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourcesSettingsGeneralStatus', [payload], 1);
       const result = await resourceRoute.updateResourcesSettingsGeneralStatus(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -208,16 +199,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'updateResourceReservationUnits',
         [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.updateResourcesSettingsReservationUnit(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourceReservationUnits', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourceReservationUnits', [payload], 1);
       const result = await resourceRoute.updateResourcesSettingsReservationUnit(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -237,16 +228,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'updateResourcesSettingsGeneralVisibility',
         [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.updateResourcesSettingsGeneralVisibility(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourcesSettingsGeneralVisibility', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourcesSettingsGeneralVisibility', [payload], 1);
       const result = await resourceRoute.updateResourcesSettingsGeneralVisibility(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -254,20 +245,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('GET settings/reservation/rate/:resourceId', () => {
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        resourceService,
-        'getResourceRate',
-        [1],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(resourceService, 'getResourceRate', [1], Promise.reject(new Error('Failed')));
       try {
         await resourceRoute.getResourceRate(1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at eturning the right value', async () => {
-      mockMethodWithResult(resourceService, 'getResourceRate', [], Result.ok([] as Resource[]));
+      mockMethodWithResult(resourceService, 'getResourceRate', [], [] as Resource[]);
       const result = await resourceRoute.getResourceRate(1);
       expect(result.body.statusCode).to.equal(200);
     });
@@ -283,20 +269,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     };
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        resourceService,
-        'createResourceRate',
-        [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(resourceService, 'createResourceRate', [payload], Promise.reject(new Error('Failed')));
       try {
         await resourceRoute.createResourceRate(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at creating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'createResourceRate', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'createResourceRate', [payload], 1);
       const result = await resourceRoute.createResourceRate(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
@@ -312,20 +293,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       duration: 2,
     };
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        resourceService,
-        'updateResourceRate',
-        [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(resourceService, 'updateResourceRate', [payload], Promise.reject(new Error('Failed')));
       try {
         await resourceRoute.updateResourceRate(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourceRate', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourceRate', [payload], 1);
       const result = await resourceRoute.updateResourceRate(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -348,16 +324,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'updateResourceReservationTimerRestriction',
         [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.updateResourceTimerRestriction(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourceReservationTimerRestriction', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourceReservationTimerRestriction', [payload], 1);
       const result = await resourceRoute.updateResourceTimerRestriction(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -372,16 +348,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'updateResourceReservationVisibility',
         [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.updateResourceRestrictionVisibility(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourceReservationVisibility', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourceReservationVisibility', [payload], 1);
       const result = await resourceRoute.updateResourceRestrictionVisibility(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -396,16 +372,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         resourceService,
         'updateResourcesSettingsnGeneralProperties',
         [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await resourceRoute.updateResourcesSettingsnGeneralProperties(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'updateResourcesSettingsnGeneralProperties', [payload], Result.ok(1));
+      mockMethodWithResult(resourceService, 'updateResourcesSettingsnGeneralProperties', [payload], 1);
       const result = await resourceRoute.updateResourcesSettingsnGeneralProperties(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -413,20 +389,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('GET settings/:resourceId', () => {
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        resourceService,
-        'getResourceSettings',
-        [1],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(resourceService, 'getResourceSettings', [1], Promise.reject(new Error('Failed')));
       try {
         await resourceRoute.getResourceSettings(1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success atr eturning the right value', async () => {
-      mockMethodWithResult(resourceService, 'getResourceSettings', [], Result.ok());
+      mockMethodWithResult(resourceService, 'getResourceSettings', [], null);
       const result = await resourceRoute.getResourceSettings(1);
       expect(result.body.statusCode).to.equal(200);
     });

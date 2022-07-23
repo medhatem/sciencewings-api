@@ -1,37 +1,37 @@
-import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
-const { suite, test } = intern.getPlugin('interface.tdd');
-const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { ResourceService } from '@/modules/resources/services/ResourceService';
-import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
-import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
-import { MemberService } from '@/modules/hr/services/MemberService';
-import { ResourceSettingsService } from '@/modules/resources/services/ResourceSettingsService';
-import { ResourceRateService } from '@/modules/resources/services/ResourceRateService';
-import { ResourceCalendarService } from '@/modules/resources/services/ResourceCalendarService';
-import { ResourceTagService } from '@/modules/resources/services/ResourceTagService';
 import {
+  ResourceRO,
   ResourceRateRO,
   ResourceReservationVisibilityRO,
-  ResourceRO,
   ResourceSettingsGeneralPropertiesRO,
   ResourceSettingsGeneralVisibilityRO,
+  ResourceTimerRestrictionRO,
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
-  ResourceTimerRestrictionRO,
 } from '@/modules/resources/routes/RequestObject';
-import { mockMethodWithResult } from '@/utils/utilities';
-import { Result } from '@/utils/Result';
-import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+
 import { BaseService } from '@/modules/base/services/BaseService';
-import Sinon = require('sinon');
 import { Collection } from '@mikro-orm/core';
+import { Configuration } from '@/configuration/Configuration';
+import { Logger } from '@/utils/Logger';
+import { MemberService } from '@/modules/hr/services/MemberService';
+import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
+import { ResourceCalendarService } from '@/modules/resources/services/ResourceCalendarService';
+import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
+import { ResourceRateService } from '@/modules/resources/services/ResourceRateService';
+import { ResourceService } from '@/modules/resources/services/ResourceService';
+import { ResourceSettingsService } from '@/modules/resources/services/ResourceSettingsService';
 import { ResourceStatusHistoryService } from '@/modules/resources/services/ResourceStatusHistoryService';
 import { ResourceStatusService } from '@/modules/resources/services/ResourceStatusService';
+import { ResourceTagService } from '@/modules/resources/services/ResourceTagService';
+import { container } from '@/di';
+import intern from 'intern';
+import { mockMethodWithResult } from '@/utils/utilities';
+
+const { suite, test } = intern.getPlugin('interface.tdd');
+const { expect } = intern.getPlugin('chai');
+import Sinon = require('sinon');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceDao: SinonStubbedInstance<ResourceDao>;
@@ -109,33 +109,39 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       managers: [{ user, organization }],
     };
     test('Should fail on organization not found', async () => {
-      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok(null)));
-      const result = await container.get(ResourceService).createResource(payload);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(null));
+      try {
+        await container.get(ResourceService).createResource(payload);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal(`ORG.NON_EXISTANT_DATA {{org}}`);
+      }
     });
 
     test('Should fail on manager does not exist', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(null)));
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(null));
 
-      const result = await container.get(ResourceService).createResource(payload);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Manager with user id ${user} in organization with id ${organization} does not exist.`,
-      );
+      try {
+        await container.get(ResourceService).createResource(payload);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal(`MEMBER.NON_EXISTANT`);
+      }
     });
 
     test('Should fail on create resource', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok(1)));
-      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok(1)));
-      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok(1)));
-      mockMethodWithResult(resourceDao, 'create', [], null);
-
-      const result = await container.get(ResourceService).createResource(payload);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`fail to create resource.`);
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(1));
+      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(1));
+      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(1));
+      mockMethodWithResult(resourceDao, 'create', [], Promise.reject(new Error('Failed')));
+      try {
+        await container.get(ResourceService).createResource(payload);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal(`Failed`);
+      }
     });
 
     test('Should succeed on create resource', async () => {
@@ -144,78 +150,77 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       crPayload.tags = [{ title: '' }];
       delete crPayload.user;
       delete crPayload.organization;
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve({}));
+      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve({}));
       mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
+        id: '133',
         managers: {
           init: stub(),
           add: stub(),
         },
       });
       Collection.prototype.init = stub();
-      mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve({}));
       mockMethodWithResult(resourceDao, 'update', [], {});
       const result = await container.get(ResourceService).createResource(crPayload);
 
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
     test('Should succeed on create resource v2', async () => {
       const crPayload = { ...payload };
       delete crPayload.managers;
       delete crPayload.user;
       delete crPayload.organization;
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve({}));
+      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve({}));
       mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
+        id: '133',
         managers: {
           init: stub(),
           add: stub(),
         },
       });
       Collection.prototype.init = stub();
-      mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceDao, 'update', [], {});
+      mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve({}));
+      mockMethodWithResult(resourceDao, 'update', [Sinon.match.any], { id: '133' });
       const result = await container.get(ResourceService).createResource(crPayload);
 
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
 
   suite('get Resources Of A Given Organization By Id', () => {
     const organizationId = 1;
     test('Should fail organization Id should be provided', async () => {
-      const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(null);
-      expect(result.error.message).to.equal(`Organization id should be provided.`);
+      try {
+        await container.get(ResourceService).getResourcesOfAGivenOrganizationById(null);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal(`required {{field}}`);
+      }
     });
     test('Should fail organization does not exist', async () => {
-      mockMethodWithResult(organizationService, 'get', [organizationId], Promise.resolve(Result.notFound(null)));
+      mockMethodWithResult(organizationService, 'get', [organizationId], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Organization with id ${organizationId} does not exist.`);
-    });
-    test('Should fail on can not get resources of organization', async () => {
-      mockMethodWithResult(organizationService, 'get', [organizationId], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceDao, 'getByCriteria', [organizationId, FETCH_STRATEGY.ALL, { refresh: true }], null);
-
-      const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`can not get resources of organization with id ${organizationId}.`);
+      try {
+        await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should return organization resource ', async () => {
-      mockMethodWithResult(organizationService, 'get', [organizationId], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(organizationService, 'get', [organizationId], Promise.resolve({}));
       mockMethodWithResult(resourceDao, 'getByCriteria', [], Promise.resolve([1]));
 
       const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
 
-      expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.eql([1]);
+      await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
+      expect(result).to.eql([1]);
     });
   });
   suite('update resource', () => {
@@ -226,55 +231,59 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     } as any;
     test('Should fail on resource not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(null));
-      const result = await container.get(ResourceService).updateResource(payload, resourceId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResource(payload, resourceId);
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on organization not exist', async () => {
-      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve({}));
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(null));
 
-      const result = await container.get(ResourceService).updateResource(payload, resourceId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResource(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal(`ORG.NON_EXISTANT_DATA {{org}}`);
+      }
     });
     test('Should fail on resource can not be updated', async () => {
-      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve({}));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve({}));
 
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], Promise.resolve(null));
+      mockMethodWithResult(resourceDao, 'update', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).updateResource(payload, resourceId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`resource with id ${resourceId} can not be updated.`);
+      try {
+        await container.get(ResourceService).updateResource(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal(`Failed`);
+      }
     });
     test('Should update resource without organization', async () => {
       const mockPayload = { ...payload };
       delete mockPayload.organization;
 
-      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve({}));
 
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'update', [{}], Promise.resolve({ id: '133' }));
 
       const result = await container.get(ResourceService).updateResource(mockPayload, resourceId);
 
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
     test('Should update resource', async () => {
-      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'get', [resourceId], Promise.resolve({}));
+      mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve({}));
 
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceDao, 'update', [{}], Promise.resolve({ id: '133' }));
 
       const result = await container.get(ResourceService).updateResource(payload, resourceId);
-
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
   suite('create resource calendar', () => {
@@ -288,58 +297,64 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     };
     test('Should fail on organization does not exist', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve(null));
-      const result = await container.get(ResourceService).createResourceCalendar(payload);
 
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Organization with id ${payload.organization} does not exist.`);
+      try {
+        await container.get(ResourceService).createResourceCalendar(payload);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('ORG.NON_EXISTANT_DATA {{org}}');
+      }
     });
     test('Should fail to create resource calendar', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({ id: 1 })));
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({ id: 1 }));
       mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], Promise.resolve({}));
 
-      mockMethodWithResult(resourceCalendarService, 'create', [], Promise.resolve(Result.ok(null)));
+      mockMethodWithResult(resourceCalendarService, 'create', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).createResourceCalendar(payload);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`fail to create resource calendar.`);
+      try {
+        await container.get(ResourceService).createResourceCalendar(payload);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed create resource calendar without organization', async () => {
       const mockPayload = { ...payload };
       delete mockPayload.organization;
 
-      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], Promise.resolve({}));
+      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], {});
 
-      mockMethodWithResult(resourceCalendarService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceCalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
 
       const result = await container.get(ResourceService).createResourceCalendar(mockPayload);
 
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.eql({ id: '133' });
     });
     test('Should succeed create resource calendar', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve(Result.ok({ id: 1 })));
-      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], Promise.resolve({}));
+      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({ id: 1 }));
+      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], {});
 
-      mockMethodWithResult(resourceCalendarService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceCalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
 
       const result = await container.get(ResourceService).createResourceCalendar(payload);
-
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.eql({ id: '133' });
     });
   });
   suite('Get Resource Settings', () => {
     const resourceId = 1;
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], Promise.resolve(null));
-      const result = await container.get(ResourceService).getResourceSettings(resourceId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).getResourceSettings(resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
-    test('Should succed getting resource settings', async () => {
-      mockMethodWithResult(resourceDao, 'get', [], Promise.resolve({}));
+    test('Should succeed getting resource settings', async () => {
+      mockMethodWithResult(resourceDao, 'get', [], Promise.resolve({ settings: {} }));
       const result = await container.get(ResourceService).getResourceSettings(resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.eql({});
     });
   });
   suite('update Resource Reservation General', () => {
@@ -350,23 +365,25 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container.get(ResourceService).updateResourceReservationGeneral(payload, resourceId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourceReservationGeneral(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on resource reservation general can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
 
-      mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(resourceDao, 'update', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).updateResourceReservationGeneral(payload, resourceId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Reservation General setings of resource with id ${resourceId} can not be updated.`,
-      );
+      try {
+        await container.get(ResourceService).updateResourceReservationGeneral(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed update resource reservation general ', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
@@ -376,8 +393,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       const result = await container.get(ResourceService).updateResourceReservationGeneral(payload, resourceId);
 
-      expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.equal(1);
+      expect(result).to.equal(1);
     });
   });
   suite('update Resource Reservation Status', () => {
@@ -390,37 +406,34 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on status general settings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], null);
-      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(
-        resourceStatusHistoryService,
-        'create',
-        [],
-        Promise.resolve(Result.fail(`Status General setings of resource with id ${resourceId} can not be updated.`)),
-      );
+      mockMethodWithResult(memberService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(resourceStatusHistoryService, 'create', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
-
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Status General setings of resource with id ${resourceId} can not be updated.`,
-      );
+      try {
+        await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed updating status general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(resourceDao, 'update', [], {});
-      mockMethodWithResult(memberService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceStatusHistoryService, 'create', [], Promise.resolve(Result.ok({ id: 1 })));
+      mockMethodWithResult(memberService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(resourceStatusHistoryService, 'create', [], Promise.resolve({ id: 1 }));
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralStatus(payload, resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal(1);
     });
   });
   suite('update Resource Reservation Units', () => {
@@ -433,28 +446,32 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container.get(ResourceService).updateResourceReservationUnits(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourceReservationUnits(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on Units General setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(resourceDao, 'update', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).updateResourceReservationUnits(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Units General setings of resource with id ${resourceId} can not be updated.`,
-      );
+      try {
+        await container.get(ResourceService).updateResourceReservationUnits(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed updating Units general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], {});
+      mockMethodWithResult(resourceDao, 'update', [], { id: '133' });
 
       const result = await container.get(ResourceService).updateResourceReservationUnits(payload, resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
   suite('update Resources Settings Reservation Visibility', () => {
@@ -465,28 +482,32 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container.get(ResourceService).updateResourceReservationVisibility(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourceReservationVisibility(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on Visibility Reservation setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(resourceDao, 'update', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).updateResourceReservationVisibility(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Visibility Reservation setings of resource with id ${resourceId} can not be updated.`,
-      );
+      try {
+        await container.get(ResourceService).updateResourceReservationVisibility(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed updating Visibility Reservation settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], {});
+      mockMethodWithResult(resourceDao, 'update', [], { id: '133' });
 
       const result = await container.get(ResourceService).updateResourceReservationVisibility(payload, resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
   suite('update Resources Settings General Visibility', () => {
@@ -502,28 +523,32 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container.get(ResourceService).updateResourcesSettingsGeneralVisibility(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourcesSettingsGeneralVisibility(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on Visibility General setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(resourceDao, 'update', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).updateResourcesSettingsGeneralVisibility(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Visibility General setings of resource with id ${resourceId} can not be updated.`,
-      );
+      try {
+        await container.get(ResourceService).updateResourcesSettingsGeneralVisibility(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed updating Visibility general settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], {});
+      mockMethodWithResult(resourceDao, 'update', [], { id: '133' });
 
       const result = await container.get(ResourceService).updateResourcesSettingsGeneralVisibility(payload, resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
   suite('update Resources Settings General properties', () => {
@@ -534,34 +559,35 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container
-        .get(ResourceService)
-        .updateResourcesSettingsnGeneralProperties(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourcesSettingsnGeneralProperties(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on properties General properties setings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(resourceDao, 'update', [{}], Promise.reject(new Error('Failed')));
 
-      const result = await container
-        .get(ResourceService)
-        .updateResourcesSettingsnGeneralProperties(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `General roperties settings of resource with id ${resourceId} can not be updated.`,
-      );
+      try {
+        await container.get(ResourceService).updateResourcesSettingsnGeneralProperties(payload, resourceId);
+
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed updating general properties settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], {});
+      mockMethodWithResult(resourceDao, 'update', [], { id: '133' });
 
       const result = await container
         .get(ResourceService)
         .updateResourcesSettingsnGeneralProperties(payload, resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
   suite('Get Resources rate Settings', () => {
@@ -569,24 +595,32 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container.get(ResourceService).getResourceRate(resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).getResourceRate(resourceId);
+
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on Resource Rate can not get', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
-      mockMethodWithResult(resourceRateService, 'getByCriteria', [], Promise.resolve(Result.ok(null)));
+      mockMethodWithResult(resourceRateService, 'getByCriteria', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).getResourceRate(resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Can not get resource rate.`);
+      try {
+        await container.get(ResourceService).getResourceRate(resourceId);
+
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed getting resource rate', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
-      mockMethodWithResult(resourceRateService, 'getByCriteria', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceRateService, 'getByCriteria', [], Promise.resolve([{ id: '123' }]));
 
       const result = await container.get(ResourceService).getResourceRate(resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.eql([{ id: '123' }]);
     });
   });
   suite('create Resources rate Settings', () => {
@@ -602,24 +636,30 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource rate does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container.get(ResourceService).createResourceRate(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).createResourceRate(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on Resource Rate can not be created', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
-      mockMethodWithResult(resourceRateService, 'create', [], Promise.resolve(Result.ok(null)));
+      mockMethodWithResult(resourceRateService, 'create', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).createResourceRate(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource Rate can not be created.`);
+      try {
+        await container.get(ResourceService).createResourceRate(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed creating resource rate', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
-      mockMethodWithResult(resourceRateService, 'create', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceRateService, 'create', [], Promise.resolve({ id: '123' }));
 
       const result = await container.get(ResourceService).createResourceRate(payload, resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('123');
     });
   });
   suite('update Resources rate Settings', () => {
@@ -633,28 +673,34 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       duration: 2,
     };
     test('Should fail on resource rate does not exist', async () => {
-      mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve(Result.ok(null)));
+      mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve(null));
 
-      const result = await container.get(ResourceService).updateResourceRate(payload, resourceRateId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource Rate with id ${resourceRateId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourceRate(payload, resourceRateId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE_RATE.NON_EXISTANT {{rate}}');
+      }
     });
     test('Should fail on resource rate can not be updated', async () => {
-      mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve({}));
       mockMethodWithResult(resourceRateService, 'wrapEntity', [], Promise.resolve({}));
-      mockMethodWithResult(resourceRateService, 'update', [], Promise.resolve(Result.ok(null)));
+      mockMethodWithResult(resourceRateService, 'update', [], Promise.reject(new Error('Failed')));
 
-      const result = await container.get(ResourceService).updateResourceRate(payload, resourceRateId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource rate with id ${resourceRateId} can not be updated.`);
+      try {
+        await container.get(ResourceService).updateResourceRate(payload, resourceRateId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed updating resource rate', async () => {
-      mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve(Result.ok({})));
-      mockMethodWithResult(resourceRateService, 'wrapEntity', [], Promise.resolve({}));
-      mockMethodWithResult(resourceRateService, 'update', [], Promise.resolve(Result.ok({})));
+      mockMethodWithResult(resourceRateService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(resourceRateService, 'wrapEntity', [], {});
+      mockMethodWithResult(resourceRateService, 'update', [{}], Promise.resolve({ id: '133' }));
 
       const result = await container.get(ResourceService).updateResourceRate(payload, resourceRateId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
   suite('update Resource Reservation Timer Restriction Settings', () => {
@@ -673,34 +719,34 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on resource does not exist', async () => {
       mockMethodWithResult(resourceDao, 'get', [], null);
 
-      const result = await container
-        .get(ResourceService)
-        .updateResourceReservationTimerRestriction(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(`Resource with id ${resourceId} does not exist.`);
+      try {
+        await container.get(ResourceService).updateResourceReservationTimerRestriction(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('RESOURCE.NON_EXISTANT {{resource}}');
+      }
     });
     test('Should fail on properties Reservation Timer Restriction Settings can not be updated', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], null);
+      mockMethodWithResult(resourceDao, 'update', [], Promise.reject(new Error('Failed')));
 
-      const result = await container
-        .get(ResourceService)
-        .updateResourceReservationTimerRestriction(payload, resourceId);
-      expect(result.isFailure).to.be.true;
-      expect(result.error.message).to.equal(
-        `Reservation time restriction of resource with id ${resourceId} can not be updated.`,
-      );
+      try {
+        await container.get(ResourceService).updateResourceReservationTimerRestriction(payload, resourceId);
+        expect.fail('unexpected success');
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
     });
     test('Should succeed updating resource reservation Timer Restriction Settings', async () => {
       mockMethodWithResult(resourceDao, 'get', [], {});
       stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(resourceDao, 'update', [], {});
+      mockMethodWithResult(resourceDao, 'update', [], { id: '133' });
 
       const result = await container
         .get(ResourceService)
         .updateResourceReservationTimerRestriction(payload, resourceId);
-      expect(result.isSuccess).to.be.true;
+      expect(result).to.equal('133');
     });
   });
 });

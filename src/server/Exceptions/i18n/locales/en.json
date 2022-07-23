@@ -15,7 +15,14 @@
    "KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}":"NO keycloak group found with id: {{id}}",
    "KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}":"User {{user}} is not a member of {{org}}",
 
+   "MEMBER.NON_EXISTANT":"member not found",
 
-   "VALIDATION.NON_MATCHING_PASSWORD":"Passwords do not match."
+
+   "RESOURCE.NON_EXISTANT {{resource}}":"Resource: {{resource}} does not exist",
+   "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Resource rate: {{rate}} not found",
+
+
+   "VALIDATION.NON_MATCHING_PASSWORD":"Passwords do not match.",
+   "required {{field}}":"{{field}} is required"
 
  }
