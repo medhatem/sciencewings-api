@@ -861,7 +861,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       try {
-        await container.get(OrganizationService).getMembers(orgId);
+        await container.get(OrganizationService).getMembers(orgId, '');
         expect.fail('unexpected success');
       } catch (error) {
         expect(error.message).to.equal(`ORG.NON_EXISTANT_DATA {{org}}`);
@@ -875,7 +875,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         Promise.resolve({ members: new Collection<Member>(Member, []) }),
       );
 
-      const members = await container.get(OrganizationService).getMembers(orgId);
+      const members = await container.get(OrganizationService).getMembers(orgId, '');
       expect(members).to.have.length(0);
     });
   });

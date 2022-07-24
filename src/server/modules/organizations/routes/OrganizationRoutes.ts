@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE } from 'typescript-rest';
+import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE, QueryParam } from 'typescript-rest';
 import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
@@ -153,8 +153,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @LoggerStorage()
   @Response<OrganizationMembersDTO>(200, 'Return organization members Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getUsers(@PathParam('id') payload: number): Promise<OrganizationMembersDTO> {
-    const result = await this.OrganizationService.getMembers(payload);
+  public async getUsers(
+    @PathParam('id') payload: number,
+    @QueryParam('status') status: string,
+  ): Promise<OrganizationMembersDTO> {
+    const result = await this.OrganizationService.getMembers(payload, status);
 
     return new OrganizationMembersDTO({ body: { data: result, statusCode: 200 } });
   }
