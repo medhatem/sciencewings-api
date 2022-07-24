@@ -16,11 +16,11 @@ const organizationSchema = Joi.object({
 
 export const CreateOrganizationSchema = organizationSchema.keys({
   description: Joi.string().allow(''),
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phones: Joi.array().required(),
-  addresses: Joi.array().required(),
-  labels: Joi.array().required(),
+  name: Joi.string().required().messages({ 'any.required': 'VALIDATION.NAME_REQUIRED' }),
+  email: Joi.string().email().required().messages({ 'any.required': 'VALIDATION.EMAIL_REQUIRED' }),
+  phones: Joi.array().required().messages({ 'any.required': 'VALIDATION.PHONE_REQUIRED' }),
+  addresses: Joi.array().required().messages({ 'any.required': 'VALIDATION.ADDRESS_REQUIRED' }),
+  labels: Joi.array().required().messages({ 'any.required': 'VALIDATION.LABEL_REQUIRED' }),
   parent: Joi.number().allow(null),
   settings: Joi.object(),
 });

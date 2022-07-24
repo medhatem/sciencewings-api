@@ -27,11 +27,9 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @Response<BaseRequestDTO>(200, 'success')
   public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
     const result = await this.service.get(id, { populate: true });
-    if (result.isFailure) {
-      throw result.error;
-    }
+
     return this.getDTOMapper.deserialize({
-      body: { statusCode: 200, data: [...([result.getValue()] || [])] },
+      body: { statusCode: 200, data: [...([result] || [])] },
     });
   }
 
@@ -42,11 +40,9 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @Response(401, 'error')
   public async getAll(): Promise<any> {
     const result = await this.service.getAll();
-    if (result.isFailure) {
-      throw result.error;
-    }
+
     return this.getDTOMapper.deserialize({
-      body: { statusCode: 200, data: [...(result.getValue() || [])] },
+      body: { statusCode: 200, data: [...(result || [])] },
     });
   }
 
@@ -57,11 +53,8 @@ export class BaseRoutes<T extends BaseModel<T>> {
   public async update(@PathParam('id') id: number, payload: any): Promise<any> {
     const currentEntity = await this.service.updateRoute(id, payload);
 
-    if (currentEntity.isFailure) {
-      throw currentEntity.error;
-    }
     return this.updateDTOMapper.serialize({
-      body: { statusCode: 204, id: currentEntity.getValue().id },
+      body: { statusCode: 204, id: currentEntity.id },
     });
   }
 
@@ -70,11 +63,8 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @Security()
   @Response(201, 'success')
   public async remove(@PathParam('id') id: number): Promise<any> {
-    const result = await this.service.removeRoute(id);
+    await this.service.removeRoute(id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
     return new BaseRequestDTO().serialize({
       body: { statusCode: 204, id },
     });

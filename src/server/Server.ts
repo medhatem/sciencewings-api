@@ -124,7 +124,7 @@ export class Server {
     const resourceService = ResourceSettingsService.getInstance();
     const fetch = await resourceService.get(1);
 
-    if (fetch.getValue() === null) {
+    if (fetch === null) {
       await resourceService.create({ resourceType: { title: StatusCases.OPERATIONAL } });
     }
   }
