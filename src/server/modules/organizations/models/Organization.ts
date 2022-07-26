@@ -104,7 +104,7 @@ export class Organization extends BaseModel<Organization> {
   })
   public jobs? = new Collection<Job>(this);
 
-  @ManyToMany({ entity: () => Member, eager: false, lazy: true })
+  @OneToMany({ entity: () => Member, mappedBy: (entity) => entity.organization, eager: false, lazy: true })
   members? = new Collection<Member>(this);
 
   @Property({ nullable: true })

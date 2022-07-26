@@ -57,10 +57,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
     const result = await this.ResourceService.createResource(payload);
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateResourceDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**
@@ -80,10 +77,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResource(payload, id);
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -101,10 +96,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceGetDTO> {
     const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(organizationId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new ResourceGetDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+    return new ResourceGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
 
   /**
@@ -127,11 +119,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     @PathParam('resourceId') resourceId: number,
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationGeneral(payload, resourceId);
-    if (result.isFailure) {
-      throw result.error;
-    }
 
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -155,11 +144,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourcesSettingsGeneralStatus(payload, resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -182,11 +167,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     @PathParam('resourceId') resourceId: number,
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationUnits(payload, resourceId);
-    if (result.isFailure) {
-      throw result.error;
-    }
 
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /* Update a resource settings, section general visibility
@@ -209,11 +191,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourcesSettingsGeneralVisibility(payload, resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -232,11 +210,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   public async getResourceRate(@PathParam('resourceId') resourceId: number): Promise<GetResourceRateDTO> {
     const result = await this.ResourceService.getResourceRate(resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new GetResourceRateDTO({ body: { data: result.getValue(), statusCode: 200 } });
+    return new GetResourceRateDTO({ body: { data: result, statusCode: 200 } });
   }
 
   /**
@@ -260,11 +234,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   ): Promise<CreateResourceDTO> {
     const result = await this.ResourceService.createResourceRate(payload, resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new CreateResourceDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new CreateResourceDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**
@@ -288,11 +258,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceRate(payload, resourceRateId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -316,11 +282,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationTimerRestriction(payload, resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -344,11 +306,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourceReservationVisibility(payload, resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /* Update a resource settings, section general general
@@ -371,11 +329,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResourcesSettingsnGeneralProperties(payload, resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new UpdateResourceDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -394,9 +348,6 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   public async getResourceSettings(@PathParam('resourceId') resourceId: number): Promise<GetResourceSettingsDTO> {
     const result = await this.ResourceService.getResourceSettings(resourceId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new GetResourceSettingsDTO({ body: { ...result.getValue(), statusCode: 200 } });
+    return new GetResourceSettingsDTO({ body: { ...result, statusCode: 200 } });
   }
 }

@@ -9,16 +9,17 @@ import { Email } from '@/utils/Email';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUserInfo } from '@/types/UserRequest';
-import { Result } from '@/utils/Result';
 import { User, userStatus } from '@/modules/users/models/User';
 import { UserDao } from '@/modules/users/daos/UserDao';
 import { UserRO } from '@/modules/users/routes/RequstObjects';
 import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateUserSchema, UpdateUserSchema } from '@/modules/users/schemas/UserSchema';
 import { validate } from '@/decorators/validate';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { NotFoundError, ValidationError } from '@/Exceptions';
+import { ConflictError } from '@/Exceptions/ConflictError';
+
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
   constructor(
@@ -37,8 +38,7 @@ export class UserService extends BaseService<User> implements IUserService {
   }
 
   @log()
-  @safeGuard()
-  async updateUserDetails(payload: UserRO, userId: number): Promise<Result<number>> {
+  async updateUserDetails(payload: UserRO, userId: number): Promise<number> {
     const userDetail = this.wrapEntity(this.dao.model, {
       email: payload.email,
       firstname: payload.firstname,
@@ -52,7 +52,7 @@ export class UserService extends BaseService<User> implements IUserService {
     });
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
-      return Result.notFound(`User with id ${userId} does not exist`);
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` }, friendly: false });
     }
 
     const user: User = {
@@ -62,18 +62,19 @@ export class UserService extends BaseService<User> implements IUserService {
 
     await this.dao.update(user);
 
-    return Result.ok<number>(userId);
+    return userId;
   }
 
   @log()
-  @safeGuard()
-  async registerUser(userInfo: KeycloakUserInfo): Promise<Result<number>> {
+  async registerUser(userInfo: KeycloakUserInfo): Promise<number> {
     // get the userKeyCloakId
-    const getUsersResult = await this.keycloakUtils.getUsersByEmail(userInfo.email);
-    const users = getUsersResult.getValue();
+    const users = await this.keycloakUtils.getUsersByEmail(userInfo.email);
 
     if (!users || !users.length) {
-      return Result.notFound<number>('No user found');
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+        variables: { user: `${userInfo.email}` },
+        friendly: true,
+      });
     }
     const user = new User();
     user.firstname = userInfo.given_name;
@@ -82,7 +83,7 @@ export class UserService extends BaseService<User> implements IUserService {
     user.keycloakId = users[0].id;
     let createdUser: { [key: string]: any } = { id: null };
     createdUser = await this.dao.create(user);
-    return Result.ok<number>(createdUser.id);
+    return createdUser.id;
   }
 
   /**
@@ -91,14 +92,8 @@ export class UserService extends BaseService<User> implements IUserService {
    * @param criteria the search criteria
    */
   @log()
-  @safeGuard()
-  async getUserByCriteria(criteria: { [key: string]: any }): Promise<Result<User>> {
-    try {
-      const user = (await this.dao.getByCriteria(criteria)) as User;
-      return Result.ok<User>(user);
-    } catch (error) {
-      return Result.fail(error);
-    }
+  async getUserByCriteria(criteria: { [key: string]: any }): Promise<User> {
+    return (await this.dao.getByCriteria(criteria)) as User;
   }
 
   /**
@@ -107,115 +102,95 @@ export class UserService extends BaseService<User> implements IUserService {
    * @param payload
    */
   @log()
-  @safeGuard()
-  async resetPassword(payload: ResetPasswordRO): Promise<Result<string>> {
+  async resetPassword(payload: ResetPasswordRO): Promise<string> {
     if (payload.password !== payload.passwordConfirmation) {
-      return Result.fail<string>("Passwords don't match");
+      throw new ValidationError('VALIDATION.NON_MATCHING_PASSWORD', { friendly: true });
     }
     const user = (await this.dao.getByCriteria({ email: payload.email })) as User;
 
     if (!user) {
-      return Result.notFound<string>(`user with email: ${payload.email} does not exist.`);
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+        variables: { user: `${payload.email}` },
+        friendly: true,
+      });
     }
 
     await this.keycloakUtils.resetPassword(user.keycloakId, payload.password);
     user.status = userStatus.ACTIVE;
-    return Result.ok<string>('Password reset successful');
+    return 'Password reset successful';
   }
 
   @log()
-  @safeGuard()
   @validate
-  async createUser(@validateParam(CreateUserSchema) user: UserRO): Promise<Result<User>> {
-    try {
-      const userExistingCheck: User = (await this.dao.getByCriteria({
-        $or: [{ email: user.email }, { keycloakId: user.keycloakId }],
-      })) as User;
-      if (userExistingCheck) {
-        return Result.fail(`user already exists `);
-      }
-      const userAddress = user.addresses;
-      const userPhones = user.phones;
-
-      const createdUser = await this.dao.create({
-        firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email,
-        dateofbirth: user.dateofbirth,
-        keycloakId: user.keycloakId,
-      });
-
-      createdUser.address = await createdUser.address.init();
-      createdUser.phones = await createdUser.phones.init();
-
-      await applyToAll(userAddress, async (address) => {
-        const createdAddress = await this.addressService.create({
-          city: address.city,
-          apartment: address.apartment,
-          country: address.country,
-          code: address.code,
-          province: address.province,
-          street: address.street,
-          type: address.type,
-          user: createdUser,
-        });
-        if (!createdAddress.isFailure) {
-          createdUser.address.add(createdAddress.getValue());
-        }
-      });
-
-      await applyToAll(userPhones, async (phone) => {
-        const createdPhone = await this.phoneService.create({
-          phoneLabel: phone.phoneLabel,
-          phoneCode: phone.phoneCode,
-          phoneNumber: phone.phoneNumber,
-          user: createdUser,
-        });
-        if (!createdPhone.isFailure) {
-          createdUser.phones.add(createdPhone.getValue());
-        }
-      });
-
-      this.dao.repository.flush();
-      const fetchdUser: User = await this.dao.get(createdUser.id);
-      return Result.ok<User>(fetchdUser);
-    } catch (error) {
-      return Result.fail(error);
+  async createUser(@validateParam(CreateUserSchema) user: UserRO): Promise<User> {
+    const userExistingCheck: User = (await this.dao.getByCriteria({
+      $or: [{ email: user.email }, { keycloakId: user.keycloakId }],
+    })) as User;
+    if (userExistingCheck) {
+      throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: 'user' }, friendly: true });
     }
+    const userAddress = user.addresses;
+    const userPhones = user.phones;
+
+    const createdUser = await this.dao.create({
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      dateofbirth: user.dateofbirth,
+      keycloakId: user.keycloakId,
+    });
+
+    createdUser.address = await createdUser.address.init();
+    createdUser.phones = await createdUser.phones.init();
+
+    await applyToAll(userAddress, async (address) => {
+      await this.addressService.create({
+        city: address.city,
+        apartment: address.apartment,
+        country: address.country,
+        code: address.code,
+        province: address.province,
+        street: address.street,
+        type: address.type,
+        user: createdUser,
+      });
+    });
+
+    await applyToAll(userPhones, async (phone) => {
+      await this.phoneService.create({
+        phoneLabel: phone.phoneLabel,
+        phoneCode: phone.phoneCode,
+        phoneNumber: phone.phoneNumber,
+        user: createdUser,
+      });
+    });
+
+    this.dao.repository.flush();
+    return await this.dao.get(createdUser.id);
   }
 
   @log()
-  @safeGuard()
   @validate
-  async updateUserByKeycloakId(
-    @validateParam(UpdateUserSchema) user: UserRO,
-    keycloakId: string,
-  ): Promise<Result<User>> {
+  async updateUserByKeycloakId(@validateParam(UpdateUserSchema) user: UserRO, keycloakId: string): Promise<User> {
     const fetchedUser = (await this.dao.getByCriteria({ keycloakId })) as User;
 
     if (!fetchedUser) {
-      return Result.notFound(`User with KCID ${keycloakId} does not exist.`);
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${keycloakId}` } });
     }
-    try {
-      const updateUser = await this.dao.update(
-        this.wrapEntity(fetchedUser, {
-          ...fetchedUser,
-          ...user,
-        }),
-      );
-      return Result.ok<User>(updateUser);
-    } catch (error) {
-      return Result.fail(error);
-    }
+    return await this.dao.update(
+      this.wrapEntity(fetchedUser, {
+        ...fetchedUser,
+        ...user,
+      }),
+    );
   }
 
   @log()
-  @safeGuard()
-  async getUserByKeycloakId(payload: string): Promise<Result<User>> {
+  async getUserByKeycloakId(payload: string): Promise<User> {
     const user = (await this.dao.getByCriteria({ keycloakId: payload })) as User;
     if (!user) {
-      return Result.notFound(`User with KCID ${payload} does not exist.`);
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload}` } });
     }
-    return Result.ok<User>(user);
+    return user;
   }
 }

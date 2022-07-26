@@ -10,10 +10,10 @@ export const UpdateResourceRateSchema = Joi.object({
 });
 
 export const CreateResourceRateSchema = Joi.object({
-  description: Joi.string().required(),
-  rate: Joi.number().required(),
-  category: Joi.string().required(),
-  isPublic: Joi.boolean().required(),
+  description: Joi.string().required().messages({ 'any.required': 'VALIDATION.DESCRIPTION_REQUIRED' }),
+  rate: Joi.number().required().messages({ 'any.required': 'VALIDATION.RATE_REQUIRED' }),
+  category: Joi.string().required().messages({ 'any.required': 'VALIDATION.CATEGORY_REQUIRED' }),
+  isPublic: Joi.boolean().required().messages({ 'any.required': '' }),
   isRequiredAccountNumber: Joi.boolean().required(),
-  duration: Joi.number().required(),
+  duration: Joi.number().required().messages({ 'any.required': 'VALIDATION.DURATION_REQUIRED' }),
 });

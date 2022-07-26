@@ -9,10 +9,8 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { MemberDao } from '@/modules/hr/daos/MemberDao';
-import { Result } from '@/utils/Result';
 import { getConfig } from '@/configuration/Configuration';
 import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
 import { MemberRO } from '@/modules/hr/routes/RequestObject';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
@@ -21,6 +19,9 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { UserInviteToOrgRO } from '@/modules/organizations/routes/RequestObject';
 import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { NotFoundError } from '@/Exceptions/NotFoundError';
+import { ConflictError } from '@/Exceptions/ConflictError';
+import { BadRequest } from '@/Exceptions/BadRequestError';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -39,13 +40,12 @@ export class MemberService extends BaseService<Member> implements IMemberService
   }
 
   @log()
-  @safeGuard()
   @validate
-  async inviteUserByEmail(@validateParam(InviteMemberSchema) payload: UserInviteToOrgRO): Promise<Result<Member>> {
+  async inviteUserByEmail(@validateParam(InviteMemberSchema) payload: UserInviteToOrgRO): Promise<Member> {
     const existingOrg = await this.organizationService.get(payload.organizationId);
 
-    if (existingOrg.isFailure || existingOrg.getValue() === null) {
-      return Result.notFound('The organization to add the user to does not exist.');
+    if (!existingOrg) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organizationId}` } });
     }
 
     const existingUser = await (await this.keycloak.getAdminClient()).users.find({
@@ -72,75 +72,65 @@ export class MemberService extends BaseService<Member> implements IMemberService
         keycloakId: createdKeyCloakUser.id,
         status: userStatus.INVITATION_PENDING,
       });
+      user = createdKeyCloakUser;
 
-      user = await this.userService.create(wrappedUser);
-      if (user.isFailure) {
-        return Result.fail(`Could not create the User with email ${payload.email}`, true);
-      }
+      await this.userService.create(wrappedUser);
     }
 
-    const existingOrgValue = existingOrg.getValue();
-    const savedUserValue = user.getValue();
     // check whether the user is already a member of the organization
-    const isAlreadyMember = await this.getByCriteria({ user: savedUserValue, organization: existingOrg.getValue() });
+    const isAlreadyMember = await this.getByCriteria({ user, organization: existingOrg });
 
-    if (isAlreadyMember.isFailure) {
-      return Result.fail('Internal server error');
-    }
-
-    if (isAlreadyMember.getValue() !== null) {
-      return Result.fail(`${payload.email} is already a member of ${existingOrg.getValue().name}.`);
+    if (isAlreadyMember) {
+      throw new ConflictError('USER.ALREADY_MEMBER {{user}}', { variables: { user: `${payload.email}` } });
     }
 
     const wrappedMember = this.wrapEntity(Member.getInstance(), {
-      name: savedUserValue.firstname + ' ' + savedUserValue.lastname,
-      workEmail: savedUserValue.email,
+      name: user.firstname + ' ' + user.lastname,
+      workEmail: user.email,
       status: userStatus.INVITATION_PENDING,
       membership: MembershipStatus.PENDING,
       joinDate: new Date(),
       memberType: MemberTypeEnum.REGULAR,
     });
-    wrappedMember.user = savedUserValue;
-    wrappedMember.organization = existingOrgValue;
+    wrappedMember.user = user;
+    wrappedMember.organization = existingOrg;
 
     const createdMemberResult = await this.dao.create(wrappedMember);
 
-    existingOrgValue.members.add(createdMemberResult);
+    existingOrg.members.add(createdMemberResult);
 
-    await this.dao.update(existingOrgValue);
+    await this.dao.update(existingOrg);
     const emailMessage: EmailMessage = {
       from: this.emailService.from,
       to: payload.email,
       text: 'Sciencewings - reset password',
-      html: inviteNewMemberTemplate(existingOrg.getValue().name),
+      html: inviteNewMemberTemplate(existingOrg.name),
       subject: ' reset password',
     };
 
     this.emailService.sendEmail(emailMessage);
-    return Result.ok<Member>(createdMemberResult);
+    return createdMemberResult;
   }
 
   @log()
-  @safeGuard()
-  async resendInvite(id: number, orgId: number): Promise<Result<number>> {
-    const existingUser = await this.userService.get(id);
+  async resendInvite(id: number, orgId: number): Promise<number> {
+    const user = await this.userService.get(id);
 
-    if (existingUser.isFailure || existingUser.getValue() === null) {
-      return Result.notFound(`user with id ${id} not exist.`);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${id}` } });
     }
-    const user = existingUser.getValue();
     const existingOrg = await this.organizationService.get(orgId);
 
-    if (existingOrg.isFailure || existingOrg.getValue() === null) {
-      return Result.fail(`Organization with id ${orgId} does not exist.`);
+    if (!existingOrg) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` } });
     }
 
     const isUserInOrg = await this.dao.getByCriteria({ user: id }, FETCH_STRATEGY.SINGLE);
     if (!isUserInOrg) {
-      return Result.notFound(`user with id ${id} is not member in organization.`);
+      throw new NotFoundError('USER.NOT_MEMBER_OF_ORG', { friendly: true });
     }
     if (user.status !== userStatus.INVITATION_PENDING) {
-      return Result.fail(`Cannot resend invite to an active user.`);
+      throw new BadRequest('USER.CANNOT_RESEND_INVITE_TO_ACTIVE_USER', { friendly: true });
     }
     const url = process.env.KEYCKLOACK_RESET_PASSWORD;
     const emailMessage: EmailMessage = {
@@ -151,7 +141,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       subject: 'reset password',
     };
     this.emailService.sendEmail(emailMessage);
-    return Result.ok<number>(user.id);
+    return user.id;
   }
   /**
    * the user can accpet, reject his membership
@@ -160,44 +150,41 @@ export class MemberService extends BaseService<Member> implements IMemberService
    * @userId @orgId primary keys of member
    */
   @log()
-  @safeGuard()
   @validate
   public async updateMembershipStatus(
     @validateParam(MemberSchema) payload: MemberRO,
     userId: number,
     orgId: number,
-  ): Promise<Result<MemberKey>> {
+  ): Promise<MemberKey> {
     const fetchedUser = await this.userService.get(userId);
-    if (fetchedUser.isFailure || !fetchedUser.getValue()) {
-      return Result.notFound(`User with id: ${userId} does not exist.`);
+    if (!fetchedUser) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
     const fetchedOrg = await this.organizationService.get(orgId);
-    if (fetchedOrg.isFailure || !fetchedOrg.getValue()) {
-      return Result.notFound(`organization with id: ${orgId} does not exist.`);
+    if (!fetchedOrg) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` } });
     }
     const fetchedMember = (await this.dao.getByCriteria(
       { organization: orgId, user: userId },
       FETCH_STRATEGY.SINGLE,
     )) as Member;
     if (!fetchedMember) {
-      return Result.notFound(`membership of user with id: ${userId} in organization with id: ${orgId} does not exist.`);
+      throw new BadRequest('USER.NOT_MEMBER_OF_ORG', { friendly: true });
     }
     if (!(fetchedMember.membership === MembershipStatus.PENDING)) {
-      return Result.fail(`The invitation has been already answered.`);
+      throw new BadRequest('USER.INVITATION_ALREADY_ANSWERED', { friendly: true });
     }
     const member = this.wrapEntity(fetchedMember, {
       ...fetchedMember,
       ...payload,
     });
 
-    const updatedMember = await this.dao.update(member);
-    if (!updatedMember) {
-      return Result.fail(`membership of user with id: ${userId} in organization with id: ${orgId} can not be updated.`);
-    }
-    //adding the user to the org Kc member group
-    await this.keycloakUtils.addMemberToGroup(fetchedOrg.getValue().memberGroupkcid, fetchedUser.getValue().keycloakId);
+    await this.dao.update(member);
 
-    return Result.ok<any>({ userId, orgId });
+    //adding the user to the org Kc member group
+    await this.keycloakUtils.addMemberToGroup(fetchedOrg.memberGroupkcid, fetchedUser.keycloakId);
+
+    return { userId, orgId };
   }
 
   /**
@@ -206,11 +193,10 @@ export class MemberService extends BaseService<Member> implements IMemberService
    * @param userId the id of the user to fetch organization memberships for
    */
   @log()
-  @safeGuard()
-  public async getUserMemberships(userId: number): Promise<Result<Organization[]>> {
+  public async getUserMemberships(userId: number): Promise<Organization[]> {
     const fetchedUser = await this.userService.get(userId);
-    if (fetchedUser.isFailure) {
-      return Result.notFound(`User with id: ${userId} does not exist.`);
+    if (!fetchedUser) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
     const fetchedMembers = (await this.dao.getByCriteria({ user: userId }, FETCH_STRATEGY.ALL)) as Member[];
     const orgs = await Promise.all(
@@ -218,7 +204,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
         return this.organizationService.get(member.organization.id);
       }),
     );
-    return Result.ok(orgs.filter((o: Result<any>) => !o.isFailure).map((o) => o.getValue()));
+    return orgs.filter((o: any) => !o.isFailure).map((o) => o);
   }
   /**
    * switch between different organizations by adding a current_org attribute
@@ -227,18 +213,17 @@ export class MemberService extends BaseService<Member> implements IMemberService
    * @param userId
    */
   @log()
-  @safeGuard()
-  public async switchOrganization(orgId: number, userId: number): Promise<Result<number>> {
-    const fetchedUser = await this.userService.get(userId);
-    const user = fetchedUser.getValue();
-    const fetchedOrganization = await this.organizationService.get(orgId);
-    if (fetchedOrganization.isFailure || !fetchedOrganization.getValue()) {
-      return Result.notFound(`organization with id: ${orgId} does not exist.`);
+  public async switchOrganization(orgId: number, userId: number): Promise<number> {
+    const user = await this.userService.get(userId);
+
+    const organization = await this.organizationService.get(orgId);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` } });
     }
-    const organization = fetchedOrganization.getValue();
+
     const fetchedMember = await this.dao.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
     if (!fetchedMember) {
-      return Result.notFound(`User with id: ${userId} is not member in that org`);
+      throw new BadRequest('USER.NOT_MEMBER_OF_ORG', { friendly: true });
     }
     //retrieve the organization keycloak group
     const orgKcGroupe = await (await this.keycloak.getAdminClient()).groups.findOne({
@@ -247,7 +232,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     });
 
     if (!orgKcGroupe) {
-      return Result.notFound(`organization with id: ${orgId} does not exist.`);
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` } });
     }
     //change the KcUser current_org attribute
     await (await this.keycloak.getAdminClient()).users.update(
@@ -255,7 +240,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       { attributes: { current_org: orgKcGroupe.id } },
     );
 
-    return Result.ok<number>(fetchedUser.id);
+    return user.id;
   }
 
   /**
@@ -264,22 +249,18 @@ export class MemberService extends BaseService<Member> implements IMemberService
    * we need these two values to properly complete the fetch
    */
   @log()
-  @safeGuard()
-  async getMemberProfile(payload: { [key: string]: any }): Promise<Result<Member>> {
+  async getMemberProfile(payload: { [key: string]: any }): Promise<Member> {
     const memberResult = await this.getByCriteria(
       { user: payload.userId, organization: payload.orgId },
       FETCH_STRATEGY.SINGLE,
       { populate: true },
     );
 
-    if (memberResult.isFailure) {
-      return Result.fail('Internal Server Error');
-    }
-    if (memberResult.getValue() === null) {
-      return Result.notFound(`The requested member does not exist.`);
+    if (!memberResult) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
 
-    return memberResult as Result<Member>;
+    return memberResult as Member;
   }
 
   /**
@@ -292,24 +273,17 @@ export class MemberService extends BaseService<Member> implements IMemberService
    * @param payload
    */
   @log()
-  @safeGuard()
   async updateMemberByUserIdAndOrgId(
     memberIds: { [key: string]: any },
     payload: { [key: string]: any },
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const memberResult = await this.getMemberProfile(memberIds);
-    if (memberResult.isFailure) {
-      return Result.fail(memberResult.error.message);
-    }
 
-    const entity = this.wrapEntity(memberResult.getValue(), {
-      ...memberResult.getValue(),
+    const entity = this.wrapEntity(memberResult, {
+      ...memberResult,
       ...payload,
     });
-    const result = await this.dao.update(entity);
-    if (!result) {
-      return Result.fail(`Member could not be updated.`);
-    }
-    return Result.ok();
+    await this.dao.update(entity);
+    return null;
   }
 }

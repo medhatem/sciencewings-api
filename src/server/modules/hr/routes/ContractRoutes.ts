@@ -31,11 +31,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   public async createContract(payload: ContractRO): Promise<ContracBaseDTO> {
     const result = await this.contractService.createContract(payload);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new ContracBaseDTO({ body: { id: result.getValue(), statusCode: 201 } });
+    return new ContracBaseDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**
@@ -51,10 +47,6 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   public async createUpdateContract(payload: ContractRO, @PathParam('id') id: number): Promise<ContracBaseDTO> {
     const result = await this.contractService.updateContract(payload, id);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new ContracBaseDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new ContracBaseDTO({ body: { id: result, statusCode: 204 } });
   }
 }

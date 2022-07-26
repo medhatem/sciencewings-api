@@ -33,7 +33,9 @@ export class ErrorHandler {
         } else if (response.data?.errorMessage?.includes('already exists')) {
           //extract the name of the resource that already exist
           const extractedName = new RegExp(/(?<=-)([\w]*)/g).exec(response.data.errorMessage);
-          keycloakErr = new KeycloakError('{{name}} ALREADY_EXISTS', { name: extractedName[0] }, true);
+          keycloakErr = new KeycloakError('{{name}} ALREADY_EXISTS', {
+            variables: { name: extractedName[0] },
+          });
           keycloakErr.statusCode = response.status;
         }
       }
@@ -47,6 +49,7 @@ export class ErrorHandler {
         error: this.localService.translate(keycloakErr.message, keycloakErr.variables),
         statusCode: keycloakErr.statusCode || 500,
         isOperational: keycloakErr.isOperational || false,
+        friendly: keycloakErr.isOperational ? keycloakErr.friendly : false,
       };
     }
 
@@ -64,12 +67,18 @@ export class ErrorHandler {
           error: this.localService.translate(oldMessage, error.variables),
           statusCode: error.statusCode,
           isOperational: true,
+          friendly: error.friendly,
         };
       }
     } else {
       this.logger.error(`Non Operational with name Internal Server Error and code 500 stackTrace: ${error.stack}`);
     }
 
-    return { error: this.localService.translate('SOMETHING_WENT_WRONG'), statusCode: 500, isOperational: false };
+    return {
+      error: this.localService.translate('SOMETHING_WENT_WRONG'),
+      statusCode: 500,
+      isOperational: false,
+      friendly: false,
+    };
   }
 }

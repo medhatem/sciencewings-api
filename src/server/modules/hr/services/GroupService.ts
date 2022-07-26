@@ -4,9 +4,7 @@ import { BaseService } from '@/modules/base/services/BaseService';
 import { Group } from '@/modules/hr/models/Group';
 import { GroupDAO } from '@/modules/hr/daos/GroupDAO';
 import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
-import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
 import { GroupRO } from '@/modules/hr/routes/RequestObject';
 import { getConfig } from '@/configuration/Configuration';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -17,6 +15,7 @@ import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { applyToAll } from '@/utils/utilities';
 import { grpPrifix } from '@/modules/prifixConstants';
+import { NotFoundError } from '@/Exceptions/NotFoundError';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -33,51 +32,52 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  @safeGuard()
-  public async getOrganizationGroup(organizationId: number): Promise<Result<any>> {
-    const fetchedorganization = await this.organizationService.get(organizationId);
+  public async getOrganizationGroup(organizationId: number): Promise<Group[]> {
+    const organization = await this.organizationService.get(organizationId);
 
-    if (fetchedorganization.isFailure || fetchedorganization.getValue() === null) {
-      return Result.notFound(`Organization with id ${organizationId} does not exist.`);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+        variables: { org: `${organizationId}` },
+        isOperational: true,
+      });
     }
 
-    const groups = await this.dao.getByCriteria({ organization: fetchedorganization.getValue() }, FETCH_STRATEGY.ALL);
-    return Result.ok(groups);
+    return (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
   }
 
   @log()
-  @safeGuard()
-  public async getGroupMembers(groupId: number): Promise<Result<any>> {
+  public async getGroupMembers(groupId: number): Promise<any> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
-      return Result.notFound(`group with id ${groupId} does not exist.`);
+      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
     await fetchedGroup.members.init();
-    return Result.ok(fetchedGroup.members);
+    return fetchedGroup.members;
   }
 
   @log()
-  @safeGuard()
   @validate
-  public async createGroup(@validateParam(CreateGroupSchema) payload: GroupRO): Promise<Result<number>> {
-    const fetchedorganization = await this.organizationService.get(payload.organization);
+  public async createGroup(@validateParam(CreateGroupSchema) payload: GroupRO): Promise<number> {
+    const organization = await this.organizationService.get(payload.organization);
 
-    if (fetchedorganization.isFailure || fetchedorganization.getValue() === null) {
-      return Result.notFound(`organization with id ${payload.organization} does not exist.`);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+        variables: { org: `${payload.organization}` },
+        isOperational: true,
+      });
     }
 
-    const fetchedorganizationValue = fetchedorganization.getValue();
-    const wrappedGroup = this.wrapEntity(new Group(), {
+    const wrappedGroup = this.wrapEntity(Group.getInstance(), {
       name: payload.name,
       active: payload.active,
       parent: payload.parent,
       description: payload.description,
     });
 
-    wrappedGroup.organization = fetchedorganizationValue;
+    wrappedGroup.organization = organization;
 
     const { id } = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
-      { id: fetchedorganizationValue.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
+      { id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         name: `${grpPrifix}${payload.name}`,
       },
@@ -91,15 +91,11 @@ export class GroupService extends BaseService<Group> implements IGroupService {
           { user: member, organization: payload.organization },
           FETCH_STRATEGY.SINGLE,
         );
-        if (fetchedMember.isFailure) {
-          return fetchedMember;
-        }
-        if (fetchedMember.isSuccess && fetchedMember.getValue() !== null) {
-          const fetchedMemberValue = fetchedMember.getValue();
 
-          createdGroup.members.add(fetchedMemberValue);
+        if (fetchedMember !== null) {
+          createdGroup.members.add(fetchedMember);
           await (await this.keycloak.getAdminClient()).users.addToGroup({
-            id: fetchedMemberValue.user.keycloakId,
+            id: fetchedMember.user.keycloakId,
             groupId: wrappedGroup.kcid,
             realm: getConfig('keycloak.clientValidation.realmName'),
           });
@@ -109,68 +105,55 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       });
     }
 
-    return Result.ok<number>(createdGroup.id);
+    return createdGroup.id;
   }
 
   @log()
-  @safeGuard()
   @validate
-  public async updateGroup(
-    @validateParam(UpdateGroupSchema) payload: GroupRO,
-    groupId: number,
-  ): Promise<Result<number>> {
+  public async updateGroup(@validateParam(UpdateGroupSchema) payload: GroupRO, groupId: number): Promise<number> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
-      return Result.notFound(`group with id ${groupId} does not exist.`);
+      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
 
     if (fetchedGroup.name !== payload.name) {
-      try {
-        await (await this.keycloak.getAdminClient()).groups.update(
-          { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
-          {
-            name: `${grpPrifix}${payload.name}`,
-          },
-        );
-      } catch (e) {
-        return Result.notFound(e);
-      }
+      await (await this.keycloak.getAdminClient()).groups.update(
+        { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
+        {
+          name: `${grpPrifix}${payload.name}`,
+        },
+      );
     }
 
     this.wrapEntity(fetchedGroup, {
       ...fetchedGroup,
       ...payload,
     });
-    return Result.ok<number>(1);
+    return fetchedGroup.id;
   }
 
   @log()
-  @safeGuard()
-  public async deleteGroup(groupId: number): Promise<Result<number>> {
+  public async deleteGroup(groupId: number): Promise<number> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
-      return Result.notFound(`group with id ${groupId} does not exist.`);
-    }
-    try {
-      await (await this.keycloak.getAdminClient()).groups.del({
-        id: fetchedGroup.kcid,
-        realm: getConfig('keycloak.clientValidation.realmName'),
-      });
-      await this.dao.remove(fetchedGroup);
-    } catch (error) {
-      return Result.fail(error.response.data);
+      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
 
-    return Result.ok<number>(groupId);
+    await (await this.keycloak.getAdminClient()).groups.del({
+      id: fetchedGroup.kcid,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+    await this.dao.remove(fetchedGroup);
+
+    return groupId;
   }
 
   @log()
-  @safeGuard()
   @validate
-  public async addGroupMember(member: any, groupId: number): Promise<Result<number>> {
+  public async addGroupMember(member: any, groupId: number): Promise<number> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
-      return Result.notFound(`group with id ${groupId} does not exist.`);
+      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
     const fetchedMember = await this.memberService.getByCriteria(
       {
@@ -179,25 +162,24 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       },
       FETCH_STRATEGY.SINGLE,
     );
-    if (fetchedMember.isFailure || fetchedMember.getValue() === null) {
-      return Result.notFound(`member does not exist.`);
+    if (!fetchedMember) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
 
     if (!fetchedGroup.members.isInitialized) fetchedGroup.members.init();
 
-    fetchedGroup.members.add(fetchedMember.getValue());
+    fetchedGroup.members.add(fetchedMember);
     this.dao.update(fetchedGroup);
 
-    return Result.ok(groupId);
+    return groupId;
   }
 
   @log()
-  @safeGuard()
   @validate
-  public async deleteGroupMember(member: any, groupId: number): Promise<Result<number>> {
+  public async deleteGroupMember(member: any, groupId: number): Promise<number> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
-      return Result.notFound(`group with id ${groupId} does not exist.`);
+      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
     const fetchedMember = await this.memberService.getByCriteria(
       {
@@ -206,16 +188,16 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       },
       FETCH_STRATEGY.SINGLE,
     );
-    if (fetchedMember.isFailure || fetchedMember.getValue() === null) {
-      return Result.notFound(`member does not exist.`);
+    if (!fetchedMember) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
 
     if (!fetchedGroup.members.isInitialized) fetchedGroup.members.init();
 
-    fetchedGroup.members.remove(fetchedMember.getValue());
+    fetchedGroup.members.remove(fetchedMember);
 
     this.dao.update(fetchedGroup);
 
-    return Result.ok(groupId);
+    return groupId;
   }
 }

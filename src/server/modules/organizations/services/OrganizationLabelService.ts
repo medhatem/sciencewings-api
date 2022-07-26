@@ -5,9 +5,7 @@ import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IO
 import { Organization } from '@/modules/organizations/models/Organization';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
 import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationLabelDao';
-import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IOrganizationLabelService)
 export class OrganizationLabelService extends BaseService<OrganizationLabel> implements IOrganizationLabelService {
@@ -20,15 +18,12 @@ export class OrganizationLabelService extends BaseService<OrganizationLabel> imp
   }
 
   @log()
-  @safeGuard()
-  async createLabel(payload: OrganizationLabel): Promise<Result<OrganizationLabel>> {
-    const phone = await this.dao.create(payload);
-    return Result.ok(phone);
+  async createLabel(payload: OrganizationLabel): Promise<OrganizationLabel> {
+    return await this.dao.create(payload);
   }
 
   @log()
-  @safeGuard()
-  async createBulkLabel(payload: string[], organization: Organization): Promise<Result<number>> {
+  async createBulkLabel(payload: string[], organization: Organization): Promise<void> {
     const labels = payload.map((name: string) => {
       const label = this.wrapEntity(new OrganizationLabel(), { name });
       label.organization = organization;
@@ -36,6 +31,5 @@ export class OrganizationLabelService extends BaseService<OrganizationLabel> imp
     });
 
     this.dao.repository.persistAndFlush(labels);
-    return Result.ok<number>(200);
   }
 }
