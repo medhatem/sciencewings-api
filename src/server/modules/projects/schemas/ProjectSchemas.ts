@@ -24,6 +24,7 @@ export const CreateProjectSchema = ProjectSchema.keys({
   managers: Joi.array().items(Joi.number()).required(),
   participants: Joi.array().items(Joi.number()).required(),
   dateStart: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATESTART_REQUIRED' }),
+  dateEnd: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATESTART_REQUIRED' }),
 });
 
 export const UpdateProjectSchema = ProjectSchema.keys({
@@ -33,4 +34,5 @@ export const UpdateProjectSchema = ProjectSchema.keys({
   managers: Joi.array().items(Joi.number()),
   participants: Joi.array().items(Joi.number()),
   dateStart: Joi.date(),
+  dateEnd: Joi.date(),
 });

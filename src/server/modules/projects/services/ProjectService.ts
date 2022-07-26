@@ -52,14 +52,9 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
     }
-    const managers = await this.memberService.getByCriteria(
-      { organization: payload.organization, user: payload.managers },
-      FETCH_STRATEGY.ALL,
-      { refresh: true },
-    );
 
-    const participants = await this.memberService.getByCriteria(
-      { organization: payload.organization, user: payload.participants },
+    const projectMember = await this.memberService.getByCriteria(
+      { organization: payload.organization, user: payload.projectMember },
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
@@ -69,8 +64,8 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       description: payload.description,
       active: payload.active,
       dateStart: payload.dateStart,
-      managers: managers,
-      participants: participants,
+      dateEnd: payload.dateEnd,
+      projectMember,
       organization: organization,
     });
 
@@ -95,25 +90,14 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       }
       project.organization = await fetchedOrganization;
     }
-
-    if (payload.managers) {
-      const fetchedResponsibles = await this.memberService.getByCriteria(
-        { organization: payload.organization, user: payload.managers },
-        FETCH_STRATEGY.ALL,
-        { refresh: true },
-      );
-
-      project.managers = await fetchedResponsibles;
-    }
-
-    if (payload.participants) {
+    if (payload.projectMember) {
       const fetchedParticipants = await this.memberService.getByCriteria(
-        { organization: payload.organization, user: payload.participants },
+        { organization: payload.organization, user: payload.projectMember },
         FETCH_STRATEGY.ALL,
         { refresh: true },
       );
 
-      project.participants = await fetchedParticipants;
+      project.projectMember = await fetchedParticipants;
     }
 
     const updatedProjectResult = await this.update(

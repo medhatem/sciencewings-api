@@ -31,7 +31,7 @@ export class ProjectTaskRO {
   dateStart: Date;
 
   @JsonProperty()
-  dateEnd?: Date;
+  dateEnd: Date;
 
   @JsonProperty()
   public parent?: number;
@@ -59,10 +59,7 @@ export class ProjectRO {
   description: string;
 
   @JsonProperty()
-  managers: number[];
-
-  @JsonProperty()
-  participants: number[];
+  projectMember: number[];
 
   @JsonProperty()
   active: boolean;
