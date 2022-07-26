@@ -47,12 +47,9 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
     const result = await this.MemberService.inviteUserByEmail(payload);
-    if (result.isFailure) {
-      throw result.error;
-    }
 
     return new InviteUserDTO({
-      body: { statusCode: 201, id: result.getValue() },
+      body: { statusCode: 201, id: result },
     });
   }
 
@@ -71,11 +68,9 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @LoggerStorage()
   public async resendInvite(payload: UserResendPassword): Promise<InviteUserDTO> {
     const result = await this.MemberService.resendInvite(payload.userId, payload.orgId);
-    if (result.isFailure) {
-      throw result.error;
-    }
+
     return new InviteUserDTO({
-      body: { statusCode: 201, id: result.getValue() },
+      body: { statusCode: 201, id: result },
     });
   }
 
@@ -98,10 +93,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   ): Promise<SwitchedMemberDTO> {
     const result = await this.MemberService.switchOrganization(orgId, request.userId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new SwitchedMemberDTO({ body: { id: result.getValue(), statusCode: 204 } });
+    return new SwitchedMemberDTO({ body: { id: result, statusCode: 204 } });
   }
   /**
   /**
@@ -125,10 +117,8 @@ export class MemberRoutes extends BaseRoutes<Member> {
     @PathParam('orgId') orgId: number,
   ): Promise<UpdateMemberDTO> {
     const result = await this.MemberService.updateMembershipStatus(payload, userId, orgId);
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new UpdateMemberDTO({ body: { ...result.getValue(), statusCode: 204 } });
+
+    return new UpdateMemberDTO({ body: { ...result, statusCode: 204 } });
   }
   /**
    * get all user memberships
@@ -144,11 +134,8 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getUserMemberships(@PathParam('userId') userId: number): Promise<getMembershipDTO> {
     const result = await this.MemberService.getUserMemberships(userId);
-    if (result.isFailure) {
-      throw result.error;
-    }
 
-    return new getMembershipDTO({ body: { data: [...result.getValue()], statusCode: 200 } });
+    return new getMembershipDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
 
   /**
@@ -170,11 +157,8 @@ export class MemberRoutes extends BaseRoutes<Member> {
     @PathParam('userId') userId: number,
   ): Promise<MemberProfileBodyDTO> {
     const result = await this.MemberService.getMemberProfile({ orgId, userId });
-    if (result.isFailure) {
-      throw result.error;
-    }
 
-    return new MemberProfileBodyDTO({ body: result.getValue(), statusCode: 200 });
+    return new MemberProfileBodyDTO({ body: result, statusCode: 200 });
   }
   /**
    * override the base update
@@ -196,10 +180,6 @@ export class MemberRoutes extends BaseRoutes<Member> {
     payload: MemberRO,
   ): Promise<MemberProfileBodyDTO> {
     const result = await this.MemberService.updateMemberByUserIdAndOrgId({ orgId, userId }, payload);
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    return new MemberProfileBodyDTO({ body: result.getValue(), statusCode: 200 });
+    return new MemberProfileBodyDTO({ body: result, statusCode: 200 });
   }
 }

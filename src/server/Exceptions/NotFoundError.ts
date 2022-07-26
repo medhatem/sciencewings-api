@@ -1,4 +1,4 @@
-import { BaseHttpError } from './BaseHttpError';
+import { BaseHttpError, ErrorParamsOptions } from './BaseHttpError';
 
 /**
  * Represents a NOT FOUND error. The server has not found anything matching
@@ -12,9 +12,7 @@ import { BaseHttpError } from './BaseHttpError';
  * or when no other response is applicable.
  */
 export class NotFoundError extends BaseHttpError {
-  constructor(message: string) {
-    super(message);
-    this.isOperational = true;
-    this.statusCode = 404;
+  constructor(message: string, params: ErrorParamsOptions = {}) {
+    super(message, { ...params, statusCode: 404 });
   }
 }

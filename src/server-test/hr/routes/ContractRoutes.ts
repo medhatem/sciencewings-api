@@ -1,17 +1,18 @@
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+
+import { Configuration } from '@/configuration/Configuration';
+import { ContractRO } from '@/modules/hr/routes/RequestObject';
+import { ContractRoutes } from '@/modules/hr/routes/ContractRoutes';
+import { ContractService } from '@/modules/hr/services/ContractService';
+import { LocalStorage } from '@/utils/LocalStorage';
+import { Logger } from '@/utils/Logger';
+import { container } from '@/di';
 import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
+import { mockMethodWithResult } from '@/utils/utilities';
+
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { ContractRoutes } from '@/modules/hr/routes/ContractRoutes';
-import { LocalStorage } from '@/utils/LocalStorage';
-import { mockMethodWithResult } from '@/utils/utilities';
-import { Result } from '@/utils/Result';
-import { ContractService } from '@/modules/hr/services/ContractService';
-import { ContractRO } from '@/modules/hr/routes/RequestObject';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let contractService: SinonStubbedInstance<ContractService>;
@@ -60,7 +61,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(contractService, 'createContract', [payload], Result.ok(1));
+      mockMethodWithResult(contractService, 'createContract', [payload], 1);
       const result = await contractRoutes.createContract(payload);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
@@ -71,20 +72,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload = new ContractRO();
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        contractService,
-        'updateContract',
-        [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(contractService, 'updateContract', [payload], Promise.reject(new Error('Failed')));
       try {
         await contractRoutes.createUpdateContract(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(contractService, 'updateContract', [payload], Result.ok(1));
+      mockMethodWithResult(contractService, 'updateContract', [payload], 1);
       const result = await contractRoutes.createUpdateContract(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);

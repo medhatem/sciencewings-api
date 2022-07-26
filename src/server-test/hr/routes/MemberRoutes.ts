@@ -7,7 +7,6 @@ import { LocalStorage } from '@/utils/LocalStorage';
 import { Logger } from '@/utils/Logger';
 import { MemberRoutes } from '@/modules/hr/routes/MemberRoutes';
 import { MemberService } from '@/modules/hr/services/MemberService';
-import { Result } from '@/utils/Result';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
@@ -55,16 +54,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         memberService,
         'resendInvite',
         [payload.userId, payload.orgId],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await memberRoutes.resendInvite(payload);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should succeed at returning the right value', async () => {
-      mockMethodWithResult(memberService, 'resendInvite', [payload.userId, payload.orgId], Result.ok(1));
+      mockMethodWithResult(memberService, 'resendInvite', [payload.userId, payload.orgId], 1);
       const result = await memberRoutes.resendInvite(payload);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
@@ -80,12 +79,12 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         memberService,
         'inviteUserByEmail',
         [{ email: payload.email, organizationId: payload.organizationId }],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject(new Error('Failed')),
       );
       try {
         await memberRoutes.inviteUserToOrganization(payload);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should succeed at returning the right value', async () => {
@@ -93,7 +92,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         memberService,
         'inviteUserByEmail',
         [{ email: payload.email, organizationId: payload.organizationId }],
-        Result.ok(1),
+        1,
       );
       const result = await memberRoutes.inviteUserToOrganization(payload);
       expect(result.body.id).to.equal(1);
@@ -103,20 +102,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('GET members/:userId/memberships', () => {
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        memberService,
-        'getUserMemberships',
-        [1],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(memberService, 'getUserMemberships', [1], Promise.reject(new Error('Failed')));
       try {
         await memberRoutes.getUserMemberships(1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should succeed at returning the right value', async () => {
-      mockMethodWithResult(memberService, 'getUserMemberships', [1], Result.ok([{}]));
+      mockMethodWithResult(memberService, 'getUserMemberships', [1], [{}]);
       const result = await memberRoutes.getUserMemberships(1);
       expect(result.body.statusCode).to.equal(200);
     });
