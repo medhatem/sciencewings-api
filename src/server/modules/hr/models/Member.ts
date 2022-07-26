@@ -13,7 +13,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 import { WorkLocation } from './WorkLocation';
-import { ProjectMember } from '@/modules/projects/models/projectMember';
+import { ProjectMember } from '@/modules/projects/models/ProjectMember';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',

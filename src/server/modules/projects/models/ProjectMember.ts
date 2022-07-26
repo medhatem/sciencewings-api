@@ -1,8 +1,7 @@
-import { Entity, OneToMany, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { Entity, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Member } from '@/modules/hr';
+import { Member } from '@/modules/hr/models/Member';
 import { Project } from '@/modules/projects/models/Project';
 import { ProjectRole } from '@/modules/projects/models/projectRole';
 
@@ -21,17 +20,15 @@ export class ProjectMember extends BaseModel<ProjectMember> {
   static getInstance(): ProjectMember {
     return container.get(ProjectMember);
   }
-  @OneToMany({
+  @OneToOne({
     entity: () => Project,
-    mappedBy: (entity) => entity.projectMember,
     primary: true,
     unique: false,
   })
   project!: Project;
 
-  @OneToMany({
+  @OneToOne({
     entity: () => Member,
-    mappedBy: (entity) => entity.projectMember,
     primary: true,
     unique: false,
   })

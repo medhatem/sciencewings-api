@@ -6,7 +6,7 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { ProjectBoard } from '@/modules/projects/models/ProjectBoard';
 import { ProjectTag } from '@/modules/projects/models/ProjectTag';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
-import { ProjectMember } from '@/modules/projects/models/projectMember';
+import { ProjectMember } from '@/modules/projects/models/ProjectMember';
 
 @provide()
 @Entity()
