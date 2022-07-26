@@ -1,17 +1,18 @@
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
+import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
+
+import { Configuration } from '@/configuration/Configuration';
+import { ContractRO } from '@/modules/hr/routes/RequestObject';
+import { JobRoutes } from '@/modules/hr/routes/JobRoutes';
+import { JobService } from '@/modules/hr/services/JobService';
+import { LocalStorage } from '@/utils/LocalStorage';
+import { Logger } from '@/utils/Logger';
+import { container } from '@/di';
 import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
+import { mockMethodWithResult } from '@/utils/utilities';
+
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
-import { Configuration } from '@/configuration/Configuration';
-import { Logger } from '@/utils/Logger';
-import { JobRoutes } from '@/modules/hr/routes/JobRoutes';
-import { LocalStorage } from '@/utils/LocalStorage';
-import { mockMethodWithResult } from '@/utils/utilities';
-import { Result } from '@/utils/Result';
-import { ContractRO } from '@/modules/hr/routes/RequestObject';
-import { JobService } from '@/modules/hr/services/JobService';
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let jobService: SinonStubbedInstance<JobService>;
@@ -47,20 +48,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload = new ContractRO();
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        jobService,
-        'createJob',
-        [payload],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(jobService, 'createJob', [payload], Promise.reject(new Error('Failed')));
       try {
         await jobRoutes.createJob(payload);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(jobService, 'createJob', [payload], Result.ok(1));
+      mockMethodWithResult(jobService, 'createJob', [payload], 1);
       const result = await jobRoutes.createJob(payload);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
@@ -71,20 +67,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload = new ContractRO();
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        jobService,
-        'updateJob',
-        [payload, 1],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
-      );
+      mockMethodWithResult(jobService, 'updateJob', [payload, 1], Promise.reject(new Error('Failed')));
       try {
         await jobRoutes.updateJob(payload, 1);
       } catch (error) {
-        expect(error).to.equal('throwing error');
+        expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(jobService, 'updateJob', [payload, 1], Result.ok(1));
+      mockMethodWithResult(jobService, 'updateJob', [payload, 1], 1);
       const result = await jobRoutes.updateJob(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);

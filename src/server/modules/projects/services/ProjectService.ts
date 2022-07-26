@@ -5,16 +5,16 @@ import { BaseService } from '@/modules/base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
-import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
-import { Result } from '@/utils/Result';
 import { ProjectRO } from '@/modules/projects/routes/RequestObject';
-import { CreateProjectSchema, UpdateProjectSchema } from '../schemas';
+import { CreateProjectSchema, UpdateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
 import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInterfaces';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+import { NotFoundError } from '@/Exceptions';
+
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
   constructor(
@@ -30,35 +30,39 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   static getInstance(): IProjectService {
     return container.get(IProjectService);
   }
-
+  /**
+   * Retrieve organization projects
+   *
+   * @param id of organization
+   */
   @log()
-  @safeGuard()
-  @validate
-  public async createProject(@validateParam(CreateProjectSchema) payload: ProjectRO): Promise<Result<number>> {
-    const fetchedOrganization = await this.organizationService.get(payload.organization);
-    if (fetchedOrganization.isFailure) {
-      return Result.fail(`Organization with id ${payload.organization} does not exist.`);
+  public async getOrganizationProjects(id: number): Promise<Project[]> {
+    const organization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
-    const fetchedResponsibles = await this.memberService.getByCriteria(
+    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
+
+    return fetchedProjects as Project[];
+  }
+  @log()
+  @validate
+  public async createProject(@validateParam(CreateProjectSchema) payload: ProjectRO): Promise<number> {
+    const organization = await this.organizationService.get(payload.organization);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
+    }
+    const managers = await this.memberService.getByCriteria(
       { organization: payload.organization, user: payload.managers },
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
-    if (fetchedResponsibles.isFailure) {
-      return fetchedResponsibles;
-    }
-    const fetchedParticipants = await this.memberService.getByCriteria(
+
+    const participants = await this.memberService.getByCriteria(
       { organization: payload.organization, user: payload.participants },
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
-    if (fetchedParticipants.isFailure) {
-      return fetchedParticipants;
-    }
-
-    const organization = await fetchedOrganization.getValue();
-    const managers = await fetchedResponsibles.getValue();
-    const participants = await fetchedParticipants.getValue();
 
     const createdProject: Project = await this.dao.create({
       title: payload.title,
@@ -67,33 +71,29 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       dateStart: payload.dateStart,
       managers: managers,
       participants: participants,
-      organizations: organization,
+      organization: organization,
     });
-    if (!createdProject) {
-      return Result.fail(`fail to create project.`);
-    }
 
-    return Result.ok(createdProject.id);
+    return createdProject.id;
   }
 
   @log()
-  @safeGuard()
   @validate
   public async updateProject(
     @validateParam(UpdateProjectSchema) payload: ProjectRO,
     projetcId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const project = await this.dao.get(projetcId);
     if (!project) {
-      return Result.fail<number>(`Project with id ${projetcId} does not exist`);
+      throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${projetcId}` } });
     }
 
     if (payload.organization) {
       const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (fetchedOrganization.isFailure) {
-        return Result.fail(`Organization with id ${payload.organization} does not exist.`);
+      if (!fetchedOrganization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
       }
-      project.organizations = await fetchedOrganization.getValue();
+      project.organization = await fetchedOrganization;
     }
 
     if (payload.managers) {
@@ -102,10 +102,8 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         FETCH_STRATEGY.ALL,
         { refresh: true },
       );
-      if (fetchedResponsibles.isFailure) {
-        return fetchedResponsibles;
-      }
-      project.managers = await fetchedResponsibles.getValue();
+
+      project.managers = await fetchedResponsibles;
     }
 
     if (payload.participants) {
@@ -114,10 +112,8 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         FETCH_STRATEGY.ALL,
         { refresh: true },
       );
-      if (fetchedParticipants.isFailure) {
-        return fetchedParticipants;
-      }
-      project.participants = await fetchedParticipants.getValue();
+
+      project.participants = await fetchedParticipants;
     }
 
     const updatedProjectResult = await this.update(
@@ -126,9 +122,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         ...payload,
       }),
     );
-    if (updatedProjectResult.isFailure) {
-      return Result.fail<number>(`Project with id ${projetcId} can not be updated`);
-    }
-    return Result.ok((await updatedProjectResult.getValue()).id);
+
+    return (await updatedProjectResult).id;
   }
 }

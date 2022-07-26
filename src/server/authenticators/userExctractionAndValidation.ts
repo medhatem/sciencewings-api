@@ -1,5 +1,6 @@
+import { NotFoundError, Unauthorized } from '@/Exceptions';
+
 import { IUserService } from '../modules/users/interfaces/IUserService';
-import { Result } from '@/utils/Result';
 import { UserRequest } from '../types/UserRequest';
 import { fetchKeyclockUserGivenToken } from './fetchKeyclockUserGivenToken';
 import { provideSingleton } from '@/di';
@@ -15,26 +16,26 @@ export class UserExctractionAndValidation {
    *
    * @param req express request
    */
-  userExctractionAndValidation = async (req: UserRequest): Promise<Result<{ keycloakUser: any; userId?: any }>> => {
+  userExctractionAndValidation = async (req: UserRequest): Promise<{ keycloakUser: any; userId?: any }> => {
     if (!req.headers || !req.headers.authorization) {
-      return Result.unauthorizedError('Not Authorized');
+      throw new Unauthorized('HTTP_401_UNAUTHORIZED');
     }
 
     const token = req.headers.authorization as string;
     const result = await fetchKeyclockUserGivenToken(token);
     if (result.error) {
-      return Result.unauthorizedError('Not Authorized');
+      throw new Unauthorized('HTTP_401_UNAUTHORIZED');
     }
 
     const criteriaResult = await this.userService.getUserByCriteria({ email: result.email });
-    if (criteriaResult.isFailure || criteriaResult.getValue() === null) {
-      return Result.fail('Unrecognized user!');
+    if (!criteriaResult) {
+      throw new NotFoundError('UNKNOWN_USER', { friendly: true });
     }
-    const userId = criteriaResult.getValue().id;
+    const userId = criteriaResult.id;
 
     req.keycloakUser = result;
     req.userId = userId;
 
-    return Result.ok({ keycloakUser: result, userId });
+    return { keycloakUser: result, userId };
   };
 }

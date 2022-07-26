@@ -2,8 +2,8 @@ import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Project } from './Project';
-import { TasksList } from './TasksList';
+import { Project } from '@/modules/projects/models/Project';
+import { TasksList } from '@/modules/projects/models/TasksList';
 
 @provide()
 @Entity()

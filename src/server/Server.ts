@@ -109,7 +109,8 @@ export class Server {
         // important to allow default error handler to close connection if headers already sent
         return next(err);
       }
-      const result = this.errorHandler.handle(err);
+      const language = req.headers['accept-language'] || 'en';
+      const result = this.errorHandler.handle(err, language);
       res.set('Content-Type', 'application/json');
       res.status(result.statusCode);
       res.json(result);
@@ -123,7 +124,7 @@ export class Server {
     const resourceService = ResourceSettingsService.getInstance();
     const fetch = await resourceService.get(1);
 
-    if (fetch.getValue() === null) {
+    if (fetch === null) {
       await resourceService.create({ resourceType: { title: StatusCases.OPERATIONAL } });
     }
   }

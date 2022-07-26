@@ -47,19 +47,19 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(organizationLabelDAO, 'create', [{ name: 'test' }], Promise.resolve({ name: 'test' }));
 
       const result = await container.get(OrganizationLabelService).createLabel({ name: 'test' } as any);
-      expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.deep.equal({ name: 'test' });
+      expect(result).to.deep.equal({ name: 'test' });
     });
   });
 
   suite('create Bulk Label', () => {
     test('Should success on bulk label creation', async () => {
       (organizationLabelDAO.repository as any) = { persistAndFlush: stub() };
-      stub(BaseService.prototype, 'wrapEntity').returns({});
-      const result = await container.get(OrganizationLabelService).createBulkLabel(['test'], {} as any);
+      const wrapEntityStub = stub(BaseService.prototype, 'wrapEntity');
+      wrapEntityStub.returns({});
 
-      expect(result.isSuccess).to.be.true;
-      expect(result.getValue()).to.equal(200);
+      await container.get(OrganizationLabelService).createBulkLabel(['test'], {} as any);
+
+      expect(wrapEntityStub.callCount).to.equal(1);
     });
   });
 });

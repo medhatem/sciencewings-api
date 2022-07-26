@@ -6,21 +6,21 @@ import { unique } from '@/decorators/unique';
 @unique
 @JsonObject()
 @unique
-export class ProjectTagDTO extends BaseBodyDTO {
+export class ProjectBoardDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
 
 @JsonObject()
 @unique
-export class CreateProjectTagDTO extends BaseRequestDTO {
+export class CreateProjectBoardDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: ProjectTagDTO;
+  public body?: ProjectBoardDTO;
 }
 
 @JsonObject()
 @unique
-export class UpdateProjectTagDTO extends BaseRequestDTO {
+export class UpdateProjectBoardDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: ProjectTagDTO;
+  public body?: ProjectBoardDTO;
 }
