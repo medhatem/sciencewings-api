@@ -18,7 +18,7 @@ import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
 import { OrganizationSettingsService } from '@/modules/organizations/services/OrganizationSettingsService';
-import { Organization, OrganizationType } from '@/modules/organizations/models/Organization';
+import { OrganizationType } from '@/modules/organizations/models/Organization';
 import { PhoneService } from '@/modules/phones/services/PhoneService';
 import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
@@ -855,10 +855,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get member', () => {
     const orgId = 1;
-    let org: Organization;
-    org = Organization.getInstance();
-    org.id = orgId;
-    const filterStutus: string = ' , , ';
+    const filterStutus: string = '';
     test('Should fail on organization not found', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
