@@ -11,7 +11,6 @@ import { OrganizationRoutes } from '@/modules/organizations/routes/OrganizationR
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
 import { OrganizationType } from '@/modules/organizations/models/Organization';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
-import { Result } from '@/utils/Result';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
@@ -74,16 +73,17 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         organizationService,
         'createOrganization',
         [payload, request.userId],
-        Promise.resolve({ isFailure: true, error: 'throwing error' }),
+        Promise.reject('throwing error'),
       );
       try {
         await organizationRoutes.createOrganization(payload, request as any);
+        expect.fail('Unexpected success');
       } catch (error) {
         expect(error).to.equal('throwing error');
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(organizationService, 'createOrganization', [payload, request.userId], Result.ok(1));
+      mockMethodWithResult(organizationService, 'createOrganization', [payload, request.userId], 1);
       const result = await organizationRoutes.createOrganization(payload, request as any);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
@@ -120,7 +120,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at updating and returning the right value', async () => {
-      mockMethodWithResult(organizationService, 'updateOrganizationGeneraleProperties', [payload], Result.ok(1));
+      mockMethodWithResult(organizationService, 'updateOrganizationGeneraleProperties', [payload, 1], 1);
       const result = await organizationRoutes.updateOrganization(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -150,7 +150,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(organizationService, 'addPhoneToOrganization', [payload, 1], Result.ok(1));
+      mockMethodWithResult(organizationService, 'addPhoneToOrganization', [payload, 1], 1);
       const result = await organizationRoutes.CreateOrganizationPhone(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -183,7 +183,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(organizationService, 'addAddressToOrganization', [payload, 1], Result.ok(1));
+      mockMethodWithResult(organizationService, 'addAddressToOrganization', [payload, 1], 1);
       const result = await organizationRoutes.CreateOrganizationAdress(payload, 1);
       expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(204);
@@ -204,7 +204,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(organizationService, 'getMembers', [], Result.ok());
+      mockMethodWithResult(organizationService, 'getMembers', [], Promise.resolve(null));
       const result = await organizationRoutes.getUsers(1);
       expect(result.body.statusCode).to.equal(200);
     });

@@ -8,7 +8,6 @@ import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos
 import { UserGetDTO } from '@/modules/users/dtos/UserDTO';
 import { ResetPasswordRO, UserRO } from './RequstObjects';
 import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
-import { Result } from '@/utils/Result';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { CreatedUserDTO } from '@/modules/users/dtos/CreatedUserDTO';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
@@ -43,14 +42,11 @@ export class UserRoutes extends BaseRoutes<User> {
   @LoggerStorage()
   @PreProcessor(validateKeyclockUser)
   public async registerUserFromToken(@ContextRequest request: UserRequest): Promise<RegisterUserFromTokenDTO> {
-    const result: Result<number> = await this.userService.registerUser(request.keycloakUser);
+    const result = await this.userService.registerUser(request.keycloakUser);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
     return new RegisterUserFromTokenDTO({
       body: {
-        id: result.getValue(),
+        id: result,
         statusCode: 201,
       },
     });
@@ -71,13 +67,9 @@ export class UserRoutes extends BaseRoutes<User> {
   public async resetPassword(payload: ResetPasswordRO): Promise<ResetPasswordDTO> {
     const result = await this.userService.resetPassword(payload);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
     return new ResetPasswordDTO({
       body: {
-        massage: result.getValue(),
+        massage: result,
         statusCode: 200,
       },
     });
@@ -97,14 +89,9 @@ export class UserRoutes extends BaseRoutes<User> {
   public async createUser(payload: UserRO): Promise<CreatedUserDTO> {
     const result = await this.userService.createUser(payload);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
-    const user: User = result.getValue();
     return new CreatedUserDTO({
       body: {
-        ...user,
+        ...result,
         statusCode: 201,
       },
     });
@@ -125,13 +112,9 @@ export class UserRoutes extends BaseRoutes<User> {
   public async updateUser(payload: UserRO, @PathParam('keycloakId') keycloakId: string): Promise<CreatedUserDTO> {
     const result = await this.userService.updateUserByKeycloakId(payload, keycloakId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
     return new CreatedUserDTO({
       body: {
-        ...result.getValue(),
+        ...result,
         statusCode: 204,
       },
     });
@@ -152,13 +135,9 @@ export class UserRoutes extends BaseRoutes<User> {
   public async updateUserDetails(payload: UserRO, @ContextRequest request: UserRequest): Promise<CreatedUserDTO> {
     const result = await this.userService.updateUserDetails(payload, request.userId);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-
     return new CreatedUserDTO({
       body: {
-        userId: result.getValue(),
+        userId: result,
         statusCode: 204,
       },
     });
@@ -177,10 +156,6 @@ export class UserRoutes extends BaseRoutes<User> {
   public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserGetDTO> {
     const result = await this.userService.getUserByKeycloakId(request.keycloakUser.sub);
 
-    if (result.isFailure) {
-      throw result.error;
-    }
-    const user = result.getValue();
-    return new UserGetDTO({ body: { data: [...([user] || [])], statusCode: 200 } });
+    return new UserGetDTO({ body: { data: [...([result] || [])], statusCode: 200 } });
   }
 }

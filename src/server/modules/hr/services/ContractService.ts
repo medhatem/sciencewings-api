@@ -11,12 +11,11 @@ import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { Result } from '@/utils/Result';
 import { log } from '@/decorators/log';
-import { safeGuard } from '@/decorators/safeGuard';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateContractSchema, UpdateContractSchema } from '@/modules/hr/schemas/ContractSchema';
+import { NotFoundError } from '@/Exceptions/NotFoundError';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -42,104 +41,91 @@ export class ContractService extends BaseService<Contract> implements IContractS
    * @returns Optional Properties
    */
   @log()
-  @safeGuard()
-  private async checkForOptionalPropertiesInContract(payload: ContractRO): Promise<Result<any>> {
+  private async checkForOptionalPropertiesInContract(payload: ContractRO): Promise<any> {
     let member, group, job, resourceCalendar, hrResponsible;
     if (payload.member) {
       member = await this.memberService.get(payload.member);
-      if (member.isFailure || member.getValue() === null)
-        return Result.notFound<number>(`Memeber with id ${payload.member} does not exist.`);
-      member = await member.getValue();
+      if (!member) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${payload.member}` } });
+      }
     }
     if (payload.group) {
       group = await this.groupService.get(payload.member);
-      if (group.isFailure || group.getValue() === null)
-        return Result.notFound<number>(`Group with id ${payload.group} does not exist.`);
-      group = await group.getValue();
+      if (!group) {
+        throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${payload.group}` } });
+      }
     }
     if (payload.job) {
       job = await this.jobService.get(payload.member);
-      if (job.isFailure || job.getValue() === null)
-        return Result.notFound<number>(`Job with id ${payload.job} does not exist.`);
-      job = await job.getValue();
+      if (!job) {
+        throw new NotFoundError('JOB.NON_EXISTANT {{job}}', { variables: { job: `${payload.job}` } });
+      }
     }
     if (payload.resourceCalendar) {
       resourceCalendar = await this.resourceCalendarSerivce.get(payload.resourceCalendar);
-      if (resourceCalendar.isFailure || resourceCalendar.getValue() === null)
-        return Result.notFound(`Resource Calendar with id ${payload.resourceCalendar} does not exist.`);
-      resourceCalendar = await resourceCalendar.getValue();
+      if (!resourceCalendar) {
+        throw new NotFoundError('RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}', {
+          variables: { calendar: `${payload.resourceCalendar}` },
+        });
+      }
     }
     if (payload.hrResponsible) {
       hrResponsible = await this.userService.get(payload.hrResponsible);
-      if (hrResponsible.isFailure || hrResponsible.getValue() === null)
-        return Result.notFound(`HR Responsible with id ${payload.hrResponsible} does not exist.`);
-      hrResponsible = await hrResponsible.getValue();
+      if (!hrResponsible) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', {
+          variables: { member: `${payload.hrResponsible}` },
+        });
+      }
     }
-    return Result.ok({ member, group, job, resourceCalendar, hrResponsible });
+    return { member, group, job, resourceCalendar, hrResponsible };
   }
 
   /**
    * Override the create method
    */
   @log()
-  @safeGuard()
   @validate
-  public async createContract(@validateParam(CreateContractSchema) payload: ContractRO): Promise<Result<number>> {
+  public async createContract(@validateParam(CreateContractSchema) payload: ContractRO): Promise<number> {
     const organization = await this.origaniaztionService.get(payload.organization);
-    if (organization.isFailure || organization.getValue() === null) {
-      return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+        variables: { org: `${payload.organization}` },
+        isOperational: true,
+      });
     }
 
-    const resEntities = await this.checkForOptionalPropertiesInContract(payload);
-    if (resEntities.isFailure) {
-      return resEntities;
-    }
-    const entities = await resEntities.getValue();
+    const entities = await this.checkForOptionalPropertiesInContract(payload);
 
     const contract = {
       ...payload,
-      organization: await organization.getValue(),
+      organization,
       ...entities,
     };
 
     const createdContract = await this.create(contract);
-
-    if (createdContract.isFailure) {
-      return createdContract;
-    }
-    return Result.ok(createdContract.getValue().id);
+    return createdContract.id;
   }
 
   /**
    * Override the update method
    */
   @log()
-  @safeGuard()
   @validate
-  public async updateContract(
-    @validateParam(UpdateContractSchema) payload: ContractRO,
-    id: number,
-  ): Promise<Result<number>> {
+  public async updateContract(@validateParam(UpdateContractSchema) payload: ContractRO, id: number): Promise<number> {
     const currentContract = await this.dao.get(id);
     if (currentContract === null) {
-      return Result.notFound(`Contract with id ${id} does not exist.`);
+      throw new NotFoundError('CONTRACT.NON_EXISTANT {{contract}}', { variables: { contract: `${id}` } });
     }
 
     let organization;
     if (payload.organization) {
       organization = await this.origaniaztionService.get(payload.organization);
-      if (organization.isFailure || organization.getValue() === null) {
-        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
       }
-      organization = await organization.getValue();
     }
 
-    const resEntities = await this.checkForOptionalPropertiesInContract(payload);
-    if (resEntities.isFailure) {
-      return resEntities;
-    }
-
-    const entities = await resEntities.getValue();
+    const entities = await this.checkForOptionalPropertiesInContract(payload);
 
     const contract = this.wrapEntity(currentContract, {
       ...currentContract,
@@ -150,9 +136,6 @@ export class ContractService extends BaseService<Contract> implements IContractS
 
     const updatedContract = await this.update(contract);
 
-    if (updatedContract.isFailure) {
-      return updatedContract;
-    }
-    return Result.ok(updatedContract.getValue().id);
+    return updatedContract.id;
   }
 }

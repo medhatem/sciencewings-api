@@ -7,11 +7,10 @@ import { FETCH_STRATEGY } from '../daos/BaseDao';
 import { IBaseService } from '../interfaces/IBaseService';
 import { Keycloak } from '@/sdks/keycloak';
 import { Logger } from '@/utils/Logger';
-import { Result } from '@/utils/Result';
-import { ServerError } from '@/errors/ServerError';
+import { NotFoundError } from '@/Exceptions/NotFoundError';
+import { ServerError } from '@/Exceptions/ServerError';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
-import { safeGuard } from '@/decorators/safeGuard';
 
 @provideSingleton(IBaseService)
 export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
@@ -25,35 +24,30 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   }
 
   @log()
-  @safeGuard()
-  public async get(id: number, options?: FindOptions<T>): Promise<Result<any>> {
-    return Result.ok<any>(await this.dao.get(id, options));
+  public async get(id: number, options?: FindOptions<T>): Promise<any> {
+    return await this.dao.get(id, options);
   }
 
   @log()
-  @safeGuard()
-  public async getAll(): Promise<Result<any[]>> {
-    return Result.ok<any>(await this.dao.getAll());
+  public async getAll(): Promise<T[]> {
+    return await this.dao.getAll();
   }
 
   @log()
-  @safeGuard()
-  public async create(entry: T): Promise<Result<any>> {
-    return Result.ok<any>(await this.dao.create(entry));
+  public async create(entry: T): Promise<T> {
+    return this.dao.create(entry);
   }
 
   @log()
-  @safeGuard()
-  public async update(entry: T): Promise<Result<any>> {
-    return Result.ok<any>(this.dao.update(entry));
+  public async update(entry: T): Promise<any> {
+    return this.dao.update(entry);
   }
 
   @log()
-  @safeGuard()
-  public async updateRoute(id: number, payload: any): Promise<Result<any>> {
+  public async updateRoute(id: number, payload: any): Promise<any> {
     const currentEntity = await this.dao.get(id);
     if (!currentEntity) {
-      return Result.notFound(`Entity with id ${id} does not exist.`);
+      throw new NotFoundError('ENTITY.NON_EXISTANT');
     }
 
     const entity = this.wrapEntity(currentEntity, {
@@ -62,45 +56,38 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
     });
 
     const result = await this.dao.update(entity);
-    if (!result) {
-      return Result.fail(`Entity with id ${id} can not be updated.`);
-    }
-    return Result.ok<any>(result);
+
+    return result;
   }
 
   @log()
-  @safeGuard()
-  public async remove(id: number): Promise<Result<number>> {
+  public async remove(id: number): Promise<T> {
     const entity = this.wrapEntity(this.dao.model, { id });
-    return Result.ok<any>(await this.dao.remove(entity));
+    return await this.dao.remove(entity);
   }
 
   @log()
-  @safeGuard()
-  public async removeWithCriteria(payload: { [key: string]: any }): Promise<Result<number>> {
+  public async removeWithCriteria(payload: { [key: string]: any }): Promise<void> {
     const entity = (await this.dao.getByCriteria(payload)) as T;
-    return Result.ok<any>(await this.dao.removeEntity(entity));
+    await this.dao.removeEntity(entity);
   }
 
   @log()
-  @safeGuard()
-  public async removeRoute(id: number): Promise<Result<number>> {
+  public async removeRoute(id: number): Promise<void> {
     const currentEntity = await this.dao.get(id);
     if (!currentEntity) {
-      return Result.notFound(`Entity with id ${id} does not exist.`);
+      throw new NotFoundError('ENTITY.NON_EXISTANT');
     }
     await this.dao.remove(currentEntity);
-    return Result.ok<any>(currentEntity);
   }
 
   @log()
-  @safeGuard()
   async getByCriteria<Y extends keyof typeof FETCH_STRATEGY>(
     criteria: { [key: string]: any },
     fetchStrategy = FETCH_STRATEGY.SINGLE,
     options?: Y extends FETCH_STRATEGY.SINGLE ? FindOneOptions<T, never> : FindOptions<T, never>,
-  ): Promise<Result<T | T[]>> {
-    return Result.ok<any>(await this.dao.getByCriteria(criteria, fetchStrategy, options));
+  ): Promise<T | T[]> {
+    return await this.dao.getByCriteria(criteria, fetchStrategy, options);
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provide } from '@/di/index';
+
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Contract } from './Contract';
 import { Group } from './Group';
@@ -37,7 +38,7 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
-  @OneToOne({
+  @ManyToOne({
     entity: () => Organization,
     onDelete: 'cascade',
     primary: true,

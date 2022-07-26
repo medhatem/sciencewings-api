@@ -3,7 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
-import { ProjectTask } from './ProjectTask';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 
 export enum Priority {
   Lowest,

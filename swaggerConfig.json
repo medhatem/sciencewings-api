@@ -40,7 +40,8 @@
       "./src/server/modules/users/routes/index.ts",
       "./src/server/modules/users/models/index.ts",
       "./src/server/modules/users/interfaces/index.ts",
-      "node_modules/typescript-rest/src/server/model/errors.ts"
+      "node_modules/typescript-rest/src/server/model/errors.ts",
+      "./src/server/Exceptions/index.ts"
     ],
     "securityDefinitions": {
       "default": {

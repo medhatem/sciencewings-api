@@ -1,8 +1,6 @@
 import { getConfig } from '@/configuration/Configuration';
-import { safeGuard } from '@/decorators/safeGuard';
 import { provideSingleton, unmanaged } from '@/di';
 import { KeycloakConfig } from '@/types/ServerConfiguration';
-import { Result } from '@/utils/Result';
 import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import fetch from 'node-fetch';
 import { Keycloak } from './index';
@@ -35,7 +33,6 @@ export class KeycloakApi {
    *
    * @param token keycloak token
    */
-  @safeGuard()
   async extractInformationFromToken(token: string): Promise<UserInformationFromToken> {
     const res = await fetch(`${this.url}/realms/${this.realm}/protocol/openid-connect/userinfo`, {
       method: 'get',
@@ -54,9 +51,7 @@ export class KeycloakApi {
    * @param id of the group to search for in keycloak
    * @param token to use an auth
    */
-  @safeGuard()
-  async getGroupById(id: string): Promise<Result<GroupRepresentation>> {
-    const group = await (await this.keycloak.getAdminClient()).groups.findOne({ id, realm: this.realm });
-    return Result.ok<GroupRepresentation>(group);
+  async getGroupById(id: string): Promise<GroupRepresentation> {
+    return await (await this.keycloak.getAdminClient()).groups.findOne({ id, realm: this.realm });
   }
 }

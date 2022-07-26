@@ -23,7 +23,7 @@
       "@/db/*": ["server/db/*"],
       "@/configuration/*": ["server/configuration/*"],
       "@types/*": ["server/types/*"],
-      "@/errors/*": ["server/errors/*"],
+      "@/Exceptions/*": ["server/Exceptions/*"],
       "@/interface/*": ["server/interface/*"],
       "@/models/*": ["server/models/*"],
       "@/routes/*": ["server/routes/*"],
