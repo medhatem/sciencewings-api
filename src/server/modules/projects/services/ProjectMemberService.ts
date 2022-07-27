@@ -1,5 +1,4 @@
 import { container, provideSingleton } from '@/di/index';
-
 import { BaseService } from '@/modules/base/services/BaseService';
 import { ProjectMember, ProjectMemberStatus } from '@/modules/projects/models/ProjectMember';
 import { ProjectMemberDao } from '@/modules/projects/daos/projectMemberDao';
@@ -12,6 +11,8 @@ import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { Member } from '@/modules/hr/models/Member';
 import { applyToAll } from '@/utils/utilities';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 
 @provideSingleton(IProjectMemberService)
 export class ProjectMemberService extends BaseService<ProjectMember> implements IProjectMemberService {
@@ -19,6 +20,8 @@ export class ProjectMemberService extends BaseService<ProjectMember> implements 
     public dao: ProjectMemberDao,
     public projectService: IProjectService,
     public memberService: IMemberService,
+    public userService: IUserService,
+    public organizationService: IOrganizationService,
   ) {
     super(dao);
   }
@@ -43,11 +46,22 @@ export class ProjectMemberService extends BaseService<ProjectMember> implements 
     const projectMembers: ProjectMember[] = [];
 
     await applyToAll(payload, async (projectMember) => {
-      let member: Member = await this.memberService.getByCriteria(
-        { user: projectMember.user, organization: projectMember.organization },
-        FETCH_STRATEGY.SINGLE,
-        { populate: true },
-      );
+      const user = await this.userService.get(projectMember.userId);
+
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${projectMember.userId}` } });
+      }
+      const organization = await this.organizationService.get(projectMember.orgId);
+
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+          variables: { org: `${projectMember.orgId}` },
+        });
+      }
+
+      let member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
+        populate: true,
+      });
 
       if (!member) {
         throw new NotFoundError('MEMBER.NON_EXISTANT');

@@ -11,6 +11,7 @@ import { IProjectService } from '@/modules/projects/interfaces/IProjectInterface
 import { validateKeyclockUser } from '@/authenticators/validateKeyclockUser';
 import { UserRequest } from '@/types/UserRequest';
 import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
+import { ProjectMembersCreateDTO } from '@/modules/projects/dtos/projectMemberDTO';
 
 @provideSingleton()
 @Path('projects')
@@ -90,15 +91,15 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Path('/:id/projectMembers/create')
   @Security()
   @LoggerStorage()
-  @Response<CreateProjectDTO>(201, 'Project created Successfully')
+  @Response<ProjectMembersCreateDTO>(201, 'Project created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createProjectMembers(
     payload: ProjectMemberRo[],
     @PathParam('id') id: number,
-  ): Promise<CreateProjectDTO> {
+  ): Promise<ProjectMembersCreateDTO> {
     const result = await this.projectMemberService.createProjectMembers(payload, id);
 
-    return new CreateProjectDTO({ body: { id: result, statusCode: 201 } });
+    return new ProjectMembersCreateDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
 }

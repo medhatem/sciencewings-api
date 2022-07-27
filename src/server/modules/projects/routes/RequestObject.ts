@@ -53,13 +53,10 @@ export class ProjectTaskRO {
 @unique
 export class ProjectMemberRo {
   @JsonProperty()
-  organization: number;
+  orgId: number;
 
   @JsonProperty()
-  user: number;
-
-  @JsonProperty()
-  project: number;
+  userId: number;
 
   @JsonProperty()
   status: string;
