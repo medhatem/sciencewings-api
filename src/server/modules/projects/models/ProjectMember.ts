@@ -1,4 +1,4 @@
-import { Entity, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
@@ -24,14 +24,14 @@ export class ProjectMember extends BaseModel<ProjectMember> {
   static getInstance(): ProjectMember {
     return container.get(ProjectMember);
   }
-  @OneToOne({
+  @ManyToOne({
     entity: () => Project,
     primary: true,
     unique: false,
   })
   project!: Project;
 
-  @OneToOne({
+  @ManyToOne({
     entity: () => Member,
     primary: true,
     unique: false,

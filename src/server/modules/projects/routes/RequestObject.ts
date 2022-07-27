@@ -67,6 +67,12 @@ export class ProjectMemberRo {
 
 @JsonObject()
 @unique
+export class listMembersRo {
+  listMembers: ProjectMemberRo[];
+}
+
+@JsonObject()
+@unique
 export class ProjectRO {
   @JsonProperty()
   title: string;

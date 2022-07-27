@@ -6,7 +6,7 @@ import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { log } from '@/decorators/log';
-import { ProjectRO } from '@/modules/projects/routes/RequestObject';
+import { listMembersRo, ProjectRO } from '@/modules/projects/routes/RequestObject';
 import { CreateProjectSchema, UpdateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
@@ -14,14 +14,17 @@ import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInt
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { NotFoundError } from '@/Exceptions';
-import { UserRequest } from '@/types/UserRequest';
 import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
-import { RolesList, ProjectMemberStatus } from '@/modules/projects/models/ProjectMember';
+import { RolesList, ProjectMemberStatus, ProjectMember } from '@/modules/projects/models/ProjectMember';
+import { IUserService } from '@/modules/users';
+import { applyToAll } from '@/utils/utilities';
+import { Member } from '@/modules/hr/models/Member';
 
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
   constructor(
     public dao: ProjectDao,
+    public userService: IUserService,
     public memberService: IMemberService,
     public organizationService: IOrganizationService,
     public projectTaskService: IProjectTaskService,
@@ -34,6 +37,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   static getInstance(): IProjectService {
     return container.get(IProjectService);
   }
+
   /**
    * Retrieve organization projects
    *
@@ -49,38 +53,53 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     return fetchedProjects as Project[];
   }
+
+  /**
+   * create new project
+   * @userId id
+   * @param payload the project payload
+   */
   @log()
-  @validate
-  public async createProject(
-    request: UserRequest,
-    @validateParam(CreateProjectSchema) payload: ProjectRO,
-  ): Promise<number> {
+  public async createProject(userId: number, @validateParam(CreateProjectSchema) payload: ProjectRO): Promise<number> {
     const organization = await this.organizationService.get(payload.organization);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
     }
+    const user = await this.userService.get(userId);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
+    }
+
     // the one who create the project is project manager
-    const member = await this.memberService.getByCriteria(
-      { organization: payload.organization, user: request.userId },
-      FETCH_STRATEGY.ALL,
-      { refresh: true },
-    );
-
-    const wrappedProject = this.wrapEntity(new Project(), {
-      ...payload,
-      organization,
+    const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE, {
+      populate: true,
     });
-    const project = await this.create(wrappedProject);
 
-    this.projectMemberService.create({
-      member,
-      project,
+    const wrappedProject = this.wrapEntity(Project.getInstance(), {
+      title: payload.title,
+      description: payload.description,
+      active: payload.active,
+      dateStart: payload.dateStart,
+      dateEnd: payload.dateEnd,
+    });
+    wrappedProject.organization = organization;
+    const project = await this.create(wrappedProject);
+    const participant = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
       role: RolesList.MANAGER,
       status: ProjectMemberStatus.ACTIVE,
     });
+    participant.member = member;
+    participant.project = project;
+    this.projectMemberService.create(participant);
+
     return project.id;
   }
 
+  /**
+   * update project
+   * @param payload the project payload
+   * @projetcId the if of project we want to update
+   */
   @log()
   @validate
   public async updateProject(
@@ -108,5 +127,57 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     );
 
     return (await updatedProjectResult).id;
+  }
+
+  /**
+   * add a list of members for a given project
+   * a project can have one or many members
+   * @param payload a list of members that will be associated to the project
+   * @param id the id of the project we want to add members too
+   */
+  @log()
+  public async addMembersToProject(payload: listMembersRo, id: number): Promise<ProjectMember[]> {
+    const project = await this.dao.get(id);
+    if (!project) {
+      throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${id}` } });
+    }
+
+    const projectMembers: ProjectMember[] = [];
+
+    await applyToAll(payload.listMembers, async (projectMember) => {
+      const user = await this.userService.get(projectMember.userId);
+
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${projectMember.userId}` } });
+      }
+      const organization = await this.organizationService.get(projectMember.orgId);
+
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+          variables: { org: `${projectMember.orgId}` },
+        });
+      }
+
+      let member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
+        populate: true,
+      });
+
+      if (!member) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT');
+      }
+
+      const wrappedProjectMember = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
+        status: projectMember.status as ProjectMemberStatus,
+        role: projectMember.role as ProjectMemberStatus,
+      });
+      wrappedProjectMember.project = project;
+      wrappedProjectMember.member = member;
+
+      const createdProjectMember = await this.projectMemberService.create(wrappedProjectMember);
+
+      projectMembers.push(createdProjectMember);
+    });
+
+    return projectMembers;
   }
 }

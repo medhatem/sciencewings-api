@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -7,7 +7,7 @@ import { ProjectBoard } from '@/modules/projects/models/ProjectBoard';
 import { ProjectTag } from '@/modules/projects/models/ProjectTag';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { ProjectMember } from '@/modules/projects/models/ProjectMember';
-
+import { Member } from '@/modules/hr/models/Member';
 @provide()
 @Entity()
 export class Project extends BaseModel<Project> {
@@ -28,11 +28,8 @@ export class Project extends BaseModel<Project> {
   @Property()
   description: string;
 
-  // @ManyToMany({ entity: () => Member, owner: true })
-  // managers = new Collection<Member>(this);
-
-  // @ManyToMany({ entity: () => Member, owner: true })
-  // participants = new Collection<Member>(this);
+  @ManyToMany({ entity: () => Member, owner: true, pivotEntity: () => ProjectMember })
+  member = new Collection<Member>(this);
 
   @Property()
   active: boolean;
@@ -64,6 +61,6 @@ export class Project extends BaseModel<Project> {
   @ManyToOne({ entity: () => Organization, nullable: true, onDelete: 'cascade' })
   organization?: Organization;
 
-  @OneToOne({ entity: () => ProjectMember, nullable: true })
-  projectMember? = new Collection<ProjectMember>(this);
+  // @ManyToMany({ entity: () => ProjectMember, pivotEntity: () => ProjectMember })
+  // projectMember? = new Collection<ProjectMember>(this);
 }

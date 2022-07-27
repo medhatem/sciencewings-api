@@ -2,21 +2,19 @@ import { Project } from '@/modules/projects/models/Project';
 import { container, provideSingleton } from '@/di/index';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { ContextRequest, GET, Path, PathParam, POST, PreProcessor, PUT, Security } from 'typescript-rest';
+import { ContextRequest, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { CreateProjectDTO, GETProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
-import { ProjectMemberRo, ProjectRO } from '@/modules/projects/routes/RequestObject';
+import { listMembersRo, ProjectRO } from '@/modules/projects/routes/RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
-import { validateKeyclockUser } from '@/authenticators/validateKeyclockUser';
 import { UserRequest } from '@/types/UserRequest';
-import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
 import { ProjectMembersCreateDTO } from '@/modules/projects/dtos/projectMemberDTO';
 
 @provideSingleton()
 @Path('projects')
 export class ProjectRoutes extends BaseRoutes<Project> {
-  constructor(private projectService: IProjectService, private projectMemberService: IProjectMemberService) {
+  constructor(private projectService: IProjectService) {
     super(projectService as any, new GETProjectDTO(), new UpdateProjectDTO());
   }
 
@@ -53,11 +51,8 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Response<CreateProjectDTO>(201, 'Project created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  @LoggerStorage()
-  @PreProcessor(validateKeyclockUser)
   public async createProject(@ContextRequest request: UserRequest, payload: ProjectRO): Promise<CreateProjectDTO> {
-    const result = await this.projectService.createProject(request, payload);
-
+    const result = await this.projectService.createProject(request.userId, payload);
     return new CreateProjectDTO({ body: { id: result, statusCode: 201 } });
   }
 
@@ -94,11 +89,11 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Response<ProjectMembersCreateDTO>(201, 'Project member created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async createProjectMembers(
-    payload: ProjectMemberRo[],
+  public async addMembersToProject(
+    payload: listMembersRo,
     @PathParam('id') id: number,
   ): Promise<ProjectMembersCreateDTO> {
-    const result = await this.projectMemberService.createProjectMembers(payload, id);
+    const result = await this.projectService.addMembersToProject(payload, id);
 
     return new ProjectMembersCreateDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }

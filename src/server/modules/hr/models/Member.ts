@@ -13,7 +13,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 import { WorkLocation } from './WorkLocation';
-import { ProjectMember } from '@/modules/projects/models/ProjectMember';
+import { Project } from '@/modules/projects/models/Project';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',
@@ -140,11 +140,8 @@ export class Member extends BaseModel<Member> {
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
 
-  // @ManyToMany(() => Project, (project) => project.managers)
-  // porjectManagers? = new Collection<Project>(this);
-
-  // @ManyToMany(() => Project, (project) => project.participants)
-  // projectParticipants? = new Collection<Project>(this);
+  @ManyToMany(() => Project)
+  projects? = new Collection<Project>(this);
 
   @Property({ nullable: true })
   status?: userStatus;
@@ -157,7 +154,4 @@ export class Member extends BaseModel<Member> {
 
   @ManyToMany({ entity: () => ProjectTask, nullable: true })
   task? = new Collection<ProjectTask>(this);
-
-  @OneToOne({ entity: () => ProjectMember, nullable: true })
-  projectMember? = new Collection<ProjectMember>(this);
 }

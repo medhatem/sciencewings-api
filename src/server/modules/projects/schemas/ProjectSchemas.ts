@@ -12,7 +12,6 @@ export const ProjectTaskSchema = Joi.object({
 
 const ProjectSchema = Joi.object({
   active: Joi.boolean(),
-  dateEnd: Joi.date(),
   tags: Joi.array().items(Joi.object()),
   tasks: Joi.array().items(ProjectTaskSchema.keys()),
 });
