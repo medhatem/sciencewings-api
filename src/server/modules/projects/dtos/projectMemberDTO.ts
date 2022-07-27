@@ -7,8 +7,6 @@ import { ProjectDTO } from '@/modules/projects/dtos/projectDTO';
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 @JsonObject()
 @unique
-@JsonObject()
-@unique
 export class ProjectMemberDTO extends BaseBodyDTO {
   @JsonProperty()
   project: ProjectDTO;
