@@ -11,12 +11,12 @@ const UserSchema = Joi.object({
 });
 
 export const CreateUserSchema = UserSchema.keys({
-  firstname: Joi.string().required(),
-  lastname: Joi.string().required(),
-  email: Joi.string().required(),
-  phones: Joi.array().required(),
-  addresses: Joi.array().required(),
-  dateofbirth: Joi.date().required(),
+  firstname: Joi.string().required().messages({ 'any.required': 'VALIDATION.FIRSTNAME_REQUIRED' }),
+  lastname: Joi.string().required().messages({ 'any.required': 'VALIDATION.LASTNAME_REQUIRED' }),
+  email: Joi.string().required().messages({ 'any.required': 'VALIDATION.EMAIL_REQUIRED' }),
+  phones: Joi.array().required().messages({ 'any.required': 'VALIDATION.PHONE_REQUIRED' }),
+  addresses: Joi.array().required().messages({ 'any.required': 'VALIDATION.ADDRESS_REQUIRED' }),
+  dateofbirth: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATEOFBIRTH_REQUIRED' }),
   keycloakId: Joi.string().required(),
 });
 

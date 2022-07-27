@@ -1,8 +1,8 @@
 import * as Joi from 'joi';
 
 export const ProjectTaskSchema = Joi.object({
-  title: Joi.string().required(),
-  description: Joi.string().required(),
+  title: Joi.string().required().messages({ 'any.required': 'VALIDATION.TITLE_REQUIRED' }),
+  description: Joi.string().required().messages({ 'any.required': 'VALIDATION.DESCRIPTION_REQUIRED' }),
   priority: Joi.string().required(),
   assigned: Joi.array().items(Joi.number()),
   active: Joi.boolean(),
@@ -18,12 +18,12 @@ const ProjectSchema = Joi.object({
 });
 
 export const CreateProjectSchema = ProjectSchema.keys({
-  title: Joi.string().required(),
-  description: Joi.string().required(),
+  title: Joi.string().required().messages({ 'any.required': 'VALIDATION.TITLE_REQUIRED' }),
+  description: Joi.string().required().messages({ 'any.required': 'VALIDATION.DESCRIPTION_REQUIRED' }),
   organization: Joi.number().required(),
   managers: Joi.array().items(Joi.number()).required(),
   participants: Joi.array().items(Joi.number()).required(),
-  dateStart: Joi.date().required(),
+  dateStart: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATESTART_REQUIRED' }),
 });
 
 export const UpdateProjectSchema = ProjectSchema.keys({
