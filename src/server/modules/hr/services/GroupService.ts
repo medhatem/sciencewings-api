@@ -6,7 +6,6 @@ import { GroupDAO } from '@/modules/hr/daos/GroupDAO';
 import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
 import { log } from '@/decorators/log';
 import { GroupRO } from '@/modules/hr/routes/RequestObject';
-import { getConfig } from '@/configuration/Configuration';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
@@ -16,6 +15,7 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { applyToAll } from '@/utils/utilities';
 import { grpPrifix } from '@/modules/prifixConstants';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -23,6 +23,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     public dao: GroupDAO,
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -76,12 +77,8 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
     wrappedGroup.organization = organization;
 
-    const { id } = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
-      { id: organization.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
-      {
-        name: `${grpPrifix}${payload.name}`,
-      },
-    );
+    const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
+
     wrappedGroup.kcid = id;
     const createdGroup = await this.dao.create(wrappedGroup);
     if (payload.members) {
@@ -94,13 +91,8 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
         if (fetchedMember !== null) {
           createdGroup.members.add(fetchedMember);
-          await (await this.keycloak.getAdminClient()).users.addToGroup({
-            id: fetchedMember.user.keycloakId,
-            groupId: wrappedGroup.kcid,
-            realm: getConfig('keycloak.clientValidation.realmName'),
-          });
+          await this.keycloakUtils.addMemberToGroup(wrappedGroup.kcid, fetchedMember.user.keycloakId);
         }
-
         return fetchedMember;
       });
     }
@@ -117,12 +109,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     }
 
     if (fetchedGroup.name !== payload.name) {
-      await (await this.keycloak.getAdminClient()).groups.update(
-        { id: fetchedGroup.kcid, realm: getConfig('keycloak.clientValidation.realmName') },
-        {
-          name: `${grpPrifix}${payload.name}`,
-        },
-      );
+      await this.keycloakUtils.updateGroup(fetchedGroup.kcid, { name: `${grpPrifix}${payload.name}` });
     }
 
     this.wrapEntity(fetchedGroup, {
@@ -138,11 +125,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
-
-    await (await this.keycloak.getAdminClient()).groups.del({
-      id: fetchedGroup.kcid,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    await this.keycloakUtils.deleteGroup(fetchedGroup.kcid);
     await this.dao.remove(fetchedGroup);
 
     return groupId;
