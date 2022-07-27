@@ -146,6 +146,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
       ]);
     } catch (error) {
+      console.log('erroorrrr==== ', error);
       await Promise.all<any>(
         [
           keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
@@ -324,7 +325,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
+    const groups = await (
+      await this.keycloak.getAdminClient()
+    ).groups.findOne({
       id: fetchedorganization.kcid,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -333,7 +336,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
 
-    await (await this.keycloak.getAdminClient()).groups.del({
+    await (
+      await this.keycloak.getAdminClient()
+    ).groups.del({
       id: fetchedorganization.kcid,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });

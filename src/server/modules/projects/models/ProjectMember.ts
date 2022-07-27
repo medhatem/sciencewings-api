@@ -3,11 +3,15 @@ import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Project } from '@/modules/projects/models/Project';
-import { ProjectRole } from '@/modules/projects/models/projectRole';
 
 export enum ProjectMemberStatus {
   ACTIVE = 'active',
   DESACTIVE = 'desactive',
+}
+export enum RolesList {
+  MANAGER = 'manager',
+  PARTICIPANT = 'participant',
+  VIEWER = 'viewers',
 }
 
 @provide()
@@ -34,10 +38,10 @@ export class ProjectMember extends BaseModel<ProjectMember> {
   })
   member!: Member;
 
-  [PrimaryKeyType]?: [Member, Project];
+  [PrimaryKeyType]?: [Project, Member];
 
-  @OneToOne({ entity: () => ProjectRole, nullable: true })
-  role: ProjectRole;
+  @Property()
+  role?: RolesList;
 
   @Property()
   status: ProjectMemberStatus;

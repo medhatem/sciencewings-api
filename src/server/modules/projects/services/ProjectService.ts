@@ -14,6 +14,9 @@ import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInt
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { NotFoundError } from '@/Exceptions';
+import { UserRequest } from '@/types/UserRequest';
+import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
+import { RolesList, ProjectMemberStatus } from '@/modules/projects/models/ProjectMember';
 
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
@@ -23,6 +26,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     public organizationService: IOrganizationService,
     public projectTaskService: IProjectTaskService,
     public projectTagService: IProjectTagService,
+    public projectMemberService: IProjectMemberService,
   ) {
     super(dao);
   }
@@ -47,29 +51,34 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   }
   @log()
   @validate
-  public async createProject(@validateParam(CreateProjectSchema) payload: ProjectRO): Promise<number> {
+  public async createProject(
+    request: UserRequest,
+    @validateParam(CreateProjectSchema) payload: ProjectRO,
+  ): Promise<number> {
     const organization = await this.organizationService.get(payload.organization);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
     }
-
-    const projectMember = await this.memberService.getByCriteria(
-      { organization: payload.organization, user: payload.projectMember },
+    // the one who create the project is project manager
+    const member = await this.memberService.getByCriteria(
+      { organization: payload.organization, user: request.userId },
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
 
-    const createdProject: Project = await this.dao.create({
-      title: payload.title,
-      description: payload.description,
-      active: payload.active,
-      dateStart: payload.dateStart,
-      dateEnd: payload.dateEnd,
-      projectMember,
-      organization: organization,
+    const wrappedProject = this.wrapEntity(new Project(), {
+      ...payload,
+      organization,
     });
+    const project = await this.create(wrappedProject);
 
-    return createdProject.id;
+    this.projectMemberService.create({
+      member,
+      project,
+      role: RolesList.MANAGER,
+      status: ProjectMemberStatus.ACTIVE,
+    });
+    return project.id;
   }
 
   @log()
@@ -89,15 +98,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
       }
       project.organization = await fetchedOrganization;
-    }
-    if (payload.projectMember) {
-      const fetchedParticipants = await this.memberService.getByCriteria(
-        { organization: payload.organization, user: payload.projectMember },
-        FETCH_STRATEGY.ALL,
-        { refresh: true },
-      );
-
-      project.projectMember = await fetchedParticipants;
     }
 
     const updatedProjectResult = await this.update(

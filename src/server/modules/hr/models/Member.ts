@@ -158,6 +158,6 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({ entity: () => ProjectTask, nullable: true })
   task? = new Collection<ProjectTask>(this);
 
-  @ManyToOne({ entity: () => ProjectMember, onDelete: 'cascade', nullable: true })
+  @OneToOne({ entity: () => ProjectMember, nullable: true })
   projectMember? = new Collection<ProjectMember>(this);
 }

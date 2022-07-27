@@ -51,15 +51,31 @@ export class ProjectTaskRO {
 
 @JsonObject()
 @unique
+export class ProjectMemberRo {
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  user: number;
+
+  @JsonProperty()
+  project: number;
+
+  @JsonProperty()
+  status: string;
+
+  @JsonProperty()
+  role: string;
+}
+
+@JsonObject()
+@unique
 export class ProjectRO {
   @JsonProperty()
   title: string;
 
   @JsonProperty()
   description: string;
-
-  @JsonProperty()
-  projectMember: number[];
 
   @JsonProperty()
   active: boolean;
