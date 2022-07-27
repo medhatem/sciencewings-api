@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { ProjectMember, ProjectMemberStatus } from '@/modules/projects/models/ProjectMember';
+import { ProjectMember, ProjectMemberStatus, RolesList } from '@/modules/projects/models/ProjectMember';
 import { ProjectMemberDao } from '@/modules/projects/daos/projectMemberDao';
 import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
 import { ProjectMemberRo } from '@/modules/projects/routes/RequestObject';
@@ -42,7 +42,7 @@ export class ProjectMemberService extends BaseService<ProjectMember> implements 
     if (!project) {
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${id}` } });
     }
-    let createdProjectMember: ProjectMember;
+
     const projectMembers: ProjectMember[] = [];
 
     await applyToAll(payload, async (projectMember) => {
@@ -67,13 +67,19 @@ export class ProjectMemberService extends BaseService<ProjectMember> implements 
         throw new NotFoundError('MEMBER.NON_EXISTANT');
       }
 
-      const wrappedProjectMember = this.wrapEntity(new ProjectMember(), {
-        project,
-        member,
+      /* const wrappedProjectMember = this.wrapEntity(new ProjectMember(), {
         status: projectMember.status as ProjectMemberStatus,
         role: projectMember.role as ProjectMemberStatus,
       });
-      createdProjectMember = await this.create(wrappedProjectMember);
+      wrappedProjectMember.project = project;
+      wrappedProjectMember.member = member; */
+
+      const createdProjectMember = await this.create({
+        status: projectMember.status as ProjectMemberStatus,
+        role: projectMember.role as RolesList,
+        project,
+        member,
+      });
 
       projectMembers.push(createdProjectMember);
     });
