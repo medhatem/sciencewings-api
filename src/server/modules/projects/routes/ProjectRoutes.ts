@@ -91,7 +91,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Path('/:id/projectMembers/create')
   @Security()
   @LoggerStorage()
-  @Response<ProjectMembersCreateDTO>(201, 'Project created Successfully')
+  @Response<ProjectMembersCreateDTO>(201, 'Project member created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createProjectMembers(
