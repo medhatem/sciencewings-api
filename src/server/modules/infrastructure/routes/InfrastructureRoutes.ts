@@ -41,10 +41,8 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createInfrastructure(payload: InfrastructureRO): Promise<CreateInfrastructureDTO> {
     const result = await this.InfrastructureService.createInfrustructure(payload);
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new CreateInfrastructureDTO({ body: { id: result.getValue(), statusCode: 204 } });
+
+    return new CreateInfrastructureDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**
@@ -69,9 +67,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     @PathParam('id') id: number,
   ): Promise<UpdateInfrastructureDTO> {
     const result = await this.InfrastructureService.updateInfrastructure(payload, id);
-    if (result.isFailure) {
-      throw result.error;
-    }
-    return new UpdateInfrastructureDTO({ body: { id: result.getValue(), statusCode: 204 } });
+
+    return new UpdateInfrastructureDTO({ body: { id: result, statusCode: 204 } });
   }
 }

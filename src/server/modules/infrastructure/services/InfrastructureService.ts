@@ -4,10 +4,8 @@ import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { infrastructureDAO } from '@/modules/infrastructure/daos/infrastructureDAO';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { validate } from '@/decorators/validate';
-import { safeGuard } from '@/decorators/safeGuard';
 import { log } from '@/decorators/log';
 import { validateParam } from '@/decorators/validateParam';
-import { Result } from '@/utils/Result';
 import {
   CreateOrganizationSchema,
   UpdateInfrastructureSchema,
@@ -20,6 +18,9 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
+import { NotFoundError } from '@/Exceptions';
+import { ConflictError } from '@/Exceptions/ConflictError';
+import { BadRequest } from '@/Exceptions/BadRequestError';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -40,49 +41,46 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    * @param payload represents the infrastructure information to persist
    */
   @log()
-  @safeGuard()
   @validate
   public async createInfrustructure(
     @validateParam(CreateOrganizationSchema) payload: InfrastructureRO,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedOrganization = await this.organizationService.get(payload.organization);
-    if (fetchedOrganization.isFailure) {
-      return Result.fail(`failed to retreive org with id ${payload.organization}`);
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${payload.organization}` },
+        friendly: false,
+      });
     }
-    if (!fetchedOrganization.getValue()) {
-      return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
-    }
+
     const organization = fetchedOrganization.getValue();
 
     const responsables = payload.responsables;
     const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
       const fetchedUser = (await this.userService.get(responsable)).getValue();
-      if (fetchedUser.isFailure) {
-        return Result.fail(`fail to retreive user with id ${responsable}.`);
-      }
-      if (!fetchedUser.getValue()) {
-        return Result.notFound(`user with id ${responsable} does not exist.`);
+      if (!fetchedUser) {
+        throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
+          variables: { user: `${responsable}` },
+          friendly: false,
+        });
       }
       const fetchedRes = await this.memberService.getByCriteria(
         { user: fetchedUser, organization: organization },
         FETCH_STRATEGY.SINGLE,
       );
-      if (fetchedRes.isFailure) {
-        return Result.fail(
-          `fail to retreive the membeship of user ${responsable} with id on org with id${organization} `,
-        );
+      if (fetchedRes) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
+          variables: { member: `${responsable}` },
+          friendly: false,
+        });
       }
-      if (!fetchedRes.getValue()) {
-        return Result.notFound(`User with id ${responsable} is not member in org with id ${organization.id}.`);
-      }
-
       return fetchedRes.getValue();
     });
     // check if the key is unique
     const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
 
     if (fetchedKey) {
-      return Result.fail(`Infrustructure key ${payload.key} already exist.`);
+      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
 
     // check the existance of the resources
@@ -91,11 +89,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       const resources = payload.resources;
       fetchedResources = await applyToAll(resources, async (resource) => {
         const fetchedResource = await this.resourceService.get(resource);
-        if (fetchedResource.isFailure) {
-          return Result.fail(`fail in retreive Resource with id ${resource}`);
-        }
         if (!fetchedResource) {
-          return Result.notFound(`Resource with id ${resource} does not exist.`);
+          throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+            variables: { resource: `${resource}` },
+          });
         }
         return fetchedResource.getValue();
       });
@@ -106,7 +103,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!payload.parent) {
       fetchedParent = await this.dao.get(payload.parent);
       if (!fetchedParent) {
-        return Result.notFound(`Infrastructure with id: ${fetchedParent.id} does not exist.`);
+        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
     }
 
@@ -118,7 +115,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       parent: fetchedParent,
     });
     await this.dao.create(createdInfustructure);
-    return Result.ok<number>(createdInfustructure.id);
+    return createdInfustructure.id;
   }
 
   /**
@@ -126,48 +123,39 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    * @param payload represents the infrastructure information to update
    */
   @log()
-  @safeGuard()
   @validate
   public async updateInfrastructure(
     @validateParam(UpdateInfrastructureSchema) payload: UpdateinfrastructureRO,
     infraId: number,
-  ): Promise<Result<number>> {
+  ): Promise<number> {
     const fetchedInfrastructure = await this.dao.get(infraId);
     if (!fetchedInfrastructure) {
-      return Result.notFound(`infrustructure with id ${infraId} does not exist.`);
+      throw new NotFoundError('INFR.NON_EXISTANT_USER {{infr}}', { variables: { infr: `${infraId}` } });
     }
 
     let organization = Organization.getInstance();
     if (payload.organization) {
       const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (fetchedOrganization.isFailure) {
-        return Result.fail(`failed to retreive org with id ${payload.organization}`);
-      }
       if (!fetchedOrganization.getValue()) {
-        return Result.notFound(`Organization with id ${payload.organization} does not exist.`);
+        throw new NotFoundError('ORG.NON_EXISTANT_USER {{org}}', { variables: { org: `${payload.organization}` } });
       }
       organization = fetchedOrganization.getValue();
     }
     const responsables = payload.responsables;
     const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
       const fetchedUser = (await this.userService.get(responsable)).getValue();
-      if (fetchedUser.isFailure) {
-        return Result.fail(`fail to retreive user with id ${responsable}.`);
-      }
-      if (!fetchedUser.getValue()) {
-        return Result.notFound(`user with id ${responsable} does not exist.`);
+      if (!fetchedUser) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${responsable}` } });
       }
       const fetchedRes = await this.memberService.getByCriteria(
         { user: fetchedUser, organization: organization },
         FETCH_STRATEGY.SINGLE,
       );
-      if (fetchedRes.isFailure) {
-        return Result.fail(
-          `fail to retreive the membeship of user ${responsable} with id on org with id${organization} `,
-        );
-      }
       if (!fetchedRes.getValue()) {
-        return Result.notFound(`User with id ${responsable} is not member in org with id ${organization.id}.`);
+        throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
+          variables: { member: `${responsable}` },
+          friendly: false,
+        });
       }
 
       return fetchedRes.getValue();
@@ -176,7 +164,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     // check if the key is unique
     const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
     if (fetchedKey) {
-      return Result.fail(`Infrustructure key ${payload.key} already exist.`);
+      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
     // check the existance of the resources
     let fetchedResources;
@@ -184,11 +172,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       const resources = payload.resources;
       fetchedResources = await applyToAll(resources, async (resource) => {
         const fetchedResource = await this.resourceService.get(resource);
-        if (fetchedResource.isFailure) {
-          return Result.fail(`fail in retreive Resource with id ${resource}`);
-        }
         if (!fetchedResource) {
-          return Result.notFound(`Resource with id ${resource} does not exist.`);
+          throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+            variables: { resource: `${resource}` },
+          });
         }
         return fetchedResource.getValue();
       });
@@ -199,7 +186,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!payload.parent) {
       fetchedParent = await this.dao.get(payload.parent);
       if (!fetchedParent) {
-        return Result.notFound(`Infrastructure with id: ${fetchedParent.id} does not exist.`);
+        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
     }
 
@@ -212,12 +199,12 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       parent: fetchedParent,
     });
 
-    const createdResource = await this.dao.update(infrustructure);
-    if (!createdResource) {
-      return Result.fail(`infrustructure with id ${infraId} can not be updated.`);
+    const updatedResource = await this.dao.update(infrustructure);
+    if (!updatedResource) {
+      throw new BadRequest('USER.CANNOT_RESEND_INVITE_TO_ACTIVE_USER', { friendly: true });
     }
 
-    const id = createdResource.id;
-    return Result.ok<number>(id);
+    const id = updatedResource.id;
+    return id;
   }
 }
