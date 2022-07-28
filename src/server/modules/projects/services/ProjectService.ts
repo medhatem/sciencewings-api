@@ -6,7 +6,7 @@ import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { log } from '@/decorators/log';
-import { listMembersRo, ProjectRO } from '@/modules/projects/routes/RequestObject';
+import { listMembersRo, ProjectRO, UpdateProjectParticipantRO } from '@/modules/projects/routes/RequestObject';
 import { CreateProjectSchema, UpdateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
@@ -77,6 +77,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     const wrappedProject = this.wrapEntity(Project.getInstance(), {
       title: payload.title,
+      key: payload.key,
       description: payload.description,
       active: payload.active,
       dateStart: payload.dateStart,
@@ -142,6 +143,22 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${id}` } });
     }
 
+    const organization = await this.organizationService.get(payload.listMembers[0].orgId);
+
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${payload.listMembers[0].orgId}` },
+      });
+    }
+
+    // check if the organization really work on this project we want to add participant too.
+
+    const isThisOrgWorkOnProject = await this.dao.getByCriteria({ organization });
+    if (project !== isThisOrgWorkOnProject) {
+      throw new NotFoundError('PROJECT.NOT_FOR_THIS_ORG {{project,org}}', {
+        variables: { project: `${id}`, org: `${payload.listMembers[0].orgId}` },
+      });
+    }
     const projectMembers: ProjectMember[] = [];
 
     await applyToAll(payload.listMembers, async (projectMember) => {
@@ -149,13 +166,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
       if (!user) {
         throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${projectMember.userId}` } });
-      }
-      const organization = await this.organizationService.get(projectMember.orgId);
-
-      if (!organization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
-          variables: { org: `${projectMember.orgId}` },
-        });
       }
 
       let member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
@@ -179,5 +189,61 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     });
 
     return projectMembers;
+  }
+  @log()
+  public async getALLProjectParticipants(id: number): Promise<ProjectMember[]> {
+    const project = await this.dao.get(id);
+    if (!project) {
+      throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${id}` } });
+    }
+    const projectParticipants = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.ALL, {
+      refresh: true,
+    });
+    return projectParticipants;
+  }
+  @log()
+  public async updateProjectParticipant(
+    projectId: number,
+    payload: UpdateProjectParticipantRO,
+  ): Promise<ProjectMember> {
+    const project = await this.dao.get(projectId);
+    if (!project) {
+      throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${projectId}` } });
+    }
+    const user = await this.userService.get(payload.userId);
+
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload.userId}` } });
+    }
+    const organization = await this.organizationService.get(payload.orgId);
+
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${payload.orgId}` },
+      });
+    }
+    let member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
+      populate: true,
+    });
+
+    if (!member) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT');
+    }
+    console.log('after fetch partici');
+    const fetchedProjectParticipants = await this.projectMemberService.getByCriteria(
+      { project, member },
+      FETCH_STRATEGY.SINGLE,
+      {
+        populate: true,
+      },
+    );
+
+    const wrappedParticipant = this.wrapEntity(fetchedProjectParticipants, {
+      ...fetchedProjectParticipants,
+      role: payload.role || fetchedProjectParticipants.role,
+      status: payload.status || fetchedProjectParticipants.role,
+    });
+    const updatedParticipant = await this.update(wrappedParticipant);
+    return updatedParticipant;
   }
 }

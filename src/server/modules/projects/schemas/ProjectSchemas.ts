@@ -18,6 +18,7 @@ const ProjectSchema = Joi.object({
 
 export const CreateProjectSchema = ProjectSchema.keys({
   title: Joi.string().required().messages({ 'any.required': 'VALIDATION.TITLE_REQUIRED' }),
+  key: Joi.string().required().messages({ 'any.required': 'VALIDATION.KEY_REQUIRED' }),
   description: Joi.string().required().messages({ 'any.required': 'VALIDATION.DESCRIPTION_REQUIRED' }),
   organization: Joi.number().required(),
   dateStart: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATESTART_REQUIRED' }),
@@ -26,6 +27,7 @@ export const CreateProjectSchema = ProjectSchema.keys({
 
 export const UpdateProjectSchema = ProjectSchema.keys({
   title: Joi.string(),
+  key: Joi.string(),
   description: Joi.string(),
   organization: Joi.number(),
   dateStart: Joi.date(),

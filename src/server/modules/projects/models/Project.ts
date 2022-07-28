@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -24,6 +24,10 @@ export class Project extends BaseModel<Project> {
 
   @Property()
   title: string;
+
+  @Unique()
+  @Property()
+  key: string;
 
   @Property()
   description: string;
@@ -58,8 +62,8 @@ export class Project extends BaseModel<Project> {
   })
   public projectBoard? = new Collection<ProjectBoard>(this);
 
-  @ManyToOne({ entity: () => Organization, nullable: true, onDelete: 'cascade' })
-  organization?: Organization;
+  @ManyToOne({ entity: () => Organization, nullable: false, onDelete: 'cascade' })
+  organization: Organization;
 
   // @ManyToMany({ entity: () => ProjectMember, pivotEntity: () => ProjectMember })
   // projectMember? = new Collection<ProjectMember>(this);

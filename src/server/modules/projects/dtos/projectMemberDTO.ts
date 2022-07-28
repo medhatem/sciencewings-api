@@ -12,6 +12,26 @@ export class ProjectMemberDTO extends BaseBodyDTO {
   project: ProjectDTO;
   @JsonProperty()
   member: MemberDTO;
+  @JsonProperty()
+  role: string;
+  @JsonProperty()
+  status: string;
+}
+@JsonObject()
+@unique
+export class ProjectMemberBodyDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: ProjectMemberDTO,
+    beforeDeserialize,
+  })
+  data: Array<ProjectMemberDTO>;
+}
+
+@JsonObject()
+@unique
+export class ProjectMemberRequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: ProjectMemberBodyDTO;
 }
 
 @JsonObject()

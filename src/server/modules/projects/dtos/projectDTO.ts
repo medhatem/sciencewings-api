@@ -16,6 +16,9 @@ export class ProjectDTO extends BaseBodyDTO {
   title: string;
 
   @JsonProperty()
+  key: string;
+
+  @JsonProperty()
   description: string;
 
   @JsonProperty({

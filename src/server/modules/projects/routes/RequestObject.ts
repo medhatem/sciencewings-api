@@ -78,6 +78,9 @@ export class ProjectRO {
   title: string;
 
   @JsonProperty()
+  key: string;
+
+  @JsonProperty()
   description: string;
 
   @JsonProperty()
@@ -91,4 +94,45 @@ export class ProjectRO {
 
   @JsonProperty()
   organization: number;
+}
+
+@JsonObject()
+@unique
+export class UpdateProjectRO {
+  @JsonProperty()
+  title?: string;
+
+  @JsonProperty()
+  key?: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  active?: boolean;
+
+  @JsonProperty()
+  dateStart?: Date;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  organization?: number;
+}
+
+@JsonObject()
+@unique
+export class UpdateProjectParticipantRO {
+  @JsonProperty()
+  orgId: number;
+
+  @JsonProperty()
+  userId: number;
+
+  @JsonProperty()
+  status: string;
+
+  @JsonProperty()
+  role: string;
 }
