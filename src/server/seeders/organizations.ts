@@ -1,154 +1,92 @@
-import {
-  Collection,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryKey,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
-import { container, provide } from '@/di/index';
-
-import { Address } from '@/modules/address/models/Address';
-import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Job } from '@/modules/hr/models/Job';
-import { Member } from '@/modules/hr/models/Member';
-import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
+import { Address, AddressType } from '@/modules/address/models/Address';
+import { AddressDao } from '@/modules/address/daos/AddressDAO';
+import { Logger } from '@/utils/Logger';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
+import { OrganizationLabelDao } from '@/modules/organizations/daos/OrganizationLabelDao';
 import { Phone } from '@/modules/phones/models/Phone';
-import { Resource } from '@/modules/resources/models/Resource';
-import { User } from '@/modules/users/models/User';
-import { WorkLocation } from '@/modules/hr/models/WorkLocation';
-import { Infrastructure } from '@/modules/infrastructure/models';
+import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
+import { applyToAll } from '@/utils/utilities';
+import { connection } from '@/db/index';
+import { faker } from '@faker-js/faker';
+import { provideSingleton } from '@/di/index';
+import { wrap } from '@mikro-orm/core';
 
-export enum OrganizationType {
-  PUBLIC = 'Public',
-  SERVICE = 'Service',
-  INSTITUT = 'Institut',
-}
+/**
+ * create organizations
+ * by making for each one { Address, Phone, Labels }
+ * and assing a user to it
+ */
+@provideSingleton()
+export class SeedOrganizations {
+  constructor(
+    private dao: OrganizationDao,
+    private addressDAO: AddressDao,
+    private phoneDAO: PhoneDao,
+    private labelDAO: OrganizationLabelDao,
+    private logger: Logger,
+  ) {}
 
-@provide()
-@Entity()
-export class Organization extends BaseModel<Organization> {
-  constructor() {
-    super();
+  async createOgranizations(users: any) {
+    try {
+      const repository = connection.em.getRepository(Organization as any);
+      await applyToAll(users, async (user: any) => {
+        const address = await this.addressDAO.create(
+          wrap(new Address()).assign({
+            country: faker.address.country(),
+            province: faker.address.state(),
+            code: faker.address.countryCode(),
+            type: AddressType.ORGANIZATION,
+            street: faker.address.streetAddress(),
+            apartment: faker.datatype.number().toString(),
+            city: faker.address.city(),
+          }),
+        );
+        const phone = await this.phoneDAO.create(
+          wrap(new Phone()).assign({
+            phoneLabel: 'personal',
+            phoneCode: '+213',
+            phoneNumber: faker.phone.phoneNumberFormat(3),
+          }),
+        );
+        const org: any = {
+          name: faker.company.companyName(),
+          email: faker.internet.email(),
+          type: 'Public',
+        };
+
+        org.phone = phone;
+        org.direction = user;
+        org.admin_contact = user;
+        org.address = [address];
+        org.labels = [address];
+
+        const organization: any = repository.create(org);
+        repository.persist(organization);
+        return organization;
+      });
+
+      await repository.flush();
+
+      return await this.dao.getAll();
+    } catch (error) {
+      Logger.getInstance().error(error);
+      return null;
+    }
   }
 
-  static getInstance(): Organization {
-    return container.get(Organization);
+  async createLabels(organizations: any) {
+    try {
+      await applyToAll(organizations, async (organization: any) => {
+        await this.labelDAO.create({ name: faker.company.bsNoun(), organization: organization.id });
+      });
+
+      return await this.dao.getAll();
+    } catch (error) {
+      this.logger.error(error);
+      return null;
+    }
   }
-
-  @PrimaryKey()
-  id?: number;
-
-  @Property()
-  kcid!: string;
-
-  @Property()
-  memberGroupkcid!: string;
-
-  @Property()
-  adminGroupkcid!: string;
-
-  @Unique({ name: 'organization_name_uniq' })
-  @Property()
-  name!: string;
-
-  @Property({ nullable: true })
-  description!: string;
-
-  @Property()
-  email!: string;
-
-  @ManyToMany({
-    entity: () => Phone,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
-  })
-  public phones = new Collection<Phone>(this);
-
-  // e.i: Public, Service, Institut
-  @Property()
-  type!: OrganizationType;
-
-  @ManyToMany({
-    entity: () => Address,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
-  })
-  public address = new Collection<Address>(this);
-
-  @OneToMany({
-    entity: () => OrganizationLabel,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
-  })
-  public labels? = new Collection<OrganizationLabel>(this);
-
-  @OneToMany({
-    entity: () => WorkLocation,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
-  })
-  public worklocations? = new Collection<WorkLocation>(this);
-
-  @OneToMany({
-    entity: () => Job,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
-  })
-  public jobs? = new Collection<Job>(this);
-
-  @OneToMany({ entity: () => Member, mappedBy: (entity) => entity.organization, eager: false, lazy: true })
-  members? = new Collection<Member>(this);
-
-  @Property({ nullable: true })
-  socialFacebook?: string;
-
-  @Property({ nullable: true })
-  socialTwitter?: string;
-
-  @Property({ nullable: true })
-  socialGithub?: string;
-
-  @Property({ nullable: true })
-  socialLinkedin?: string;
-
-  @Property({ nullable: true })
-  socialYoutube?: string;
-
-  @Property({ nullable: true })
-  socialInstagram?: string;
-
-  @OneToOne({
-    entity: () => User,
-    unique: false,
-  })
-  public direction!: User;
-
-  @OneToMany({ entity: () => Resource, nullable: true, mappedBy: (entity) => entity.organization })
-  resources? = new Collection<Resource>(this);
-
-  @ManyToOne({
-    entity: () => Organization,
-    nullable: true,
-  })
-  public parent?: Organization;
-
-  @OneToMany({
-    entity: () => Organization,
-    mappedBy: 'parent',
-    lazy: true,
-    eager: false,
-  })
-  public children? = new Collection<Organization>(this);
-
-  @OneToMany({ entity: () => Infrastructure, mappedBy: (entity) => entity.organization })
-  infrastructure? = new Collection<Infrastructure>(this);
 }
+
+// export const updateUsers = () => {};
