@@ -10,34 +10,34 @@ import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 @unique
 export class ProjectDTO extends BaseBodyDTO {
   @JsonProperty()
-  id: number;
+  id?: number;
 
   @JsonProperty()
-  title: string;
+  title?: string;
 
   @JsonProperty()
-  key: string;
+  key?: string;
 
   @JsonProperty()
-  description: string;
+  description?: string;
 
   @JsonProperty({
     type: MemberDTO,
     beforeDeserialize,
   })
-  managers: Array<MemberDTO>;
+  managers?: Array<MemberDTO>;
 
   @JsonProperty({
     type: MemberDTO,
     beforeDeserialize,
   })
-  participants: Array<MemberDTO>;
+  participants?: Array<MemberDTO>;
 
   @JsonProperty()
-  active: boolean;
+  active?: boolean;
 
   @JsonProperty()
-  dateStart: Date;
+  dateStart?: Date;
 
   @JsonProperty()
   dateEnd?: Date;

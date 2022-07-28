@@ -5,7 +5,12 @@ import { LoggerStorage } from '@/decorators/loggerStorage';
 import { ContextRequest, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { CreateProjectDTO, GETProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
-import { listMembersRo, ProjectRO, UpdateProjectParticipantRO } from '@/modules/projects/routes/RequestObject';
+import {
+  listMembersRo,
+  ProjectRO,
+  UpdateProjectParticipantRO,
+  UpdateProjectRO,
+} from '@/modules/projects/routes/RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { UserRequest } from '@/types/UserRequest';
@@ -61,7 +66,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   }
 
   /**
-   * Update a project record in the database
+   * Update a project in the database
    *
    * @param payload
    * @param project id
@@ -73,10 +78,10 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Response<UpdateProjectDTO>(204, 'Project updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateProject(payload: ProjectRO, @PathParam('id') id: number): Promise<UpdateProjectDTO> {
+  public async updateProject(payload: UpdateProjectRO, @PathParam('id') id: number): Promise<UpdateProjectDTO> {
     const result = await this.projectService.updateProject(payload, id);
 
-    return new UpdateProjectDTO({ body: { projectId: result, statusCode: 204 } });
+    return new UpdateProjectDTO({ body: { id: result, statusCode: 204 } });
   }
 
   /**

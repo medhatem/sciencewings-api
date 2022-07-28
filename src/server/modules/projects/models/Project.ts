@@ -20,7 +20,7 @@ export class Project extends BaseModel<Project> {
   }
 
   @PrimaryKey()
-  id?: number;
+  id: number;
 
   @Property()
   title: string;

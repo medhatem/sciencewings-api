@@ -29,7 +29,6 @@ export const UpdateProjectSchema = ProjectSchema.keys({
   title: Joi.string(),
   key: Joi.string(),
   description: Joi.string(),
-  organization: Joi.number(),
   dateStart: Joi.date(),
   dateEnd: Joi.date(),
 });

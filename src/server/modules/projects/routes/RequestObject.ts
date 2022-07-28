@@ -68,7 +68,17 @@ export class ProjectMemberRo {
 @JsonObject()
 @unique
 export class listMembersRo {
+  @JsonProperty()
   listMembers: ProjectMemberRo[];
+}
+
+@JsonObject()
+@unique
+export class ProjectResponsableRO {
+  @JsonProperty()
+  userId: number;
+  @JsonProperty()
+  orgId: number;
 }
 
 @JsonObject()
@@ -116,9 +126,6 @@ export class UpdateProjectRO {
 
   @JsonProperty()
   dateEnd?: Date;
-
-  @JsonProperty()
-  organization?: number;
 }
 
 @JsonObject()

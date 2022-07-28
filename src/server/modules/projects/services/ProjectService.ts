@@ -6,7 +6,12 @@ import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { log } from '@/decorators/log';
-import { listMembersRo, ProjectRO, UpdateProjectParticipantRO } from '@/modules/projects/routes/RequestObject';
+import {
+  listMembersRo,
+  ProjectRO,
+  UpdateProjectParticipantRO,
+  UpdateProjectRO,
+} from '@/modules/projects/routes/RequestObject';
 import { CreateProjectSchema, UpdateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
@@ -104,7 +109,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   @log()
   @validate
   public async updateProject(
-    @validateParam(UpdateProjectSchema) payload: ProjectRO,
+    @validateParam(UpdateProjectSchema) payload: UpdateProjectRO,
     projetcId: number,
   ): Promise<number> {
     const project = await this.dao.get(projetcId);
@@ -112,22 +117,19 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${projetcId}` } });
     }
 
-    if (payload.organization) {
-      const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (!fetchedOrganization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
-      }
-      project.organization = await fetchedOrganization;
-    }
-
     const updatedProjectResult = await this.update(
       this.wrapEntity(project, {
         ...project,
-        ...payload,
+        title: payload.title || project.title,
+        key: payload.key || project.key,
+        description: payload.description || project.description,
+        active: payload.active || project.active,
+        dateStart: payload.dateStart || project.dateStart,
+        dateEnd: payload.dateEnd || project.dateEnd,
       }),
     );
 
-    return (await updatedProjectResult).id;
+    return updatedProjectResult.id;
   }
 
   /**
@@ -190,6 +192,12 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     return projectMembers;
   }
+
+  /**
+   * Retrieve all project's participant
+   * @param id project id
+   * @returns
+   */
   @log()
   public async getALLProjectParticipants(id: number): Promise<ProjectMember[]> {
     const project = await this.dao.get(id);
@@ -201,6 +209,13 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     });
     return projectParticipants;
   }
+
+  /**
+   * update Role and status of project participant
+   * @param projectId
+   * @param payload
+   * @returns
+   */
   @log()
   public async updateProjectParticipant(
     projectId: number,
