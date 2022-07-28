@@ -1,7 +1,7 @@
 import { HttpError } from 'typescript-rest/dist/server/model/errors';
 import { Replacements } from 'i18n';
 
-export type Vars = number | number[] | Replacements;
+export type Vars = number | number[] | string | Replacements;
 
 export interface ErrorParamsOptions {
   friendly?: boolean;

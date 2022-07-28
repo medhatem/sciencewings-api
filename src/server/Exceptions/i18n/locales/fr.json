@@ -33,6 +33,7 @@
   "PROJECT.NON_EXISTANT {{project}}": "Projet: {{project}} est introuvable. ",
   "PROJECT.NOT_FOR_THIS_ORG {{project,org}}": "Le projet: {{project}} N'appartient pas à cette organisation: {{org}}.",
   "PROJECT.KEY_IS_NOT_UNIQUE {{key}}": "Le clé de projet: {{key}} est déja utilisé.",
+  "PROJECT.MEMBER_IS_ALREADY_PARTICIPATE_IN_PROJECT {{member}}": "Le membre: {{member}} travaille déjà sur ce projet.",
 
   "GROUP.NON_EXISTANT {{group}}": "groupe: {{group}} est introuvable",
 

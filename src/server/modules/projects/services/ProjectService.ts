@@ -24,6 +24,7 @@ import { RolesList, ProjectMemberStatus, ProjectMember } from '@/modules/project
 import { IUserService } from '@/modules/users';
 import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
+import { ConflictError } from '@/Exceptions/ConflictError';
 
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
@@ -124,7 +125,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (payload.key) {
       const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
       if (ifProjectKeyIsUnique) {
-        throw new ValidationError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', { variables: { key: `${payload.key}` } });
+        throw new ConflictError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', { variables: { key: `${payload.key}` } });
       }
     }
 
@@ -165,7 +166,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     // check if the organization really work on this project we want to add participant too.
-
     const isThisOrgWorkOnProject = await this.dao.getByCriteria({ organization });
     if (project !== isThisOrgWorkOnProject) {
       throw new NotFoundError('PROJECT.NOT_FOR_THIS_ORG {{project,org}}', {
@@ -189,6 +189,18 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         throw new NotFoundError('MEMBER.NON_EXISTANT');
       }
 
+      const checkIfMemberAlreadyInProject: ProjectMember = await this.projectMemberService.getByCriteria(
+        { member, project },
+        FETCH_STRATEGY.SINGLE,
+        {
+          populate: true,
+        },
+      );
+      if (checkIfMemberAlreadyInProject) {
+        throw new ConflictError('PROJECT.MEMBER_IS_ALREADY_PARTICIPATE_IN_PROJECT {{member}}', {
+          variables: { member: `${member.name}` },
+        });
+      }
       const wrappedProjectMember = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
         status: projectMember.status as ProjectMemberStatus,
         role: projectMember.role as ProjectMemberStatus,
