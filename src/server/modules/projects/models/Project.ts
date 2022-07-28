@@ -41,7 +41,7 @@ export class Project extends BaseModel<Project> {
   @Property()
   dateStart: Date;
 
-  @Property({ nullable: true })
+  @Property()
   dateEnd: Date;
 
   @OneToMany({

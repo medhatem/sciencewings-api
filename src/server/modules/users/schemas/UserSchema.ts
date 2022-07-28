@@ -1,8 +1,8 @@
 import Joi = require('joi');
 
 const UserSchema = Joi.object({
-  firstname: Joi.string().allow(''),
-  lastname: Joi.string().allow(''),
+  firstname: Joi.string(),
+  lastname: Joi.string(),
   email: Joi.string(),
   phones: Joi.array(),
   addresses: Joi.array(),
