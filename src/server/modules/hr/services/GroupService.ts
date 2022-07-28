@@ -112,10 +112,12 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       await this.keycloakUtils.updateGroup(fetchedGroup.kcid, { name: `${grpPrifix}${payload.name}` });
     }
 
-    this.wrapEntity(fetchedGroup, {
+    const wrappedGroup = this.wrapEntity(fetchedGroup, {
       ...fetchedGroup,
       ...payload,
     });
+    await this.dao.update(wrappedGroup);
+
     return fetchedGroup.id;
   }
 
