@@ -9,7 +9,11 @@ export const CreateOrganizationSchema = Joi.object({
   organization: Joi.number().required(),
 });
 export const UpdateInfrastructureSchema = Joi.object({
-  name: Joi.string(),
   description: Joi.string().allow(''),
+  name: Joi.string(),
   key: Joi.string(),
+  resources: Joi.array(),
+  responsables: Joi.array(),
+  parent: Joi.number().allow(null),
+  organization: Joi.number(),
 });

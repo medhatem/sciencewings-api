@@ -16,11 +16,10 @@ import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { NotFoundError } from '@/Exceptions';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { BadRequest } from '@/Exceptions/BadRequestError';
+import { Organization } from '@/modules/organizations';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -36,85 +35,123 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   static getInstance(): IInfrastructureService {
     return container.get(IInfrastructureService);
   }
+  /** Get one infrastructure of an organization ,
+   * @param infId of the requested infrastructure
+   */
+  @log()
+  public async getOrganizationInfrastructureByOrgId(infId: number): Promise<Infrastructure> {
+    const fetchedInfrastructure = await this.dao.get(infId);
+
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', {
+        variables: { infra: `${infId}` },
+        friendly: false,
+      });
+    }
+
+    return fetchedInfrastructure;
+  }
+
+  /** Get all the infrastructure of an organization ,
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  public async getAllOgranizationInfrastructures(orgId: number): Promise<Infrastructure[]> {
+    console.log('inside');
+    const fetchedOrganization = await this.organizationService.get(orgId);
+
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${orgId}` },
+        friendly: false,
+      });
+    }
+    console.log('fetchedOrganization.infrastructure.init()', fetchedOrganization.infrastructure.init());
+    return await fetchedOrganization.infrastructure.init();
+  }
+
   /**
    * create an infrastructure
    * @param payload represents the infrastructure information to persist
    */
   @log()
   @validate
-  public async createInfrustructure(
+  public async createinfrastructure(
     @validateParam(CreateOrganizationSchema) payload: InfrastructureRO,
   ): Promise<number> {
-    const fetchedOrganization = await this.organizationService.get(payload.organization);
-    if (!fetchedOrganization) {
+    const organization = await this.organizationService.get(payload.organization);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
         variables: { org: `${payload.organization}` },
         friendly: false,
       });
     }
 
-    const organization = fetchedOrganization.getValue();
-
-    const responsables = payload.responsables;
-    const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
-      const fetchedUser = (await this.userService.get(responsable)).getValue();
-      if (!fetchedUser) {
-        throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
-          variables: { user: `${responsable}` },
-          friendly: false,
-        });
-      }
-      const fetchedRes = await this.memberService.getByCriteria(
-        { user: fetchedUser, organization: organization },
-        FETCH_STRATEGY.SINGLE,
-      );
-      if (fetchedRes) {
-        throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
-          variables: { member: `${responsable}` },
-          friendly: false,
-        });
-      }
-      return fetchedRes.getValue();
-    });
+    let fetchedResponsables;
+    if (payload.responsables) {
+      const responsables = payload.responsables;
+      await responsables.map(async (res) => {
+        // await applyToAll(responsables, async (res) => {
+        const user = await this.userService.get(res);
+        if (!user) {
+          throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
+            variables: { user: `${res}` },
+            friendly: false,
+          });
+        }
+        const responsable = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+        if (!responsable) {
+          throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
+            variables: { member: `${res}` },
+            friendly: false,
+          });
+        }
+        fetchedResponsables.push(responsable);
+      });
+    }
     // check if the key is unique
-    const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
+    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
 
-    if (fetchedKey) {
+    if (keyExistingTest) {
       throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
 
     // check the existance of the resources
     let fetchedResources;
-    if (!payload.resources) {
+    if (payload.resources) {
       const resources = payload.resources;
-      fetchedResources = await applyToAll(resources, async (resource) => {
+      await applyToAll(resources, async (resource) => {
         const fetchedResource = await this.resourceService.get(resource);
         if (!fetchedResource) {
           throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
             variables: { resource: `${resource}` },
           });
         }
-        return fetchedResource.getValue();
+        fetchedResources.push(fetchedResource);
       });
     }
 
     // check the existance of the parent
     let fetchedParent;
-    if (!payload.parent) {
+    if (payload.parent) {
       fetchedParent = await this.dao.get(payload.parent);
       if (!fetchedParent) {
         throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
     }
 
-    const createdInfustructure = this.wrapEntity(Infrastructure.getInstance(), {
-      ...payload,
-      organization,
-      responsibles: fetchedResponsables,
-      resources: fetchedResources,
-      parent: fetchedParent,
+    const wrappedInfustructure = this.wrapEntity(new Infrastructure(), {
+      name: payload.name,
+      description: payload.description,
+      key: payload.key,
     });
-    await this.dao.create(createdInfustructure);
+    wrappedInfustructure.organization = organization;
+    wrappedInfustructure.resources = fetchedResources;
+    wrappedInfustructure.responsables = fetchedResponsables;
+    wrappedInfustructure.parent = fetchedParent;
+
+    const createdInfustructure = await this.create(wrappedInfustructure);
     return createdInfustructure.id;
   }
 
@@ -130,81 +167,83 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   ): Promise<number> {
     const fetchedInfrastructure = await this.dao.get(infraId);
     if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFR.NON_EXISTANT_USER {{infr}}', { variables: { infr: `${infraId}` } });
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
-
-    let organization = Organization.getInstance();
+    const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
+      ...fetchedInfrastructure,
+      name: payload.name || fetchedInfrastructure.name,
+      description: payload.description || fetchedInfrastructure.description,
+      key: payload.key || fetchedInfrastructure.key,
+    });
+    let organization: Organization;
     if (payload.organization) {
-      const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (!fetchedOrganization.getValue()) {
-        throw new NotFoundError('ORG.NON_EXISTANT_USER {{org}}', { variables: { org: `${payload.organization}` } });
-      }
-      organization = fetchedOrganization.getValue();
-    }
-    const responsables = payload.responsables;
-    const fetchedResponsables = await applyToAll(responsables, async (responsable) => {
-      const fetchedUser = (await this.userService.get(responsable)).getValue();
-      if (!fetchedUser) {
-        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${responsable}` } });
-      }
-      const fetchedRes = await this.memberService.getByCriteria(
-        { user: fetchedUser, organization: organization },
-        FETCH_STRATEGY.SINGLE,
-      );
-      if (!fetchedRes.getValue()) {
-        throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
-          variables: { member: `${responsable}` },
+      organization = await this.organizationService.get(payload.organization);
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+          variables: { org: `${payload.organization}` },
           friendly: false,
         });
       }
+      wrappedInfustructure.organization = organization;
+    }
 
-      return fetchedRes.getValue();
-    });
-
+    let fetchedResponsables;
+    if (payload.responsables) {
+      const responsables = payload.responsables;
+      await responsables.map(async (res) => {
+        // await applyToAll(responsables, async (res) => {
+        const user = await this.userService.get(res);
+        if (!user) {
+          throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
+            variables: { user: `${res}` },
+            friendly: false,
+          });
+        }
+        const responsable = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+        if (!responsable) {
+          throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
+            variables: { member: `${res}` },
+            friendly: false,
+          });
+        }
+        fetchedResponsables.push(responsable);
+      });
+      wrappedInfustructure.responsables = fetchedResponsables;
+    }
     // check if the key is unique
-    const fetchedKey = await this.dao.getByCriteria({ key: payload.key });
-    if (fetchedKey) {
+    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
+
+    if (keyExistingTest) {
       throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
+
     // check the existance of the resources
     let fetchedResources;
-    if (!payload.resources) {
+    if (payload.resources) {
       const resources = payload.resources;
-      fetchedResources = await applyToAll(resources, async (resource) => {
+      await applyToAll(resources, async (resource) => {
         const fetchedResource = await this.resourceService.get(resource);
         if (!fetchedResource) {
           throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
             variables: { resource: `${resource}` },
           });
         }
-        return fetchedResource.getValue();
+        fetchedResources.push(fetchedResource);
       });
+      wrappedInfustructure.resources.add(fetchedResources);
     }
 
     // check the existance of the parent
     let fetchedParent;
-    if (!payload.parent) {
+    if (payload.parent) {
       fetchedParent = await this.dao.get(payload.parent);
       if (!fetchedParent) {
         throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
+      wrappedInfustructure.parent = fetchedParent;
     }
 
-    const infrustructure = this.wrapEntity(fetchedInfrastructure, {
-      ...fetchedInfrastructure,
-      ...payload,
-      organization,
-      responsibles: fetchedResponsables,
-      resources: fetchedResources,
-      parent: fetchedParent,
-    });
-
-    const updatedResource = await this.dao.update(infrustructure);
-    if (!updatedResource) {
-      throw new BadRequest('USER.CANNOT_RESEND_INVITE_TO_ACTIVE_USER', { friendly: true });
-    }
-
-    const id = updatedResource.id;
-    return id;
+    const createdInfustructure = await this.update(wrappedInfustructure);
+    return createdInfustructure.id;
   }
 }

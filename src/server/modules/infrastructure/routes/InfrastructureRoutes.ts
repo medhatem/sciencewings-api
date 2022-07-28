@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@/di/index';
-import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
@@ -9,6 +9,8 @@ import { Response } from 'typescript-rest-swagger';
 import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructure/routes/RequestObject';
 import {
   CreateInfrastructureDTO,
+  GetAllInfrastructuresDTO,
+  GetInfrastructureDTO,
   infrastructureGetDTO,
   UpdateInfrastructureDTO,
 } from '@/modules/infrastructure/dtos/InfrastructureDTO';
@@ -25,12 +27,43 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   }
 
   /**
-   * @override
-   * create an infrustructure in the database
-   *
-   * @param payload
-   * Should contain infrustructure data
-   *
+   * retrieve one infrustructure by id
+   * @param infId infrustructure id
+   */
+  @GET
+  @Path('getInfById/:infId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetInfrastructureDTO>(200, 'Organization infrustructure retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getOrganizationInfrastructureByOrgId(@PathParam('infId') infId: number): Promise<GetInfrastructureDTO> {
+    const result = await this.InfrastructureService.getOrganizationInfrastructureByOrgId(infId);
+    return new GetInfrastructureDTO({ body: { result, statusCode: 200 } });
+  }
+  /**
+   * retrieve Organization infrustructures by organization id
+   * @param orgId organization id
+   */
+  @GET
+  @Path('getAll/:orgId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllOrganizationInfrastructuresByOrgId(
+    @PathParam('orgId') orgId: number,
+  ): Promise<GetAllInfrastructuresDTO> {
+    console.log('r1');
+    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(orgId);
+
+    return new GetAllInfrastructuresDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+  }
+
+  /**
+   * @override create an infrustructure in the database
+   * @param payload Should contain infrustructure data
    */
   @POST
   @Path('create')
@@ -40,20 +73,15 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createInfrastructure(payload: InfrastructureRO): Promise<CreateInfrastructureDTO> {
-    const result = await this.InfrastructureService.createInfrustructure(payload);
+    const result = await this.InfrastructureService.createinfrastructure(payload);
 
-    return new CreateInfrastructureDTO({ body: { id: result, statusCode: 204 } });
+    return new CreateInfrastructureDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**
-   * @override
    * Update a infrustructure in the database
-   *
-   * @param payload
-   * Should contain infrustructure data that include infrustructure data with its id
-   * @param id
-   * id of the requested infrustructure
-   *
+   * @param payload Should contain infrustructure data that include infrustructure data with its id
+   * @param id id of the requested infrustructure
    */
   @PUT
   @Path('update/:id')

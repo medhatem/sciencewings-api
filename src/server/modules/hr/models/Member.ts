@@ -78,8 +78,6 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({
     entity: () => Infrastructure,
     nullable: true,
-    lazy: true,
-    eager: false,
   })
   Infrastructures? = new Collection<Infrastructure>(this);
 

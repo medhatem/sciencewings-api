@@ -11,7 +11,7 @@ export class InfrastructureRO {
   description?: string;
 
   @JsonProperty()
-  key!: number;
+  key!: string;
 
   @JsonProperty()
   responsables?: Array<number>;
