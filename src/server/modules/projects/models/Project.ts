@@ -33,7 +33,7 @@ export class Project extends BaseModel<Project> {
   description: string;
 
   @ManyToMany({ entity: () => Member, owner: true, pivotEntity: () => ProjectMember })
-  member = new Collection<Member>(this);
+  members = new Collection<Member>(this);
 
   @Property()
   active: boolean;

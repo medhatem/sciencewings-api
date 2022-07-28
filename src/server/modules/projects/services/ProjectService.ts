@@ -45,8 +45,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   }
 
   /**
-   * Retrieve organization projects
-   *
+   * Retrieve all organization projects
    * @param id of organization
    */
   @log()
@@ -61,7 +60,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   }
 
   /**
-   * create new project
+   * create a new project in database
    * @userId id
    * @param payload the project payload
    */
@@ -80,7 +79,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
-    // the one who create the project is project manager
+    // add the user who create the project as a manager of project
     const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE, {
       populate: true,
     });

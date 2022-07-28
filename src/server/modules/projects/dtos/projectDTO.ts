@@ -25,13 +25,7 @@ export class ProjectDTO extends BaseBodyDTO {
     type: MemberDTO,
     beforeDeserialize,
   })
-  managers?: Array<MemberDTO>;
-
-  @JsonProperty({
-    type: MemberDTO,
-    beforeDeserialize,
-  })
-  participants?: Array<MemberDTO>;
+  members?: Array<MemberDTO>;
 
   @JsonProperty()
   active?: boolean;

@@ -32,7 +32,6 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   }
   /**
    * Retrieve organization projects
-   *
    * @param id of organization
    */
   @GET
@@ -49,7 +48,6 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   }
   /**
    * Containing data related to the project to be saved in the database
-   *
    * @param payload containing data related to the project to be saved in the database
    * Should container Project data
    */
@@ -67,7 +65,6 @@ export class ProjectRoutes extends BaseRoutes<Project> {
 
   /**
    * Update a project in the database
-   *
    * @param payload
    * @param project id
    */
@@ -86,8 +83,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
 
   /**
    * Containing data related to the participants of project to be saved in the database
-   *
-   * @param payload containing data related to the project to be saved in the database
+   * @param payload containing array of data related to participants to be saved in the database
    * @param id containing id of the project want to add members too
    * Should container Project data
    */
@@ -109,8 +105,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   }
 
   /**
-   * retrive participant which works on project
-   *
+   * retrive all participants whorking on project
    * @param id: project id
    */
   @GET
@@ -126,8 +121,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   }
 
   /**
-   * Update a project participant in the database
-   *
+   * Update a project participant role and status in the database
    * @param payload
    * @param projectId project id
    */
