@@ -31,10 +31,10 @@ export class ProjectDTO extends BaseBodyDTO {
   active?: boolean;
 
   @JsonProperty()
-  dateStart?: Date;
+  dateStart?: string;
 
   @JsonProperty()
-  dateEnd?: Date;
+  dateEnd?: string;
 
   @JsonProperty({
     type: OrganizationInformationDTO,

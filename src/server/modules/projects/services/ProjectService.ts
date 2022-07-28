@@ -55,8 +55,15 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
     const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
+    let projects;
+    fetchedProjects.map(async (fetchedProject) => {
+      if (!fetchedProject.members.isInitialized()) await fetchedProject.members.init();
+      projects.push(
+        fetchedProject.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() })),
+      );
+    });
 
-    return fetchedProjects as Project[];
+    return projects;
   }
 
   /**
