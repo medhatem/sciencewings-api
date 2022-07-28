@@ -325,7 +325,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const groups = await this.keycloakUtils.getGroupById(fetchedorganization.kcid);
 
-    if (groups.subGroups.length !== 1) {
+    if (groups.subGroups.length !== 0) {
       throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
     await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
