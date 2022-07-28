@@ -18,7 +18,7 @@ import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskI
 import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInterfaces';
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
-import { NotFoundError } from '@/Exceptions';
+import { NotFoundError, ValidationError } from '@/Exceptions';
 import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
 import { RolesList, ProjectMemberStatus, ProjectMember } from '@/modules/projects/models/ProjectMember';
 import { IUserService } from '@/modules/users';
@@ -66,6 +66,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    */
   @log()
   public async createProject(userId: number, @validateParam(CreateProjectSchema) payload: ProjectRO): Promise<number> {
+    //check if the project key is unique
+    const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
+    if (ifProjectKeyIsUnique) {
+      throw new ValidationError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', { variables: { key: `${payload.key}` } });
+    }
     const organization = await this.organizationService.get(payload.organization);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
@@ -74,7 +79,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
-
     // the one who create the project is project manager
     const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE, {
       populate: true,
@@ -116,6 +120,13 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!project) {
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${projetcId}` } });
     }
+    //check if the project key is unique
+    if (payload.key) {
+      const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
+      if (ifProjectKeyIsUnique) {
+        throw new ValidationError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', { variables: { key: `${payload.key}` } });
+      }
+    }
 
     const updatedProjectResult = await this.update(
       this.wrapEntity(project, {
@@ -135,7 +146,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
   /**
    * add a list of members for a given project
    * a project can have one or many members
-   * @param payload a list of members that will be associated to the project
+   * @param payload a list of members that will be added to the project
    * @param id the id of the project we want to add members too
    */
   @log()
@@ -244,7 +255,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
-    console.log('after fetch partici');
     const fetchedProjectParticipants = await this.projectMemberService.getByCriteria(
       { project, member },
       FETCH_STRATEGY.SINGLE,
