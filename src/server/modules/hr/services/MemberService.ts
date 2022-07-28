@@ -76,9 +76,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
         keycloakId: createdKeyCloakUser.id,
         status: userStatus.INVITATION_PENDING,
       });
-      user = createdKeyCloakUser;
 
-      await this.userService.create(wrappedUser);
+      user = await this.userService.create(wrappedUser);
     }
 
     // check whether the user is already a member of the organization
