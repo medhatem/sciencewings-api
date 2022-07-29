@@ -855,12 +855,12 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get member', () => {
     const orgId = 1;
-    const filterStutus: string = '';
+    const filterStatus: string = '';
     test('Should fail on organization not found', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       try {
-        await container.get(OrganizationService).getMembers(orgId, filterStutus);
+        await container.get(OrganizationService).getMembers(orgId, filterStatus);
         expect.fail('unexpected success');
       } catch (error) {
         expect(error.message).to.equal(`ORG.NON_EXISTANT_DATA {{org}}`);
