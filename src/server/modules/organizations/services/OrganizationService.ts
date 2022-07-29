@@ -325,6 +325,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     const groups = await this.keycloakUtils.getGroupById(fetchedorganization.kcid);
 
+    //check if the org have subgroups
     if (groups.subGroups.length !== 0) {
       throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
