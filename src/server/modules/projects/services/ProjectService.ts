@@ -309,7 +309,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       projectList.push({
         title: project.title,
         responsable: `<div>${responsable.member.name}</div><div>${responsable.member.workEmail}</div>`,
-        members: project.members.length,
+        members: project.members.count(),
         startDate: project.dateStart.toString(),
       });
     });
