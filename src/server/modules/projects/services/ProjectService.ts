@@ -313,8 +313,8 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         title: project.title,
         responsable: {
           member: responsable.member,
-          name: responsable.name,
-          email: responsable.workEmail,
+          name: responsable.member.name,
+          email: responsable.member.workEmail,
         },
         members: membersLength,
         startDate: project.dateStart.toString(),
