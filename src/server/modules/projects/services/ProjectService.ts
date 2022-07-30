@@ -25,6 +25,7 @@ import { IUserService } from '@/modules/users';
 import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { ConflictError } from '@/Exceptions/ConflictError';
+import { ProjectList } from '@/types/types';
 
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
@@ -54,16 +55,10 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
-    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
-    let projects;
-    fetchedProjects.map(async (fetchedProject) => {
-      if (!fetchedProject.members.isInitialized()) await fetchedProject.members.init();
-      projects.push(
-        fetchedProject.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() })),
-      );
-    });
-
-    return projects;
+    const fetchedProjects = (await this.dao.getByCriteria<FETCH_STRATEGY.ALL>({ organization }, FETCH_STRATEGY.ALL, {
+      populate: ['members'] as never,
+    })) as Project[];
+    return fetchedProjects;
   }
 
   /**
@@ -288,5 +283,37 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     });
     const updatedParticipant = await this.update(wrappedParticipant);
     return updatedParticipant;
+  }
+  /**
+   * fetch project and project Member and return
+   * name, starting date, number of participants from project table
+   * Responsable of the project from the projectMember table
+   * @param id project id
+   * @returns
+   */
+  @log()
+  public async getALLProjectList(id: number): Promise<ProjectList[]> {
+    const organization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
+    }
+    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+      populate: ['members'] as never,
+    })) as Project[];
+    let projectList: any[] = [];
+    let responsable;
+    await applyToAll(fetchedProjects, async (project) => {
+      responsable = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.SINGLE, {
+        populate: ['member'] as never,
+        filters: { manager: true },
+      });
+      projectList.push({
+        title: project.title,
+        responsable: `<div>${responsable.member.name}</div><div>${responsable.member.workEmail}</div>`,
+        members: project.members.length,
+        startDate: project.dateStart.toString(),
+      });
+    });
+    return projectList;
   }
 }

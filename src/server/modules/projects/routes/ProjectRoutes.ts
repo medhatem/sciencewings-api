@@ -19,6 +19,7 @@ import {
   ProjectMembersCreateDTO,
   UpdateProjectMemberDTO,
 } from '@/modules/projects/dtos/projectMemberDTO';
+import { ProjectListRequestDTO } from '@/modules/projects/dtos/projectListDto';
 
 @provideSingleton()
 @Path('projects')
@@ -105,14 +106,14 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   }
 
   /**
-   * retrive all participants whorking on project
+   * retrive all participants working on project
    * @param id: project id
    */
   @GET
   @Path('getParticipant/:id')
   @Security()
   @LoggerStorage()
-  @Response<ProjectMemberRequestDTO>(200, 'Return organization members Successfully')
+  @Response<ProjectMemberRequestDTO>(200, 'Return project participants Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getALLProjectParticipants(@PathParam('id') id: number): Promise<ProjectMemberRequestDTO> {
     const result = await this.projectService.getALLProjectParticipants(id);
@@ -138,5 +139,21 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   ): Promise<UpdateProjectMemberDTO> {
     const result = await this.projectService.updateProjectParticipant(projectId, payload);
     return new UpdateProjectMemberDTO({ body: { ...result, statusCode: 201 } });
+  }
+  /**
+   * this route is for the project list in frontend, it combine between Project and projectMember model
+   * and send only the necessary data to print
+   * @param id: project id
+   */
+  @GET
+  @Path('getProjectList/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<ProjectListRequestDTO>(200, 'Return project list Successfully')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getALLProjectList(@PathParam('id') id: number): Promise<ProjectListRequestDTO> {
+    const result = await this.projectService.getALLProjectList(id);
+
+    return new ProjectListRequestDTO({ body: { data: result, statusCode: 200 } });
   }
 }

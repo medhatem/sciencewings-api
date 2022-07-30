@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { Entity, Filter, ManyToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
@@ -11,11 +11,14 @@ export enum ProjectMemberStatus {
 export enum RolesList {
   MANAGER = 'manager',
   PARTICIPANT = 'participant',
-  VIEWER = 'viewers',
+  VIEWER = 'viewer',
 }
 
 @provide()
 @Entity()
+@Filter({ name: 'manager', cond: { role: { $eq: `${RolesList.MANAGER}` } } })
+@Filter({ name: 'participant', cond: { role: { $eq: `${RolesList.PARTICIPANT}` } } })
+@Filter({ name: 'viewer', cond: { role: { $eq: `${RolesList.VIEWER}` } } })
 export class ProjectMember extends BaseModel<ProjectMember> {
   constructor() {
     super();
@@ -41,7 +44,7 @@ export class ProjectMember extends BaseModel<ProjectMember> {
   [PrimaryKeyType]?: [Project, Member];
 
   @Property()
-  role?: RolesList;
+  role: RolesList;
 
   @Property()
   status: ProjectMemberStatus;

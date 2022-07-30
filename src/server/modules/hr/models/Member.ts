@@ -14,6 +14,7 @@ import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 import { WorkLocation } from './WorkLocation';
 import { Project } from '@/modules/projects/models/Project';
+import { ProjectMember } from '@/modules/projects/models/ProjectMember';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',
@@ -140,7 +141,7 @@ export class Member extends BaseModel<Member> {
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
 
-  @ManyToMany(() => Project)
+  @ManyToMany({ entity: () => Project, owner: true, pivotEntity: () => ProjectMember })
   projects? = new Collection<Project>(this);
 
   @Property({ nullable: true })
