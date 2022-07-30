@@ -16,5 +16,5 @@ export abstract class IProjectService extends IBaseService<any> {
   addMembersToProject: (payload: listMembersRo, id: number) => Promise<ProjectMember[]>;
   getALLProjectParticipants: (id: number) => Promise<ProjectMember[]>;
   updateProjectParticipant: (projectId: number, payload: UpdateProjectParticipantRO) => Promise<ProjectMember>;
-  getALLProjectList: (id: number) => Promise<ProjectList[]>;
+  getAllOrganizationProjectsList: (id: number) => Promise<ProjectList[]>;
 }

@@ -71,7 +71,10 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     //check if the project key is unique
     const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
     if (ifProjectKeyIsUnique) {
-      throw new ValidationError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', { variables: { key: `${payload.key}` } });
+      throw new ValidationError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', {
+        variables: { key: `${payload.key}` },
+        friendly: true,
+      });
     }
     const organization = await this.organizationService.get(payload.organization);
     if (!organization) {
@@ -102,7 +105,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     });
     participant.member = member;
     participant.project = project;
-    this.projectMemberService.create(participant);
+    await this.projectMemberService.create(participant);
 
     return project.id;
   }
@@ -292,7 +295,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    * @returns
    */
   @log()
-  public async getALLProjectList(id: number): Promise<ProjectList[]> {
+  public async getAllOrganizationProjectsList(id: number): Promise<ProjectList[]> {
     const organization = await this.organizationService.get(id);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
@@ -308,7 +311,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       let membersLength = await project.members.loadCount(true);
       projectList.push({
         title: project.title,
-        responsable: `<div>${responsable.member.name}</div><div>${responsable.member.workEmail}</div>`,
+        responsable: {
+          member: responsable.member,
+          name: responsable.name,
+          email: responsable.workEmail,
+        },
         members: membersLength,
         startDate: project.dateStart.toString(),
       });
