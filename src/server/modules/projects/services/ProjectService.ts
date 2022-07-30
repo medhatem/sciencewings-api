@@ -307,6 +307,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         populate: ['member'] as never,
         filters: { manager: true },
       });
+      if (project.members.isInitialized(false)) await project.members.init();
       projectList.push({
         title: project.title,
         responsable: `<div>${responsable.member.name}</div><div>${responsable.member.workEmail}</div>`,
