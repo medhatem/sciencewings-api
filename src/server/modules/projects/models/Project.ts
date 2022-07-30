@@ -35,14 +35,14 @@ export class Project extends BaseModel<Project> {
   @ManyToMany({ entity: () => Member, owner: true, pivotEntity: () => ProjectMember })
   members = new Collection<Member>(this);
 
-  @Property()
-  active: boolean;
+  @Property({ nullable: true })
+  active?: boolean;
 
-  @Property()
-  dateStart: Date;
+  @Property({ nullable: true })
+  dateStart?: Date;
 
-  @Property()
-  dateEnd: Date;
+  @Property({ nullable: true })
+  dateEnd?: Date;
 
   @OneToMany({
     entity: () => ProjectTag,

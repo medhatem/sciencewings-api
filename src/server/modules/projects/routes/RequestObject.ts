@@ -94,10 +94,10 @@ export class ProjectRO {
   description: string;
 
   @JsonProperty()
-  active: boolean;
+  active?: boolean;
 
   @JsonProperty()
-  dateStart: Date;
+  dateStart?: Date;
 
   @JsonProperty()
   dateEnd?: Date;

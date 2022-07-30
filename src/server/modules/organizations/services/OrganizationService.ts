@@ -308,7 +308,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    return existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
+    return existingOrg.members.toArray().map((el: any) => ({ ...el, joinedDate: el.joinedDate.toISOString() }));
   }
 
   /**

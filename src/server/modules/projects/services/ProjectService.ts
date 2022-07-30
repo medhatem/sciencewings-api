@@ -93,9 +93,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       title: payload.title,
       key: payload.key,
       description: payload.description,
-      active: payload.active,
-      dateStart: payload.dateStart,
-      dateEnd: payload.dateEnd,
     });
     wrappedProject.organization = organization;
     const project = await this.create(wrappedProject);
