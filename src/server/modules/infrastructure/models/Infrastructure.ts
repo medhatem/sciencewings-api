@@ -36,7 +36,7 @@ export class Infrastructure extends BaseModel<Infrastructure> {
     eager: false,
     nullable: true,
   })
-  public responsables? = new Collection<Member>(this);
+  public responsibles? = new Collection<Member>(this);
 
   @ManyToOne({
     entity: () => Infrastructure,
