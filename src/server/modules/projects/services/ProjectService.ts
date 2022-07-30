@@ -297,9 +297,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
-    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
-      populate: ['members'] as never,
-    })) as Project[];
+    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
     let projectList: any[] = [];
     let responsable;
     await applyToAll(fetchedProjects, async (project) => {
@@ -307,7 +305,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         populate: ['member'] as never,
         filters: { manager: true },
       });
-      if (project.members.isInitialized(false)) await project.members.init();
+      if (project.members.isInitialized() === false) await project.members.init();
       projectList.push({
         title: project.title,
         responsable: `<div>${responsable.member.name}</div><div>${responsable.member.workEmail}</div>`,
