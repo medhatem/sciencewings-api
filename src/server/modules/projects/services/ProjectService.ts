@@ -293,7 +293,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    */
   @log()
   public async getALLProjectList(id: number): Promise<ProjectList[]> {
-    const organization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
+    const organization = await this.organizationService.get(id);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
@@ -305,11 +305,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         populate: ['member'] as never,
         filters: { manager: true },
       });
-      if (project.members.isInitialized() === false) await project.members.init();
+      let membersLength = await project.members.loadCount(true);
       projectList.push({
         title: project.title,
         responsable: `<div>${responsable.member.name}</div><div>${responsable.member.workEmail}</div>`,
-        members: project.members.count(),
+        members: membersLength,
         startDate: project.dateStart.toString(),
       });
     });
