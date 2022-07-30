@@ -317,7 +317,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
           email: responsable.member.workEmail,
         },
         members: membersLength,
-        startDate: project.dateStart.toString(),
+        startDate: project.createdAt.toString(),
       });
     });
     return projectList;

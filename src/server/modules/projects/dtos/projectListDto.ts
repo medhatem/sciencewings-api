@@ -25,7 +25,7 @@ export class ProjectListDTO extends BaseBodyDTO {
   @JsonProperty()
   members: number;
   @JsonProperty()
-  startDate: Date;
+  creatingDate: string;
 }
 @JsonObject()
 @unique
