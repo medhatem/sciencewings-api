@@ -65,8 +65,8 @@ export class Resource extends BaseModel<Resource> {
   })
   calendar? = new Collection<ResourceCalendar>(this);
 
-  @Property()
-  timezone!: string;
+  @Property({ nullable: true })
+  timezone?: string;
 
   @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
   settings: ResourceSettings;

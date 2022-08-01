@@ -179,9 +179,6 @@ export class ResourceRO {
   description: string;
 
   @JsonProperty()
-  active?: boolean;
-
-  @JsonProperty()
   organization?: number;
 
   @JsonProperty()
@@ -192,18 +189,6 @@ export class ResourceRO {
 
   @JsonProperty()
   user?: number;
-
-  @JsonProperty()
-  timezone!: string;
-
-  @JsonProperty()
-  calendar?: Array<ResourceCalendarRO>;
-
-  @JsonProperty()
-  tags?: Array<ResourceTagRO>;
-
-  @JsonProperty()
-  managers?: Array<ResourceManagerRO>;
 }
 @JsonObject()
 @unique

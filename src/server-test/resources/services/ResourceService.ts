@@ -94,19 +94,13 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
 
   suite('create resource', () => {
-    const user = 1;
-    const organization = 1;
     const payload: ResourceRO = {
       name: 'resource_dash_one',
       description: 'string',
-      active: true,
       resourceType: 'USER',
       resourceClass: 'TECH',
-      timezone: 'gmt+1',
-      tags: [],
       organization: 1,
       user: 1,
-      managers: [{ user, organization }],
     };
     test('Should fail on organization not found', async () => {
       mockMethodWithResult(organizationService, 'get', [payload.organization], Promise.resolve(null));
@@ -146,8 +140,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     test('Should succeed on create resource', async () => {
       const crPayload = { ...payload };
-      crPayload.managers;
-      crPayload.tags = [{ title: '' }];
       delete crPayload.user;
       delete crPayload.organization;
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));
@@ -170,7 +162,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
     test('Should succeed on create resource v2', async () => {
       const crPayload = { ...payload };
-      delete crPayload.managers;
       delete crPayload.user;
       delete crPayload.organization;
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));

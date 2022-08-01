@@ -107,17 +107,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       }
     }
 
-    const managers: Member[] = [];
-    if (payload.managers) {
-      for await (const { organization, user } of payload.managers) {
-        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-        if (!fetcheManager) {
-          throw new NotFoundError('MEMBER.NON_EXISTANT', { friendly: true });
-        }
-        managers.push(fetcheManager);
-      }
-    }
-
     const resourceStatusSetting = await this.resourceStatusService.get(1);
 
     await this.resourceSettingsService.create({
@@ -127,30 +116,15 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     const createdResourceResult = await this.dao.create({
       name: payload.name,
       description: payload.description,
-      active: payload.active,
+      active: true,
       resourceType: payload.resourceType,
       resourceClass: payload.resourceClass,
-      timezone: payload.timezone,
       organization,
       settings: resourceStatusSetting,
     });
 
     await createdResourceResult.managers.init();
 
-    for (const manager of managers) {
-      createdResourceResult.managers.add(manager);
-    }
-
-    await applyToAll(
-      payload.tags,
-      async (tag) => {
-        await this.resourceTagService.create({
-          title: tag.title,
-          resource: createdResourceResult,
-        });
-      },
-      true,
-    );
     await this.dao.update(createdResourceResult);
     return createdResourceResult.id;
   }

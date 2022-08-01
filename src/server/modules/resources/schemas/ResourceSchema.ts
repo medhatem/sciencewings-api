@@ -72,7 +72,8 @@ export const ResourceReservationVisibilitySchema = Joi.object({
 export const ResourceGeneralStatusSchema = ResourceSchema.keys({
   resourceType: Joi.string().required(),
   statusDescription: Joi.string().required(),
-  memberId: Joi.number().required(),
+  user: Joi.number().required(),
+  organization: Joi.number().required(),
 });
 
 export const ResourceGeneralVisibilitySchema = ResourceSchema.keys({
