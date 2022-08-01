@@ -45,7 +45,7 @@ import { IResourceSettingsService } from '@/modules/resources/interfaces/IResour
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { applyToAll } from '@/utils/utilities';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IResourceStatusHistoryService';
 import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 import { NotFoundError, ValidationError } from '@/Exceptions';
@@ -56,6 +56,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public dao: ResourceDao,
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
+    public userService: IUserService,
     public resourceSettingsService: IResourceSettingsService,
     public resourceRateService: IResourceRateService,
     public resourceCalendarService: IResourceCalendarService,
@@ -123,7 +124,15 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       settings: resourceStatusSetting,
     });
 
-    await createdResourceResult.managers.init();
+    const user = await this.userService.get(payload.user);
+
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+        variables: { user: `${payload.user}` },
+      });
+    }
+
+    const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
 
     await this.dao.update(createdResourceResult);
     return createdResourceResult.id;

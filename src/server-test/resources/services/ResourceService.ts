@@ -17,6 +17,7 @@ import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
 import { MemberService } from '@/modules/hr/services/MemberService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
+import { UserService } from '@/modules/users/services/UserService';
 import { ResourceCalendarService } from '@/modules/resources/services/ResourceCalendarService';
 import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
 import { ResourceRateService } from '@/modules/resources/services/ResourceRateService';
@@ -36,6 +37,7 @@ import Sinon = require('sinon');
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceDao: SinonStubbedInstance<ResourceDao>;
   let organizationService: SinonStubbedInstance<OrganizationService>;
+  let userService: SinonStubbedInstance<UserService>;
   let memberService: SinonStubbedInstance<MemberService>;
   let resourceSettingsService: SinonStubbedInstance<ResourceSettingsService>;
   let resourceRateService: SinonStubbedInstance<ResourceRateService>;
@@ -48,6 +50,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     createStubInstance(Configuration);
     resourceDao = createStubInstance(ResourceDao);
     organizationService = createStubInstance(OrganizationService);
+    userService = createStubInstance(UserService);
     memberService = createStubInstance(MemberService);
     resourceSettingsService = createStubInstance(ResourceSettingsService);
     resourceRateService = createStubInstance(ResourceRateService);
@@ -74,6 +77,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           resourceDao,
           organizationService,
           memberService,
+          userService,
           resourceSettingsService,
           resourceRateService,
           resourceCalendarService,
