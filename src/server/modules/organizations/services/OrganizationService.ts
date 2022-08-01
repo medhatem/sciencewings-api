@@ -323,10 +323,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    const groups = await this.keycloakUtils.getGroupById(fetchedorganization.kcid);
+    const group = await this.keycloakUtils.getGroupById(fetchedorganization.kcid);
 
     //check if the org have subgroups
-    if (groups.subGroups.length !== 0) {
+    if (group.subGroups.length !== 0) {
       throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
     await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
