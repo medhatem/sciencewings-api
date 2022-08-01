@@ -62,7 +62,9 @@ export class ResourceSettingsGeneralStatusRO {
   @JsonProperty()
   statusDescription: string;
   @JsonProperty()
-  memberId: number;
+  user: number;
+  @JsonProperty()
+  organization: number;
 }
 
 @JsonObject()
@@ -179,7 +181,7 @@ export class ResourceRO {
   description: string;
 
   @JsonProperty()
-  organization?: number;
+  organization!: number;
 
   @JsonProperty()
   resourceType!: string;
@@ -201,9 +203,6 @@ export class UpdateResourceRO {
 
   @JsonProperty()
   active?: boolean;
-
-  @JsonProperty()
-  organization?: number;
 
   @JsonProperty()
   resourceType?: string;

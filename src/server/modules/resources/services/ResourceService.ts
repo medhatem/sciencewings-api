@@ -43,7 +43,6 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IResourceStatusHistoryService';
@@ -82,10 +81,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     if (!organizationId) {
       throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
     }
-    const fetchedOrganization = await this.organizationService.get(organizationId);
-    if (!fetchedOrganization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
+
+    {
+      const fetchedOrganization = await this.organizationService.get(organizationId);
+      if (!fetchedOrganization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
+      }
     }
+
     const resources = await this.dao.getByCriteria(
       {
         organization: organizationId,
@@ -93,6 +96,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
+    console.log({ organizationId, resources });
 
     return resources as Resource[];
   }
@@ -100,12 +104,9 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
   @log()
   @validate
   public async createResource(@validateParam(CreateResourceSchema) payload: ResourceRO): Promise<number> {
-    const organization: Organization = null;
-    if (payload.organization) {
-      const organization = await this.organizationService.get(payload.organization);
-      if (!organization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
-      }
+    const organization = await this.organizationService.get(payload.organization);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
     }
 
     const resourceStatusSetting = await this.resourceStatusService.get(1);
@@ -132,8 +133,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
     }
 
-    const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-
     await this.dao.update(createdResourceResult);
     return createdResourceResult.id;
   }
@@ -147,15 +146,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     const fetchedResource = await this.dao.get(resourceId);
     if (!fetchedResource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
-    }
-
-    let organization = null;
-    if (payload.organization) {
-      const fetchedOrganization = await this.organizationService.get(payload.organization);
-      if (!fetchedOrganization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
-      }
-      organization = fetchedOrganization;
     }
 
     const managers: Member[] = [];
@@ -178,7 +168,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       resourceType: payload.resourceType || fetchedResource.resourceType,
       resourceClass: payload.resourceClass || fetchedResource.resourceClass,
       timezone: payload.timezone || fetchedResource.timezone,
-      organization,
     });
 
     for (const manager of managers) {
@@ -268,11 +257,19 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
     }
 
-    const member = await this.memberService.get(payload.memberId);
+    const member = await this.memberService.getByCriteria(
+      { user: payload.user, organization: payload.organization },
+      FETCH_STRATEGY.SINGLE,
+    );
 
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
+    console.log({
+      ...payload,
+      resource,
+      member,
+    });
 
     const resourceStatusHistory = await this.resourceStatusHistoryService.create({
       ...payload,

@@ -18,7 +18,6 @@ export const ResourceCalendarSchema = Joi.object({
 const ResourceSchema = Joi.object({
   // base
   active: Joi.boolean(),
-  organization: Joi.number(),
   user: Joi.number(),
   timezone: Joi.string(),
   tags: Joi.array(),
@@ -38,6 +37,7 @@ const ResourceSchema = Joi.object({
 export const CreateResourceSchema = ResourceSchema.keys({
   name: Joi.string().required(),
   description: Joi.string().required(),
+  organization: Joi.number().required(),
   resourceType: Joi.string().required(),
   resourceClass: Joi.string().required(),
 });

@@ -58,11 +58,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceRO = {
       name: 'resource_dash_one',
       description: 'string',
-      active: true,
       resourceType: 'USER',
       resourceClass: 'TECH',
-      timezone: 'gmt+1',
-      tags: [],
       organization: 1,
       user: 1,
     };
@@ -86,11 +83,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceRO = {
       name: 'resource_dash_one',
       description: 'string',
-      active: true,
       resourceType: 'USER',
       resourceClass: 'TECH',
-      timezone: 'gmt+1',
-      tags: [],
       organization: 1,
       user: 1,
     };
