@@ -23,6 +23,9 @@ export class ResourceStatus extends BaseModel<ResourceStatus> {
   @PrimaryKey()
   id: number;
 
-  @Property({ unique: true })
-  title: StatusCases;
+  @Property()
+  statusType: StatusCases;
+
+  @Property()
+  statusDescription: string;
 }

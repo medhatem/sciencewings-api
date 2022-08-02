@@ -48,6 +48,7 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IResourceStatusHistoryService';
 import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 import { NotFoundError, ValidationError } from '@/Exceptions';
+import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
@@ -111,8 +112,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     const resourceStatusSetting = await this.resourceStatusService.get(1);
 
+    const resourceStatus = await this.resourceStatusService.create({
+      statusType: StatusCases.OPERATIONAL,
+      statusDescription: '',
+    });
+
     await this.resourceSettingsService.create({
-      resourceType: resourceStatusSetting,
+      ...resourceStatusSetting,
+      status: resourceStatus,
     });
 
     const createdResourceResult = await this.dao.create({
@@ -123,6 +130,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       resourceClass: payload.resourceClass,
       organization,
       settings: resourceStatusSetting,
+      status: resourceStatus,
     });
 
     const user = await this.userService.get(payload.user);
@@ -165,7 +173,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       name: payload.name || fetchedResource.name,
       description: payload.description || fetchedResource.description,
       active: payload.active || fetchedResource.active,
-      resourceType: payload.resourceType || fetchedResource.resourceType,
+      statusType: payload.resourceType || fetchedResource.resourceType,
       resourceClass: payload.resourceClass || fetchedResource.resourceClass,
       timezone: payload.timezone || fetchedResource.timezone,
     });
@@ -217,8 +225,9 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         variables: { resource: `${resourceId}` },
       });
     }
+    console.log({ fetchedResource });
 
-    return fetchedResource.settings;
+    return { ...fetchedResource.settings, ...fetchedResource.status };
   }
 
   //Resource settings
@@ -265,11 +274,10 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
-    console.log({
-      ...payload,
-      resource,
-      member,
-    });
+
+    resource.status.statusType = payload.statusType as StatusCases;
+    resource.status.statusDescription = payload.statusDescription;
+    await this.dao.update(resource);
 
     const resourceStatusHistory = await this.resourceStatusHistoryService.create({
       ...payload,

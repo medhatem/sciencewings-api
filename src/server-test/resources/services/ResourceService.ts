@@ -101,7 +101,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceRO = {
       name: 'resource_dash_one',
       description: 'string',
-      resourceType: 'USER',
+      statusType: 'USER',
       resourceClass: 'TECH',
       organization: 1,
       user: 1,
@@ -394,7 +394,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   suite('update Resource Reservation Status', () => {
     const resourceId = 1;
     const payload = {
-      resourceType: 'ORGANIZATION',
+      statusType: 'ORGANIZATION',
       statusDescription: 'test',
       memberId: 1,
     } as any;

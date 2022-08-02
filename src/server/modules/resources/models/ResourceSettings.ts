@@ -64,7 +64,7 @@ export class ResourceSettings extends BaseModel<ResourceSettings> {
     entity: () => ResourceStatus,
     unique: false,
   })
-  resourceType: ResourceStatus;
+  status: ResourceStatus;
 
   @Property({ type: StringType })
   statusDescription = '';

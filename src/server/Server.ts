@@ -64,7 +64,7 @@ export class Server {
       const port = getConfig('baseConfig.port');
       await this.configureServer();
       this.expressApp.listen(port);
-      await this.seeding();
+      // await this.seeding();
       console.log(`server available at http://localhost:${port}`);
     } catch (error) {
       this.serverHealthStatus = false;
@@ -125,7 +125,7 @@ export class Server {
     const fetch = await resourceService.get(1);
 
     if (fetch === null) {
-      await resourceService.create({ resourceType: { title: StatusCases.OPERATIONAL } });
+      await resourceService.create({ statusType: StatusCases.OPERATIONAL, statusDescription: '' });
     }
   }
 
