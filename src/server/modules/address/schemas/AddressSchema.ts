@@ -7,12 +7,12 @@ const organizationAddressSchema = Joi.object({
 });
 
 export const CreateOrganizationAddressSchema = organizationAddressSchema.keys({
-  country: Joi.string().required(),
-  province: Joi.string().required(),
-  code: Joi.string().required(),
-  type: Joi.string().required(),
-  city: Joi.string().required(),
-  street: Joi.string().required(),
+  country: Joi.string().required().messages({ 'any.required': 'VALIDATION.COUNTRY_REQUIRED' }),
+  province: Joi.string().required().messages({ 'any.required': 'VALIDATION.PROVINCE_REQUIRED' }),
+  code: Joi.string().required().messages({ 'any.required': 'VALIDATION.CODE_REQUIRED' }),
+  type: Joi.string().required().messages({ 'any.required': 'VALIDATION.TYPE_REQUIRED' }),
+  city: Joi.string().required().messages({ 'any.required': 'VALIDATION.CITY_REQUIRED' }),
+  street: Joi.string().required().messages({ 'any.required': 'VALIDATION.STREET_REQUIRED' }),
 });
 
 export const UpdateOrganizationAddressSchema = organizationAddressSchema.keys({

@@ -45,6 +45,13 @@
   "VALIDATION.EMAIL_REQUIRED": "email is required",
   "VALIDATION.PHONE_REQUIRED": "phone is required",
   "VALIDATION.ADDRESS_REQUIRED": "address is required",
+  "VALIDATION.COUNTRY_REQUIRED": "country is required",
+  "VALIDATION.PROVINCE_REQUIRED": "province is required",
+  "VALIDATION.CODE_REQUIRED": "code is required",
+  "VALIDATION.TYPE_REQUIRED": "type is required",
+  "VALIDATION.CITY_REQUIRED": "city is required",
+  "VALIDATION.STREET_REQUIRED": "street is required",
+
   "VALIDATION.NAME_REQUIRED": "Name is required",
   "VALIDATION.LABEL_REQUIRED": "Label is required",
   "VALIDATION.DESCRIPTION_REQUIRED": "description is required",
