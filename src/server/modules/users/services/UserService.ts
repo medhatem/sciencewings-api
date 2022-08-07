@@ -12,11 +12,11 @@ import { KeycloakUserInfo } from '@/types/UserRequest';
 import { User, userStatus } from '@/modules/users/models/User';
 import { UserDao } from '@/modules/users/daos/UserDao';
 import { UserRO } from '@/modules/users/routes/RequstObjects';
-import { getConfig } from '@/configuration/Configuration';
 import { log } from '@/decorators/log';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateUserSchema, UpdateUserSchema } from '@/modules/users/schemas/UserSchema';
 import { validate } from '@/decorators/validate';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { ConflictError } from '@/Exceptions/ConflictError';
 
@@ -26,8 +26,9 @@ export class UserService extends BaseService<User> implements IUserService {
     public dao: UserDao,
     public addressService: IAddressService,
     public phoneService: IPhoneService,
-    public keycloak: Keycloak = Keycloak.getInstance(),
-    public emailService = Email.getInstance(),
+    public keycloak: Keycloak,
+    public emailService: Email,
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -67,10 +68,7 @@ export class UserService extends BaseService<User> implements IUserService {
   @log()
   async registerUser(userInfo: KeycloakUserInfo): Promise<number> {
     // get the userKeyCloakId
-    const users = await (await this.keycloak.getAdminClient()).users.find({
-      email: userInfo.email,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    const users = await this.keycloakUtils.getUsersByEmail(userInfo.email);
 
     if (!users || !users.length) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
@@ -117,15 +115,7 @@ export class UserService extends BaseService<User> implements IUserService {
       });
     }
 
-    await (await this.keycloak.getAdminClient()).users.resetPassword({
-      realm: getConfig('keycloak.clientValidation.realmName'),
-      id: user.keycloakId,
-      credential: {
-        temporary: false,
-        type: 'password',
-        value: payload.password,
-      },
-    });
+    await this.keycloakUtils.resetPassword(user.keycloakId, payload.password);
     user.status = userStatus.ACTIVE;
     return 'Password reset successful';
   }
