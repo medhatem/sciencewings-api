@@ -39,7 +39,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    * @param infId of the requested infrastructure
    */
   @log()
-  public async getOrganizationInfrastructureByOrgId(infId: number): Promise<Infrastructure> {
+  public async getInfrastructureByOrgId(infId: number): Promise<Infrastructure> {
     const fetchedInfrastructure = await this.dao.get(infId);
 
     if (!fetchedInfrastructure) {
@@ -148,7 +148,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     });
     wrappedInfustructure.organization = organization;
     wrappedInfustructure.resources = fetchedResources;
-    wrappedInfustructure.responsables = fetchedResponsables;
+    wrappedInfustructure.responsibles = fetchedResponsables;
     wrappedInfustructure.parent = fetchedParent;
 
     const createdInfustructure = await this.create(wrappedInfustructure);
@@ -208,7 +208,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         }
         fetchedResponsables.push(responsable);
       });
-      wrappedInfustructure.responsables = fetchedResponsables;
+      wrappedInfustructure.responsibles = fetchedResponsables;
     }
     // check if the key is unique
     const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });

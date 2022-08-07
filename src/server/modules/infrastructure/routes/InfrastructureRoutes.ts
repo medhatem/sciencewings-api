@@ -37,8 +37,8 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<GetInfrastructureDTO>(200, 'Organization infrustructure retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOrganizationInfrastructureByOrgId(@PathParam('infId') infId: number): Promise<GetInfrastructureDTO> {
-    const result = await this.InfrastructureService.getOrganizationInfrastructureByOrgId(infId);
+  public async getInfrastructureByOrgId(@PathParam('infId') infId: number): Promise<GetInfrastructureDTO> {
+    const result = await this.InfrastructureService.getInfrastructureByOrgId(infId);
     return new GetInfrastructureDTO({ body: { result, statusCode: 200 } });
   }
   /**
@@ -52,10 +52,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllOrganizationInfrastructuresByOrgId(
-    @PathParam('orgId') orgId: number,
-  ): Promise<GetAllInfrastructuresDTO> {
-    console.log('r1');
+  public async getAllOrganizationInfrastructures(@PathParam('orgId') orgId: number): Promise<GetAllInfrastructuresDTO> {
     const result = await this.InfrastructureService.getAllOgranizationInfrastructures(orgId);
 
     return new GetAllInfrastructuresDTO({ body: { data: [...(result || [])], statusCode: 200 } });
