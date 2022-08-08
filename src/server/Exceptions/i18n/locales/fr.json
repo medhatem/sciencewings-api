@@ -61,7 +61,10 @@
     "VALIDATION.DURATION_REQUIRED": "La durée est requise",
     "VALIDATION.TITLE_REQUIRED": "Le titre est requis",
     "VALIDATION.DATESTART_REQUIRED": "La date du debut est requise",
-  
+    "VALIDATION.KEY_REQUIRED": "La clé est requise",
+    "VALIDATION.ORGANIZATION_REQUIRED": "L'organisation est requise",
+
+
     "required {{field}}": "{{field}} est requi"
   }
   

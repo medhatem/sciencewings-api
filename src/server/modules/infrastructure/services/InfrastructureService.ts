@@ -17,9 +17,9 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
-import { NotFoundError } from '@/Exceptions';
+import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { Organization } from '@/modules/organizations';
+import { Organization } from '@/modules/organizations/models/Organization';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -35,22 +35,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   static getInstance(): IInfrastructureService {
     return container.get(IInfrastructureService);
   }
-  /** Get one infrastructure of an organization ,
-   * @param infId of the requested infrastructure
-   */
-  @log()
-  public async getInfrastructureByOrgId(infId: number): Promise<Infrastructure> {
-    const fetchedInfrastructure = await this.dao.get(infId);
-
-    if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', {
-        variables: { infra: `${infId}` },
-        friendly: false,
-      });
-    }
-
-    return fetchedInfrastructure;
-  }
 
   /** Get all the infrastructure of an organization ,
    * @param id of the requested organization
@@ -64,10 +48,9 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!fetchedOrganization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
         variables: { org: `${orgId}` },
-        friendly: false,
+        friendly: true,
       });
     }
-    console.log('fetchedOrganization.infrastructure.init()', fetchedOrganization.infrastructure.init());
     return await fetchedOrganization.infrastructure.init();
   }
 
@@ -86,6 +69,21 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         variables: { org: `${payload.organization}` },
         friendly: false,
       });
+    }
+    // check the existance of the parent
+    let fetchedParent;
+    if (payload.parent) {
+      fetchedParent = await this.dao.get(payload.parent);
+      if (!fetchedParent) {
+        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
+      }
+    }
+
+    // check if the key is unique
+    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
+
+    if (keyExistingTest) {
+      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
 
     let fetchedResponsables;
@@ -110,13 +108,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         fetchedResponsables.push(responsable);
       });
     }
-    // check if the key is unique
-    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
-
-    if (keyExistingTest) {
-      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
-    }
-
     // check the existance of the resources
     let fetchedResources;
     if (payload.resources) {
@@ -132,16 +123,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     }
 
-    // check the existance of the parent
-    let fetchedParent;
-    if (payload.parent) {
-      fetchedParent = await this.dao.get(payload.parent);
-      if (!fetchedParent) {
-        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
-      }
-    }
-
-    const wrappedInfustructure = this.wrapEntity(new Infrastructure(), {
+    const wrappedInfustructure = this.wrapEntity(Infrastructure.getInstance(), {
       name: payload.name,
       description: payload.description,
       key: payload.key,

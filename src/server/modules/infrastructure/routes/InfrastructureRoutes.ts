@@ -10,7 +10,6 @@ import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructu
 import {
   CreateInfrastructureDTO,
   GetAllInfrastructuresDTO,
-  GetInfrastructureDTO,
   infrastructureGetDTO,
   UpdateInfrastructureDTO,
 } from '@/modules/infrastructure/dtos/InfrastructureDTO';
@@ -24,22 +23,6 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
 
   static getInstance(): InfrastructureRoutes {
     return container.get(InfrastructureRoutes);
-  }
-
-  /**
-   * retrieve one infrustructure by id
-   * @param infId infrustructure id
-   */
-  @GET
-  @Path('getInfById/:infId')
-  @Security()
-  @LoggerStorage()
-  @Response<GetInfrastructureDTO>(200, 'Organization infrustructure retrived Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async getInfrastructureByOrgId(@PathParam('infId') infId: number): Promise<GetInfrastructureDTO> {
-    const result = await this.InfrastructureService.getInfrastructureByOrgId(infId);
-    return new GetInfrastructureDTO({ body: { result, statusCode: 200 } });
   }
   /**
    * retrieve Organization infrustructures by organization id

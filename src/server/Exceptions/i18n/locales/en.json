@@ -51,6 +51,8 @@
   "VALIDATION.TYPE_REQUIRED": "type is required",
   "VALIDATION.CITY_REQUIRED": "city is required",
   "VALIDATION.STREET_REQUIRED": "street is required",
+  "VALIDATION.KEY_REQUIRED": "key is required",
+  "VALIDATION.ORGANIZATION_REQUIRED": "organization is required",
 
   "VALIDATION.NAME_REQUIRED": "Name is required",
   "VALIDATION.LABEL_REQUIRED": "Label is required",
