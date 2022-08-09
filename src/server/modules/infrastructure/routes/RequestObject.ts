@@ -5,13 +5,13 @@ import { unique } from '@/decorators/unique';
 @unique
 export class InfrastructureRO {
   @JsonProperty()
-  name!: string;
+  name: string;
 
   @JsonProperty()
   description?: string;
 
   @JsonProperty()
-  key!: string;
+  key: string;
 
   @JsonProperty()
   responsibles?: Array<number>;
@@ -23,7 +23,7 @@ export class InfrastructureRO {
   resources?: Array<number>;
 
   @JsonProperty()
-  organization!: number;
+  organization: number;
 }
 @JsonObject()
 @unique
