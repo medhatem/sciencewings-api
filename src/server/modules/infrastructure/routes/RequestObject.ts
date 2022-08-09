@@ -14,7 +14,7 @@ export class InfrastructureRO {
   key!: string;
 
   @JsonProperty()
-  responsables?: Array<number>;
+  responsibles?: Array<number>;
 
   @JsonProperty()
   parent?: number;

@@ -24,29 +24,13 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   static getInstance(): InfrastructureRoutes {
     return container.get(InfrastructureRoutes);
   }
-  /**
-   * retrieve Organization infrustructures by organization id
-   * @param orgId organization id
-   */
-  @GET
-  @Path('getAll/:orgId')
-  @Security()
-  @LoggerStorage()
-  @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllOrganizationInfrastructures(@PathParam('orgId') orgId: number): Promise<GetAllInfrastructuresDTO> {
-    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(orgId);
-
-    return new GetAllInfrastructuresDTO({ body: { data: [...(result || [])], statusCode: 200 } });
-  }
 
   /**
    * @override create an infrustructure in the database
    * @param payload Should contain infrustructure data
    */
   @POST
-  @Path('create')
+  @Path('createInfrastructure')
   @Security()
   @LoggerStorage()
   @Response<infrastructureGetDTO>(204, 'infrastructure created Successfully')
@@ -77,5 +61,22 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     const result = await this.InfrastructureService.updateInfrastructure(payload, id);
 
     return new UpdateInfrastructureDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /**
+   * retrieve Organization infrustructures by organization id
+   * @param orgId organization id
+   */
+  @GET
+  @Path('getAll/:orgId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllOrganizationInfrastructures(@PathParam('orgId') orgId: number): Promise<GetAllInfrastructuresDTO> {
+    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(orgId);
+
+    return new GetAllInfrastructuresDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
 }
