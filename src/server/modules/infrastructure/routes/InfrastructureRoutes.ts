@@ -6,7 +6,7 @@ import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
-import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructure/routes/RequestObject';
+import { InfrastructureRO, UpdateinfrastructureRO } from './RequestObject';
 import {
   CreateInfrastructureDTO,
   GetAllInfrastructuresDTO,
