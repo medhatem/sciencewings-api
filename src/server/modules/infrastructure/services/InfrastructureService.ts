@@ -170,8 +170,8 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     }
 
     let fetchedResponsables;
-    if (payload.responsables) {
-      const responsables = payload.responsables;
+    if (payload.responsibles) {
+      const responsables = payload.responsibles;
       await responsables.map(async (res) => {
         // await applyToAll(responsables, async (res) => {
         const user = await this.userService.get(res);

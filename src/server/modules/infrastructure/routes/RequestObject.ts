@@ -38,7 +38,7 @@ export class UpdateinfrastructureRO {
   key?: number;
 
   @JsonProperty()
-  responsables?: Array<number>;
+  responsibles?: Array<number>;
 
   @JsonProperty()
   parent?: number;
