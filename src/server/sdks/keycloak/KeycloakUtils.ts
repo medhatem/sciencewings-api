@@ -3,6 +3,7 @@ import { container, provide } from '@/di';
 import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import { Keycloak } from '../keycloak';
 import { getConfig } from '@/configuration/Configuration';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 
 /**
  * utilities class containing keycloak specific actions
@@ -29,7 +30,9 @@ export class KeycloakUtil {
       const subGroup = await this.createSubGroup(name, parentId);
       createdGroup = { id: subGroup };
     } else {
-      createdGroup = await (await this.keycloak.getAdminClient()).groups.create({
+      createdGroup = await (
+        await this.keycloak.getAdminClient()
+      ).groups.create({
         name,
         realm: getConfig('keycloak.clientValidation.realmName'),
       });
@@ -44,7 +47,9 @@ export class KeycloakUtil {
    * @param parentId represents the id of the parent organization
    */
   async createSubGroup(name: string, parentId: string): Promise<string> {
-    const result = await (await this.keycloak.getAdminClient()).groups.setOrCreateChild(
+    const result = await (
+      await this.keycloak.getAdminClient()
+    ).groups.setOrCreateChild(
       { id: parentId, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         name,
@@ -62,7 +67,9 @@ export class KeycloakUtil {
   async deleteGroup(id: string): Promise<string> {
     // find the group before deleting it
     const groupToDelete = await this.getGroupById(id);
-    await (await Keycloak.getInstance().getAdminClient()).groups.del({
+    await (
+      await Keycloak.getInstance().getAdminClient()
+    ).groups.del({
       id,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -78,7 +85,9 @@ export class KeycloakUtil {
    * @param owner of the organization
    */
   async addOwnerToGroup(id: string, name: string, owner: string): Promise<any> {
-    return await (await this.keycloak.getAdminClient()).groups.update(
+    return await (
+      await this.keycloak.getAdminClient()
+    ).groups.update(
       { id, realm: getConfig('keycloak.clientValidation.realmName') },
       { attributes: { owner: [owner] }, name },
     );
@@ -90,7 +99,9 @@ export class KeycloakUtil {
    * @param id of the group to fetch
    */
   async getGroupById(id: string): Promise<GroupRepresentation> {
-    return await (await this.keycloak.getAdminClient()).groups.findOne({
+    return await (
+      await this.keycloak.getAdminClient()
+    ).groups.findOne({
       id,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -103,7 +114,9 @@ export class KeycloakUtil {
    * @param userId of the member to add
    */
   async addMemberToGroup(groupId: string, userId: string): Promise<string> {
-    return await (await this.keycloak.getAdminClient()).users.addToGroup({
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.addToGroup({
       id: userId,
       groupId,
       realm: getConfig('keycloak.clientValidation.realmName'),
@@ -118,11 +131,49 @@ export class KeycloakUtil {
    * @param newName of the group
    */
   async updateGroup(KcGroupid: string, payload: GroupRepresentation): Promise<any> {
-    return await (await this.keycloak.getAdminClient()).groups.update(
+    return await (
+      await this.keycloak.getAdminClient()
+    ).groups.update(
       { id: KcGroupid, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         ...payload,
       },
     );
+  }
+
+  /*
+   * fetches a keycloak users by email
+   *
+   * @param email to get users by
+   */
+
+  async getUsersByEmail(email: string): Promise<UserRepresentation[]> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.find({
+      email,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+  }
+
+  /*
+   * reset a keycloak user password
+   *
+   * @param id of the user to fetch
+   * @param newPassword the new password
+   */
+
+  async resetPassword(id: string, newPassword: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.resetPassword({
+      realm: getConfig('keycloak.clientValidation.realmName'),
+      id,
+      credential: {
+        temporary: false,
+        type: 'password',
+        value: newPassword,
+      },
+    });
   }
 }
