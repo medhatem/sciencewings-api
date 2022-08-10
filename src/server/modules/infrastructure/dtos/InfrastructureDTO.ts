@@ -24,7 +24,7 @@ export class GetInfrastructureDTO extends BaseRequestDTO {
 }
 @JsonObject()
 @unique
-export class GetInfrastructuresBodyDTO extends BaseBodyDTO {
+export class GetInfrastructuresDTO extends BaseBodyDTO {
   @JsonProperty({
     type: InfrastructureDTO,
     beforeDeserialize,
@@ -35,7 +35,7 @@ export class GetInfrastructuresBodyDTO extends BaseBodyDTO {
 @unique
 export class GetAllInfrastructuresDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: GetInfrastructuresBodyDTO;
+  public body?: GetInfrastructuresDTO;
 }
 
 @JsonObject()

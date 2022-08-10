@@ -30,7 +30,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    * @param payload Should contain infrustructure data
    */
   @POST
-  @Path('createInfrastructure')
+  @Path('create')
   @Security()
   @LoggerStorage()
   @Response<infrastructureGetDTO>(204, 'infrastructure created Successfully')
@@ -43,7 +43,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   }
 
   /**
-   * Update a infrustructure in the database
+   * @override Update a infrustructure in the database
    * @param payload Should contain infrustructure data that include infrustructure data with its id
    * @param id id of the requested infrustructure
    */
