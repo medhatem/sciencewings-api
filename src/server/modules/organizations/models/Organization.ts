@@ -149,6 +149,6 @@ export class Organization extends BaseModel<Organization> {
   })
   public children? = new Collection<Organization>(this);
 
-  @OneToMany({ entity: () => Infrastructure, mappedBy: (infra) => infra.organization })
+  @OneToMany({ entity: () => Infrastructure, mappedBy: (entity) => entity.organization })
   infrastructure? = new Collection<Infrastructure>(this);
 }

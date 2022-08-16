@@ -23,18 +23,18 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   name!: string;
 
   @Property({ nullable: true })
-  description!: string;
+  description?: string;
 
   @Unique()
   @Property()
-  key!: number;
+  key!: string;
 
   @ManyToMany({
     entity: () => Member,
-    nullable: true,
     mappedBy: (entity) => entity.Infrastructures,
     lazy: true,
     eager: false,
+    nullable: true,
   })
   public responsibles? = new Collection<Member>(this);
 
@@ -44,9 +44,15 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   })
   public parent?: Infrastructure;
 
-  @OneToMany({ entity: () => Resource, mappedBy: (res) => res.infrastructure, nullable: true })
+  @OneToMany({
+    entity: () => Resource,
+    mappedBy: (res) => res.infrastructure,
+    nullable: true,
+    eager: false,
+    lazy: true,
+  })
   resources? = new Collection<Resource>(this);
 
-  @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
-  organization?: Organization;
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
+  organization!: Organization;
 }
