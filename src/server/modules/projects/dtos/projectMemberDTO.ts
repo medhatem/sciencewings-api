@@ -16,6 +16,8 @@ export class ProjectMemberDTO extends BaseBodyDTO {
   role: string;
   @JsonProperty()
   status: string;
+  @JsonProperty()
+  createdAt: string;
 }
 @JsonObject()
 @unique
