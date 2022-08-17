@@ -48,6 +48,23 @@ export class ProjectRoutes extends BaseRoutes<Project> {
     return new ProjectGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
   /**
+   * Retrieve organization project by id
+   * @param id of project
+   */
+  @GET
+  @Path('getOrganizationProjectById/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<GETProjectDTO>(200, 'Project extract Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getOrganizationProjectById(@PathParam('id') id: number): Promise<GETProjectDTO> {
+    const result = await this.projectService.getOrganizationProjectById(id);
+
+    return new GETProjectDTO({ body: { data: result, statusCode: 200 } });
+  }
+
+  /**
    * Containing data related to the project to be saved in the database
    * @param payload containing data related to the project to be saved in the database
    * Should container Project data

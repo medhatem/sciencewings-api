@@ -60,6 +60,20 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     })) as Project[];
     return fetchedProjects;
   }
+  /**
+   * Retrieve a project
+   * @param id of project
+   */
+  @log()
+  public async getOrganizationProjectById(id: number): Promise<Project> {
+    const project = (await this.dao.getByCriteria({ id }, FETCH_STRATEGY.SINGLE, {
+      populate: ['members'] as never,
+    })) as Project;
+    if (!project) {
+      throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${id}` } });
+    }
+    return project;
+  }
 
   /**
    * create a new project in database
