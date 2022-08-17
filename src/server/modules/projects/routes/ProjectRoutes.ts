@@ -61,7 +61,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   public async getOrganizationProjectById(@PathParam('id') id: number): Promise<GETProjectDTO> {
     const result = await this.projectService.getOrganizationProjectById(id);
 
-    return new GETProjectDTO({ body: { data: result, statusCode: 200 } });
+    return new GETProjectDTO({ body: { ...result, statusCode: 200 } });
   }
 
   /**
