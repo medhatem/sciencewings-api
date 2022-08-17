@@ -15,6 +15,7 @@ import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatus
 import { WorkLocation } from './WorkLocation';
 import { Project } from '@/modules/projects/models/Project';
 import { ProjectMember } from '@/modules/projects/models/ProjectMember';
+import { Infrastructure } from '@/modules/infrastructure';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',
@@ -74,6 +75,12 @@ export class Member extends BaseModel<Member> {
     eager: false,
   })
   resources? = new Collection<Resource>(this);
+
+  @ManyToMany({
+    entity: () => Infrastructure,
+    nullable: true,
+  })
+  Infrastructures? = new Collection<Infrastructure>(this);
 
   @Property({ nullable: true })
   name?: string;

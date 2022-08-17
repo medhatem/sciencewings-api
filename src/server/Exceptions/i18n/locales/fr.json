@@ -9,6 +9,8 @@
   "ORG.NON_EXISTANT_DATA {{org}}": "L'organisation {{org}} est introuvable.",
   "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
 
+  "INFRAS.NON_EXISTANT_DATA {{infra}}": "L'infrastructure {{infra}} est introuvable.",
+
   "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas",
   "USER.ALREADY_MEMBER {{user}}": "L'utilisateur {{user}} est deja membre de l'organisation.",
   "USER.NOT_MEMBER_OF_ORG": "L'utilisateur n'est pas membre de l'organisation",
@@ -47,6 +49,12 @@
   "VALIDATION.EMAIL_REQUIRED": "L'email est requis",
   "VALIDATION.PHONE_REQUIRED": "Telephone est requis",
   "VALIDATION.ADDRESS_REQUIRED": "L'adresse est requis",
+  "VALIDATION.COUNTRY_REQUIRED": "le pays est requis",
+  "VALIDATION.PROVINCE_REQUIRED": "la province est requis",
+  "VALIDATION.CODE_REQUIRED": " le code est requis",
+  "VALIDATION.TYPE_REQUIRED": "le type est requis",
+  "VALIDATION.CITY_REQUIRED": "la ville est requis",
+  "VALIDATION.STREET_REQUIRED": "la rue est requis",
   "VALIDATION.NAME_REQUIRED": "Le nom est requis",
   "VALIDATION.LABEL_REQUIRED": "Le label est requis",
   "VALIDATION.DATEOFBIRTH_REQUIRED": "La date de naissance est requis",
@@ -55,8 +63,9 @@
   "VALIDATION.CATEGORY_REQUIRED": "La categorie est requise",
   "VALIDATION.DURATION_REQUIRED": "La durée est requise",
   "VALIDATION.TITLE_REQUIRED": "Le titre est requis",
-  "VALIDATION.KEY_REQUIRED": "Le clé est requis",
   "VALIDATION.DATESTART_REQUIRED": "La date du debut est requise",
+  "VALIDATION.KEY_REQUIRED": "La clé est requise",
+  "VALIDATION.ORGANIZATION_REQUIRED": "L'organisation est requise",
 
   "required {{field}}": "{{field}} est requi"
 }
