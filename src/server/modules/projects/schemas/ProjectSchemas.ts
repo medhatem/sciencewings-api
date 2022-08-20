@@ -5,13 +5,13 @@ export const ProjectTaskSchema = Joi.object({
   description: Joi.string().required().messages({ 'any.required': 'VALIDATION.DESCRIPTION_REQUIRED' }),
   priority: Joi.string().required(),
   assigned: Joi.array().items(Joi.number()),
-  active: Joi.boolean(),
+  status: Joi.string(),
   dateStart: Joi.date(),
   parent: Joi.number(),
 });
 
 const ProjectSchema = Joi.object({
-  active: Joi.boolean(),
+  status: Joi.string(),
   tags: Joi.array().items(Joi.object()),
   tasks: Joi.array().items(ProjectTaskSchema.keys()),
 });

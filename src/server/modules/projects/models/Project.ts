@@ -8,6 +8,14 @@ import { ProjectTag } from '@/modules/projects/models/ProjectTag';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { ProjectMember } from '@/modules/projects/models/ProjectMember';
 import { Member } from '@/modules/hr/models/Member';
+
+export enum ProjectStatus {
+  TODO = 'To-do',
+  IN_PROGRESS = 'In-progress',
+  REVIEW = 'Review',
+  DONE = 'Done',
+}
+
 @provide()
 @Entity()
 export class Project extends BaseModel<Project> {
@@ -36,7 +44,7 @@ export class Project extends BaseModel<Project> {
   members = new Collection<Member>(this);
 
   @Property({ nullable: true })
-  active?: boolean;
+  status?: ProjectStatus;
 
   @Property({ nullable: true })
   dateStart?: Date;

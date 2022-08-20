@@ -132,27 +132,42 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     @validateParam(UpdateProjectSchema) payload: UpdateProjectRO,
     projetcId: number,
   ): Promise<number> {
+    console.log('i am inside service : payload = ', payload);
     const project = await this.dao.get(projetcId);
     if (!project) {
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${projetcId}` } });
     }
-    //check if the project key is unique
+    // check if the project key is unique
     if (payload.key) {
       const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
       if (ifProjectKeyIsUnique) {
         throw new ConflictError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', { variables: { key: `${payload.key}` } });
       }
     }
+    if (payload.newManager) {
+      let oldManager = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.SINGLE, {
+        filters: { manager: true },
+      });
+      let newManager = await this.projectMemberService.get(payload.newManager);
 
+      // Role changing
+      await this.projectMemberService.update(
+        this.projectMemberService.wrapEntity(oldManager, {
+          ...oldManager,
+          role: RolesList.PARTICIPANT,
+        }),
+      );
+      await this.projectMemberService.update(
+        this.projectMemberService.wrapEntity(newManager, {
+          ...oldManager,
+          role: RolesList.MANAGER,
+        }),
+      );
+    }
     const updatedProjectResult = await this.update(
       this.wrapEntity(project, {
         ...project,
-        title: payload.title || project.title,
-        key: payload.key || project.key,
-        description: payload.description || project.description,
-        active: payload.active || project.active,
-        dateStart: payload.dateStart || project.dateStart,
-        dateEnd: payload.dateEnd || project.dateEnd,
+        ...payload,
       }),
     );
 

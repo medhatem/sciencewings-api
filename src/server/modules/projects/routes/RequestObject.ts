@@ -1,6 +1,7 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
+import { ProjectStatus } from '@/modules/projects/models/Project';
 
 @JsonObject()
 @unique
@@ -116,10 +117,13 @@ export class UpdateProjectRO {
   key?: string;
 
   @JsonProperty()
+  newManager?: number;
+
+  @JsonProperty()
   description?: string;
 
   @JsonProperty()
-  active?: boolean;
+  status?: ProjectStatus;
 
   @JsonProperty()
   dateStart?: Date;

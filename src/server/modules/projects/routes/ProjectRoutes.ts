@@ -87,13 +87,15 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    * @param project id
    */
   @PUT
-  @Path('/update/:id')
+  @Path('/updateProject/:id')
   @Security()
   @LoggerStorage()
   @Response<UpdateProjectDTO>(204, 'Project updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateProject(payload: UpdateProjectRO, @PathParam('id') id: number): Promise<UpdateProjectDTO> {
+    console.log('i am inside route : payload = ', payload);
+
     const result = await this.projectService.updateProject(payload, id);
 
     return new UpdateProjectDTO({ body: { id: result, statusCode: 204 } });
