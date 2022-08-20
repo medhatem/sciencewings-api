@@ -127,11 +127,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    * @projetcId the if of project we want to update
    */
   @log()
-  @validate
-  public async updateProject(
-    @validateParam(UpdateProjectSchema) payload: UpdateProjectRO,
-    projetcId: number,
-  ): Promise<number> {
+  public async updateProject(payload: UpdateProjectRO, projetcId: number): Promise<number> {
     console.log('i am inside service : payload = ', payload);
     const project = await this.dao.get(projetcId);
     if (!project) {
@@ -148,21 +144,24 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       let oldManager = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.SINGLE, {
         filters: { manager: true },
       });
-      let newManager = await this.projectMemberService.get(payload.newManager);
 
-      // Role changing
-      await this.projectMemberService.update(
-        this.projectMemberService.wrapEntity(oldManager, {
-          ...oldManager,
-          role: RolesList.PARTICIPANT,
-        }),
-      );
-      await this.projectMemberService.update(
-        this.projectMemberService.wrapEntity(newManager, {
-          ...oldManager,
-          role: RolesList.MANAGER,
-        }),
-      );
+      if (oldManager.id == payload.newManager) {
+        let newManager = await this.projectMemberService.get(payload.newManager);
+
+        // Role changing
+        await this.projectMemberService.update(
+          this.projectMemberService.wrapEntity(oldManager, {
+            ...oldManager,
+            role: RolesList.PARTICIPANT,
+          }),
+        );
+        await this.projectMemberService.update(
+          this.projectMemberService.wrapEntity(newManager, {
+            ...oldManager,
+            role: RolesList.MANAGER,
+          }),
+        );
+      }
     }
     const updatedProjectResult = await this.update(
       this.wrapEntity(project, {
