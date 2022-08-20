@@ -4,7 +4,6 @@ import { ProjectDao } from '@/modules/projects/daos/projectDAO';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
-import { validate } from '@/decorators/validate';
 import { log } from '@/decorators/log';
 import {
   listMembersRo,
@@ -12,7 +11,7 @@ import {
   UpdateProjectParticipantRO,
   UpdateProjectRO,
 } from '@/modules/projects/routes/RequestObject';
-import { CreateProjectSchema, UpdateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
+import { CreateProjectSchema } from '@/modules/projects/schemas/ProjectSchemas';
 import { IMemberService } from '@/modules/hr/interfaces';
 import { IProjectTaskService } from '@/modules/projects/interfaces/IProjectTaskInterfaces';
 import { IProjectTagService } from '@/modules/projects/interfaces/IProjectTagInterfaces';
