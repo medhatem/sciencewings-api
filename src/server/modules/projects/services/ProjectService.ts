@@ -155,7 +155,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
           }),
         );
         await this.projectMemberService.update(
-          this.projectMemberService.wrapEntity(newManager, {
+          this.wrapEntity(newManager, {
             ...oldManager,
             role: RolesList.MANAGER,
           }),
@@ -342,6 +342,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         },
         members: membersLength,
         creatingDate: project.createdAt.toString(),
+        id: project.id,
       });
     });
     return projectList;

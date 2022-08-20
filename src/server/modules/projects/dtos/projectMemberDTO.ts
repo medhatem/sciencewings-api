@@ -9,6 +9,8 @@ import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 @unique
 export class ProjectMemberDTO extends BaseBodyDTO {
   @JsonProperty()
+  id?: number;
+  @JsonProperty()
   project: ProjectDTO;
   @JsonProperty()
   member: MemberDTO;

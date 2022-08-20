@@ -8,6 +8,8 @@ import { MemberDTO } from '@/modules/hr';
 @unique
 export class ResponsableObjectDTO extends BaseBodyDTO {
   @JsonProperty()
+  id?: number;
+  @JsonProperty()
   member: MemberDTO;
   @JsonProperty()
   name: string;
@@ -18,6 +20,8 @@ export class ResponsableObjectDTO extends BaseBodyDTO {
 @JsonObject()
 @unique
 export class ProjectListDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id?: number;
   @JsonProperty()
   title: string;
   @JsonProperty()
