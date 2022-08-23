@@ -49,7 +49,7 @@ export class UserRO {
 @unique
 export class ResetPasswordRO {
   @JsonProperty()
-  email: number;
+  email: string;
 
   @JsonProperty()
   password: string;
