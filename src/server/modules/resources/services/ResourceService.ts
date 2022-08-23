@@ -9,7 +9,6 @@ import {
   ResourceRateRO,
   ResourceTimerRestrictionRO,
   ResourceReservationVisibilityRO,
-  UpdateResourceRO,
 } from '@/modules/resources/routes/RequestObject';
 import {
   ResourceCalendarSchema,
@@ -38,7 +37,6 @@ import { log } from '@/decorators/log';
 import { ResourceCalendarRO, ResourceRO } from '@/modules/resources/routes/RequestObject';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
-import { Member } from '@/modules/hr/models/Member';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
@@ -49,7 +47,6 @@ import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IR
 import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
-
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -97,103 +94,113 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       FETCH_STRATEGY.ALL,
       { refresh: true },
     );
-    console.log({ organizationId, resources });
-
     return resources as Resource[];
   }
 
   @log()
   @validate
-  public async createResource(@validateParam(CreateResourceSchema) payload: ResourceRO): Promise<number> {
+  public async createResource(
+    userId: number,
+    @validateParam(CreateResourceSchema) payload: ResourceRO,
+  ): Promise<number> {
     const organization = await this.organizationService.get(payload.organization);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
     }
+    const wrappedResource = this.wrapEntity(Resource.getInstance(), {
+      name: payload.name,
+      resourceType: payload.resourceType,
+      resourceClass: payload.resourceClass,
+      active: true,
+    });
+    wrappedResource.organization = organization;
+    if (payload.managers) {
+      /*       payload.managers.forEach(async (manager) => {
+        const user = await this.userService.get(manager);
+        const m = (await this.memberService.getByCriteria(
+          {
+            user,
+            organization,
+          },
+          FETCH_STRATEGY.SINGLE,
+        )) as Member;
+        managers.push(m);
+      });
+ */
+      const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
 
-    const resourceStatusSetting = await this.resourceStatusService.get(1);
-
+      const manager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
+      if (!manager) {
+        throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+          variables: { user: `${payload.managers}` },
+        });
+      }
+      if (!wrappedResource.managers.isInitialized()) await wrappedResource.managers.init();
+      wrappedResource.managers = manager;
+    }
     const resourceStatus = await this.resourceStatusService.create({
       statusType: StatusCases.OPERATIONAL,
       statusDescription: '',
     });
+    wrappedResource.status = resourceStatus;
 
-    await this.resourceSettingsService.create({
-      ...resourceStatusSetting,
-      status: resourceStatus,
-    });
+    const resourceSetting = await this.resourceSettingsService.create({});
+    wrappedResource.settings = resourceSetting;
 
-    const createdResourceResult = await this.dao.create({
-      name: payload.name,
-      description: payload.description,
-      active: true,
-      resourceType: payload.resourceType,
-      resourceClass: payload.resourceClass,
-      organization,
-      settings: resourceStatusSetting,
-      status: resourceStatus,
-    });
+    const createdResource = await this.create(wrappedResource);
 
-    const user = await this.userService.get(payload.user);
-
-    if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
-        variables: { user: `${payload.user}` },
-      });
-    }
-
-    await this.dao.update(createdResourceResult);
-    return createdResourceResult.id;
+    return createdResource.id;
   }
 
-  @log()
-  @validate
-  public async updateResource(
-    @validateParam(UpdateResourceSchema) payload: UpdateResourceRO,
-    resourceId: number,
-  ): Promise<number> {
-    const fetchedResource = await this.dao.get(resourceId);
-    if (!fetchedResource) {
-      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
-    }
+  // @log()
+  // @validate
+  // public async updateResource(
+  //   @validateParam(UpdateResourceSchema) payload: UpdateResourceRO,
+  //   resourceId: number,
+  // ): Promise<number> {
+  //   const fetchedResource = await this.dao.get(resourceId);
+  //   if (!fetchedResource) {
+  //     throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
+  //   }
 
-    const managers: Member[] = [];
-    const delManagers: Member[] = [];
-    if (payload.managers) {
-      for await (const { organization, user } of payload.managers) {
-        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-        if (!fetcheManager) {
-          delManagers.push(fetcheManager);
-        }
-        managers.push(fetcheManager);
-      }
-    }
+  //   const managers: Member[] = [];
+  //   const delManagers: Member[] = [];
+  //   if (payload.managers) {
+  //     for await (const { organization, user } of payload.managers) {
+  //       const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
+  //       if (!fetcheManager) {
+  //         delManagers.push(fetcheManager);
+  //       }
+  //       managers.push(fetcheManager);
+  //     }
+  //   }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      name: payload.name || fetchedResource.name,
-      description: payload.description || fetchedResource.description,
-      active: payload.active || fetchedResource.active,
-      statusType: payload.resourceType || fetchedResource.resourceType,
-      resourceClass: payload.resourceClass || fetchedResource.resourceClass,
-      timezone: payload.timezone || fetchedResource.timezone,
-    });
+  //   const resource = this.wrapEntity(fetchedResource, {
+  //     ...fetchedResource,
+  //     name: payload.name || fetchedResource.name,
+  //     description: payload.description || fetchedResource.description,
+  //     active: payload.active || fetchedResource.active,
+  //     statusType: payload.resourceType || fetchedResource.resourceType,
+  //     resourceClass: payload.resourceClass || fetchedResource.resourceClass,
+  //     timezone: payload.timezone || fetchedResource.timezone,
+  //   });
 
-    for (const manager of managers) {
-      for (const existingManager of resource.managers) {
-        if (manager.user.id == existingManager.user.id && manager.organization.id == existingManager.organization.id) {
-          break;
-        }
-      }
-      resource.managers.add(manager);
-    }
-    for (const manager of delManagers) {
-      resource.managers.remove(manager);
-    }
+  //   for (const manager of managers) {
+  //     for (const existingManager of resource.managers) {
+  //       if (manager.user.id == existingManager.user.id && manager.organization.id == existingManager.organization.id) {
+  //         break;
+  //       }
+  //     }
+  //     resource.managers.add(manager);
+  //   }
+  //   for (const manager of delManagers) {
+  //     resource.managers.remove(manager);
+  //   }
 
-    const updatedResource = await this.dao.update(resource);
+  //   const updatedResource = await this.dao.update(resource);
 
-    return updatedResource.id;
-  }
+  //   return updatedResource.id;
+  // }
 
   @log()
   @validate
@@ -225,7 +232,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         variables: { resource: `${resourceId}` },
       });
     }
-    console.log({ fetchedResource });
 
     return { ...fetchedResource.settings, ...fetchedResource.status };
   }

@@ -8,7 +8,6 @@ import * as morgan from 'morgan';
 
 import { Configuration, getConfig } from './configuration/Configuration';
 import { OptionsJson, OptionsUrlencoded } from 'body-parser';
-import { ResourceSettingsService, StatusCases } from './modules';
 import { container, provideSingleton } from '@/di';
 
 import { ErrorHandler } from './Exceptions/GlobalErrorHandler';
@@ -120,14 +119,13 @@ export class Server {
   /**
    * method that adds all the base data
    */
-  private async seeding() {
-    const resourceService = ResourceSettingsService.getInstance();
-    const fetch = await resourceService.get(1);
-
-    if (fetch === null) {
-      await resourceService.create({ statusType: StatusCases.OPERATIONAL, statusDescription: '' });
-    }
-  }
+  // private async seeding() {
+  //   const resourceService = ResourceSettingsService.getInstance();
+  //   const fetch = await resourceService.get(1);
+  //   if (fetch === null) {
+  //     await resourceService.create({ statusType: StatusCases.NON_OPERATIONAL, statusDescription: '' });
+  //   }
+  // }
 
   private configureAuthenticator() {
     const keyCloakAuth = container.get(KeyCloakToken);

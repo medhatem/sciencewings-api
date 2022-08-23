@@ -26,12 +26,11 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   name!: string;
 
-  @Property()
-  description!: string;
+  @Property({ nullable: true })
+  description?: string;
 
   @ManyToMany({
     entity: () => Member,
-    nullable: true,
     mappedBy: (entity) => entity.resources,
     lazy: true,
     eager: false,
@@ -71,11 +70,11 @@ export class Resource extends BaseModel<Resource> {
   timezone?: string;
 
   @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
-  settings: ResourceSettings;
+  settings?: ResourceSettings;
 
   @ManyToOne({ entity: () => Infrastructure, onDelete: 'cascade' })
   infrastructure?: Infrastructure;
 
   @OneToOne({ entity: () => ResourceStatus, nullable: true, unique: false })
-  status: ResourceStatus;
+  status?: ResourceStatus;
 }

@@ -101,7 +101,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceRO = {
       name: 'resource_dash_one',
       description: 'string',
-      statusType: 'USER',
+      resourceType: 'USER',
       resourceClass: 'TECH',
       organization: 1,
       user: 1,

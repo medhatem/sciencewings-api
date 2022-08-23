@@ -36,7 +36,7 @@ const ResourceSchema = Joi.object({
 
 export const CreateResourceSchema = ResourceSchema.keys({
   name: Joi.string().required(),
-  description: Joi.string().required(),
+  description: Joi.string(),
   organization: Joi.number().required(),
   resourceType: Joi.string().required(),
   resourceClass: Joi.string().required(),

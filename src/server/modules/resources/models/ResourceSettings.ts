@@ -1,8 +1,7 @@
-import { BooleanType, Entity, OneToOne, PrimaryKey, Property, StringType } from '@mikro-orm/core';
+import { BooleanType, Entity, PrimaryKey, Property, StringType } from '@mikro-orm/core';
 import { provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { ResourceStatus } from '@/modules/resources/models/ResourceStatus';
 
 @provide()
 @Entity()
@@ -59,12 +58,6 @@ export class ResourceSettings extends BaseModel<ResourceSettings> {
   // visibility
   @Property({ type: BooleanType })
   isReservationDetailsVisibilityToNonModerators = false;
-
-  @OneToOne({
-    entity: () => ResourceStatus,
-    unique: false,
-  })
-  status: ResourceStatus;
 
   @Property({ type: StringType })
   statusDescription = '';

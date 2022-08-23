@@ -175,10 +175,10 @@ export class ResourceCalendarRO {
 @unique
 export class ResourceRO {
   @JsonProperty()
-  name: string;
+  name?: string;
 
   @JsonProperty()
-  description: string;
+  description?: string;
 
   @JsonProperty()
   organization!: number;
@@ -190,7 +190,7 @@ export class ResourceRO {
   resourceClass!: string;
 
   @JsonProperty()
-  user?: number;
+  managers?: number[];
 }
 @JsonObject()
 @unique
