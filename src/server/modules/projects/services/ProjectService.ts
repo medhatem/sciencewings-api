@@ -1,5 +1,5 @@
 import { IOrganizationService } from '@/modules/organizations/interfaces';
-import { Project } from '@/modules/projects/models/Project';
+import { Project, ProjectStatus } from '@/modules/projects/models/Project';
 import { ProjectDao } from '@/modules/projects/daos/projectDAO';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { provideSingleton, container } from '@/di/index';
@@ -101,11 +101,15 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE, {
       populate: true,
     });
+    if (!member) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT');
+    }
 
     const wrappedProject = this.wrapEntity(Project.getInstance(), {
       title: payload.title,
       key: payload.key,
       description: payload.description,
+      status: ProjectStatus.TODO,
     });
     wrappedProject.organization = organization;
     const project = await this.create(wrappedProject);
@@ -116,7 +120,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     participant.member = member;
     participant.project = project;
     await this.projectMemberService.create(participant);
-
     return project.id;
   }
 
