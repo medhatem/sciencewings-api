@@ -1,7 +1,7 @@
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Project } from '@/modules/projects/models/Project';
 import {
-  listMembersRo,
+  ProjectMemberRo,
   ProjectRO,
   UpdateProjectParticipantRO,
   UpdateProjectRO,
@@ -14,7 +14,7 @@ export abstract class IProjectService extends IBaseService<any> {
   updateProject: (payload: UpdateProjectRO, projetcId: number) => Promise<number>;
   getOrganizationProjects: (id: number) => Promise<Project[]>;
   getOrganizationProjectById: (id: number) => Promise<Project>;
-  addMembersToProject: (payload: listMembersRo, id: number) => Promise<ProjectMember[]>;
+  addMembersToProject: (payload: ProjectMemberRo, id: number) => Promise<ProjectMember[]>;
   getALLProjectParticipants: (id: number) => Promise<ProjectMember[]>;
   updateProjectParticipant: (projectId: number, payload: UpdateProjectParticipantRO) => Promise<ProjectMember>;
   getAllOrganizationProjectsList: (id: number) => Promise<ProjectList[]>;

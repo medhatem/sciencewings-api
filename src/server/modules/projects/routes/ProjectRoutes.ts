@@ -6,7 +6,7 @@ import { ContextRequest, GET, Path, PathParam, POST, PUT, Security } from 'types
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { CreateProjectDTO, GETProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
 import {
-  listMembersRo,
+  ProjectMemberRo,
   ProjectRO,
   UpdateProjectParticipantRO,
   UpdateProjectRO,
@@ -15,8 +15,8 @@ import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/
 import { IProjectService } from '@/modules/projects/interfaces/IProjectInterfaces';
 import { UserRequest } from '@/types/UserRequest';
 import {
+  CreateProjectMemberDTO,
   ProjectMemberRequestDTO,
-  ProjectMembersCreateDTO,
   UpdateProjectMemberDTO,
 } from '@/modules/projects/dtos/projectMemberDTO';
 import { ProjectListRequestDTO } from '@/modules/projects/dtos/projectListDto';
@@ -94,8 +94,6 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateProject(payload: UpdateProjectRO, @PathParam('id') id: number): Promise<UpdateProjectDTO> {
-    console.log('i am inside route : payload = ', payload);
-
     const result = await this.projectService.updateProject(payload, id);
 
     return new UpdateProjectDTO({ body: { id: result, statusCode: 204 } });
@@ -107,21 +105,20 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    * @param id containing id of the project want to add members too
    * Should container Project data
    */
-
   @POST
   @Path('/:id/projectMembers/create')
   @Security()
   @LoggerStorage()
-  @Response<ProjectMembersCreateDTO>(201, 'Project member created Successfully')
+  @Response<CreateProjectMemberDTO>(201, 'Project member created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async addMembersToProject(
-    payload: listMembersRo,
+    payload: ProjectMemberRo,
     @PathParam('id') id: number,
-  ): Promise<ProjectMembersCreateDTO> {
+  ): Promise<CreateProjectMemberDTO> {
     const result = await this.projectService.addMembersToProject(payload, id);
 
-    return new ProjectMembersCreateDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+    return new CreateProjectMemberDTO({ body: { ...result, statusCode: 200 } });
   }
 
   /**
