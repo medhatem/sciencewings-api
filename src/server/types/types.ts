@@ -17,3 +17,10 @@ export type OrgKey = {
   orgId: number;
   orgName: string;
 };
+
+export type ProjectList = {
+  title: string;
+  responsable: string;
+  members: number;
+  startDate: Date;
+};

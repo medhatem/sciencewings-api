@@ -6,10 +6,10 @@ import { unique } from '@/decorators/unique';
 
 export class UserInviteToOrgRO {
   @JsonProperty()
-  organizationId: number;
+  email: string;
 
   @JsonProperty()
-  email: string;
+  organizationId: number;
 }
 
 @JsonObject()

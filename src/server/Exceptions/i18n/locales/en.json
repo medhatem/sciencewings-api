@@ -32,6 +32,9 @@
   "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} is not found",
 
   "PROJECT.NON_EXISTANT {{project}}": "Project: {{project}} not found",
+  "PROJECT.NOT_FOR_THIS_ORG {{project,org}}": "Project: {{project}} not belong to this organization: {{org}}.",
+  "PROJECT.KEY_IS_NOT_UNIQUE {{key}}": "Project key: {{key}} already in use.",
+  "PROJECT.MEMBER_IS_ALREADY_PARTICIPATE_IN_PROJECT {{member}}": "Member: {{member}} is already working on this project.",
 
   "GROUP.NON_EXISTANT {{group}}": "group: {{group}} is not found",
 
