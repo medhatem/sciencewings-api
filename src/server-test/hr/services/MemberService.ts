@@ -45,7 +45,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     containerStub.withArgs(BaseService).returns(new BaseService({} as any));
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
+      .returns(
+        new MemberService(
+          memberDao,
+          userService,
+          organizationService,
+          emailService,
+          Keycloak.getInstance(),
+          keycloakUtil,
+        ),
+      );
   }
 
   beforeEach(() => {
@@ -53,6 +62,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
     emailService = createStubInstance(Email);
+    keycloakUtil = createStubInstance(KeycloakUtil);
 
     containerStub = stub(container, 'get');
     containerStub.withArgs(Configuration).returns({
@@ -68,7 +78,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, emailService, keycloakUtil));
+      .returns(
+        new MemberService(
+          memberDao,
+          userService,
+          organizationService,
+          emailService,
+          Keycloak.getInstance(),
+          keycloakUtil,
+        ),
+      );
   });
 
   afterEach(() => {
@@ -96,6 +115,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     test('Should fail on creating user', async () => {
       stubKeyclockInstanceWithBaseService([]);
       mockMethodWithResult(organizationService, 'get', [orgId], Promise.resolve({}));
+      mockMethodWithResult(keycloakUtil, 'createKcUser', [email], Promise.resolve({}));
+      mockMethodWithResult(keycloakUtil, 'getUsersByEmail', [email], Promise.resolve([]));
+
       mockMethodWithResult(userService, 'create', [], Promise.reject(new Error('Failed')));
 
       try {
@@ -118,6 +140,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           },
         }),
       );
+      mockMethodWithResult(keycloakUtil, 'createKcUser', [email], Promise.resolve({ id: 1 }));
+      mockMethodWithResult(keycloakUtil, 'getUsersByEmail', [email], Promise.resolve([]));
       const memberService = container.get(MemberService);
       mockMethodWithResult(userService, 'create', [], Promise.resolve({ id: 1 }));
       mockMethodWithResult(memberDao, 'create', [], Promise.resolve({ user: 1, organization: orgId }));

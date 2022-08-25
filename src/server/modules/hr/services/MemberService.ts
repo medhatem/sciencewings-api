@@ -20,6 +20,8 @@ import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
+import { Keycloak } from '@/sdks/keycloak';
+
 import { BadRequest } from '@/Exceptions/BadRequestError';
 
 @provideSingleton(IMemberService)
@@ -29,6 +31,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     public userService: IUserService,
     public organizationService: IOrganizationService,
     public emailService: Email,
+    public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
