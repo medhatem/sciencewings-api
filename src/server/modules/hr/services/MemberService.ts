@@ -48,7 +48,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organizationId}` } });
     }
 
-    const existingUser = await (await this.keycloak.getAdminClient()).users.find({
+    const existingUser = await (
+      await this.keycloak.getAdminClient()
+    ).users.find({
       email: payload.email,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -58,7 +60,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
       // fetch the existing user
       user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
     } else {
-      const createdKeyCloakUser = await (await this.keycloak.getAdminClient()).users.create({
+      const createdKeyCloakUser = await (
+        await this.keycloak.getAdminClient()
+      ).users.create({
         email: payload.email,
         firstName: '',
         lastName: '',
@@ -72,9 +76,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
         keycloakId: createdKeyCloakUser.id,
         status: userStatus.INVITATION_PENDING,
       });
-      user = createdKeyCloakUser;
 
-      await this.userService.create(wrappedUser);
+      user = await this.userService.create(wrappedUser);
     }
 
     // check whether the user is already a member of the organization
@@ -145,7 +148,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
   }
   /**
    * the user can accpet, reject his membership
-   * updating the staus of membership
+   * updating the status of membership
    * @param payload the status of membership
    * @userId @orgId primary keys of member
    */
@@ -226,7 +229,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
       throw new BadRequest('USER.NOT_MEMBER_OF_ORG', { friendly: true });
     }
     //retrieve the organization keycloak group
-    const orgKcGroupe = await (await this.keycloak.getAdminClient()).groups.findOne({
+    const orgKcGroupe = await (
+      await this.keycloak.getAdminClient()
+    ).groups.findOne({
       id: organization.kcid,
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
@@ -235,7 +240,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` } });
     }
     //change the KcUser current_org attribute
-    await (await this.keycloak.getAdminClient()).users.update(
+    await (
+      await this.keycloak.getAdminClient()
+    ).users.update(
       { id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName') },
       { attributes: { current_org: orgKcGroupe.id } },
     );

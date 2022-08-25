@@ -8,12 +8,13 @@ import { Group } from './Group';
 import { Job } from './Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
-import { Project } from '@/modules/projects/models/Project';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 import { WorkLocation } from './WorkLocation';
+import { Project } from '@/modules/projects/models/Project';
+import { ProjectMember } from '@/modules/projects/models/ProjectMember';
 import { Infrastructure } from '@/modules/infrastructure';
 
 export enum MemberTypeEnum {
@@ -144,17 +145,11 @@ export class Member extends BaseModel<Member> {
   @Property({ columnType: 'date', nullable: true })
   joinedDate?: Date;
 
-  @Property({ columnType: 'timestamp', nullable: true })
-  joinDate?: Date = new Date();
-
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
 
-  @ManyToMany(() => Project, (project) => project.managers)
-  porjectManagers? = new Collection<Project>(this);
-
-  @ManyToMany(() => Project, (project) => project.participants)
-  projectParticipants? = new Collection<Project>(this);
+  @ManyToMany({ entity: () => Project, owner: true, pivotEntity: () => ProjectMember })
+  projects? = new Collection<Project>(this);
 
   @Property({ nullable: true })
   status?: userStatus;
@@ -166,5 +161,5 @@ export class Member extends BaseModel<Member> {
   resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
 
   @ManyToMany({ entity: () => ProjectTask, nullable: true })
-  task?: ProjectTask;
+  task? = new Collection<ProjectTask>(this);
 }
