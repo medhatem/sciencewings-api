@@ -7,3 +7,4 @@ export * from './IResourceEventService';
 export * from './IResourceRateService';
 export * from './IResourceStatusService';
 export * from './IResourceStatusHistoryService';
+export * from './IResourceManagerService';

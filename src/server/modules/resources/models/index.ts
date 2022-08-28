@@ -9,3 +9,4 @@ export * from './ResourceEvent';
 export * from './ResourceSettings';
 export * from './ResourceStatus';
 export * from './ResourceStatusHistory';
+export * from './ResourceManager';

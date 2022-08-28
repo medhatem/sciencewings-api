@@ -19,7 +19,7 @@ export class BaseDao<T extends BaseModel<T>> {
   public builder: QueryBuilder<T>;
   public logger: Logger;
   constructor(public model: T) {
-    this.repository = ((connection.em as any) as EntityManager).getRepository<T>(model.constructor as new () => T);
+    this.repository = (connection.em as any as EntityManager).getRepository<T>(model.constructor as new () => T);
     this.logger = Logger.getInstance();
   }
 
@@ -63,8 +63,12 @@ export class BaseDao<T extends BaseModel<T>> {
 
   @log()
   public async create(entry: T): Promise<T> {
+    console.log('entry =================== ', entry);
     const entity = (this.repository as any).create(entry); //generate an entity from a payload
-    await this.repository.persistAndFlush(entity);
+    console.log('entity =================== ', entity);
+    const e = this.repository.persist(entity);
+    console.log('e======================', e);
+    await this.repository.flush();
     return entity;
   }
 

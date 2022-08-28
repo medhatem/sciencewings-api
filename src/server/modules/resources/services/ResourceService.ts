@@ -47,6 +47,9 @@ import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IR
 import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
+import { IResourceManagerService } from '@/modules/resources/interfaces/IResourceManagerService';
+import { ResourceManager, ResourceRolesList } from '@/modules/resources/models/ResourceManager';
+import { Member } from '@/modules/hr';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -60,6 +63,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public resourceTagService: IResourceTagService,
     public resourceStatusHistoryService: IResourceStatusHistoryService,
     public resourceStatusService: IResourceStatusService,
+    public resourceManagerService: IResourceManagerService,
   ) {
     super(dao);
   }
@@ -114,8 +118,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       active: true,
     });
     wrappedResource.organization = organization;
-    if (payload.managers) {
-      /*       payload.managers.forEach(async (manager) => {
+    /*       payload.managers.forEach(async (manager) => {
         const user = await this.userService.get(manager);
         const m = (await this.memberService.getByCriteria(
           {
@@ -127,17 +130,15 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         managers.push(m);
       });
  */
-      const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
+    const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
 
-      const manager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-      if (!manager) {
-        throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
-          variables: { user: `${payload.managers}` },
-        });
-      }
-      if (!wrappedResource.managers.isInitialized()) await wrappedResource.managers.init();
-      wrappedResource.managers = manager;
+    const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
+    if (!manager) {
+      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+        variables: { user: `${payload.managers}` },
+      });
     }
+
     const resourceStatus = await this.resourceStatusService.create({
       statusType: StatusCases.OPERATIONAL,
       statusDescription: '',
@@ -148,6 +149,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     wrappedResource.settings = resourceSetting;
 
     const createdResource = await this.create(wrappedResource);
+
+    const defaultResourceManager = this.resourceManagerService.wrapEntity(ResourceManager.getInstance(), {
+      role: ResourceRolesList.RESPONSIBLE,
+    });
+    defaultResourceManager.Resource = createdResource;
+    defaultResourceManager.member = manager;
+    console.log('defaultResourceManager= ', defaultResourceManager);
+    await this.resourceManagerService.create(defaultResourceManager);
 
     return createdResource.id;
   }

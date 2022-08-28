@@ -6,3 +6,4 @@ export * from './ResourceCalendarService';
 export * from './ResourceEventService';
 export * from './ResourceStatusService';
 export * from './ResourceStatusHistoryService';
+export * from './ResourceManagerService';
