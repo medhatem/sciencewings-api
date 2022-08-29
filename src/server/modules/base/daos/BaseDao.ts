@@ -63,12 +63,8 @@ export class BaseDao<T extends BaseModel<T>> {
 
   @log()
   public async create(entry: T): Promise<T> {
-    console.log('entry =================== ', entry);
     const entity = (this.repository as any).create(entry); //generate an entity from a payload
-    console.log('entity =================== ', entity);
-    const e = this.repository.persist(entity);
-    console.log('e======================', e);
-    await this.repository.flush();
+    await this.repository.persistAndFlush(entity);
     return entity;
   }
 

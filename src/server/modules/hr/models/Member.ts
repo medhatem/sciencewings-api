@@ -16,7 +16,6 @@ import { WorkLocation } from './WorkLocation';
 import { Project } from '@/modules/projects/models/Project';
 import { ProjectMember } from '@/modules/projects/models/ProjectMember';
 import { Infrastructure } from '@/modules/infrastructure';
-import { ResourceManager } from '@/modules/resources/models/ResourceManager';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',
@@ -75,7 +74,7 @@ export class Member extends BaseModel<Member> {
   // })
   // resources? = new Collection<Resource>(this);
 
-  @ManyToMany({ entity: () => Resource, owner: true, pivotEntity: () => ResourceManager })
+  @ManyToMany({ entity: () => Resource })
   resources? = new Collection<Resource>(this);
 
   @ManyToMany({

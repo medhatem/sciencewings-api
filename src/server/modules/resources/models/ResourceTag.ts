@@ -1,6 +1,6 @@
 import { container, provide } from '@/di';
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { Resource } from './Resource';
 
 @provide()
@@ -23,5 +23,5 @@ export class ResourceTag extends BaseModel<ResourceTag> {
   @ManyToMany({
     entity: () => Resource,
   })
-  resource: Resource;
+  resource = new Collection<Resource>(this);
 }

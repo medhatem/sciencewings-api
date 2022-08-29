@@ -8,7 +8,6 @@ import { ResourceTag } from '@/modules/resources/models//ResourceTag';
 import { ResourceSettings } from '@/modules/resources/models//ResourceSettings';
 import { Infrastructure } from '@/modules/infrastructure';
 import { ResourceStatus } from '@/modules/resources/models//ResourceStatus';
-import { ResourceManager } from '@/modules/resources/models/ResourceManager';
 
 @provide()
 @Entity()
@@ -38,7 +37,7 @@ export class Resource extends BaseModel<Resource> {
   // })
   // public managers? = new Collection<Member>(this);
 
-  @ManyToMany({ entity: () => Member, owner: true, pivotEntity: () => ResourceManager })
+  @ManyToMany({ entity: () => Member, mappedBy: (entity) => entity.resources })
   managers = new Collection<Member>(this);
 
   @ManyToMany({
