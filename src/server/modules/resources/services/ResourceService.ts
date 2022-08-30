@@ -114,21 +114,9 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       resourceClass: payload.resourceClass,
       active: true,
     });
-    wrappedResource.organization = organization;
-    /*       payload.managers.forEach(async (manager) => {
-        const user = await this.userService.get(manager);
-        const m = (await this.memberService.getByCriteria(
-          {
-            user,
-            organization,
-          },
-          FETCH_STRATEGY.SINGLE,
-        )) as Member;
-        managers.push(m);
-      });
- */
-    const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
 
+    wrappedResource.organization = organization;
+    const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
     const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
     if (!manager) {
       throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
@@ -186,7 +174,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
   //   for (const manager of managers) {
   //     for (const existingManager of resource.managers) {
-  //       if (manager.user.id == existingManager.user.id && manager.organization.id == existingManager.organization.id) {
+  //       if (manager.user.id == existingManager.user.id
+  //            && manager.organization.id == existingManager.organization.id) {
   //         break;
   //       }
   //     }
@@ -271,16 +260,15 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
     }
 
-    const member = await this.memberService.getByCriteria(
-      { user: payload.user, organization: payload.organization },
-      FETCH_STRATEGY.SINGLE,
-    );
+    const organization = await this.organizationService.get(payload.organization);
+    const user = await this.userService.getByCriteria({ id: payload.user }, FETCH_STRATEGY.SINGLE);
+
+    const member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
 
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
-
-    resource.status.statusType = payload.statusType as StatusCases;
+    resource.status.statusType = payload.statusType;
     resource.status.statusDescription = payload.statusDescription;
     await this.dao.update(resource);
 

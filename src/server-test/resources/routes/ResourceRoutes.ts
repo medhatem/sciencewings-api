@@ -62,6 +62,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       resourceClass: 'TECH',
       organization: 1,
     };
+    const userId = 1;
 
     test('Should fail on throw error', async () => {
       mockMethodWithResult(resourceService, 'createResource', [payload], Promise.reject(new Error('Failed')));
@@ -72,9 +73,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'createResource', [payload], 1);
+      mockMethodWithResult(resourceService, 'createResource', [userId, payload], { body: { id: 1 } });
       const result = await resourceRoute.createResource({} as any, payload);
-      expect(result.body.id).to.equal(1);
       expect(result.body.statusCode).to.equal(201);
     });
   });

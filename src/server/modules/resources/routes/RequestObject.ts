@@ -1,5 +1,6 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
+import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 
 //Resource settings
 @JsonObject()
@@ -58,7 +59,7 @@ export class ResourcesSettingsReservationUnitRO {
 @unique
 export class ResourceSettingsGeneralStatusRO {
   @JsonProperty()
-  statusType: string;
+  statusType: StatusCases;
   @JsonProperty()
   statusDescription: string;
   @JsonProperty()
@@ -124,19 +125,6 @@ export class ResourceReservationVisibilityRO {
 export class ResourceSettingsGeneralPropertiesRO {
   @JsonProperty()
   accessToResource: string;
-}
-
-@JsonObject()
-@unique
-export class ResourceManagerRO {
-  @JsonProperty()
-  id?: number;
-
-  @JsonProperty()
-  organization: number;
-
-  @JsonProperty()
-  user: number;
 }
 
 @JsonObject()
@@ -221,9 +209,6 @@ export class UpdateResourceRO {
 
   @JsonProperty()
   tags?: Array<ResourceTagRO>;
-
-  @JsonProperty()
-  managers?: Array<ResourceManagerRO>;
 }
 @JsonObject()
 @unique

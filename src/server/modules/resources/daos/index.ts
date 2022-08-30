@@ -6,4 +6,3 @@ export * from './ResourceEventDAO';
 export * from './ResourceRateDAO';
 export * from './ResourceStatusDAO';
 export * from './ResourceStatusHistoryDAO';
-export * from './ResourceManagerDao';

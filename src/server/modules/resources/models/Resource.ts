@@ -29,14 +29,6 @@ export class Resource extends BaseModel<Resource> {
   @Property({ nullable: true })
   description?: string;
 
-  // @ManyToMany({
-  //   entity: () => Member,
-  //   mappedBy: (entity) => entity.resources,
-  //   lazy: true,
-  //   eager: false,
-  // })
-  // public managers? = new Collection<Member>(this);
-
   @ManyToMany({ entity: () => Member, mappedBy: (entity) => entity.resources })
   managers = new Collection<Member>(this);
 

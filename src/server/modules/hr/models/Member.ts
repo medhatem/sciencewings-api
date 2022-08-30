@@ -68,12 +68,6 @@ export class Member extends BaseModel<Member> {
   })
   resourceCalendar?: ResourceCalendar;
 
-  // @ManyToMany({
-  //   entity: () => Resource,
-  //   nullable: true,
-  // })
-  // resources? = new Collection<Resource>(this);
-
   @ManyToMany({ entity: () => Resource })
   resources? = new Collection<Resource>(this);
 
