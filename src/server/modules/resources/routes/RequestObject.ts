@@ -184,6 +184,9 @@ export class ResourceRO {
 @unique
 export class UpdateResourceRO {
   @JsonProperty()
+  organization!: number;
+
+  @JsonProperty()
   name?: string;
 
   @JsonProperty()
