@@ -66,6 +66,9 @@
   "VALIDATION.DATESTART_REQUIRED": "La date du debut est requise",
   "VALIDATION.KEY_REQUIRED": "La clé est requise",
   "VALIDATION.ORGANIZATION_REQUIRED": "L'organisation est requise",
+  "VALIDATION.JOBLEVEL_REQUIRED": "le niveau de travaille est requise",
+  "VALIDATION.USER_REQUIRED": "L'utilisateur' est requise",
+  "VALIDATION.WAGE_REQUIRED": "La salaire est requise",
 
   "required {{field}}": "{{field}} est requi"
 }

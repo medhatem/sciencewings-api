@@ -8,12 +8,12 @@ const ContractSchema = Joi.object({
 });
 
 export const CreateContractSchema = ContractSchema.keys({
-  name: Joi.string().required(),
-  jobLevel: Joi.string().required(),
-  user: Joi.number().required(),
-  dateStart: Joi.date().required(),
-  wage: Joi.number().required(),
-  organization: Joi.number().required(),
+  name: Joi.string().required().messages({ 'any.required': 'VALIDATION.NAME_REQUIRED' }),
+  jobLevel: Joi.string().required().messages({ 'any.required': 'VALIDATION.JOBLEVEL_REQUIRED' }),
+  user: Joi.number().required().messages({ 'any.required': 'VALIDATION.USER_REQUIRED' }),
+  dateStart: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATESTART_REQUIRED' }),
+  wage: Joi.number().required().messages({ 'any.required': 'VALIDATION.WAGE_REQUIRED' }),
+  organization: Joi.number().required().messages({ 'any.required': 'VALIDATION.ORGANIZATION_REQUIRED' }),
 });
 
 export const UpdateContractSchema = ContractSchema.keys({

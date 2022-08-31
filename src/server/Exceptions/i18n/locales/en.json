@@ -65,5 +65,9 @@
   "VALIDATION.DURATION_REQUIRED": "duration is required",
   "VALIDATION.TITLE_REQUIRED": "Title is required",
   "VALIDATION.DATESTART_REQUIRED": "Date start is required",
+  "VALIDATION.JOBLEVEL_REQUIRED": "Job Level is required",
+  "VALIDATION.USER_REQUIRED": "User is required",
+  "VALIDATION.WAGE_REQUIRED": "Wage is required",
+
   "required {{field}}": "{{field}} is required"
 }

@@ -138,9 +138,9 @@ export class ContractService extends BaseService<Contract> implements IContractS
     });
     wrappedJob.organization = organization;
     const job = await this.jobService.create(wrappedJob);
-    job.contracts.init();
+    await job.contracts.init();
     job.contracts.add(createdContract);
-    this.jobService.update(job);
+    await this.jobService.update(job);
 
     return createdContract.id;
   }
