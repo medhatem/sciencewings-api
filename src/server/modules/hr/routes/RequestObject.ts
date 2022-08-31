@@ -5,54 +5,49 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 import { userStatus } from '@/modules/users/models/User';
+import { JobLevel, contractType } from '@/modules/hr/models/Contract';
 
 @JsonObject()
 @unique
-export class ContractRO {
+export class MemberKeyRO {
   @JsonProperty()
-  id: number;
+  userId: number;
+  @JsonProperty()
+  orgId: number;
+}
 
+@JsonObject()
+@unique
+export class CreateContractRO {
   @JsonProperty()
   name!: string;
-
-  @JsonProperty()
-  completeName?: string;
-
-  @JsonProperty()
-  dateStart!: Date;
-
-  @JsonProperty()
-  wage!: number;
 
   @JsonProperty()
   organization!: number;
 
   @JsonProperty()
-  active?: boolean;
+  user!: number;
 
   @JsonProperty()
-  parent?: number;
+  jobLevel!: JobLevel;
 
   @JsonProperty()
-  manager?: number;
+  wage!: number;
+
+  @JsonProperty()
+  contractType!: contractType;
+
+  @JsonProperty()
+  dateStart!: Date;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  supervisor?: number;
 
   @JsonProperty()
   description?: string;
-
-  @JsonProperty()
-  member?: number;
-
-  @JsonProperty()
-  group?: number;
-
-  @JsonProperty()
-  job?: number;
-
-  @JsonProperty()
-  resourceCalendar?: number;
-
-  @JsonProperty()
-  hrResponsible?: number;
 }
 
 @JsonObject()
@@ -97,6 +92,7 @@ export class JobRO {
   @JsonProperty()
   hrResponsible?: number;
 }
+
 @JsonObject()
 @unique
 export class MemberRO {

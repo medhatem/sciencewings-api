@@ -6,7 +6,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Contract } from '@/modules/hr/models/Contract';
 import { ContractDao } from '@/modules/hr/daos/ContractDao';
-import { ContractRO } from '@/modules/hr/routes/RequestObject';
+import { CreateContractRO } from '@/modules/hr/routes/RequestObject';
 import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
@@ -16,6 +16,8 @@ import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateContractSchema, UpdateContractSchema } from '@/modules/hr/schemas/ContractSchema';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+import { JobState, Job } from '@/modules/hr/models/Job';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -41,7 +43,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
    * @returns Optional Properties
    */
   @log()
-  private async checkForOptionalPropertiesInContract(payload: ContractRO): Promise<any> {
+  private async checkForOptionalPropertiesInContract(payload: any): Promise<any> {
     let member, group, job, resourceCalendar, hrResponsible;
     if (payload.member) {
       member = await this.memberService.get(payload.member);
@@ -85,7 +87,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
    */
   @log()
   @validate
-  public async createContract(@validateParam(CreateContractSchema) payload: ContractRO): Promise<number> {
+  public async createContract(@validateParam(CreateContractSchema) payload: CreateContractRO): Promise<number> {
     const organization = await this.origaniaztionService.get(payload.organization);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
@@ -93,16 +95,53 @@ export class ContractService extends BaseService<Contract> implements IContractS
         isOperational: true,
       });
     }
+    const user = await this.userService.get(payload.user);
 
-    const entities = await this.checkForOptionalPropertiesInContract(payload);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload.user}` } });
+    }
 
-    const contract = {
-      ...payload,
-      organization,
-      ...entities,
-    };
+    const member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+    if (!member) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${payload.user}` } });
+    }
+    const wrappedContract = this.wrapEntity(Contract.getInstance(), {
+      jobLevel: payload.jobLevel,
+      wage: payload.wage,
+      contractType: payload.contractType,
+      dateStart: payload.dateStart,
+      dateEnd: payload.dateEnd,
+      description: payload.description,
+    });
 
-    const createdContract = await this.create(contract);
+    wrappedContract.member = member;
+
+    if (payload.supervisor) {
+      const user = await this.userService.get(payload.supervisor);
+
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload.user}` } });
+      }
+
+      const supervisor = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+      if (!supervisor) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${payload.user}` } });
+      }
+      wrappedContract.supervisor = supervisor;
+    }
+
+    const createdContract = await this.dao.create(wrappedContract);
+
+    const wrappedJob = this.jobService.wrapEntity(Job.getInstance(), {
+      name: payload.name,
+      state: JobState.WORKING,
+    });
+    wrappedJob.organization = organization;
+    const job = await this.jobService.create(wrappedJob);
+    job.contracts.init();
+    job.contracts.add(createdContract);
+    this.jobService.update(job);
+
     return createdContract.id;
   }
 
@@ -111,7 +150,10 @@ export class ContractService extends BaseService<Contract> implements IContractS
    */
   @log()
   @validate
-  public async updateContract(@validateParam(UpdateContractSchema) payload: ContractRO, id: number): Promise<number> {
+  public async updateContract(
+    @validateParam(UpdateContractSchema) payload: CreateContractRO,
+    id: number,
+  ): Promise<number> {
     const currentContract = await this.dao.get(id);
     if (currentContract === null) {
       throw new NotFoundError('CONTRACT.NON_EXISTANT {{contract}}', { variables: { contract: `${id}` } });

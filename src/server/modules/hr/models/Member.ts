@@ -1,4 +1,13 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryKeyType,
+  Property,
+} from '@mikro-orm/core';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provide } from '@/di/index';
 
@@ -145,7 +154,7 @@ export class Member extends BaseModel<Member> {
   @Property({ columnType: 'date', nullable: true })
   joinedDate?: Date;
 
-  @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
+  @OneToMany({ entity: () => Contract, mappedBy: (entity) => entity.member, nullable: true, eager: false, lazy: true })
   contract?: Contract;
 
   @ManyToMany({ entity: () => Project, owner: true, pivotEntity: () => ProjectMember })
