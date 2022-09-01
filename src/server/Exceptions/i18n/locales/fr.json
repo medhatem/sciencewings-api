@@ -69,6 +69,7 @@
   "VALIDATION.JOBLEVEL_REQUIRED": "le niveau de travaille est requise",
   "VALIDATION.USER_REQUIRED": "L'utilisateur' est requise",
   "VALIDATION.WAGE_REQUIRED": "La salaire est requise",
+  "VALIDATION.DATEEND_JUST_IN_CDD": "Vous pouvez ajouter une date de fin justque en contrat CDD",
 
   "required {{field}}": "{{field}} est requi"
 }

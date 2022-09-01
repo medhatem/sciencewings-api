@@ -9,10 +9,11 @@ import {
   ContracBaseDTO,
   UpdateContracBaseDTO,
 } from '@/modules/hr/dtos/ContractDTO';
-import { CreateContractRO } from './RequestObject';
+import { UpdateContractRO, CreateContractRO } from '@/modules/hr/routes/RequestObject';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
+import { ValidationError } from '@/Exceptions/ValidationError';
 @provideSingleton()
 @Path('contracts')
 export class ContractRoutes extends BaseRoutes<Contract> {
@@ -61,17 +62,23 @@ export class ContractRoutes extends BaseRoutes<Contract> {
 
   /**
    * Override the update method
+   * @param payload updated properties
+   * @param id of updated contract
    */
   @PUT
-  @Path('/update/:id')
+  @Path('/updateContract/:id')
   @Security()
   @LoggerStorage()
-  @Response<ContracBaseBodyDTO>(204, 'Contract updated Successfully')
+  @Response<UpdateContracBaseDTO>(204, 'Contract updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async createUpdateContract(payload: CreateContractRO, @PathParam('id') id: number): Promise<ContracBaseDTO> {
+  @Response<ValidationError>(404, 'Validation Error')
+  public async createUpdateContract(
+    payload: UpdateContractRO,
+    @PathParam('id') id: number,
+  ): Promise<UpdateContracBaseDTO> {
     const result = await this.contractService.updateContract(payload, id);
 
-    return new ContracBaseDTO({ body: { id: result, statusCode: 204 } });
+    return new UpdateContracBaseDTO({ body: { id: result, statusCode: 204 } });
   }
 }

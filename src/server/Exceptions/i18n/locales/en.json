@@ -68,6 +68,7 @@
   "VALIDATION.JOBLEVEL_REQUIRED": "Job Level is required",
   "VALIDATION.USER_REQUIRED": "User is required",
   "VALIDATION.WAGE_REQUIRED": "Wage is required",
+  "VALIDATION.DATEEND_JUST_IN_CDD": "You can add an End date just in CDD",
 
   "required {{field}}": "{{field}} is required"
 }

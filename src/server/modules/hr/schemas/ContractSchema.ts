@@ -17,8 +17,11 @@ export const CreateContractSchema = ContractSchema.keys({
 });
 
 export const UpdateContractSchema = ContractSchema.keys({
-  name: Joi.string(),
+  jobName: Joi.string(),
+  state: Joi.string(),
+  jobLevel: Joi.string(),
+  user: Joi.number(),
   dateStart: Joi.date(),
   wage: Joi.number(),
-  organization: Joi.number(),
+  organization: Joi.number().required(),
 });
