@@ -28,7 +28,6 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
-import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
@@ -308,7 +307,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    return existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
+    return existingOrg.members.toArray().map((el: any) => ({ ...el, joinedDate: el.joinedDate.toISOString() }));
   }
 
   /**
@@ -324,19 +323,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
-      id: fetchedorganization.kcid,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    const group = await this.keycloakUtils.getGroupById(fetchedorganization.kcid);
 
-    if (groups.subGroups.length !== 1) {
+    //check if the org have subgroups
+    if (group.subGroups.length !== 0) {
       throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
-
-    await (await this.keycloak.getAdminClient()).groups.del({
-      id: fetchedorganization.kcid,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
     await this.dao.remove(fetchedorganization);
     return organizationId;

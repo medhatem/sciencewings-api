@@ -146,17 +146,18 @@ export class KeycloakUtil {
    *
    * @param email to get users by
    */
+
   async getUsersByEmail(email: string): Promise<UserRepresentation[]> {
     return await (
       await this.keycloak.getAdminClient()
     ).users.find({
       email,
-
       realm: getConfig('keycloak.clientValidation.realmName'),
     });
   }
 
   /*
+<<<<<<< HEAD
    * create a keycloak user
    *
    * @param email to get users by
@@ -188,5 +189,24 @@ export class KeycloakUtil {
         ...payload,
       },
     );
+  }
+  /* reset a keycloak user password
+   *
+   * @param id of the user to fetch
+   * @param newPassword the new password
+   */
+
+  async resetPassword(id: string, newPassword: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.resetPassword({
+      realm: getConfig('keycloak.clientValidation.realmName'),
+      id,
+      credential: {
+        temporary: false,
+        type: 'password',
+        value: newPassword,
+      },
+    });
   }
 }

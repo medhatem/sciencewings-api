@@ -49,6 +49,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (!existingOrg) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organizationId}` } });
     }
+
     const existingUser = await this.keycloakUtils.getUsersByEmail(payload.email);
 
     let user = null;
@@ -65,9 +66,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
         keycloakId: createdKeyCloakUser.id,
         status: userStatus.INVITATION_PENDING,
       });
-      user = createdKeyCloakUser;
 
-      await this.userService.create(wrappedUser);
+      user = await this.userService.create(wrappedUser);
     }
 
     // check whether the user is already a member of the organization
@@ -138,7 +138,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
   }
   /**
    * the user can accpet, reject his membership
-   * updating the staus of membership
+   * updating the status of membership
    * @param payload the status of membership
    * @userId @orgId primary keys of member
    */
@@ -225,7 +225,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     }
     //change the KcUser current_org attribute
     await this.keycloakUtils.updateKcUser(user.keycloakId, { attributes: { current_org: orgKcGroupe.id } });
-
     return user.id;
   }
 
