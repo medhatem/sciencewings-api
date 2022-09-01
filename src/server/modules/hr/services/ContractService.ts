@@ -198,15 +198,19 @@ export class ContractService extends BaseService<Contract> implements IContractS
       }
       wrappedContract.supervisor = supervisor;
     }
-
-    if (payload.contractType === ContractTypes.CDI) {
-      wrappedContract.contractType = payload.contractType;
-      wrappedContract.dateEnd = null;
+    if (payload.contractType) {
+      if (payload.contractType === ContractTypes.CDI) {
+        wrappedContract.contractType = payload.contractType;
+        wrappedContract.dateEnd = null;
+      }
+      if (payload.contractType === ContractTypes.CDD) {
+        if (payload.dateEnd) {
+          wrappedContract.contractType = payload.contractType;
+        } else {
+          throw new ValidationError('VALIDATION.DATEEND_REQUIRED');
+        }
+      }
     }
-    if (payload.contractType === ContractTypes.CDD) {
-      wrappedContract.contractType = payload.contractType;
-    }
-
     if (payload.dateEnd) {
       if (wrappedContract.contractType === ContractTypes.CDD) {
         wrappedContract.dateEnd = payload.dateEnd;
