@@ -4,7 +4,7 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Contract } from '@/modules/hr/models/Contract';
+import { Contract, ContractType } from '@/modules/hr/models/Contract';
 import { ContractDao } from '@/modules/hr/daos/ContractDao';
 import { CreateContractRO } from '@/modules/hr/routes/RequestObject';
 import { IContractService } from '@/modules/hr/interfaces/IContractService';
@@ -18,6 +18,7 @@ import { CreateContractSchema, UpdateContractSchema } from '@/modules/hr/schemas
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { JobState, Job } from '@/modules/hr/models/Job';
+import { ValidationError } from '@/Exceptions/ValidationError';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -108,13 +109,27 @@ export class ContractService extends BaseService<Contract> implements IContractS
     const wrappedContract = this.wrapEntity(Contract.getInstance(), {
       jobLevel: payload.jobLevel,
       wage: payload.wage,
-      contractType: payload.contractType,
       dateStart: payload.dateStart,
-      dateEnd: payload.dateEnd,
       description: payload.description,
     });
 
     wrappedContract.member = member;
+    if (payload.dateEnd && payload.contractType !== ContractType.CDD) {
+      throw new ValidationError('VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED');
+    }
+
+    if (payload.contractType) {
+      if (payload.contractType === ContractType.CDD) {
+        if (payload.dateEnd) {
+          wrappedContract.contractType = payload.contractType;
+          wrappedContract.dateEnd = payload.dateEnd;
+        } else {
+          throw new ValidationError('VALIDATION.DATEEND_REQUIRED');
+        }
+      } else {
+        wrappedContract.contractType = payload.contractType;
+      }
+    }
 
     if (payload.supervisor) {
       const user = await this.userService.get(payload.supervisor);

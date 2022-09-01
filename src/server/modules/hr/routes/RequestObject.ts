@@ -5,7 +5,7 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 import { userStatus } from '@/modules/users/models/User';
-import { JobLevel, contractType } from '@/modules/hr/models/Contract';
+import { JobLevel, ContractType } from '@/modules/hr/models/Contract';
 
 @JsonObject()
 @unique
@@ -35,7 +35,7 @@ export class CreateContractRO {
   wage!: number;
 
   @JsonProperty()
-  contractType!: contractType;
+  contractType!: ContractType;
 
   @JsonProperty()
   dateStart!: Date;

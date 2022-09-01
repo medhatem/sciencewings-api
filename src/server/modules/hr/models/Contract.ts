@@ -14,7 +14,7 @@ export enum JobLevel {
   SENIOR = 'Senior',
 }
 
-export enum contractType {
+export enum ContractType {
   CDD = 'Cdd',
   CDI = 'Cdi',
 }
@@ -42,7 +42,7 @@ export class Contract extends BaseModel<Contract> {
   wage!: number;
 
   @Property()
-  contractType!: contractType;
+  contractType!: ContractType;
 
   @Property()
   description?: string;
