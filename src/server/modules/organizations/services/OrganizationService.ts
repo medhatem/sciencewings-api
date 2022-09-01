@@ -300,15 +300,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(orgId: number, statusFilter: string): Promise<Member[]> {
+  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
     const existingOrg = await this.dao.get(orgId);
     if (!existingOrg) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
-    let status = statusFilter.split(',');
-    const members = await existingOrg.members.init({ where: { membership: status } });
-    return members.toArray().map((member: any) => ({ ...member, joinDate: member.joinDate.toISOString() }));
+    if (!statusFilter) {
+      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
+      return existingOrg.members.toArray().map((el: any) => ({ ...el, joinedDate: el.joinedDate.toISOString() }));
+    } else {
+      let status = statusFilter.split(',');
+      const members = await existingOrg.members.init({ where: { membership: status } });
+      return members.toArray().map((member: any) => ({ ...member, joinDate: member.joinDate.toISOString() }));
+    }
   }
 
   /**

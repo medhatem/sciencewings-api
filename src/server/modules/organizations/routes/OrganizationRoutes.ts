@@ -155,7 +155,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getUsers(
     @PathParam('id') payload: number,
-    @QueryParam('status') status: string,
+    @QueryParam('status') status?: string,
   ): Promise<OrganizationMembersDTO> {
     const result = await this.OrganizationService.getMembers(payload, status);
 
