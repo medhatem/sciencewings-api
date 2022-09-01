@@ -5,7 +5,7 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 import { userStatus } from '@/modules/users/models/User';
-import { JobLevel, contractType } from '@/modules/hr/models/Contract';
+import { JobLevel, ContractTypes } from '@/modules/hr/models/Contract';
 import { JobState } from '@/modules/hr/models/Job';
 
 @JsonObject()
@@ -36,7 +36,7 @@ export class CreateContractRO {
   wage!: number;
 
   @JsonProperty()
-  contractType!: contractType;
+  contractType!: ContractTypes;
 
   @JsonProperty()
   dateStart!: Date;
@@ -73,7 +73,7 @@ export class UpdateContractRO {
   wage?: number;
 
   @JsonProperty()
-  contractType?: contractType;
+  contractType?: ContractTypes;
 
   @JsonProperty()
   dateStart?: Date;

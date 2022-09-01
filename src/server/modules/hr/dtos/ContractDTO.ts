@@ -1,7 +1,7 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
-import { JobLevel, contractType } from '@/modules/hr/models/Contract';
+import { JobLevel, ContractTypes } from '@/modules/hr/models/Contract';
 import { beforeDeserialize } from '@/utils/utilities';
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { JobBaseBodyGetDTO } from '@/modules/hr/dtos//JobDTO';
@@ -28,7 +28,7 @@ export class ContracBaseBodyDTO extends BaseBodyDTO {
   wage?: number;
 
   @JsonProperty()
-  contractType?: contractType;
+  contractType?: ContractTypes;
 
   @JsonProperty()
   dateStart?: string;

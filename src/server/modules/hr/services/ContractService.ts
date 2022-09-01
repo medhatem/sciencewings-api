@@ -4,7 +4,7 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Contract, contractType } from '@/modules/hr/models/Contract';
+import { Contract, ContractTypes } from '@/modules/hr/models/Contract';
 import { ContractDao } from '@/modules/hr/daos/ContractDao';
 import { CreateContractRO, UpdateContractRO } from '@/modules/hr/routes/RequestObject';
 import { IContractService } from '@/modules/hr/interfaces/IContractService';
@@ -185,16 +185,16 @@ export class ContractService extends BaseService<Contract> implements IContractS
       wrappedContract.supervisor = supervisor;
     }
 
-    if (payload.contractType === contractType.CDI) {
+    if (payload.contractType === ContractTypes.CDI) {
       wrappedContract.contractType = payload.contractType;
       wrappedContract.dateEnd = null;
     }
-    if (payload.contractType === contractType.CDD) {
+    if (payload.contractType === ContractTypes.CDD) {
       wrappedContract.contractType = payload.contractType;
     }
 
     if (payload.dateEnd) {
-      if (wrappedContract.contractType === contractType.CDD) {
+      if (wrappedContract.contractType === ContractTypes.CDD) {
         wrappedContract.dateEnd = payload.dateEnd;
       } else {
         throw new ValidationError('VALIDATION.DATEEND_JUST_IN_CDD');
