@@ -13,7 +13,6 @@ import { UpdateContractRO, CreateContractRO } from '@/modules/hr/routes/RequestO
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
-import { ValidationError } from '@/Exceptions/ValidationError';
 @provideSingleton()
 @Path('contracts')
 export class ContractRoutes extends BaseRoutes<Contract> {
@@ -72,7 +71,6 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   @Response<UpdateContracBaseDTO>(204, 'Contract updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  @Response<ValidationError>(404, 'Validation Error')
   public async createUpdateContract(
     payload: UpdateContractRO,
     @PathParam('id') id: number,
