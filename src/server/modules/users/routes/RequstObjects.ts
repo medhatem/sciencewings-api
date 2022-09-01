@@ -6,10 +6,10 @@ import { unique } from '@/decorators/unique';
 
 export class UserInviteToOrgRO {
   @JsonProperty()
-  organizationId: number;
+  email: string;
 
   @JsonProperty()
-  email: string;
+  organizationId: number;
 }
 
 @JsonObject()
@@ -49,7 +49,7 @@ export class UserRO {
 @unique
 export class ResetPasswordRO {
   @JsonProperty()
-  email: number;
+  email: string;
 
   @JsonProperty()
   password: string;

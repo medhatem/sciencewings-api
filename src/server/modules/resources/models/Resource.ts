@@ -6,6 +6,7 @@ import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceCalendar } from './ResourceCalendar';
 import { ResourceTag } from './ResourceTag';
 import { ResourceSettings } from './ResourceSettings';
+import { Infrastructure } from '@/modules/infrastructure';
 
 @provide()
 @Entity()
@@ -70,4 +71,7 @@ export class Resource extends BaseModel<Resource> {
 
   @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
   settings: ResourceSettings;
+
+  @ManyToOne({ entity: () => Infrastructure, onDelete: 'cascade' })
+  infrastructure?: Infrastructure;
 }
