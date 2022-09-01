@@ -24,3 +24,22 @@ export type ProjectList = {
   members: number;
   startDate: Date;
 };
+
+export type responsableT = {
+  id: number;
+  name: string;
+  workEmail: string;
+};
+
+export type subInfrastructureT = {
+  id: number;
+  name: string;
+};
+
+export type infrastructurelistline = {
+  id: number;
+  name: string;
+  resourcesNb: number;
+  responsable: responsableT;
+  subInfrastructure: Array<subInfrastructureT>;
+};

@@ -45,6 +45,14 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   public parent?: Infrastructure;
 
   @OneToMany({
+    entity: () => Infrastructure,
+    mappedBy: 'parent',
+    lazy: true,
+    eager: false,
+  })
+  public children? = new Collection<Infrastructure>(this);
+
+  @OneToMany({
     entity: () => Resource,
     mappedBy: (res) => res.infrastructure,
     nullable: true,
