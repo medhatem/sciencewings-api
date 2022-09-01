@@ -4,7 +4,7 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Contract, ContractType } from '@/modules/hr/models/Contract';
+import { Contract, ContractTypes } from '@/modules/hr/models/Contract';
 import { ContractDao } from '@/modules/hr/daos/ContractDao';
 import { CreateContractRO } from '@/modules/hr/routes/RequestObject';
 import { IContractService } from '@/modules/hr/interfaces/IContractService';
@@ -114,12 +114,12 @@ export class ContractService extends BaseService<Contract> implements IContractS
     });
 
     wrappedContract.member = member;
-    if (payload.dateEnd && payload.contractType !== ContractType.CDD) {
+    if (payload.dateEnd && payload.contractType !== ContractTypes.CDD) {
       throw new ValidationError('VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED');
     }
 
     if (payload.contractType) {
-      if (payload.contractType === ContractType.CDD) {
+      if (payload.contractType === ContractTypes.CDD) {
         if (payload.dateEnd) {
           wrappedContract.contractType = payload.contractType;
           wrappedContract.dateEnd = payload.dateEnd;
