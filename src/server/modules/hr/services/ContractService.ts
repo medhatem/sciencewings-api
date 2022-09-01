@@ -38,6 +38,36 @@ export class ContractService extends BaseService<Contract> implements IContractS
   }
 
   /**
+   * Retrieve all member contracts
+   * @param orgId of organization id
+   * @param userId of user id
+   */
+  @log()
+  public async getAllMemberContracts(userId: number, orgId: number): Promise<Contract[]> {
+    const organization = await this.origaniaztionService.get(orgId);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+        variables: { org: `${orgId}` },
+        isOperational: true,
+      });
+    }
+    const user = await this.userService.get(userId);
+
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
+    }
+
+    const member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+    if (!member) {
+      throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${userId}` } });
+    }
+    const fetchedContracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
+      populate: ['job'] as never,
+    })) as Contract[];
+    return fetchedContracts;
+  }
+
+  /**
    * check the existence of optional properties for a given contract
    * @param payload
    * @returns Optional Properties

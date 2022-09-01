@@ -2,8 +2,13 @@ import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Contract } from '@/modules/hr/models/Contract';
-import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
-import { ContracBaseBodyDTO, ContracBaseDTO, UpdateContracBaseDTO } from '@/modules/hr/dtos/ContractDTO';
+import { GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import {
+  AllContractsBaseDTO,
+  ContracBaseBodyDTO,
+  ContracBaseDTO,
+  UpdateContracBaseDTO,
+} from '@/modules/hr/dtos/ContractDTO';
 import { CreateContractRO } from './RequestObject';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -17,6 +22,25 @@ export class ContractRoutes extends BaseRoutes<Contract> {
 
   static getInstance(): ContractRoutes {
     return container.get(ContractRoutes);
+  }
+  /**
+   * Retrieve all member contracts
+   * @param orgId of organization id
+   * @param userId of user id
+   */
+  @GET
+  @Path('/:orgId/:userId')
+  @Security()
+  @LoggerStorage()
+  @Response<AllContractsBaseDTO>(200, 'Contracts extract Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllMemberContracts(
+    @PathParam('orgId') orgId: number,
+    @PathParam('userId') userId: number,
+  ): Promise<AllContractsBaseDTO> {
+    const result = await this.contractService.getAllMemberContracts(orgId, userId);
+    return new AllContractsBaseDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
 
   /**
