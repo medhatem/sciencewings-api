@@ -157,7 +157,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @PathParam('id') payload: number,
     @QueryParam('status') status?: string,
   ): Promise<OrganizationMembersDTO> {
-    const result = await this.OrganizationService.getMembers(payload, status);
+    const result = await this.OrganizationService.getMembers(payload, status || null);
 
     return new OrganizationMembersDTO({ body: { data: result, statusCode: 200 } });
   }
