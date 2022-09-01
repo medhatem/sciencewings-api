@@ -94,13 +94,27 @@ export class ContractService extends BaseService<Contract> implements IContractS
     const wrappedContract = this.wrapEntity(Contract.getInstance(), {
       jobLevel: payload.jobLevel,
       wage: payload.wage,
-      contractType: payload.contractType,
       dateStart: payload.dateStart,
-      dateEnd: payload.dateEnd,
       description: payload.description,
     });
 
     wrappedContract.member = member;
+    if (payload.dateEnd && payload.contractType !== ContractTypes.CDD) {
+      throw new ValidationError('VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED');
+    }
+
+    if (payload.contractType) {
+      if (payload.contractType === ContractTypes.CDD) {
+        if (payload.dateEnd) {
+          wrappedContract.contractType = payload.contractType;
+          wrappedContract.dateEnd = payload.dateEnd;
+        } else {
+          throw new ValidationError('VALIDATION.DATEEND_REQUIRED');
+        }
+      } else {
+        wrappedContract.contractType = payload.contractType;
+      }
+    }
 
     if (payload.supervisor) {
       const user = await this.userService.get(payload.supervisor);

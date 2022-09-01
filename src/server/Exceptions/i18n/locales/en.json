@@ -69,6 +69,7 @@
   "VALIDATION.USER_REQUIRED": "User is required",
   "VALIDATION.WAGE_REQUIRED": "Wage is required",
   "VALIDATION.DATEEND_JUST_IN_CDD": "You can add an End date just in CDD",
-
+  "VALIDATION.DATEEND_REQUIRED": "Date end is required for CDD contract",
+  "VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED": "Can not set end date without CDD contract",
   "required {{field}}": "{{field}} is required"
 }
