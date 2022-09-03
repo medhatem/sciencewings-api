@@ -58,3 +58,55 @@ export class UpdateInfrastructureDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: InfrastructureDTO;
 }
+
+@JsonObject()
+@unique
+export class InfrastructureResponsableObjectDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id?: number;
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  workEmail: string;
+}
+
+@JsonObject()
+@unique
+export class SubInfrastructureObjectDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id?: number;
+  @JsonProperty()
+  name?: string;
+}
+
+@JsonObject()
+@unique
+export class InfrustructureListLineDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id?: number;
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  responsable: InfrastructureResponsableObjectDTO;
+  @JsonProperty()
+  resourcesNb: number;
+  @JsonProperty()
+  subInfrastructure: Array<SubInfrastructureObjectDTO>;
+}
+
+@JsonObject()
+@unique
+export class InfrastructureListBodyDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: InfrustructureListLineDTO,
+    beforeDeserialize,
+  })
+  data: Array<InfrustructureListLineDTO>;
+}
+
+@JsonObject()
+@unique
+export class InfrastructureListRequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: InfrastructureListBodyDTO;
+}
