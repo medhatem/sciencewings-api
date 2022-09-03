@@ -301,13 +301,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   @log()
   public async getMembers(orgId: number): Promise<Member[]> {
-    const existingOrg = await this.dao.get(orgId);
+    const existingOrg = await this.dao.get(orgId, { populate: ['members'] as never });
     if (!existingOrg) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-
-    if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    return existingOrg.members.toArray().map((el: any) => ({ ...el, joinedDate: el.joinedDate.toISOString() }));
+    console.log('existingOrg============= ', existingOrg);
+    return existingOrg.members.toArray().map((el: any) => ({ ...el }));
   }
 
   /**
