@@ -47,7 +47,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
    * Override the create method
    */
   @POST
-  @Path('')
+  @Path('create')
   @Security()
   @LoggerStorage()
   @Response<ContracBaseBodyDTO>(201, 'Contract created Successfully')
@@ -65,7 +65,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
    * @param id of updated contract
    */
   @PUT
-  @Path('/:id')
+  @Path('/update/:id')
   @Security()
   @LoggerStorage()
   @Response<UpdateContracBaseDTO>(204, 'Contract updated Successfully')
