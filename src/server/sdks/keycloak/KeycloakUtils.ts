@@ -156,8 +156,8 @@ export class KeycloakUtil {
     });
   }
 
-  /*
-<<<<<<< HEAD
+  /**
+   *
    * create a keycloak user
    *
    * @param email to get users by

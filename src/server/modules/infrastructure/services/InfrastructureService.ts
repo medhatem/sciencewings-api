@@ -20,7 +20,6 @@ import { IResourceService } from '@/modules/resources/interfaces/IResourceServic
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { infrastructurelistline, responsableT, subInfrastructureT } from '@/types/types';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -227,45 +226,5 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
 
     const createdInfustructure = await this.update(wrappedInfustructure);
     return createdInfustructure.id;
-  }
-
-  @log()
-  public async getAllOrganizationInfrastructureList(orgId: number): Promise<infrastructurelistline[]> {
-    const organization = await this.organizationService.get(orgId);
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` } });
-    }
-    const fetchedInfrastructure = (await this.dao.getByCriteria(
-      { organization },
-      FETCH_STRATEGY.ALL,
-    )) as Infrastructure[];
-    let InfrastructureList: infrastructurelistline[] = [];
-    let responsibleList: responsableT[] = [];
-    let subInfras: subInfrastructureT[] = [];
-    await applyToAll(fetchedInfrastructure, async (Infrastructure) => {
-      await Infrastructure.responsibles.init();
-      await applyToAll(Infrastructure.responsibles.toArray(), async (responsible) => {
-        responsibleList.push({
-          name: responsible.name,
-          workEmail: responsible.workEmail,
-        });
-      });
-      await Infrastructure.children.init();
-      await applyToAll(Infrastructure.children.toArray(), async (child) => {
-        subInfras.push({
-          id: child.id,
-          name: child.name,
-        });
-      });
-      let resourceNb = await Infrastructure.resources.loadCount(true);
-      InfrastructureList.push({
-        name: Infrastructure.name,
-        responsibles: responsibleList,
-        resourcesNb: resourceNb,
-        id: Infrastructure.id,
-        subInfrastructure: subInfras,
-      });
-    });
-    return InfrastructureList;
   }
 }
