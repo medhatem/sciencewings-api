@@ -63,8 +63,6 @@ export class UpdateInfrastructureDTO extends BaseRequestDTO {
 @unique
 export class InfrastructureResponsableObjectDTO extends BaseBodyDTO {
   @JsonProperty()
-  id?: number;
-  @JsonProperty()
   name: string;
   @JsonProperty()
   workEmail: string;
@@ -87,7 +85,7 @@ export class InfrustructureListLineDTO extends BaseBodyDTO {
   @JsonProperty()
   name: string;
   @JsonProperty()
-  responsable: InfrastructureResponsableObjectDTO;
+  responsibles: Array<InfrastructureResponsableObjectDTO>;
   @JsonProperty()
   resourcesNb: number;
   @JsonProperty()

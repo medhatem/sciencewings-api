@@ -26,7 +26,6 @@ export type ProjectList = {
 };
 
 export type responsableT = {
-  id: number;
   name: string;
   workEmail: string;
 };
@@ -40,6 +39,6 @@ export type infrastructurelistline = {
   id: number;
   name: string;
   resourcesNb: number;
-  responsable: responsableT;
+  responsibles: Array<responsableT>;
   subInfrastructure: Array<subInfrastructureT>;
 };

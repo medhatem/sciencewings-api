@@ -20,7 +20,7 @@ import { IResourceService } from '@/modules/resources/interfaces/IResourceServic
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { infrastructurelistline, subInfrastructureT } from '@/types/types';
+import { infrastructurelistline, responsableT, subInfrastructureT } from '@/types/types';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -240,12 +240,15 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       FETCH_STRATEGY.ALL,
     )) as Infrastructure[];
     let InfrastructureList: infrastructurelistline[] = [];
-    let responsable;
-    let subInfras: Array<subInfrastructureT>;
+    let responsibleList: responsableT[] = [];
+    let subInfras: subInfrastructureT[] = [];
     await applyToAll(fetchedInfrastructure, async (Infrastructure) => {
-      responsable = await this.memberService.getByCriteria({ Infrastructure }, FETCH_STRATEGY.SINGLE, {
-        populate: ['member'] as never,
-        filters: { manager: true },
+      await Infrastructure.responsibles.init();
+      await applyToAll(Infrastructure.responsibles.toArray(), async (responsible) => {
+        responsibleList.push({
+          name: responsible.name,
+          workEmail: responsible.workEmail,
+        });
       });
       await Infrastructure.children.init();
       await applyToAll(Infrastructure.children.toArray(), async (child) => {
@@ -257,11 +260,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       let resourceNb = await Infrastructure.resources.loadCount(true);
       InfrastructureList.push({
         name: Infrastructure.name,
-        responsable: {
-          id: responsable.id,
-          name: responsable.name,
-          workEmail: responsable.workEmail,
-        },
+        responsibles: responsibleList,
         resourcesNb: resourceNb,
         id: Infrastructure.id,
         subInfrastructure: subInfras,

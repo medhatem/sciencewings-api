@@ -83,8 +83,8 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
 
   /**
    * get the list of infrustructure of an organization with the folowing data :
-   *  number of resources , responsable of the infru,sub-infras...
-   * @param orgId: porganization id
+   *  number of resources , responsable of the infru,sub-infras ...
+   * @param orgId: organization id
    */
   @GET
   @Path('getInfrastructureList/:orgId')
