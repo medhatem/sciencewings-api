@@ -82,8 +82,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   }
 
   /**
-   * get the list of infrustructure of an organization with the folowing data :
-   *  number of resources , responsable of the infru,sub-infras ...
+   * get the list of infrustructure of a given organization
    * @param orgId: organization id
    */
   @GET
@@ -92,10 +91,10 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @LoggerStorage()
   @Response<InfrastructureListRequestDTO>(200, 'Return project list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllOrganizationProjectsList(
+  public async getAllInfrastructuresOfAgivenOrganization(
     @PathParam('orgId') orgId: number,
   ): Promise<InfrastructureListRequestDTO> {
-    const result = await this.InfrastructureService.getAllOrganizationInfrastructureList(orgId);
+    const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(orgId);
 
     return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });
   }

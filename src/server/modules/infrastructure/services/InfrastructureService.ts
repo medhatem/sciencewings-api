@@ -20,7 +20,7 @@ import { IResourceService } from '@/modules/resources/interfaces/IResourceServic
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { infrastructurelistline, responsableT, subInfrastructureT } from '@/types/types';
+import { infrastructurelistline, responsableT, subInfrastructureT } from '@/modules/infrastructure/infastructureTypes';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -228,8 +228,13 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     const createdInfustructure = await this.update(wrappedInfustructure);
     return createdInfustructure.id;
   }
+
+  /**
+   * get the list of infrustructure of a given organization
+   * @param orgId: organization id
+   */
   @log()
-  public async getAllOrganizationInfrastructureList(orgId: number): Promise<infrastructurelistline[]> {
+  public async getAllInfrastructuresOfAgivenOrganization(orgId: number): Promise<infrastructurelistline[]> {
     const organization = await this.organizationService.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId} ` } });
