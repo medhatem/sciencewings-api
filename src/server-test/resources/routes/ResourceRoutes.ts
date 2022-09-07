@@ -79,27 +79,27 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
   });
   suite('PUT update/:id', () => {
-    // const payload: ResourceRO = {
-    //   name: 'resource_dash_one',
-    //   description: 'string',
-    //   resourceType: 'USER',
-    //   resourceClass: 'TECH',
-    //   organization: 1,
-    // };
-    // test('Should fail on throw error', async () => {
-    //   mockMethodWithResult(resourceService, 'updateResource', [payload], Promise.reject(new Error('Failed')));
-    //   try {
-    //     await resourceRoute.updateResource({} as any, payload, 1);
-    //   } catch (error) {
-    //     expect(error.message).to.equal('Failed');
-    //   }
-    // });
-    // test('Should success at updating and returning the right value', async () => {
-    //   mockMethodWithResult(resourceService, 'updateResource', [payload], 1);
-    //   const result = await resourceRoute.updateResource(payload, 1);
-    //   expect(result.body.id).to.equal(1);
-    //   expect(result.body.statusCode).to.equal(204);
-    // });
+    const payload: ResourceRO = {
+      name: 'resource_dash_one',
+      description: 'string',
+      resourceType: 'USER',
+      resourceClass: 'TECH',
+      organization: 1,
+    };
+    test('Should fail on throw error', async () => {
+      mockMethodWithResult(resourceService, 'updateResource', [payload], Promise.reject(new Error('Failed')));
+      try {
+        await resourceRoute.updateResource({} as any, 1);
+      } catch (error) {
+        expect(error.message).to.equal('Failed');
+      }
+    });
+    test('Should success at updating and returning the right value', async () => {
+      mockMethodWithResult(resourceService, 'updateResource', [payload], 1);
+      const result = await resourceRoute.updateResource(payload, 1);
+      expect(result.body.id).to.equal(1);
+      expect(result.body.statusCode).to.equal(204);
+    });
   });
   suite('GET getOgranizationResourcesById/:organizationId', () => {
     test('Should fail on throw error', async () => {

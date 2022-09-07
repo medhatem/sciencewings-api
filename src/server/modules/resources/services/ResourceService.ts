@@ -49,7 +49,7 @@ import { IResourceStatusService } from '@/modules/resources/interfaces/IResource
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 import { Member } from '@/modules/hr';
-import { ResourceTag } from '../models';
+import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
@@ -171,7 +171,13 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     let newTags: any[] = [];
 
     if (payload.tags) {
+      /**
+       *for @param payload.tags
+       * if id exists so the tag is already created and we need just to update
+       * if the one tag doesn't have an id so we need to create it
+       */
       payload.tags.map((tag) => ('id' in tag ? existingTags.push(tag) : newTags.push(tag)));
+      await fetchedResource.tags.init();
       await applyToAll(existingTags, async (existingTag) => {
         let fetchedExistingTag = await this.resourceTagService.getByCriteria(
           {
@@ -185,9 +191,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
             variables: { tag: `${existingTag.id}` },
           });
         }
-        await fetchedExistingTag.resource.init();
-        fetchedExistingTag.resource.add(fetchedResource);
-        await this.resourceTagService.update(fetchedExistingTag);
+        fetchedResource.tags.add(fetchedExistingTag);
       });
 
       await applyToAll(newTags, async (newTag) => {
@@ -195,38 +199,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
           title: newTag.title,
         });
         const createdTag = await this.resourceTagService.create(tag);
-        await createdTag.resource.init();
-        createdTag.resource.add(fetchedResource);
         createdTag.organization = organization;
         await this.resourceTagService.update(createdTag);
+        fetchedResource.tags.add(createdTag);
       });
     }
-
-    /*     const managers: Member[] = [];
-    const delManagers: Member[] = [];
-    if (payload.managers) {
-      for await (const { organization, user } of payload.managers) {
-        const fetcheManager = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-        if (!fetcheManager) {
-          delManagers.push(fetcheManager);
-        }
-        managers.push(fetcheManager);
-      }
-    }
- */
-
-    /*     for (const manager of managers) {
-      for (const existingManager of resource.managers) {
-        if (manager.user.id == existingManager.user.id && manager.organization.id == existingManager.organization.id) {
-          break;
-        }
-      }
-      resource.managers.add(manager);
-    }
-    for (const manager of delManagers) {
-      resource.managers.remove(manager);
-    }
- */
 
     const updatedResource = await this.dao.update(resource);
 
