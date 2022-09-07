@@ -308,11 +308,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     if (!statusFilter) {
       if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-      return existingOrg.members.toArray().map((el: any) => ({ ...el, joinedDate: el.joinedDate.toISOString() }));
+      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
     } else {
       let status = statusFilter.split(',');
       const members = await existingOrg.members.init({ where: { membership: status } });
-      return members.toArray().map((member: any) => ({ ...member, joinDate: member.joinDate.toISOString() }));
+      return members.toArray().map((member: any) => ({ ...member }));
     }
   }
 

@@ -5,7 +5,6 @@ volumes:
     driver: local
   smtp4dev-data:
 
-
 services:
   postgres:
     image: postgres
@@ -16,7 +15,7 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
     ports:
-      - '5434:5432'
+      - '5432:5432'
   keycloak:
     image: jboss/keycloak:latest
     volumes:
