@@ -80,7 +80,7 @@ export class Member extends BaseModel<Member> {
     entity: () => Infrastructure,
     nullable: true,
   })
-  Infrastructures? = new Collection<Infrastructure>(this);
+  public Infrastructures? = new Collection<Infrastructure>(this);
 
   @Property({ nullable: true })
   name?: string;
