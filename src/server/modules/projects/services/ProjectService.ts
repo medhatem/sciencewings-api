@@ -317,7 +317,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    * fetch project and project Member and return
    * name, starting date, number of participants from project table
    * Responsable of the project from the projectMember table
-   * @param id project id
+   * @param id org id
    * @returns
    */
   @log()

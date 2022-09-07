@@ -9,7 +9,6 @@ import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { MemberDao } from '@/modules/hr/daos/MemberDao';
-import { getConfig } from '@/configuration/Configuration';
 import { log } from '@/decorators/log';
 import { MemberRO } from '@/modules/hr/routes/RequestObject';
 import { validate } from '@/decorators/validate';
@@ -21,6 +20,8 @@ import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
+import { Keycloak } from '@/sdks/keycloak';
+
 import { BadRequest } from '@/Exceptions/BadRequestError';
 
 @provideSingleton(IMemberService)
@@ -30,6 +31,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     public userService: IUserService,
     public organizationService: IOrganizationService,
     public emailService: Email,
+    public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
@@ -48,26 +50,14 @@ export class MemberService extends BaseService<Member> implements IMemberService
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organizationId}` } });
     }
 
-    const existingUser = await (
-      await this.keycloak.getAdminClient()
-    ).users.find({
-      email: payload.email,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    const existingUser = await this.keycloakUtils.getUsersByEmail(payload.email);
 
     let user = null;
     if (existingUser.length > 0) {
       // fetch the existing user
       user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
     } else {
-      const createdKeyCloakUser = await (
-        await this.keycloak.getAdminClient()
-      ).users.create({
-        email: payload.email,
-        firstName: '',
-        lastName: '',
-        realm: getConfig('keycloak.clientValidation.realmName'),
-      });
+      const createdKeyCloakUser = await this.keycloakUtils.createKcUser(payload.email);
       //save created keycloak user in the database
       const wrappedUser = this.userService.wrapEntity(User.getInstance(), {
         firstname: '',
@@ -229,24 +219,12 @@ export class MemberService extends BaseService<Member> implements IMemberService
       throw new BadRequest('USER.NOT_MEMBER_OF_ORG', { friendly: true });
     }
     //retrieve the organization keycloak group
-    const orgKcGroupe = await (
-      await this.keycloak.getAdminClient()
-    ).groups.findOne({
-      id: organization.kcid,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
-
+    const orgKcGroupe = await this.keycloakUtils.getGroupById(organization.kcid);
     if (!orgKcGroupe) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` } });
     }
     //change the KcUser current_org attribute
-    await (
-      await this.keycloak.getAdminClient()
-    ).users.update(
-      { id: user.keycloakId, realm: getConfig('keycloak.clientValidation.realmName') },
-      { attributes: { current_org: orgKcGroupe.id } },
-    );
-
+    await this.keycloakUtils.updateKcUser(user.keycloakId, { attributes: { current_org: orgKcGroupe.id } });
     return user.id;
   }
 
