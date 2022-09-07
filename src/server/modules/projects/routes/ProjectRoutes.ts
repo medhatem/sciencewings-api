@@ -159,7 +159,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   /**
    * this route is for the project list in frontend, it combine between Project and projectMember model
    * and send only the necessary data to print
-   * @param id: project id
+   * @param id: org id
    */
   @GET
   @Path('getProjectList/:id')
