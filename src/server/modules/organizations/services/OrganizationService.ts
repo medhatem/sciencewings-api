@@ -312,7 +312,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     } else {
       let status = statusFilter.split(',');
       const members = await existingOrg.members.init({ where: { membership: status } });
-      return members.toArray().map((member: any) => ({ ...member, joinDate: member.joinDate.toISOString() }));
+      return members.toArray().map((member: any) => ({ ...member }));
     }
   }
 
