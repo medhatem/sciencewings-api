@@ -305,7 +305,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!existingOrg) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-    console.log('existingOrg============= ', existingOrg);
     return existingOrg.members.toArray().map((el: any) => ({ ...el }));
   }
 
