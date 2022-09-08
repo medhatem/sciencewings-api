@@ -4,7 +4,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@/utils/Email';
 import { EmailMessage, MemberKey } from '@/types/types';
-import { FETCH_STRATEGY } from '@/modules/base';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';

@@ -48,7 +48,7 @@ import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IR
 import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
-import { Member } from '@/modules/hr';
+import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
 @provideSingleton(IResourceService)
@@ -134,10 +134,18 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     const resourceSetting = await this.resourceSettingsService.create({});
     wrappedResource.settings = resourceSetting;
+    const calendar = await this.resourceCalendarService.create({
+      name: `${wrappedResource.name}-calendar`,
+      active: true,
+      organization: organization,
+    });
 
+    console.log('calendar is ', calendar);
     const createdResource = await this.create(wrappedResource);
     await createdResource.managers.init();
     createdResource.managers.add(manager);
+    await wrappedResource.calendar.init();
+    wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
     return createdResource.id;
   }

@@ -21,10 +21,10 @@ export class ResourceEvent extends BaseModel<ResourceEvent> {
   @Property()
   title: string;
 
-  @Property({ columnType: 'date' })
+  @Property({ columnType: 'timestamp' })
   dateFrom: Date;
 
-  @Property({ columnType: 'date' })
+  @Property({ columnType: 'timestamp' })
   dateTo: Date;
 
   @ManyToOne({ entity: () => ResourceCalendar, onDelete: 'set null' })

@@ -145,6 +145,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
       ]);
     } catch (error) {
+      console.log('error is ', error);
       await Promise.all<any>(
         [
           keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
