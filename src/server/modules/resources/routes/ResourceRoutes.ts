@@ -1,6 +1,6 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { Path, POST, Security, GET, PathParam, PUT } from 'typescript-rest';
+import { Path, POST, Security, GET, PathParam, PUT, ContextRequest } from 'typescript-rest';
 import {
   ResourceSettingsGeneralVisibilityRO,
   ResourceSettingsGeneralPropertiesRO,
@@ -31,6 +31,7 @@ import {
 } from './RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dtos/ResourceRateDTO';
+import { UserRequest } from '@/types/UserRequest';
 
 @provideSingleton()
 @Path('resources')
@@ -56,8 +57,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
-    const result = await this.ResourceService.createResource(payload);
+  public async createResource(@ContextRequest request: UserRequest, payload: ResourceRO): Promise<CreateResourceDTO> {
+    const result = await this.ResourceService.createResource(request.userId, payload);
     return new CreateResourceDTO({ body: { id: result, statusCode: 201 } });
   }
 
@@ -78,7 +79,6 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateResource(payload: UpdateResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResource(payload, id);
-
     return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 

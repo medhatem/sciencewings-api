@@ -196,7 +196,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       name: 'resource_dash_one',
       description: 'string',
       active: true,
-      resourceType: 'USER',
+      statusType: 'USER',
       resourceClass: 'TECH',
       timezone: 'gmt+1',
       tags: [],

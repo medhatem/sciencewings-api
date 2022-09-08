@@ -3,9 +3,9 @@ import { User, userStatus } from '@/modules/users/models/User';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Contract } from './Contract';
-import { Group } from './Group';
-import { Job } from './Job';
+import { Contract } from '@/modules/hr/models/Contract';
+import { Group } from '@/modules/hr/models/Group';
+import { Job } from '@/modules/hr/models/Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
@@ -68,12 +68,7 @@ export class Member extends BaseModel<Member> {
   })
   resourceCalendar?: ResourceCalendar;
 
-  @ManyToMany({
-    entity: () => Resource,
-    nullable: true,
-    lazy: true,
-    eager: false,
-  })
+  @ManyToMany({ entity: () => Resource })
   resources? = new Collection<Resource>(this);
 
   @ManyToMany({
