@@ -32,7 +32,7 @@ export class SeedResources {
 
         const res = {
           name: faker.company.bsNoun(),
-          resourceType: 'resourceType',
+          statusType: 'statusType',
           organization: organizations[idx],
           user: users[idx],
           calendar: calendar,

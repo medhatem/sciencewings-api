@@ -4,10 +4,10 @@ import {
   ResourceSettingsGeneralPropertiesRO,
   ResourceSettingsGeneralStatusRO,
   ResourceSettingsGeneralVisibilityRO,
-  UpdateResourceRO,
   ResourceTimerRestrictionRO,
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
+  UpdateResourceRO,
 } from '@/modules/resources/routes/RequestObject';
 
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
@@ -17,7 +17,7 @@ import { ResourceRate } from '@/modules/resources/models/ResourceRate';
 
 export abstract class IResourceService extends IBaseService<any> {
   getResourcesOfAGivenOrganizationById: (organizationId: number) => Promise<Resource[]>;
-  createResource: (payload: ResourceRO) => Promise<number>;
+  createResource: (userId: number, payload: ResourceRO) => Promise<number>;
   updateResource: (payload: UpdateResourceRO, resourceId: number) => Promise<number>;
 
   updateResourceReservationGeneral: (
