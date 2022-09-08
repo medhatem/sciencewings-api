@@ -1,9 +1,9 @@
-export type responsableT = {
+export type responsable = {
   name: string;
   workEmail: string;
 };
 
-export type subInfrastructureT = {
+export type subInfrastructure = {
   id: number;
   name: string;
 };
@@ -12,6 +12,6 @@ export type infrastructurelistline = {
   id: number;
   name: string;
   resourcesNb: number;
-  responsibles: Array<responsableT>;
-  subInfrastructure: Array<subInfrastructureT>;
+  responsibles: Array<responsable>;
+  subInfrastructure: Array<subInfrastructure>;
 };

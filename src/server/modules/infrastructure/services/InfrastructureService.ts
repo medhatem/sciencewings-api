@@ -20,7 +20,7 @@ import { IResourceService } from '@/modules/resources/interfaces/IResourceServic
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { infrastructurelistline, responsableT, subInfrastructureT } from '@/modules/infrastructure/infastructureTypes';
+import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -242,23 +242,13 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       FETCH_STRATEGY.ALL,
     )) as Infrastructure[];
     let InfrastructureList: infrastructurelistline[] = [];
-    let responsibleList: responsableT[] = [];
-    let subInfras: subInfrastructureT[] = [];
+    let responsibleList: any[] = [];
+    let subInfras: any[] = [];
     await applyToAll(fetchedInfrastructure, async (Infrastructure) => {
       await Infrastructure.responsibles.init();
-      await applyToAll(Infrastructure.responsibles.toArray(), async (responsible) => {
-        responsibleList.push({
-          name: responsible.name,
-          workEmail: responsible.workEmail,
-        });
-      });
+      responsibleList = Infrastructure.responsibles.toArray();
       await Infrastructure.children.init();
-      await applyToAll(Infrastructure.children.toArray(), async (child) => {
-        subInfras.push({
-          id: child.id,
-          name: child.name,
-        });
-      });
+      subInfras = Infrastructure.children.toArray();
       let resourceNb = await Infrastructure.resources.loadCount(true);
       InfrastructureList.push({
         name: Infrastructure.name,
