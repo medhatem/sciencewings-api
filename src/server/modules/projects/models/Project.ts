@@ -37,8 +37,8 @@ export class Project extends BaseModel<Project> {
   @Property()
   key: string;
 
-  @Property()
-  description: string;
+  @Property({ nullable: true })
+  description?: string;
 
   @ManyToMany({ entity: () => Member, owner: true, pivotEntity: () => ProjectMember })
   members = new Collection<Member>(this);

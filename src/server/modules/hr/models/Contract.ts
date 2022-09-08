@@ -44,7 +44,7 @@ export class Contract extends BaseModel<Contract> {
   @Property()
   contractType!: ContractTypes;
 
-  @Property()
+  @Property({ nullable: true })
   description?: string;
 
   @Property({ nullable: true })
