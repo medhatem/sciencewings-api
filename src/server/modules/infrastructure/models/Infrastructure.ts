@@ -25,6 +25,9 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   @Property({ nullable: true })
   description?: string;
 
+  @Property({ default: false })
+  default?: boolean;
+
   @Unique()
   @Property()
   key!: string;

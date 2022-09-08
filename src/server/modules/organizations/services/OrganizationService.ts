@@ -35,6 +35,7 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
+import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -42,6 +43,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public dao: OrganizationDao,
     public organizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
+    public infrastructureService: IInfrastructureService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
     public phoneService: IPhoneService,
@@ -183,6 +185,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
         });
       }),
     );
+    //create a default infastructure
+    const wrappedInfustructure = this.infrastructureService.wrapEntity(Infrastructure.getInstance(), {
+      name: `${organization.name}defaultInfra`,
+      organization: organization.id,
+      key: `${organization.name}defaultInfra`,
+      default: true,
+    });
+    await this.infrastructureService.create(wrappedInfustructure);
     return organization.id;
   }
 

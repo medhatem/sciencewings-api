@@ -125,6 +125,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       name: payload.name,
       description: payload.description,
       key: payload.key,
+      default: payload.default,
     });
     wrappedInfustructure.organization = organization;
     wrappedInfustructure.resources = fetchedResources;
