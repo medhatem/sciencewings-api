@@ -63,7 +63,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
       throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${userId}` } });
     }
     const fetchedContracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
-      populate: ['job'] as never,
+      populate: ['job', 'supervisor'] as never,
     })) as Contract[];
     return fetchedContracts;
   }
