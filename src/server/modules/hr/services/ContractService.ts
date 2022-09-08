@@ -79,17 +79,24 @@ export class ContractService extends BaseService<Contract> implements IContractS
       throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
         variables: { org: `${payload.organization}` },
         isOperational: true,
+        friendly: true,
       });
     }
     const user = await this.userService.get(payload.user);
 
     if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload.user}` } });
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+        variables: { user: `${payload.user}` },
+        friendly: true,
+      });
     }
 
     const member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
     if (!member) {
-      throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${payload.user}` } });
+      throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', {
+        variables: { member: `${payload.user}` },
+        friendly: true,
+      });
     }
     const wrappedContract = this.wrapEntity(Contract.getInstance(), {
       jobLevel: payload.jobLevel,
@@ -100,7 +107,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
 
     wrappedContract.member = member;
     if (payload.dateEnd && payload.contractType !== ContractTypes.CDD) {
-      throw new ValidationError('VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED');
+      throw new ValidationError('VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED', { friendly: true });
     }
 
     if (payload.contractType) {
@@ -109,7 +116,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
           wrappedContract.contractType = payload.contractType;
           wrappedContract.dateEnd = payload.dateEnd;
         } else {
-          throw new ValidationError('VALIDATION.DATEEND_REQUIRED');
+          throw new ValidationError('VALIDATION.DATEEND_REQUIRED', { friendly: true });
         }
       } else {
         wrappedContract.contractType = payload.contractType;
@@ -120,12 +127,18 @@ export class ContractService extends BaseService<Contract> implements IContractS
       const user = await this.userService.get(payload.supervisor);
 
       if (!user) {
-        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload.user}` } });
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+          variables: { user: `${payload.user}` },
+          friendly: true,
+        });
       }
 
       const supervisor = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
       if (!supervisor) {
-        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${payload.user}` } });
+        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', {
+          variables: { member: `${payload.user}` },
+          friendly: true,
+        });
       }
       wrappedContract.supervisor = supervisor;
     }
@@ -179,6 +192,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
         throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
           variables: { org: `${payload.organization}` },
           isOperational: true,
+          friendly: true,
         });
       }
       const user = await this.userService.get(payload.supervisor);
@@ -207,7 +221,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
         if (payload.dateEnd) {
           wrappedContract.contractType = payload.contractType;
         } else {
-          throw new ValidationError('VALIDATION.DATEEND_REQUIRED');
+          throw new ValidationError('VALIDATION.DATEEND_REQUIRED', { friendly: true });
         }
       }
     }
@@ -215,7 +229,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
       if (wrappedContract.contractType === ContractTypes.CDD) {
         wrappedContract.dateEnd = payload.dateEnd;
       } else {
-        throw new ValidationError('VALIDATION.DATEEND_JUST_IN_CDD');
+        throw new ValidationError('VALIDATION.DATEEND_JUST_IN_CDD', { friendly: true });
       }
     }
     const updatedContract = await this.update(wrappedContract);
