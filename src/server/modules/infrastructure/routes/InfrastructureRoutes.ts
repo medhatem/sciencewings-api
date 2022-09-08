@@ -86,7 +86,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    * @param orgId: organization id
    */
   @GET
-  @Path('getInfrastructureList/:orgId')
+  @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
   @Security()
   @LoggerStorage()
   @Response<InfrastructureListRequestDTO>(200, 'Return project list Successfully')
