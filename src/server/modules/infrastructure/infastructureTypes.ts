@@ -1,15 +1,5 @@
-import { Member } from '../hr';
-import { Infrastructure } from './models';
-
-export type responsable = {
-  name: string;
-  workEmail: string;
-};
-
-export type subInfrastructure = {
-  id: number;
-  name: string;
-};
+import { Member } from '@/modules/hr/models/Member';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 
 export type infrastructurelistline = {
   id: number;

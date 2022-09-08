@@ -82,14 +82,14 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   }
 
   /**
-   * get the list of infrustructure of a given organization
+   * get the list of infrastructure of a given organization
    * @param orgId: organization id
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
   @Security()
   @LoggerStorage()
-  @Response<InfrastructureListRequestDTO>(200, 'Return project list Successfully')
+  @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getAllInfrastructuresOfAgivenOrganization(
     @PathParam('orgId') orgId: number,
