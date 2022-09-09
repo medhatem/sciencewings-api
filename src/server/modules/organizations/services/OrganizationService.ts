@@ -35,8 +35,9 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
-import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
-import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
+import { Infrastructure, InfrastructureService } from '@/modules/infrastructure';
+// import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
+// import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -44,7 +45,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public dao: OrganizationDao,
     public organizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
-    public infrastructureService: IInfrastructureService,
     public labelService: IOrganizationLabelService,
     public addressService: IAddressService,
     public phoneService: IPhoneService,
@@ -187,13 +187,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }),
     );
     //create a default infastructure
-    const wrappedInfustructure = this.infrastructureService.wrapEntity(Infrastructure.getInstance(), {
-      name: `${organization.name}defaultInfra`,
-      organization: organization.id,
-      key: `${organization.name}defaultInfra`,
-      default: true,
-    });
-    await this.infrastructureService.create(wrappedInfustructure);
+    const infraService = InfrastructureService.getInstance();
+    const a = Infrastructure.getInstance();
+    a.name = `${organization.name}_defaultInfra`;
+    a.organization = organization;
+    a.key = `${organization.name}_defaultInfra`;
+    a.default = true;
+    await infraService.create(a);
     return organization.id;
   }
 

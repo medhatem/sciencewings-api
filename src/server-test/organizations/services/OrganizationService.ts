@@ -26,8 +26,6 @@ import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
 
 import Sinon = require('sinon');
-import { InfrastructureService } from '@/modules/infrastructure/services/InfrastructureService';
-
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
 
@@ -35,7 +33,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let organizationDAO: SinonStubbedInstance<OrganizationDao>;
   let organizationSettingsService: SinonStubbedInstance<OrganizationSettingsService>;
   let userService: SinonStubbedInstance<UserService>;
-  let infrastructureService: SinonStubbedInstance<InfrastructureService>;
   let emailService: SinonStubbedInstance<Email>;
   let addressService: SinonStubbedInstance<AddressService>;
   let phoneService: SinonStubbedInstance<PhoneService>;
@@ -80,7 +77,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           organizationDAO,
           organizationSettingsService,
           userService,
-          infrastructureService,
           labelService,
           addressService,
           phoneService,
@@ -120,7 +116,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           organizationDAO,
           organizationSettingsService,
           userService,
-          infrastructureService,
           labelService,
           addressService,
           phoneService,
