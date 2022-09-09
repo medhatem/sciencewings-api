@@ -13,6 +13,7 @@ export * from '@/modules/address';
 export * from '@/modules/phones';
 export * from '@/modules/projects';
 export * from '@/modules/infrastructure';
+export * from '@/modules/reservation';
 
 container.initialize();
 

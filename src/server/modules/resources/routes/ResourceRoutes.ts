@@ -32,12 +32,12 @@ import {
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dtos/ResourceRateDTO';
 import { UserRequest } from '@/types/UserRequest';
-import { IResourceReservationService } from '@/modules/resources/interfaces/IResourceReservationService';
+import { IReservationService } from '@/modules/reservation/interfaces/IReservationService';
 
 @provideSingleton()
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
-  @lazyInject(IResourceReservationService) private reservationResourceService: IResourceReservationService;
+  @lazyInject(IReservationService) private reservationResourceService: IReservationService;
 
   constructor(private ResourceService: IResourceService) {
     super(ResourceService as any, new ResourceGetDTO(), new UpdateResourceDTO());

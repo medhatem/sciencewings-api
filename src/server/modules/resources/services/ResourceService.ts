@@ -36,10 +36,10 @@ import {
 } from '@/modules/resources/schemas/ResourceSchema';
 import { log } from '@/decorators/log';
 import { ResourceCalendarRO, ResourceRO } from '@/modules/resources/routes/RequestObject';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { Calendar } from '@/modules/reservation/models/Calendar';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
+import { ICalendarService } from '@/modules/reservation/interfaces/ICalendarService';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -60,7 +60,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public userService: IUserService,
     public resourceSettingsService: IResourceSettingsService,
     public resourceRateService: IResourceRateService,
-    public resourceCalendarService: IResourceCalendarService,
+    public resourceCalendarService: ICalendarService,
     public resourceTagService: IResourceTagService,
     public resourceStatusHistoryService: IResourceStatusHistoryService,
     public resourceStatusService: IResourceStatusService,
@@ -222,7 +222,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
   @validate
   public async createResourceCalendar(
     @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
-  ): Promise<ResourceCalendar> {
+  ): Promise<Calendar> {
     let organization = null;
     if (payload.organization) {
       organization = await this.organizationService.get(payload.organization);
@@ -231,7 +231,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       }
     }
 
-    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(new ResourceCalendar(), {
+    const resourceCalendar: Calendar = this.resourceCalendarService.wrapEntity(new Calendar(), {
       ...payload,
       organization,
     });

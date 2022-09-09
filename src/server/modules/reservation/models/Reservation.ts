@@ -2,17 +2,17 @@ import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { ResourceCalendar } from './ResourceCalendar';
+import { Calendar } from './Calendar';
 
 @provide()
 @Entity()
-export class ResourceEvent extends BaseModel<ResourceEvent> {
+export class Reservation extends BaseModel<Reservation> {
   constructor() {
     super();
   }
 
-  static getInstance(): ResourceEvent {
-    return container.get(ResourceEvent);
+  static getInstance(): Reservation {
+    return container.get(Reservation);
   }
 
   @PrimaryKey()
@@ -27,6 +27,6 @@ export class ResourceEvent extends BaseModel<ResourceEvent> {
   @Property({ columnType: 'timestamp' })
   dateTo: Date;
 
-  @ManyToOne({ entity: () => ResourceCalendar, onDelete: 'set null' })
-  resourceCalendar: ResourceCalendar;
+  @ManyToOne({ entity: () => Calendar, onDelete: 'set null' })
+  resourceCalendar: Calendar;
 }

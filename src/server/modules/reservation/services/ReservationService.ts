@@ -4,21 +4,21 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
-import { IResourceReservationService } from '@/modules/resources/interfaces/IResourceReservationService';
+import { IReservationService } from '@/modules/reservation/interfaces/IReservationService';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
-import { ResourceEvent } from '@/modules/resources/models/ResourceEvent';
+import { Reservation } from '@/modules/reservation/models/Reservation';
 import { ResourceEventDao } from '@/modules/resources/daos/ResourceEventDAO';
 import { log } from '@/decorators/log';
 
-@provideSingleton(IResourceReservationService)
-export class ResourceReservationService extends BaseService<ResourceEvent> implements IResourceReservationService {
+@provideSingleton(IReservationService)
+export class ReservationService extends BaseService<Reservation> implements IReservationService {
   constructor(public dao: ResourceEventDao, private resourceService: IResourceService) {
     super(dao);
   }
 
-  static getInstance(): IResourceReservationService {
-    return container.get(IResourceReservationService);
+  static getInstance(): IReservationService {
+    return container.get(IReservationService);
   }
 
   /**
@@ -54,7 +54,7 @@ export class ResourceReservationService extends BaseService<ResourceEvent> imple
     }
     await resource.calendar.init();
     const calendar = resource.calendar[0]; // by default we only use one calendar for now
-    const event = this.wrapEntity(ResourceEvent.getInstance(), {
+    const event = this.wrapEntity(Reservation.getInstance(), {
       title: payload.title,
       dateFrom: moment(payload.dateFrom).utc().toDate(),
       dateTo: moment(payload.dateTo).utc().toDate(),

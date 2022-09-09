@@ -9,7 +9,7 @@ import { ContractDao } from '@/modules/hr/daos/ContractDao';
 import { ContractRO } from '@/modules/hr/routes/RequestObject';
 import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
-import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
+import { ICalendarService } from '@/modules/reservation/interfaces/ICalendarService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { log } from '@/decorators/log';
 import { validate } from '@/decorators/validate';
@@ -25,7 +25,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     public memberService: IMemberService,
     public groupService: IGroupService,
     public jobService: IJobService,
-    public resourceCalendarSerivce: IResourceCalendarService,
+    public resourceCalendarSerivce: ICalendarService,
     public userService: IUserService,
   ) {
     super(dao);

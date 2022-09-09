@@ -1,20 +1,22 @@
-import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
-const { suite, test } = intern.getPlugin('interface.tdd');
-const { expect } = intern.getPlugin('chai');
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
+
+import { CalendarDao } from '@/modules/reservation/daos/CalendarDAO';
+import { CalendarService } from '@/modules/reservation/services/CalendarService';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
-import { ResourceCalendarService } from '@/modules/resources/services/ResourceCalendarService';
-import { ResourceCalendarDao } from '@/modules/resources/daos/ResourceCalendarDAO';
+import { container } from '@/di';
+import intern from 'intern';
+
+const { suite, test } = intern.getPlugin('interface.tdd');
+const { expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
-  let resourceCalendarDao: SinonStubbedInstance<ResourceCalendarDao>;
+  let resourceCalendarDao: SinonStubbedInstance<CalendarDao>;
 
   beforeEach(() => {
     createStubInstance(Configuration);
-    resourceCalendarDao = createStubInstance(ResourceCalendarDao);
+    resourceCalendarDao = createStubInstance(CalendarDao);
     const mockedContainer = stub(container, 'get');
     mockedContainer.withArgs(Configuration).returns({
       getConfiguration: stub(),
@@ -26,7 +28,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       error: stub(),
       warn: stub(),
     });
-    mockedContainer.withArgs(ResourceCalendarService).returns(new ResourceCalendarService(resourceCalendarDao));
+    mockedContainer.withArgs(CalendarService).returns(new CalendarService(resourceCalendarDao));
   });
 
   afterEach(() => {
@@ -34,7 +36,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
 
   test('Should create the right instance', () => {
-    const instance = ResourceCalendarService.getInstance();
-    expect(instance instanceof ResourceCalendarService);
+    const instance = CalendarService.getInstance();
+    expect(instance instanceof CalendarService);
   });
 });

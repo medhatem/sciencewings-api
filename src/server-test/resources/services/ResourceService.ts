@@ -12,13 +12,12 @@ import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
 
 import { BaseService } from '@/modules/base/services/BaseService';
+import { CalendarService } from '@/modules/reservation/services/CalendarService';
 import { Collection } from '@mikro-orm/core';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
 import { MemberService } from '@/modules/hr/services/MemberService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
-import { UserService } from '@/modules/users/services/UserService';
-import { ResourceCalendarService } from '@/modules/resources/services/ResourceCalendarService';
 import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
 import { ResourceRateService } from '@/modules/resources/services/ResourceRateService';
 import { ResourceService } from '@/modules/resources/services/ResourceService';
@@ -26,6 +25,7 @@ import { ResourceSettingsService } from '@/modules/resources/services/ResourceSe
 import { ResourceStatusHistoryService } from '@/modules/resources/services/ResourceStatusHistoryService';
 import { ResourceStatusService } from '@/modules/resources/services/ResourceStatusService';
 import { ResourceTagService } from '@/modules/resources/services/ResourceTagService';
+import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
@@ -41,7 +41,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let memberService: SinonStubbedInstance<MemberService>;
   let resourceSettingsService: SinonStubbedInstance<ResourceSettingsService>;
   let resourceRateService: SinonStubbedInstance<ResourceRateService>;
-  let resourceCalendarService: SinonStubbedInstance<ResourceCalendarService>;
+  let calendarService: SinonStubbedInstance<CalendarService>;
   let resourceTagService: SinonStubbedInstance<ResourceTagService>;
   let resourceStatusHistoryService: SinonStubbedInstance<ResourceStatusHistoryService>;
   let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
@@ -54,7 +54,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     memberService = createStubInstance(MemberService);
     resourceSettingsService = createStubInstance(ResourceSettingsService);
     resourceRateService = createStubInstance(ResourceRateService);
-    resourceCalendarService = createStubInstance(ResourceCalendarService);
+    calendarService = createStubInstance(CalendarService);
     resourceTagService = createStubInstance(ResourceTagService);
     resourceStatusHistoryService = createStubInstance(ResourceStatusHistoryService);
     resourceStatusService = createStubInstance(ResourceStatusService);
@@ -80,7 +80,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           userService,
           resourceSettingsService,
           resourceRateService,
-          resourceCalendarService,
+          calendarService,
           resourceTagService,
           resourceStatusHistoryService,
           resourceStatusService,
@@ -282,9 +282,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
     test('Should fail to create resource calendar', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve({ id: 1 }));
-      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], Promise.resolve({}));
+      mockMethodWithResult(CalendarService, 'wrapEntity', [], Promise.resolve({}));
 
-      mockMethodWithResult(resourceCalendarService, 'create', [], Promise.reject(new Error('Failed')));
+      mockMethodWithResult(CalendarService, 'create', [], Promise.reject(new Error('Failed')));
 
       try {
         await container.get(ResourceService).createResourceCalendar(payload);
@@ -297,9 +297,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       const mockPayload = { ...payload };
       delete mockPayload.organization;
 
-      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], {});
+      mockMethodWithResult(CalendarService, 'wrapEntity', [], {});
 
-      mockMethodWithResult(resourceCalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
+      mockMethodWithResult(CalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
 
       const result = await container.get(ResourceService).createResourceCalendar(mockPayload);
 
@@ -307,9 +307,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     });
     test('Should succeed create resource calendar', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve({ id: 1 }));
-      mockMethodWithResult(resourceCalendarService, 'wrapEntity', [], {});
+      mockMethodWithResult(CalendarService, 'wrapEntity', [], {});
 
-      mockMethodWithResult(resourceCalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
+      mockMethodWithResult(CalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
 
       const result = await container.get(ResourceService).createResourceCalendar(payload);
       expect(result).to.eql({ id: '133' });

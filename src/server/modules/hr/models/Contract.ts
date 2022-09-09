@@ -1,11 +1,12 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
+
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Calendar } from '@/modules/reservation/models/Calendar';
 import { ContractType } from '@/modules/hr/models/ContractType';
 import { Group } from '@/modules/hr/models/Group';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { BaseModel } from '@/modules/base/models/BaseModel';
 
 @provide()
 @Entity()
@@ -40,12 +41,12 @@ export class Contract extends BaseModel<Contract> {
   dateEnd?: Date;
 
   @ManyToOne({
-    entity: () => ResourceCalendar,
+    entity: () => Calendar,
     onDelete: 'set null',
     nullable: true,
     index: 'hr_contract_resource_calendar_id_index',
   })
-  resourceCalendar?: ResourceCalendar;
+  resourceCalendar?: Calendar;
 
   @Property({ columnType: 'numeric' })
   wage!: number;

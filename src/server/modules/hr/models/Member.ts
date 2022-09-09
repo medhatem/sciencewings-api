@@ -3,19 +3,19 @@ import { User, userStatus } from '@/modules/users/models/User';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Calendar } from '@/modules/reservation/models/Calendar';
 import { Contract } from '@/modules/hr/models/Contract';
 import { Group } from '@/modules/hr/models/Group';
+import { Infrastructure } from '@/modules/infrastructure';
 import { Job } from '@/modules/hr/models/Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
-import { ProjectTask } from '@/modules/projects/models/ProjectTask';
-import { Resource } from '@/modules/resources/models/Resource';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
-import { WorkLocation } from './WorkLocation';
 import { Project } from '@/modules/projects/models/Project';
 import { ProjectMember } from '@/modules/projects/models/ProjectMember';
-import { Infrastructure } from '@/modules/infrastructure';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
+import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
+import { WorkLocation } from './WorkLocation';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',
@@ -62,11 +62,11 @@ export class Member extends BaseModel<Member> {
   membership: MembershipStatus;
 
   @ManyToOne({
-    entity: () => ResourceCalendar,
+    entity: () => Calendar,
     onDelete: 'set null',
     nullable: true,
   })
-  resourceCalendar?: ResourceCalendar;
+  resourceCalendar?: Calendar;
 
   @ManyToMany({ entity: () => Resource })
   resources? = new Collection<Resource>(this);
