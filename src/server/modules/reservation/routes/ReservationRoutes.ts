@@ -4,7 +4,11 @@ import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { GET, Path, PathParam, POST, QueryParam, Security } from 'typescript-rest';
 import { IReservationService } from '@/modules/reservation/interfaces/IReservationService';
 import { Reservation } from '../models/Reservation';
+import { Response } from 'typescript-rest-swagger';
 import { ReservationCreateDTO, ReservationGetDTO } from '../dtos/ReservationDTO';
+import { InternalServerError } from '@/Exceptions/InternalServerError';
+import { NotFoundError } from '@/Exceptions/NotFoundError';
+import { ReservationRO } from './RequestObject';
 
 @provideSingleton()
 @Path('reservation')
@@ -47,9 +51,12 @@ export class ReservationRoutes extends BaseRoutes<Reservation> {
   @Path('/:resourceId')
   @Security()
   @LoggerStorage()
+  @Response<ReservationCreateDTO>(201, 'Organization created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async createReservation(
     @PathParam('resourceId') resourceId: number,
-    payload: any,
+    payload: ReservationRO,
   ): Promise<ReservationCreateDTO> {
     const result = await this.reservationService.createReservation(resourceId, payload);
 

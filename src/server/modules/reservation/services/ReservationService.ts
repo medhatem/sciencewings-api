@@ -47,7 +47,7 @@ export class ReservationService extends BaseService<Reservation> implements IRes
   }
 
   @log()
-  async createReservation(resourceId: number, payload: any): Promise<any> {
+  async createReservation(resourceId: number, payload: { [key: string]: any }): Promise<Reservation> {
     const resource = await this.resourceService.get(resourceId);
     if (!resource) {
       throw new NotFoundError('');
