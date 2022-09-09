@@ -36,8 +36,6 @@ import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
 import { Infrastructure, InfrastructureService } from '@/modules/infrastructure';
-// import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
-// import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
