@@ -42,3 +42,20 @@ export class ReservationCreateDTO extends BaseRequestDTO {
   @JsonProperty()
   body: ReservationDTO;
 }
+
+@JsonObject()
+@unique
+export class ReservationsDataDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: ReservationDTO,
+    beforeDeserialize,
+  })
+  data: Array<ReservationDTO>;
+}
+
+@JsonObject()
+@unique
+export class ReservationsDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: ReservationsDataDTO;
+}

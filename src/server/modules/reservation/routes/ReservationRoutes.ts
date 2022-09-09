@@ -5,7 +5,7 @@ import { GET, Path, PathParam, POST, QueryParam, Security } from 'typescript-res
 import { IReservationService } from '@/modules/reservation/interfaces/IReservationService';
 import { Reservation } from '../models/Reservation';
 import { Response } from 'typescript-rest-swagger';
-import { ReservationCreateDTO, ReservationGetDTO } from '../dtos/ReservationDTO';
+import { ReservationCreateDTO, ReservationGetDTO, ReservationsDTO } from '@/modules/reservation/dtos/ReservationDTO';
 import { InternalServerError } from '@/Exceptions/InternalServerError';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ReservationRO } from './RequestObject';
@@ -22,7 +22,7 @@ export class ReservationRoutes extends BaseRoutes<Reservation> {
   }
 
   /**
-   * Get a resource settings in the database
+   * get all reservations within a given date range
    *
    * @param resourceId
    * Requested resource id
@@ -31,18 +31,20 @@ export class ReservationRoutes extends BaseRoutes<Reservation> {
   @Path('getEventsByRange/:resourceId')
   @Security()
   @LoggerStorage()
+  @Response<ReservationsDTO>(200, 'reservations fetched successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
   public async getEventsByRange(
     @PathParam('resourceId') resourceId: number,
     @QueryParam('start') start: string,
     @QueryParam('end') end: string,
-  ): Promise<any> {
+  ): Promise<ReservationsDTO> {
     const result = await this.reservationService.getEventsByRange(resourceId, new Date(start), new Date(end));
-
-    return { result };
+    return new ReservationsDTO({ body: { data: [...(result || [])] }, statusCode: 201 });
   }
 
   /**
-   * Get a resource settings in the database
+   * Create a reservation by resource Id
    *
    * @param resourceId
    * Requested resource id
@@ -51,7 +53,7 @@ export class ReservationRoutes extends BaseRoutes<Reservation> {
   @Path('/:resourceId')
   @Security()
   @LoggerStorage()
-  @Response<ReservationCreateDTO>(201, 'Organization created Successfully')
+  @Response<ReservationCreateDTO>(201, 'Reservation created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createReservation(
