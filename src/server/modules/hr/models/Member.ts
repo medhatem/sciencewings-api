@@ -171,4 +171,13 @@ export class Member extends BaseModel<Member> {
 
   @ManyToMany({ entity: () => ProjectTask, nullable: true })
   task? = new Collection<ProjectTask>(this);
+
+  @OneToMany({
+    entity: () => Contract,
+    mappedBy: (entity) => entity.supervisor,
+    nullable: true,
+    eager: false,
+    lazy: true,
+  })
+  contractSupervized?: Contract;
 }

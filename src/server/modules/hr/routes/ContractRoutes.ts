@@ -76,7 +76,6 @@ export class ContractRoutes extends BaseRoutes<Contract> {
     @PathParam('id') id: number,
   ): Promise<UpdateContracBaseDTO> {
     const result = await this.contractService.updateContract(payload, id);
-
     return new UpdateContracBaseDTO({ body: { id: result, statusCode: 204 } });
   }
 }

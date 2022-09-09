@@ -179,13 +179,12 @@ export class ContractService extends BaseService<Contract> implements IContractS
     }
     const wrappedContract = this.wrapEntity(contract, {
       ...Contract,
-      jobLevel: payload.jobLevel || contract.jobLevel,
-      wage: payload.wage || contract.wage,
-      dateStart: payload.dateStart || contract.dateStart,
-      description: payload.description || contract.description,
+      jobLevel: payload?.jobLevel || contract.jobLevel,
+      wage: payload?.wage || contract.wage,
+      dateStart: payload?.dateStart || contract.dateStart,
+      description: payload?.description || contract.description,
     });
-
-    if (payload.supervisor && contract.supervisor.user.id !== payload.supervisor) {
+    if (payload.supervisor && contract.supervisor && contract.supervisor.user.id !== payload.supervisor) {
       const organization = await this.origaniaztionService.get(payload.organization);
 
       if (!organization) {
@@ -241,8 +240,8 @@ export class ContractService extends BaseService<Contract> implements IContractS
       const job = (await this.jobService.getByCriteria({ contracts: contract }, FETCH_STRATEGY.SINGLE)) as Job;
       const wrappedJob = this.jobService.wrapEntity(job, {
         ...job,
-        name: payload.jobName || job.name,
-        state: payload.state || job.state,
+        name: payload?.jobName || job.name,
+        state: payload?.state || job.state,
       });
       this.jobService.update(wrappedJob);
     }
