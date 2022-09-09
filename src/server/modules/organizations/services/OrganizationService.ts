@@ -186,12 +186,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
     );
     //create a default infastructure
     const infraService = InfrastructureService.getInstance();
-    const a = Infrastructure.getInstance();
-    a.name = `${organization.name}_defaultInfra`;
-    a.organization = organization;
-    a.key = `${organization.name}_defaultInfra`;
-    a.default = true;
-    await infraService.create(a);
+    const defaultInfrastructure = Infrastructure.getInstance();
+    defaultInfrastructure.name = `${organization.name}_defaultInfra`;
+    defaultInfrastructure.organization = organization;
+    defaultInfrastructure.key = `${organization.name}_defaultInfra`;
+    defaultInfrastructure.default = true;
+    await infraService.create(defaultInfrastructure);
     return organization.id;
   }
 
