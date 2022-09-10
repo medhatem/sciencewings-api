@@ -14,7 +14,7 @@ export class InfrastructureRO {
   key: string;
 
   @JsonProperty()
-  responsible?: number;
+  responsibles?: Array<number>;
 
   @JsonProperty()
   parent?: number;
@@ -38,7 +38,7 @@ export class UpdateinfrastructureRO {
   key?: number;
 
   @JsonProperty()
-  responsible?: number;
+  responsibles?: Array<number>;
 
   @JsonProperty()
   parent?: number;

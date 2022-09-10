@@ -1,13 +1,4 @@
-import {
-  Collection,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryKeyType,
-  Property,
-} from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provide } from '@/di/index';
 
@@ -80,9 +71,8 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({ entity: () => Resource })
   resources? = new Collection<Resource>(this);
 
-  @OneToMany({
+  @ManyToMany({
     entity: () => Infrastructure,
-    mappedBy: (entity) => entity.responsible,
     nullable: true,
   })
   public Infrastructures? = new Collection<Infrastructure>(this);

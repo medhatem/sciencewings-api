@@ -5,6 +5,6 @@ export type infrastructurelistline = {
   id: number;
   name: string;
   resourcesNb: number;
-  responsibles: Member;
+  responsibles: Array<Member>;
   subInfrastructure: Array<Infrastructure>;
 };
