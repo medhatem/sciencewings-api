@@ -28,9 +28,11 @@
 
   "RESOURCE.NON_EXISTANT {{resource}}": "Resource: {{resource}} n'existe pas",
 
-  "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource not found",
+  "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource n'existe pas",
 
-  "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} is not found",
+  "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} n'existe pas",
+
+  "RESOURCE_TAG.NON_EXISTANT {{tag}}": "Resource tag: {{tag}} n'existe pas",
 
   "PROJECT.NON_EXISTANT {{project}}": "Projet: {{project}} est introuvable. ",
   "PROJECT.NOT_FOR_THIS_ORG {{project,org}}": "Le projet: {{project}} N'appartient pas à cette organisation: {{org}}.",

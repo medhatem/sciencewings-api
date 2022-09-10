@@ -300,12 +300,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(orgId: number): Promise<Member[]> {
-    const existingOrg = await this.dao.get(orgId, { populate: ['members'] as never });
+  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
+    const existingOrg = await this.dao.get(orgId);
     if (!existingOrg) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-    return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+
+    if (!statusFilter) {
+      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
+      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    } else {
+      let status = statusFilter.split(',');
+      const members = await existingOrg.members.init({ where: { membership: status } });
+      return members.toArray().map((member: any) => ({ ...member }));
+    }
   }
 
   /**
@@ -327,6 +335,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (group.subGroups.length !== 0) {
       throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
+
     await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
     await this.dao.remove(fetchedorganization);
