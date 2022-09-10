@@ -29,14 +29,13 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   @Property()
   key!: string;
 
-  @ManyToMany({
+  @ManyToOne({
     entity: () => Member,
-    mappedBy: (entity) => entity.Infrastructures,
     lazy: true,
     eager: false,
     nullable: true,
   })
-  public responsibles? = new Collection<Member>(this);
+  public responsible?: Member;
 
   @ManyToOne({
     entity: () => Infrastructure,
