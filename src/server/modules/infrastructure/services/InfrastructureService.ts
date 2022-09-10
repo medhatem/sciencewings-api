@@ -238,10 +238,11 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       FETCH_STRATEGY.ALL,
     )) as Infrastructure[];
     let InfrastructureList: infrastructurelistline[] = [];
-    let responsible: Member;
     let subInfras: any[] = [];
+    let responsible: Member;
     await applyToAll(fetchedInfrastructure, async (infrastructure) => {
       responsible = infrastructure.responsible as Member;
+      console.log('rrrrrrrrrrrrrrrrrrr', responsible);
       await infrastructure.children.init();
       subInfras = infrastructure.children.toArray();
       let resourceNb = await infrastructure.resources.loadCount(true);
