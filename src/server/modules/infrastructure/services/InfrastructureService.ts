@@ -21,6 +21,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
+import { Member } from '@/modules/hr';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -100,7 +101,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
           friendly: false,
         });
       }
-      const responsable = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+      const responsable = (await this.memberService.getByCriteria(
+        { user, organization },
+        FETCH_STRATEGY.SINGLE,
+      )) as Member;
       if (!responsable) {
         throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
           variables: { member: `${payload.responsible}` },
