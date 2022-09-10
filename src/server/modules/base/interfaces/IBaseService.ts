@@ -1,20 +1,31 @@
-import { AssignOptions } from '@mikro-orm/core';
-import { Result } from '@utils/Result';
+import { AssignOptions, FindOneOptions, FindOptions } from '@mikro-orm/core';
 
-export abstract class IBaseService<T> {
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+
+export abstract class IBaseService<T extends BaseModel> {
   static getInstance: () => any;
 
-  public get: (id: number) => Promise<any>;
+  public get: (id: number, options?: FindOneOptions<T>) => Promise<T>;
 
-  public getAll: () => Promise<Result<any[]>>;
+  public getAll: () => Promise<T[]>;
 
-  public create: (entry: T) => Promise<Result<any>>;
+  public create: (entry: T) => Promise<T>;
 
-  public update: (entry: T) => Promise<Result<any>>;
+  public update: (entry: T) => Promise<any>;
 
-  public remove: (id: number) => Promise<Result<number>>;
+  public updateRoute: (id: number, payload: any) => Promise<any>;
 
-  getByCriteria: (criteria: { [key: string]: any }) => Promise<T>;
+  public remove: (id: number) => Promise<T>;
+  public removeWithCriteria: (payload: { [key: string]: any }) => Promise<void>;
 
-  public wrapEntity: (entity: T, payload: { [key: string]: any }, options: boolean | AssignOptions) => T;
+  public removeRoute: (id: number) => Promise<void>;
+
+  getByCriteria: (
+    criteria: { [key: string]: any },
+    fetchStrategy: FETCH_STRATEGY,
+    options?: FindOptions<T> | FindOneOptions<T>,
+  ) => Promise<T>;
+
+  public wrapEntity: (entity: T, payload: { [key: string]: any }, options?: AssignOptions) => T;
 }

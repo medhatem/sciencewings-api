@@ -6,3 +6,5 @@ export * from '@/modules/base';
 export * from '@/modules/address';
 export * from '@/modules/organizations';
 export * from '@/modules/phones';
+export * from '@/modules/projects';
+export * from '@/modules/infrastructure';

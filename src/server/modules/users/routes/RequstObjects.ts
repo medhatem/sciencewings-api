@@ -1,17 +1,20 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { AddressRO } from '@/modules/address/routes';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { unique } from '@/decorators/unique';
 
 export class UserInviteToOrgRO {
   @JsonProperty()
-  organizationId: number;
+  email: string;
 
   @JsonProperty()
-  email: string;
+  organizationId: number;
 }
 
-@Serializable()
-export class UserDetailsRO {
+@JsonObject()
+@unique
+export class UserRO {
   @JsonProperty()
   email: string;
 
@@ -22,10 +25,10 @@ export class UserDetailsRO {
   lastname: string;
 
   @JsonProperty()
-  address: string;
+  addresses: Array<AddressRO>;
 
   @JsonProperty()
-  phones: PhoneDTO[];
+  phones: Array<PhoneRO>;
 
   @JsonProperty()
   dateofbirth: Date;
@@ -34,14 +37,19 @@ export class UserDetailsRO {
   signature?: string;
 
   @JsonProperty()
+  keycloakId: string;
+
+  @JsonProperty()
   actionId?: number;
 
   @JsonProperty()
   share?: boolean;
 }
+
+@unique
 export class ResetPasswordRO {
   @JsonProperty()
-  email: number;
+  email: string;
 
   @JsonProperty()
   password: string;

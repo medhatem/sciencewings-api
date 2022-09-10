@@ -1,12 +1,9 @@
-import { Phone } from '../../phones/models/Phone';
-import { Result } from '@utils/Result';
-import { PhoneDTO } from '../dtos/PhoneDTO';
-import { Organization } from '../../organizations/models/Organization';
-import { User } from '../../users/models/User';
-import { IBaseService } from '../../base/interfaces/IBaseService';
+import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { User } from '@/modules/users/models/User';
 
 export abstract class IPhoneService extends IBaseService<any> {
-  createPhone: (payload: PhoneDTO) => Promise<Result<Phone>>;
-  createBulkPhoneForUser: (payload: PhoneDTO[], entity: User) => Promise<Result<number>>;
-  createBulkPhoneForOrganization: (payload: PhoneDTO[], entity: Organization) => Promise<Result<number>>;
+  createBulkPhoneForUser: (payload: PhoneRO[], entity: User) => Promise<void>;
+  createBulkPhoneForOrganization: (payload: PhoneRO[], entity: Organization) => Promise<void>;
 }

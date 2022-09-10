@@ -1,8 +1,11 @@
-import { AddressOrganizationDTO } from '../../address/dtos/AddressDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { PhoneDTO } from '../../phones/dtos/PhoneDTO';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-@Serializable()
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { unique } from '@/decorators/unique';
+
+@JsonObject()
+@unique
 export class CreateOrganizationRO {
   @JsonProperty()
   name: string;
@@ -10,49 +13,159 @@ export class CreateOrganizationRO {
   @JsonProperty()
   email: string;
 
-  @JsonProperty()
-  phones: PhoneDTO[];
-
+  @JsonProperty({
+    type: PhoneRO,
+  })
+  phones?: Array<PhoneRO>;
   @JsonProperty()
   type: string;
 
-  @JsonProperty()
-  address: AddressOrganizationDTO[];
+  @JsonProperty({
+    type: AddressRO,
+  })
+  addresses?: Array<AddressRO>;
 
   @JsonProperty()
-  labels: string[];
+  labels: Array<string>;
 
   @JsonProperty()
-  members: number[];
+  members: Array<number>;
 
   @JsonProperty()
-  direction: number;
+  socialFacebook?: string;
+  @JsonProperty()
+  socialTwitter?: string;
+  @JsonProperty()
+  socialGithub?: string;
+  @JsonProperty()
+  socialLinkedin?: string;
+  @JsonProperty()
+  socialYoutube?: string;
+  @JsonProperty()
+  socialInstagram?: string;
 
   @JsonProperty()
-  social_facebook?: string;
-  @JsonProperty()
-  social_twitter?: string;
-  @JsonProperty()
-  social_github?: string;
-  @JsonProperty()
-  social_linkedin?: string;
-  @JsonProperty()
-  social_youtube?: string;
-  @JsonProperty()
-  social_instagram?: string;
-
-  @JsonProperty()
-  adminContact: number;
-
-  @JsonProperty()
-  parentId?: string;
+  parent?: number;
 }
 
-@Serializable()
+@JsonObject()
+@unique
+export class UpdateOrganizationRO {
+  @JsonProperty()
+  name?: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  email?: string;
+
+  @JsonProperty()
+  type?: string;
+
+  @JsonProperty()
+  labels?: Array<string>;
+
+  @JsonProperty()
+  direction?: number;
+
+  @JsonProperty()
+  socialFacebook?: string;
+  @JsonProperty()
+  socialTwitter?: string;
+  @JsonProperty()
+  socialGithub?: string;
+  @JsonProperty()
+  socialLinkedin?: string;
+  @JsonProperty()
+  socialYoutube?: string;
+  @JsonProperty()
+  socialInstagram?: string;
+
+  @JsonProperty()
+  parent?: number;
+}
+
+@JsonObject()
+@unique
 export class UserInviteToOrgRO {
   @JsonProperty()
   organizationId: number;
 
   @JsonProperty()
   email: string;
+}
+@JsonObject()
+@unique
+export class UserResendPassword {
+  @JsonProperty()
+  userId: number;
+
+  @JsonProperty()
+  orgId: number;
+}
+@JsonObject()
+@unique
+export class OrganizationMemberSettingsRO {
+  @JsonProperty()
+  membersCanEditAccountNumbers: boolean;
+  @JsonProperty()
+  promptForAccouantNumbers: boolean;
+  @JsonProperty()
+  acountNumberNote: string;
+  @JsonProperty()
+  allowMembersToSeeAllOtherMembers: boolean;
+}
+
+@JsonObject()
+@unique
+export class OrganizationReservationSettingsRO {
+  @JsonProperty()
+  approversCanEditReservations?: boolean;
+  @JsonProperty()
+  requireReasonWhenEditingReservation?: boolean;
+  @JsonProperty()
+  hideOrganizationCalendar?: boolean;
+  @JsonProperty()
+  hideAccountNumberWhenMakingReservation?: boolean;
+  @JsonProperty()
+  showResourceImagesInReservation?: boolean;
+  @JsonProperty()
+  confirmationEmailWhenMakingReservation?: string;
+  @JsonProperty()
+  attachedIcsCalendarFeeds?: boolean;
+  @JsonProperty()
+  emailAddressToReceiveReservationReplyMessages?: string[];
+}
+
+@JsonObject()
+@unique
+export class OrganizationInvoicesSettingsRO {
+  @JsonProperty()
+  membersCanEditBillingAddress?: boolean;
+  @JsonProperty()
+  defaultInvoiceDueDateUnit?: string;
+  @JsonProperty()
+  defaultInvoiceDueDate?: number;
+  @JsonProperty()
+  roundTaxOnPerItemBasisInsteadOfOnceOnSubtotal?: boolean;
+  @JsonProperty()
+  lockInvoicedReservationsAndRequests?: boolean;
+}
+
+@JsonObject()
+@unique
+export class OrganizationAccessSettingsRO {
+  @JsonProperty()
+  anyMemberCanJoinYourOrganizationAndAccessResourceSchedules?: boolean;
+  @JsonProperty()
+  joinCode?: string;
+  @JsonProperty()
+  yourOrganizationWillNeverAppearInSearchResults?: boolean;
+  @JsonProperty()
+  notifyAdministratorsWhenMembersJoinOrganization?: boolean;
+  @JsonProperty()
+  listResourceToNonMembers?: boolean;
+  @JsonProperty()
+  messageSentToNewMembers?: string;
 }

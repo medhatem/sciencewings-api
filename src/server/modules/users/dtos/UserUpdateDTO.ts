@@ -1,14 +1,17 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { User } from '../models';
+import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
+import { unique } from '@/decorators/unique';
+
+@unique
 class BodyUpdateUserDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
 
-@Serializable()
-export class UpdateUserDTO extends BaseRequestDTO<User> {
+@unique
+@JsonObject()
+export class UpdateUserDTO extends BaseRequestDTO {
   @JsonProperty()
   public body?: BodyUpdateUserDTO;
 

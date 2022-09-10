@@ -1,8 +1,8 @@
-import { IBaseService } from '../../base/interfaces/IBaseService';
-import { Result } from '@utils/Result';
-import { Organization } from '../models/Organization';
-import { OrganizationLabel } from '../models/OrganizationLabel';
+import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
+
 export abstract class IOrganizationLabelService extends IBaseService<any> {
-  createLabel: (payload: OrganizationLabel) => Promise<Result<number>>;
-  createBulkLabel: (payload: string[], organization: Organization) => Promise<Result<number>>;
+  createLabel: (payload: OrganizationLabel) => Promise<OrganizationLabel>;
+  createBulkLabel: (payload: string[], organization: Organization) => Promise<void>;
 }

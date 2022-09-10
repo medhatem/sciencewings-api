@@ -33,6 +33,10 @@ definitions:
         name: generate swagger
         script:
           - npm run swagger-gen
+    - step: &test
+        name: unit test
+        script:
+          - npm run test
     - step: &installForDeployment
         name: install dependencies for deployment
         script:
@@ -47,6 +51,7 @@ definitions:
     - step: &deploy
         name: deploy to dev
         trigger: manual
+        deployment: Staging
         script:
           - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
           - docker-compose -f devops/staging/docker-compose.yml build
@@ -69,6 +74,7 @@ pipelines:
     - step: *build
     - step: *lint
     - step: *generateSwagger
+    - step: *test
   branches:
     dev:
       - step: *caching
@@ -76,6 +82,7 @@ pipelines:
       - step: *build
       - step: *lint
       - step: *generateSwagger
+      - step: *test
       - step: *installForDeployment
       - step: *buildForDeployment
       - step: *deploy
@@ -93,12 +100,14 @@ pipelines:
       - step: *build
       - step: *lint
       - step: *generateSwagger
+      - step: *test
     release/*:
       - step: *caching
       - step: *install
       - step: *build
       - step: *lint
       - step: *generateSwagger
+      - step: *test
       - step: *installForDeployment
       - step: *buildForDeployment
       - step: *deploy
@@ -108,12 +117,14 @@ pipelines:
       - step: *build
       - step: *lint
       - step: *generateSwagger
-      - step: *installForDeployment
-      - step: *buildForDeployment
-      - step: *deploy
+      - step: *test
+      # - step: *installForDeployment
+      # - step: *buildForDeployment
+      # - step: *deploy
     bugfix/*:
       - step: *caching
       - step: *install
       - step: *build
       - step: *lint
       - step: *generateSwagger
+      - step: *test

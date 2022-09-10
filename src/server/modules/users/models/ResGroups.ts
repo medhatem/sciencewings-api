@@ -1,8 +1,9 @@
 import { Entity, Index, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { BaseModel } from '../../base/models/BaseModel';
-import { container, provideSingleton } from '@di/index';
+import { container, provide } from '@/di/index';
 
-@provideSingleton()
+import { BaseModel } from '@/modules/base/models/BaseModel';
+
+@provide()
 @Entity()
 @Unique({ name: 'res_groups_name_uniq', properties: ['name', 'categoryId'] })
 export class ResGroups extends BaseModel<ResGroups> {
@@ -15,7 +16,7 @@ export class ResGroups extends BaseModel<ResGroups> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

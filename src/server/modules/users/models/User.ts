@@ -1,10 +1,15 @@
-import { Collection, DateType, Entity, Index, ManyToMany, OneToMany, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@di/index';
-import { BaseModel } from '../../base/models/BaseModel';
-import { Organization } from '../../organizations/models/Organization';
-import { Phone } from '../../phones/models/Phone';
+import { Collection, DateType, Entity, Index, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
+import { Address } from '@/modules/address/models/Address';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Phone } from '@/modules/phones/models/Phone';
 
-@provideSingleton()
+export enum userStatus {
+  INVITATION_PENDING = 'INVITATION_PENDING',
+  ACTIVE = 'ACTIVE',
+}
+
+@provide()
 @Entity()
 export class User extends BaseModel<User> {
   constructor() {
@@ -14,6 +19,10 @@ export class User extends BaseModel<User> {
   static getInstance(): User {
     return container.get(User);
   }
+
+  @PrimaryKey()
+  id?: number;
+
   @Property()
   firstname: string;
 
@@ -24,15 +33,22 @@ export class User extends BaseModel<User> {
   @Unique()
   email: string;
 
-  @Property({ nullable: true })
-  address?: string;
-
-  @OneToMany({
-    entity: () => Phone,
-    mappedBy: (entity) => entity.user,
+  @ManyToMany({
+    entity: () => Address,
+    mappedBy: (entity: Address) => entity.user,
     nullable: true,
+    lazy: true,
+    eager: false,
   })
-  phone? = new Collection<Phone>(this);
+  address? = new Collection<Address>(this);
+
+  @ManyToMany({
+    entity: () => Phone,
+    mappedBy: (entity: Phone) => entity.user,
+    lazy: true,
+    eager: false,
+  })
+  phones? = new Collection<Phone>(this);
 
   @Property({ type: DateType, nullable: true })
   dateofbirth = new Date();
@@ -40,14 +56,6 @@ export class User extends BaseModel<User> {
   @Property()
   @Index()
   keycloakId: string;
-
-  // @ManyToOne({ entity: () => Organisation })
-  // @ManyToMany(() => Organisation, 'users', { owner: true })
-  @ManyToMany(() => Organization, (organization) => organization.members)
-  organizations = new Collection<Organization>(this);
-
-  // @ManyToOne({ entity: () => ResPartner, index: 'res_users_partner_id_index' })
-  // partner!: ResPartner;
 
   @Property({ columnType: 'text', nullable: true })
   signature?: string;
@@ -58,6 +66,6 @@ export class User extends BaseModel<User> {
   @Property({ nullable: true })
   share?: boolean;
 
-  // @Property()
-  // notificationType!: string;
+  @Property({ nullable: true })
+  status?: userStatus;
 }

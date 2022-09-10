@@ -1,25 +1,48 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-import { Organization } from './../models/Organization';
+import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
+import { PhoneInformationDTO } from '@/modules/phones/dtos/PhoneDTO';
+import { beforeDeserialize } from '@/utils/utilities';
+import { unique } from '@/decorators/unique';
 
-@Serializable()
-class BaseBodyGetDTO extends BaseBodyDTO {
+@JsonObject()
+@unique
+export class OrganizationInformationDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
-
   @JsonProperty()
-  name: string;
-
+  name?: string;
   @JsonProperty()
-  parent: any;
+  email?: string;
+  @JsonProperty()
+  description?: string;
+  @JsonProperty()
+  type?: string;
+  @JsonProperty({
+    type: AddressDTO,
+    beforeDeserialize,
+  })
+  address?: Array<AddressDTO>;
+  @JsonProperty({
+    type: PhoneInformationDTO,
+    beforeDeserialize,
+  })
+  phones?: Array<PhoneInformationDTO>;
+}
+@JsonObject()
+@unique
+export class OrganizationBaseBodyGetDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: OrganizationInformationDTO,
+    beforeDeserialize,
+  })
+  data: Array<OrganizationInformationDTO>;
 }
 
-@Serializable()
-export class OrganizationDTO extends BaseRequestDTO<Organization> {
+@JsonObject()
+@unique
+export class OrganizationDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
+  public body?: OrganizationBaseBodyGetDTO;
 }

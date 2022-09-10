@@ -1,6 +1,9 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-@Serializable()
+import { unique } from '@/decorators/unique';
+
+@JsonObject()
+@unique
 export class GetUserOrganizationDTO {
   @JsonProperty()
   id: number;

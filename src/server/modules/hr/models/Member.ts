@@ -1,23 +1,35 @@
-import { Entity, ManyToOne, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
-import { container, provideSingleton } from '@di/index';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryKeyType, Property } from '@mikro-orm/core';
+import { User, userStatus } from '@/modules/users/models/User';
+import { container, provide } from '@/di/index';
 
-import { BaseModel } from '../../base/models/BaseModel';
-import { Contract } from './Contract';
-import { Group } from './Group';
-import { Job } from './Job';
-import { Organization } from '../../organizations/models/Organization';
-import { ResCountry } from '../../organizations/models/ResCountry';
-import { ResPartnerBank } from '../../organizations/models/ResPartnerBank';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { Resource } from '../../resources/models/Resource';
-import { User } from '../../users/models/User';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Contract } from '@/modules/hr/models/Contract';
+import { Group } from '@/modules/hr/models/Group';
+import { Job } from '@/modules/hr/models/Job';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { Phone } from '@/modules/phones/models/Phone';
+import { ProjectTask } from '@/modules/projects/models/ProjectTask';
+import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 import { WorkLocation } from './WorkLocation';
-import { Phone } from '../../phones/models/Phone';
-import { Address } from '../../..';
+import { Project } from '@/modules/projects/models/Project';
+import { ProjectMember } from '@/modules/projects/models/ProjectMember';
+import { Infrastructure } from '@/modules/infrastructure';
 
-@provideSingleton()
+export enum MemberTypeEnum {
+  ADMIN = 'admin',
+  REGULAR = 'regular',
+}
+
+export enum MembershipStatus {
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  PENDING = 'pending',
+}
+
+@provide()
 @Entity()
-@Unique({ name: 'hr_member_user_uniq', properties: ['organization', 'user'] })
 export class Member extends BaseModel<Member> {
   constructor() {
     super();
@@ -27,22 +39,43 @@ export class Member extends BaseModel<Member> {
     return container.get(Member);
   }
 
-  @PrimaryKey()
-  id!: number;
-
-  @ManyToOne({ entity: () => Resource, index: 'hr_member_resource_id_index' })
-  resource!: Resource;
-
-  @OneToOne({ entity: () => Organization, onDelete: 'set null', index: 'hr_member_organization_id_index' })
+  @ManyToOne({
+    entity: () => Organization,
+    onDelete: 'cascade',
+    primary: true,
+    unique: false,
+  })
   organization!: Organization;
+
+  @OneToOne({
+    entity: () => User,
+    onDelete: 'set null',
+    nullable: true,
+    primary: true,
+    unique: false,
+  })
+  user!: User;
+
+  [PrimaryKeyType]?: [Organization, User];
+
+  @Property()
+  membership: MembershipStatus;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_member_resource_calendar_id_index',
   })
   resourceCalendar?: ResourceCalendar;
+
+  @ManyToMany({ entity: () => Resource })
+  resources? = new Collection<Resource>(this);
+
+  @ManyToMany({
+    entity: () => Infrastructure,
+    nullable: true,
+  })
+  public Infrastructures? = new Collection<Infrastructure>(this);
 
   @Property({ nullable: true })
   name?: string;
@@ -59,23 +92,14 @@ export class Member extends BaseModel<Member> {
   @Property({ nullable: true })
   jobTitle?: string;
 
-  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
-  address?: Address;
-
   @OneToOne({ entity: () => Phone, nullable: true })
   workPhone?: Phone;
-
-  @OneToOne({ entity: () => Phone, nullable: true })
-  mobilePhone?: Phone;
 
   @Property({ nullable: true })
   workEmail?: string;
 
   @ManyToOne({ entity: () => WorkLocation, onDelete: 'set null', nullable: true })
   workLocation?: WorkLocation;
-
-  @OneToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  user?: User;
 
   @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
   parent?: Member;
@@ -84,34 +108,7 @@ export class Member extends BaseModel<Member> {
   coach?: Member;
 
   @Property()
-  memberType!: string;
-
-  @ManyToOne({ entity: () => Address, onDelete: 'set null', nullable: true })
-  addressHome?: Address;
-
-  @ManyToOne({ entity: () => ResCountry, onDelete: 'set null', nullable: true })
-  country?: ResCountry;
-
-  @Property({ nullable: true })
-  gender?: string;
-
-  @Property({ nullable: true })
-  marital?: string;
-
-  @Property({ nullable: true })
-  spouseCompleteName?: string;
-
-  @Property({ columnType: 'date', nullable: true })
-  spouseBirthdate?: Date;
-
-  @Property({ nullable: true })
-  children?: number;
-
-  @Property({ nullable: true })
-  placeOfBirth?: string;
-
-  @ManyToOne({ entity: () => ResCountry, fieldName: 'country_of_birth', onDelete: 'set null', nullable: true })
-  countryOfBirth?: ResCountry;
+  memberType!: MemberTypeEnum;
 
   @Property({ columnType: 'date', nullable: true })
   birthday?: Date;
@@ -120,37 +117,10 @@ export class Member extends BaseModel<Member> {
   identificationId?: string;
 
   @Property({ nullable: true })
-  passportId?: string;
-
-  @ManyToOne({ entity: () => ResPartnerBank, onDelete: 'set null', nullable: true })
-  bankAccount?: ResPartnerBank;
-
-  @Property({ nullable: true })
-  permitNo?: string;
-
-  @Property({ nullable: true })
-  visaNo?: string;
-
-  @Property({ columnType: 'date', nullable: true })
-  visaExpire?: Date;
-
-  @Property({ columnType: 'date', nullable: true })
-  workPermitExpirationDate?: Date;
-
-  @Property({ nullable: true })
-  workPermitScheduledActivity?: boolean;
-
-  @Property({ columnType: 'text', nullable: true })
-  additionalNote?: string;
-
-  @Property({ nullable: true })
   certificate?: string;
 
   @Property({ nullable: true })
   studyField?: string;
-
-  @Property({ nullable: true })
-  studySchool?: string;
 
   @Property({ nullable: true })
   emergencyContact?: string;
@@ -167,6 +137,24 @@ export class Member extends BaseModel<Member> {
   @Property({ columnType: 'date', nullable: true })
   departureDate?: Date;
 
+  @Property({ columnType: 'date', nullable: true })
+  joinedDate?: Date;
+
   @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
   contract?: Contract;
+
+  @ManyToMany({ entity: () => Project, owner: true, pivotEntity: () => ProjectMember })
+  projects? = new Collection<Project>(this);
+
+  @Property({ nullable: true })
+  status?: userStatus;
+
+  @ManyToMany({
+    entity: () => ResourceStatusHistory,
+    nullable: true,
+  })
+  resourceStatusHistory? = new Collection<ResourceStatusHistory>(this);
+
+  @ManyToMany({ entity: () => ProjectTask, nullable: true })
+  task? = new Collection<ProjectTask>(this);
 }

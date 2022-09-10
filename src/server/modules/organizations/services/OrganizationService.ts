@@ -1,34 +1,53 @@
-import { container, provideSingleton } from '@di/index';
-import { BaseService } from '../../base/services/BaseService';
-import { Collection } from '@mikro-orm/core';
-import { CreateOrganizationRO } from '../routes/RequestObject';
-import { IOrganizationService } from '../interfaces/IOrganizationService';
-import { Organization } from '../../organizations/models/Organization';
-import { OrganizationDao } from '../daos/OrganizationDao';
-import { Result } from '@utils/Result';
-import { User } from '../../users/models/User';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
-import { EmailMessage } from '../../../types/types';
-import { Email } from '@utils/Email';
-import { validate } from '../../../decorators/bodyValidationDecorators/validate';
-import createSchema from '../schemas/createOrganizationSchema';
-import { getConfig } from './../../../configuration/Configuration';
-import { IPhoneService } from '../../phones/interfaces/IPhoneService';
-import { IAddressService } from '../../address/interfaces/IAddressService';
-import { IUserService } from '../../users/interfaces';
-import { IOrganizationLabelService } from '../../organizations/interfaces/IOrganizationLabelService';
-import { GetUserOrganizationDTO } from '../dtos/GetUserOrganizationDTO';
+import { Member } from '@/modules/hr/models/Member';
+import { container, provideSingleton } from '@/di/index';
+import { BaseService } from '@/modules/base/services/BaseService';
+import {
+  CreateOrganizationRO,
+  OrganizationAccessSettingsRO,
+  OrganizationInvoicesSettingsRO,
+  OrganizationMemberSettingsRO,
+  OrganizationReservationSettingsRO,
+  UpdateOrganizationRO,
+} from '@/modules/organizations/routes/RequestObject';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
+import { Organization } from '@/modules/organizations/models/Organization';
+import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
+import { log } from '@/decorators/log';
+import { Email } from '@/utils/Email';
+import { CreateOrganizationSchema, UpdateOrganizationSchema } from '@/modules/organizations/schemas/OrganizationSchema';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { IOrganizationLabelService } from '@/modules/organizations/interfaces/IOrganizationLabelService';
+import { validateParam } from '@/decorators/validateParam';
+import { validate } from '@/decorators/validate';
+import { IAddressService } from '@/modules/address/interfaces/IAddressService';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
+import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSchema';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
+import { Keycloak } from '@/sdks/keycloak';
+import { MemberEvent } from '@/modules/hr/events/MemberEvent';
+import { GroupEvent } from '@/modules/hr/events/GroupEvent';
+import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
+import { AddressType } from '@/modules/address/models/Address';
+import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { ConflictError } from '@/Exceptions/ConflictError';
+import { InternalServerError, NotFoundError } from '@/Exceptions';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   constructor(
     public dao: OrganizationDao,
+    public organizationSettingsService: IOrganizationSettingsService,
     public userService: IUserService,
     public labelService: IOrganizationLabelService,
-    public adressService: IAddressService,
+    public addressService: IAddressService,
     public phoneService: IPhoneService,
     public emailService: Email,
+    public keycloak: Keycloak,
+    public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
   }
@@ -37,177 +56,342 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return container.get(IOrganizationService);
   }
 
+  /**
+   * create a new organization in multiple steps
+   * step1: create the organization as a group in keycloak
+   * step2: create the admin group and members group under the organization group in keycloak
+   * step3: add the owner attribute to the organization group in keycloak
+   * step4: create the organization in the database
+   * step5: add the owner as a member of the created organization
+   * step6: create the admin and member groups of the organization in the database
+   * step6: persist addresses and phones and labels
+   *
+   * if any of the steps fail rollback all creations on keyclaok and database
+   *
+   *
+   * @param payload represents the organization information to persist
+   * @param userId id of the organization owner
+   */
   @log()
-  @safeGuard()
-  @validate(createSchema)
-  public async createOrganization(payload: CreateOrganizationRO, userId: number): Promise<Result<number>> {
-    const existingOrg = await this.dao.getByCriteria({ name: payload.name });
+  @validate
+  public async createOrganization(
+    @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
+    userId: number,
+  ): Promise<number> {
+    const existingOrg = (await this.dao.getByCriteria({
+      name: payload.name,
+    })) as Organization;
     if (existingOrg) {
-      return Result.fail<number>(`Organization ${payload.name} already exist.`);
+      throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: payload.name }, friendly: true });
     }
-
-    if (payload.parentId) {
-      const org = await this.dao.getByCriteria({ id: payload.parentId });
+    let parent: Organization;
+    if (payload.parent) {
+      const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
       if (!org) {
-        return Result.fail<number>('Organization parent does not exist');
+        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
+      parent = org;
+    }
+    const user = await this.userService.get(userId);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
 
-    const fetchedUser = await this.userService.getUserByCriteria({ id: userId });
-    if (fetchedUser.isFailure) {
-      return Result.fail<number>(`User with id: ${userId} parent does not exist`);
-    }
-    const user = fetchedUser.getValue();
-
-    let adminContact;
-    if (payload.adminContact) {
-      adminContact = await this.userService.getUserByCriteria({ id: payload.adminContact });
-      if (!adminContact) {
-        return Result.fail<number>(`User with id: ${payload.adminContact} does not exist.`);
-      }
-    }
-
-    let direction;
-    if (payload.direction) {
-      direction = await this.userService.getUserByCriteria({ id: payload.direction });
-      if (!direction) {
-        return Result.fail<number>(`User with id: ${payload.direction} does not exist.`);
-      }
-    }
-
-    const organization = this.wrapEntity(this.dao.model, {
+    const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       email: payload.email,
       type: payload.type,
-      social_facebook: payload.social_facebook,
-      social_instagram: payload.social_instagram,
-      social_youtube: payload.social_youtube,
-      social_github: payload.social_github,
-      social_twitter: payload.social_twitter,
-      social_linkedin: payload.social_linkedin,
+      socialFacebook: payload.socialFacebook || null,
+      socialInstagram: payload.socialInstagram || null,
+      socialYoutube: payload.socialYoutube || null,
+      socialGithub: payload.socialGithub || null,
+      socialTwitter: payload.socialTwitter || null,
+      socialLinkedin: payload.socialLinkedin || null,
     });
-    organization.direction = await direction.getValue();
-    organization.admin_contact = await adminContact.getValue();
+    wrappedOrganization.parent = parent;
+    wrappedOrganization.direction = user;
+    const groupName = `${orgPrifix}${payload.name}`;
+    // create keycloak organization
+    const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
+    /**
+     * create keycloak admin group as well as members group
+     * and add the owner attribute to the organization in keycloak
+     */
+    let adminGroup;
+    let membersGroup;
+    let organization: Organization;
+    try {
+      [adminGroup, membersGroup] = await Promise.all([
+        this.keycloakUtils.createGroup(`${grpPrifix}admin`, keycloakOrganization),
+        this.keycloakUtils.createGroup(`${grpPrifix}members`, keycloakOrganization),
+        this.keycloakUtils.addOwnerToGroup(keycloakOrganization, groupName, user.keycloakId),
+      ]);
+      await this.keycloakUtils.addMemberToGroup(adminGroup, user.keycloakId);
 
-    await user.organizations.init();
-    user.organizations.add(organization);
-    const _createdOrg = await this.create(organization);
+      //storing the KC groups ids
+      wrappedOrganization.kcid = keycloakOrganization;
+      wrappedOrganization.adminGroupkcid = adminGroup;
+      wrappedOrganization.memberGroupkcid = membersGroup;
 
-    if (_createdOrg.isFailure) {
-      return Result.fail<number>(_createdOrg.error);
+      organization = await this.create(wrappedOrganization);
+      const memberEvent = new MemberEvent();
+      await memberEvent.createMember(user, organization);
+
+      const groupEvent = new GroupEvent();
+      // create the admin and member groups in the db
+      // add the owner as a member to the organization
+      await Promise.all([
+        groupEvent.createGroup(adminGroup, organization, `${grpPrifix}admin`),
+        groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
+      ]);
+    } catch (error) {
+      await Promise.all<any>(
+        [
+          keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
+          organization && this.remove(organization.id),
+        ].filter(Boolean),
+      );
+      throw new InternalServerError('SOMETHING_WENT_WRONG');
     }
 
-    const createdOrg = await _createdOrg.getValue();
+    if (payload.labels?.length) {
+      await this.labelService.createBulkLabel(payload.labels, organization);
+    }
 
-    createdOrg.parent = existingOrg;
-    await this.update(createdOrg);
-
-    if (payload.address.length) this.adressService.createBulkAddress(payload.address);
-
-    if (payload.phones.length) this.phoneService.createBulkPhoneForOrganization(payload.phones, createdOrg);
-
-    if (payload.labels.length) this.labelService.createBulkLabel(payload.labels, createdOrg);
-
-    let flagError = false;
     await Promise.all(
-      payload.members.map(async (el: number) => {
-        const user = await this.userService.getUserByCriteria({ id: el });
-        if (user.isFailure || !user) {
-          flagError = true;
-        }
-        if (user) createdOrg.members.add(user.getValue());
-      }),
+      payload.addresses.map((address) =>
+        this.addressService.create({
+          city: address.city,
+          apartment: address.apartment,
+          country: address.country,
+          code: address.code,
+          province: address.province,
+          street: address.street,
+          type: AddressType.ORGANIZATION,
+          organization,
+        }),
+      ),
     );
 
-    if (flagError) {
-      return Result.fail<number>(`User in members does not exist.`);
+    await Promise.all(
+      payload.phones.map((phone) => {
+        this.phoneService.create({
+          phoneLabel: phone.phoneLabel,
+          phoneCode: phone.phoneCode,
+          phoneNumber: phone.phoneNumber,
+          organization,
+        });
+      }),
+    );
+    return organization.id;
+  }
+
+  /**
+   * Udate General(unit) properties of organization like name description
+   * @param payload Update Organization properties details
+   * @param orgId organization id
+   */
+  @log()
+  @validate
+  public async updateOrganizationGeneraleProperties(
+    @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
+    orgId: number,
+  ): Promise<number> {
+    const fetchedorganization = await this.dao.get(orgId);
+    if (!fetchedorganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
-    await this.update(createdOrg);
-    return Result.ok<number>(createdOrg.id);
+    if (fetchedorganization.name !== payload.name) {
+      //update the Kc group name
+      await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+        name: `${orgPrifix}${payload.name}`,
+      });
+    }
+
+    const wrappedOrganization = this.wrapEntity(fetchedorganization, {
+      ...payload,
+    });
+
+    if (payload.direction) {
+      const direction = await this.userService.get(payload.direction);
+      if (!direction) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+          variables: { user: `${payload.direction}` },
+          friendly: false,
+        });
+      }
+      wrappedOrganization.direction = direction;
+    }
+
+    if (payload.parent) {
+      const parent = await this.dao.get(payload.parent);
+      if (!parent) {
+        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG');
+      }
+      wrappedOrganization.parent = parent;
+    }
+
+    const updateResult = await this.dao.update(wrappedOrganization);
+    if (!updateResult) {
+      //in case we update the name of the org
+      if (fetchedorganization.name !== payload.name) {
+        //rolback the keyclock updated group name
+        await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+          name: `${orgPrifix}${fetchedorganization.name}`,
+        });
+      }
+    }
+    return orgId;
+  }
+
+  /**
+   * add new phone to organization
+   * @param payload create phone details
+   * @param orgId organization id
+   */
+  @log()
+  @validate
+  public async addPhoneToOrganization(
+    @validateParam(CreateOrganizationPhoneSchema) payload: PhoneRO,
+    orgId: number,
+  ): Promise<number> {
+    const fetchedorganization = await this.dao.get(orgId);
+    if (!fetchedorganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
+    }
+    const newPhone = await this.phoneService.create({
+      phoneLabel: payload.phoneLabel,
+      phoneCode: payload.phoneCode,
+      phoneNumber: payload.phoneNumber,
+      Organization: fetchedorganization,
+    });
+
+    return newPhone.id;
+  }
+
+  /**
+   * add new address to organization
+   * @param payload create address details
+   * @param orgId organization id
+   */
+  @log()
+  @validate
+  public async addAddressToOrganization(
+    @validateParam(CreateOrganizationAddressSchema) payload: AddressRO,
+    orgId: number,
+  ): Promise<number> {
+    const fetchedorganization = await this.dao.get(orgId);
+    if (!fetchedorganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
+    }
+    const newAddress = await this.addressService.create({
+      country: payload.country,
+      province: payload.province,
+      code: payload.code,
+      type: payload.type,
+      city: payload.city,
+      street: payload.street,
+      apartment: payload.apartment,
+      organization: fetchedorganization,
+    });
+
+    return newAddress.id;
   }
 
   @log()
-  @safeGuard()
-  async inviteUserByEmail(email: string, orgId: number): Promise<Result<number>> {
-    const existingUser = await this.keycloak
-      .getAdminClient()
-      .users.find({ email, realm: getConfig('keycloak.clientValidation.realmName') });
-    if (existingUser.length > 0) {
-      return Result.fail<number>('The user already exist.');
-    }
-
+  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
     const existingOrg = await this.dao.get(orgId);
-
     if (!existingOrg) {
-      return Result.fail<number>('The organization to add the user to does not exist.');
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
-    const createdKeyCloakUser = await this.keycloak.getAdminClient().users.create({
-      email,
-      firstName: '',
-      lastName: '',
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    if (!statusFilter) {
+      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
+      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    } else {
+      let status = statusFilter.split(',');
+      const members = await existingOrg.members.init({ where: { membership: status } });
+      return members.toArray().map((member: any) => ({ ...member }));
+    }
+  }
 
-    //save created keycloak user in the database
-    const user = new User();
-    user.firstname = '';
-    user.lastname = '';
-    user.email = email;
-    user.keycloakId = createdKeyCloakUser.id;
+  /**
+   * Delete organization
+   * @param organizationId organization id
+   */
+  @log()
+  public async deleteOrganization(organizationId: number): Promise<number> {
+    const fetchedorganization = await this.dao.get(organizationId);
+    if (!fetchedorganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
+    }
+    const group = await this.keycloakUtils.getGroupById(fetchedorganization.kcid);
 
-    const savedUser = await this.userService.create(user);
-
-    if (savedUser.isFailure) {
-      return Result.fail<number>(savedUser.error);
+    //check if the org have subgroups
+    if (group.subGroups.length !== 0) {
+      throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
 
-    // add the invited user to the organization
-    await existingOrg.members.init();
-    existingOrg.members.add(savedUser.getValue());
+    await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
-    await this.userService.update(savedUser.getValue());
+    await this.dao.remove(fetchedorganization);
+    return organizationId;
+  }
+  /* Get all the settings of an organization ,
+   *
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  public async getOrganizationSettingsById(organizationId: number): Promise<any> {
+    const fetchedOrganization = await this.get(organizationId);
 
-    const emailMessage: EmailMessage = {
-      from: this.emailService.from,
-      to: email,
-      text: 'Sciencewings - reset password',
-      html: '<html><body>Reset password</body></html>',
-      subject: ' reset password',
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
+    }
+
+    return {
+      settings: fetchedOrganization.settings,
     };
-
-    this.emailService.sendEmail(emailMessage);
-
-    return Result.ok<number>(savedUser.getValue().id);
   }
 
+  /* Update the reservation, invoices or access settings of an organization ,
+   *
+   * @param payload
+   * @param id of the requested organization
+   *
+   */
   @log()
-  @safeGuard()
-  public async getMembers(orgId: number): Promise<Result<Collection<User>>> {
-    const existingOrg = await this.dao.get(orgId);
-
-    if (!existingOrg) {
-      return Result.fail(`Organization with id ${orgId} does not exist.`);
+  public async updateOrganizationsSettingsProperties(
+    payload:
+      | OrganizationMemberSettingsRO
+      | OrganizationReservationSettingsRO
+      | OrganizationInvoicesSettingsRO
+      | OrganizationAccessSettingsRO,
+    organizationId: number,
+  ): Promise<number> {
+    const fetchedOrganization = await this.get(organizationId);
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
     }
-
-    const members: Collection<User> = await existingOrg.members.init();
-    return Result.ok<Collection<User>>(members);
-  }
-
-  @log()
-  @safeGuard()
-  public async getUserOrganizations(userId: number): Promise<Result<GetUserOrganizationDTO[]>> {
-    const user = await this.userService.getUserByCriteria({ id: userId });
-
-    if (user.isFailure) {
-      return Result.fail(user.error);
-    }
-
-    const fetchedUsersOrganization = await user.getValue().organizations.init();
-    const organizations = fetchedUsersOrganization.toArray().map((org: Organization) => {
-      return { id: org.id, name: org.name };
+    const oldSetting = fetchedOrganization.settings;
+    const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
+      ...oldSetting,
+      ...payload,
     });
-    return Result.ok<GetUserOrganizationDTO[]>(organizations);
+
+    await this.organizationSettingsService.update(newSettings);
+
+    return organizationId;
   }
 }

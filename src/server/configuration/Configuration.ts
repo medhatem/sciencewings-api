@@ -1,7 +1,7 @@
 import { EnvConfig, ServerConfiguration, env } from '../types/ServerConfiguration';
-import { container, provideSingleton } from '@di/index';
+import { container, provideSingleton } from '@/di/index';
 
-import { LogLevel } from '@utils/Logger';
+import { LogLevel } from '@/utils/Logger';
 
 @provideSingleton()
 export class Configuration {
@@ -73,7 +73,7 @@ export class Configuration {
           grantType: 'password',
           clientId: 'admin-cli',
           realmName: 'master',
-          baseUrl: 'http://keycloak-app-staging-env.eba-fsrexfym.ca-central-1.elasticbeanstalk.com/auth',
+          baseUrl: 'https://keycloak.zonesinnovation.ca/auth',
           clientValidation: {
             realmName: 'sciencewings-web',
           },

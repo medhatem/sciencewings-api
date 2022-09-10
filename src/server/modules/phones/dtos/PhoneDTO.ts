@@ -1,19 +1,31 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-@Serializable()
-export class PhoneDTO {
-  @JsonProperty()
-  label: string;
+import { unique } from '@/decorators/unique';
 
+@JsonObject()
+@unique
+export class PhoneInformationDTO extends BaseBodyDTO {
   @JsonProperty()
-  code: string;
+  id: number;
+  @JsonProperty()
+  phoneLabel: string;
+  @JsonProperty()
+  phoneCode: string;
+  @JsonProperty()
+  phoneNumber: string;
+}
 
+@JsonObject()
+@unique
+export class PhoneBaseBodyDTO extends BaseBodyDTO {
   @JsonProperty()
-  number: number;
+  id: number;
+}
 
+@JsonObject()
+@unique
+export class PhoneDTO extends BaseRequestDTO {
   @JsonProperty()
-  userId?: number;
-
-  @JsonProperty()
-  organizationId?: number;
+  public body?: PhoneBaseBodyDTO;
 }

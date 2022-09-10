@@ -1,10 +1,14 @@
-import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
-import { PhoneDTO } from '@/modules/phones/dtos/PhoneDTO';
-import { User } from '../models';
+import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { beforeDeserialize } from '@/utils/utilities';
+import { unique } from '@/decorators/unique';
 
-class BaseBodyGetDTO extends BaseBodyDTO {
+@unique
+@JsonObject()
+export class UserDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 
@@ -17,18 +21,68 @@ class BaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   email: string;
 
-  @JsonProperty()
-  phones: PhoneDTO[];
+  @JsonProperty({
+    type: PhoneRO,
+    name: 'phone',
+    beforeDeserialize,
+  })
+  phones: Array<PhoneRO>;
+
+  @JsonProperty({
+    type: AddressDTO,
+    name: 'address',
+    beforeDeserialize,
+  })
+  addresses: Array<AddressDTO>;
 
   @JsonProperty()
   keycloakId: string;
 }
 
-@Serializable()
-export class UserDTO extends BaseRequestDTO<User> {
+@unique
+@JsonObject()
+export class UserBaseBodyGetDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: UserDTO,
+    beforeDeserialize,
+  })
+  public data: Array<UserDTO>;
+}
+
+@unique
+@JsonObject()
+export class UserGetDTO extends BaseRequestDTO {
   @JsonProperty()
-  public body?: BaseBodyGetDTO;
+  public body?: UserBaseBodyGetDTO;
+}
+
+@JsonObject()
+@unique
+export class membershipBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  groupId: string;
+  @JsonProperty()
+  orgId: string;
 
   @JsonProperty()
-  public error?: BaseErrorDTO;
+  membershipStatus: string;
+}
+
+@JsonObject()
+@unique
+export class GetMembershipBodyDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: membershipBodyDTO,
+    beforeDeserialize,
+  })
+  data: Array<membershipBodyDTO>;
+}
+
+@JsonObject()
+@unique
+export class MembershipDto extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetMembershipBodyDTO;
 }

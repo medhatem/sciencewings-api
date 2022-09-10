@@ -1,14 +1,16 @@
-import { JsonProperty, Serializable, deserialize, serialize } from 'typescript-json-serializer';
+import { JsonObject, JsonProperty, JsonSerializer } from 'typescript-json-serializer';
 
-import { BaseModel } from './../models/BaseModel';
+import { unique } from '@/decorators/unique';
 
-@Serializable()
+@JsonObject()
+@unique
 export class BaseBodyDTO {
   @JsonProperty()
   statusCode: number;
 }
 
-@Serializable()
+@JsonObject()
+@unique
 export class BaseErrorDTO {
   @JsonProperty()
   statusCode: number;
@@ -17,28 +19,30 @@ export class BaseErrorDTO {
   errorMessage: string;
 }
 
-@Serializable()
-export class BaseRequestDTO<T extends BaseModel<T>> {
-  // getMapper<T extends BaseRequestDTO>(): IMapper<T, unknown> {
-  //   return buildMapper<unknown, T>(this.constructor as any as Class<T>);
-  // }
-
-  serialize(payload: { [key: string]: any }): this {
-    return serialize(payload as any);
+@JsonObject()
+@unique
+export class BaseRequestDTO {
+  constructor(payload?: { [key: string]: any }) {
+    if (payload && Object.keys(payload)?.length > 0) {
+      const result = this.deserialize(payload);
+      Object.assign(this, result);
+    }
   }
 
-  deserialize(model: T, payload: any): any {
-    return deserialize<T>(payload as any, model as any);
+  serialize(payload: { [key: string]: any }): this {
+    return new JsonSerializer().serialize(payload as any) as this;
+  }
+
+  deserialize(payload: { [key: string]: any }): this {
+    return new JsonSerializer().deserialize<this>(payload as any, this.constructor as any) as this;
   }
 
   @JsonProperty()
   public body?: BaseBodyDTO;
-
-  @JsonProperty()
-  public error?: BaseErrorDTO;
 }
 
-@Serializable()
+@JsonObject()
+@unique
 export class BaseDTO {
   @JsonProperty()
   id: number;

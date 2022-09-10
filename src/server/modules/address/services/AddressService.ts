@@ -1,12 +1,11 @@
-import { container, provideSingleton } from '@di/index';
-import { BaseService } from '../../base/services/BaseService';
-import { Result } from '@utils/Result';
-import { log } from '../../../decorators/log';
-import { safeGuard } from '../../../decorators/safeGuard';
-import { AddressDao } from '../../address/daos/AddressDAO';
-import { AddressOrganizationDTO } from '../../address/dtos/AddressDTO';
-import { Address } from '../../address/models/AdressModel';
-import { IAddressService } from '../interfaces/IAddressService';
+import { container, provideSingleton } from '@/di/index';
+
+import { Address } from '@/modules/address/models/Address';
+import { AddressDao } from '@/modules/address/daos/AddressDAO';
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { BaseService } from '@/modules/base/services/BaseService';
+import { IAddressService } from '@/modules/address/interfaces/IAddressService';
+import { log } from '@/decorators/log';
 
 @provideSingleton(IAddressService)
 export class AddressService extends BaseService<Address> implements IAddressService {
@@ -18,21 +17,15 @@ export class AddressService extends BaseService<Address> implements IAddressServ
     return container.get(IAddressService);
   }
 
+  /**
+   * create an address in the database
+   * @param payload address data
+   * @returns created address
+   */
   @log()
-  @safeGuard()
-  async createAddress(payload: Address): Promise<Result<Address>> {
-    const address = await this.dao.create(payload);
-    return Result.ok<Address>(address);
-  }
-
-  @log()
-  @safeGuard()
-  async createBulkAddress(payload: AddressOrganizationDTO[]): Promise<Result<number>> {
-    payload.map((el: AddressOrganizationDTO) => {
-      const address = this.wrapEntity(this.dao.model, el);
-      this.dao.repository.persist(address);
-    });
-
-    return Result.ok<number>(200);
+  async createAddress(payload: AddressRO): Promise<Address> {
+    const wrappedAddress = this.wrapEntity(this.dao.model, payload);
+    const address: Address = await this.dao.create(wrappedAddress);
+    return address;
   }
 }

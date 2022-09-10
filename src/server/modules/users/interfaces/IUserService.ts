@@ -1,19 +1,19 @@
-import { ResetPasswordRO, UserDetailsRO } from '../routes/RequstObjects';
+import { IBaseService } from '@/modules/base/interfaces/IBaseService';
+import { KeycloakUserInfo } from '@/types/UserRequest';
+import { ResetPasswordRO } from '@/modules/users/routes/RequstObjects';
+import { User } from '@/modules/users/models/User';
+import { UserRO } from '@/modules/users/routes/RequstObjects';
 
-import { KeycloakUserInfo } from '../../../types/UserRequest';
-import { Result } from '@utils/Result';
-import { User } from '../../users/models';
-
-export abstract class IUserService {
+export abstract class IUserService extends IBaseService<any> {
   static getInstance: () => IUserService;
 
-  updateUserDetails: (payload: UserDetailsRO, userId: number) => Promise<Result<number>>;
-  registerUser: (userInfo: KeycloakUserInfo) => Promise<Result<number>>;
-  getUserByCriteria: (criteria: { [key: string]: any }) => Promise<Result<User>>;
-  resetPassword: (payload: ResetPasswordRO) => Promise<Result<string>>;
+  updateUserDetails: (payload: UserRO, userId: number) => Promise<number>;
+  registerUser: (userInfo: KeycloakUserInfo) => Promise<number>;
+  getUserByCriteria: (criteria: { [key: string]: any }) => Promise<User>;
+  resetPassword: (payload: ResetPasswordRO) => Promise<string>;
 
-  create: (user: User) => Promise<Result<User>>;
-  update: (user: User) => Promise<Result<User>>;
+  createUser: (user: UserRO) => Promise<User>;
+  updateUserByKeycloakId: (user: UserRO, keycloakId: string) => Promise<User>;
 
-  getUserByKeycloakId: (payload: string) => Promise<Result<User>>;
+  getUserByKeycloakId: (payload: string) => Promise<User>;
 }

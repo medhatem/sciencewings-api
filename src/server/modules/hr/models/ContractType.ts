@@ -1,8 +1,9 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
-import { BaseModel } from '../../base/models/BaseModel';
-import { container, provideSingleton } from '@di/index';
+import { container, provide } from '@/di/index';
 
-@provideSingleton()
+import { BaseModel } from '@/modules/base/models/BaseModel';
+
+@provide()
 @Entity()
 export class ContractType extends BaseModel<ContractType> {
   constructor() {
@@ -14,7 +15,7 @@ export class ContractType extends BaseModel<ContractType> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;

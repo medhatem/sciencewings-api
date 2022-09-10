@@ -1,13 +1,17 @@
-import { User } from './../../users/models/User';
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { ErrorDTO, UserIdDTO } from '../../users/dtos/RegisterUserFromTokenDTO';
-import { BaseErrorDTO, BaseRequestDTO } from '../../base/dtos/BaseDTO';
+import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
+import { unique } from '@/decorators/unique';
 
-@Serializable()
-export class InviteUserDTO extends BaseRequestDTO<User> {
+@JsonObject()
+@unique
+export class InviteUserBodyDTO extends BaseBodyDTO {
   @JsonProperty()
-  body?: UserIdDTO = new UserIdDTO();
+  id: number;
+}
 
+@JsonObject()
+@unique
+export class InviteUserDTO extends BaseRequestDTO {
   @JsonProperty()
-  error?: BaseErrorDTO = new ErrorDTO();
+  body: InviteUserBodyDTO;
 }

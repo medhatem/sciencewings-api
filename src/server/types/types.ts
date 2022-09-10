@@ -7,3 +7,20 @@ export type EmailMessage = {
 };
 
 export type Json = { [key: string]: any };
+
+export type MemberKey = {
+  userId: number;
+  orgId: number;
+};
+
+export type OrgKey = {
+  orgId: number;
+  orgName: string;
+};
+
+export type ProjectList = {
+  title: string;
+  responsable: string;
+  members: number;
+  startDate: Date;
+};

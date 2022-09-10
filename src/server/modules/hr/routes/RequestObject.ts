@@ -1,142 +1,131 @@
-import { JsonProperty, Serializable } from 'typescript-json-serializer';
-import { Address, Phone } from '../../..';
+import { JsonObject, JsonProperty } from 'typescript-json-serializer';
+import { MemberTypeEnum, MembershipStatus } from '@/modules/hr/models/Member';
 
-@Serializable()
-export class CreateMemberRO {
+import { AddressRO } from '@/modules/address/routes/AddressRO';
+import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { unique } from '@/decorators/unique';
+import { userStatus } from '@/modules/users/models/User';
+
+@JsonObject()
+@unique
+export class ContractRO {
   @JsonProperty()
   id: number;
+
   @JsonProperty()
-  resource!: number;
+  name!: string;
+
+  @JsonProperty()
+  completeName?: string;
+
+  @JsonProperty()
+  dateStart!: Date;
+
+  @JsonProperty()
+  wage!: number;
+
   @JsonProperty()
   organization!: number;
-  // @JsonProperty()
-  // resourceCalendar?: number;
-  @JsonProperty()
-  name?: string;
+
   @JsonProperty()
   active?: boolean;
-  // @JsonProperty()
-  // group?: number;
-  // @JsonProperty()
-  // job?: number;
+
   @JsonProperty()
-  jobTitle?: string;
+  parent?: number;
+
   @JsonProperty()
-  address?: Address;
+  manager?: number;
+
   @JsonProperty()
-  workPhone?: Phone;
+  description?: string;
+
   @JsonProperty()
-  mobilePhone?: Phone;
+  member?: number;
+
   @JsonProperty()
-  workEmail?: string;
+  group?: number;
+
   @JsonProperty()
-  workLocation?: Address;
-  // @JsonProperty()
-  // user?: number;
-  // @JsonProperty()
-  // parent?: number;
-  // @JsonProperty()
-  // coach?: number;
+  job?: number;
+
   @JsonProperty()
-  memberType!: string;
+  resourceCalendar?: number;
+
   @JsonProperty()
-  addressHome?: Address;
-  // @JsonProperty()
-  // country?: ResCountry;
-  @JsonProperty()
-  gender?: string;
-  @JsonProperty()
-  marital?: string;
-  @JsonProperty()
-  spouseCompleteName?: string;
-  @JsonProperty()
-  spouseBirthdate?: Date;
-  @JsonProperty()
-  children?: number;
-  @JsonProperty()
-  placeOfBirth?: string;
-  // @JsonProperty()
-  // countryOfBirth?: ResCountry;
-  @JsonProperty()
-  birthday?: Date;
-  @JsonProperty()
-  identificationId?: string;
-  @JsonProperty()
-  passportId?: string;
-  // @JsonProperty()
-  // bankAccount?: ResPartnerBank;
-  @JsonProperty()
-  permitNo?: string;
-  @JsonProperty()
-  visaNo?: string;
-  @JsonProperty()
-  visaExpire?: Date;
-  @JsonProperty()
-  workPermitExpirationDate?: Date;
-  @JsonProperty()
-  workPermitScheduledActivity?: boolean;
-  @JsonProperty()
-  additionalNote?: string;
-  @JsonProperty()
-  certificate?: string;
-  @JsonProperty()
-  studyField?: string;
-  @JsonProperty()
-  studySchool?: string;
-  @JsonProperty()
-  emergencyContact?: string;
-  @JsonProperty()
-  emergencyPhone?: Phone;
-  @JsonProperty()
-  notes?: string;
-  @JsonProperty()
-  departureDescription?: string;
-  @JsonProperty()
-  departureDate?: Date;
+  hrResponsible?: number;
 }
 
-@Serializable()
-export class UpdateMemberRO {
+@JsonObject()
+@unique
+export class JobRO {
   @JsonProperty()
-  id: number;
+  name!: string;
+
+  @JsonProperty()
+  description?: string;
+
+  @JsonProperty()
+  group?: number;
+
+  @JsonProperty()
+  organization?: number;
+
+  @JsonProperty()
+  member?: number;
+
+  @JsonProperty()
+  job?: number;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  trialDateEnd?: Date;
+
+  @JsonProperty()
+  resourceCalendar?: number;
+
+  @JsonProperty()
+  notes?: string;
+
+  @JsonProperty()
+  state?: string;
+
+  @JsonProperty()
+  kanbanState?: string;
+
+  @JsonProperty()
+  hrResponsible?: number;
+}
+@JsonObject()
+@unique
+export class MemberRO {
+  @JsonProperty()
+  id?: number;
   @JsonProperty()
   resource?: number;
   @JsonProperty()
   organization?: number;
-  // @JsonProperty()
-  // resourceCalendar?: number;
   @JsonProperty()
   name?: string;
   @JsonProperty()
   active?: boolean;
-  // @JsonProperty()
-  // group?: number;
-  // @JsonProperty()
-  // job?: number;
   @JsonProperty()
   jobTitle?: string;
   @JsonProperty()
-  address?: Address;
+  address?: AddressRO;
   @JsonProperty()
-  workPhone?: Phone;
+  workPhone?: PhoneRO;
   @JsonProperty()
-  mobilePhone?: Phone;
+  mobilePhone?: PhoneRO;
   @JsonProperty()
   workEmail?: string;
   @JsonProperty()
-  workLocation?: Address;
-  // @JsonProperty()
-  // user?: number;
-  // @JsonProperty()
-  // parent?: number;
-  // @JsonProperty()
-  // coach?: number;
+  workLocation?: AddressRO;
   @JsonProperty()
-  memberType!: string;
+  memberType?: MemberTypeEnum;
   @JsonProperty()
-  addressHome?: Address;
-  // @JsonProperty()
-  // country?: ResCountry;
+  addressHome?: AddressRO;
   @JsonProperty()
   gender?: string;
   @JsonProperty()
@@ -149,16 +138,12 @@ export class UpdateMemberRO {
   children?: number;
   @JsonProperty()
   placeOfBirth?: string;
-  // @JsonProperty()
-  // countryOfBirth?: ResCountry;
   @JsonProperty()
   birthday?: Date;
   @JsonProperty()
   identificationId?: string;
   @JsonProperty()
   passportId?: string;
-  // @JsonProperty()
-  // bankAccount?: ResPartnerBank;
   @JsonProperty()
   permitNo?: string;
   @JsonProperty()
@@ -180,11 +165,78 @@ export class UpdateMemberRO {
   @JsonProperty()
   emergencyContact?: string;
   @JsonProperty()
-  emergencyPhone?: Phone;
+  emergencyPhone?: PhoneRO;
   @JsonProperty()
   notes?: string;
   @JsonProperty()
   departureDescription?: string;
   @JsonProperty()
   departureDate?: Date;
+  @JsonProperty()
+  status?: userStatus;
+  @JsonProperty()
+  membership?: MembershipStatus;
+}
+
+@JsonObject()
+@unique
+export class UpdateMemberRO {
+  @JsonProperty()
+  id?: number;
+  @JsonProperty()
+  resource?: number;
+  @JsonProperty()
+  organization?: number;
+  @JsonProperty()
+  name?: string;
+  @JsonProperty()
+  active?: boolean;
+  @JsonProperty()
+  jobTitle?: string;
+  @JsonProperty()
+  workPhone?: PhoneRO;
+  @JsonProperty()
+  workEmail?: string;
+  @JsonProperty()
+  workLocation?: AddressRO;
+  @JsonProperty()
+  memberType?: string;
+  @JsonProperty()
+  identificationId?: string;
+  @JsonProperty()
+  studyField?: string;
+  @JsonProperty()
+  emergencyContact?: string;
+  @JsonProperty()
+  emergencyPhone?: PhoneRO;
+  @JsonProperty()
+  notes?: string;
+  @JsonProperty()
+  departureDescription?: string;
+  @JsonProperty()
+  departureDate?: Date;
+  @JsonProperty()
+  status?: userStatus;
+}
+
+@JsonObject()
+@unique
+export class GroupRO {
+  @JsonProperty()
+  name: string;
+
+  @JsonProperty()
+  active: boolean;
+
+  @JsonProperty()
+  organization: number;
+
+  @JsonProperty()
+  parent: number;
+
+  @JsonProperty()
+  members?: number[];
+
+  @JsonProperty()
+  description: string;
 }

@@ -1,10 +1,11 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { BaseModel } from '../../base/models/BaseModel';
-import { ResourceCalendar } from './ResourceCalendar';
-import { Resource } from './Resource';
-import { container, provideSingleton } from '@di/index';
+import { container, provide } from '@/di/index';
 
-@provideSingleton()
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Resource } from './Resource';
+import { ResourceCalendar } from './ResourceCalendar';
+
+@provide()
 @Entity()
 export class ResourceCalendarAttendance extends BaseModel<ResourceCalendarAttendance> {
   constructor() {
@@ -16,7 +17,7 @@ export class ResourceCalendarAttendance extends BaseModel<ResourceCalendarAttend
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
 
   @Property()
   name!: string;
@@ -39,7 +40,7 @@ export class ResourceCalendarAttendance extends BaseModel<ResourceCalendarAttend
   hourTo!: number;
 
   @ManyToOne({ entity: () => ResourceCalendar, onDelete: 'cascade' })
-  calendar!: ResourceCalendar;
+  calendar: ResourceCalendar;
 
   @Property()
   dayPeriod!: string;

@@ -1,11 +1,11 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@di/index';
+import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { container, provide } from '@/di/index';
 
-import { BaseModel } from '../..//base/models/BaseModel';
-import { Member } from './Member';
-import { Organization } from '../../organizations/models/Organization';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Member } from '@/modules/hr/models/Member';
+import { Organization } from '@/modules/organizations/models/Organization';
 
-@provideSingleton()
+@provide()
 @Entity()
 export class Group extends BaseModel<Group> {
   constructor() {
@@ -17,36 +17,30 @@ export class Group extends BaseModel<Group> {
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
+
+  @Property()
+  kcid!: string;
 
   @Property()
   name!: string;
 
   @Property({ nullable: true })
-  completeName?: string;
-
-  @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({
-    entity: () => Organization,
-    onDelete: 'set null',
-    nullable: true,
-    index: 'hr_group_organization_id_index',
-  })
-  organization?: Organization;
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
+  organization!: Organization;
 
   @ManyToOne({
     entity: () => Group,
     onDelete: 'set null',
     nullable: true,
-    index: 'hr_group_parent_id_index',
   })
   parent?: Group;
 
-  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
-  manager?: Member;
+  @OneToMany({ entity: () => Member, mappedBy: (member) => member.group, nullable: true })
+  members? = new Collection<Member>(this);
 
   @Property({ columnType: 'text', nullable: true })
-  note?: string;
+  description?: string;
 }

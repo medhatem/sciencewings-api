@@ -1,8 +1,9 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "outDir": "../dist",
     "baseUrl": ".",
-    "target": "esnext",
+    "target": "es6",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
@@ -18,16 +19,18 @@
     "paths": {
       "@/*": ["server/*"],
       "@/modules/*": ["server/modules/*"],
-      "@di/*": ["server/di/*"],
+      "@/di/*": ["server/di/*"],
+      "@/db/*": ["server/db/*"],
+      "@/configuration/*": ["server/configuration/*"],
       "@types/*": ["server/types/*"],
-      "@errors/*": ["server/errors/*"],
-      "@interface/*": ["server/interface/*"],
+      "@/Exceptions/*": ["server/Exceptions/*"],
+      "@/interface/*": ["server/interface/*"],
       "@/models/*": ["server/models/*"],
-      "@routes/*": ["server/routes/*"],
-      "@service/*": ["server/service/*"],
-      "@dao/*": ["server/dao/*"],
-      "@sdks/*": ["server/sdks/*"],
-      "@utils/*": ["server/utils/*"]
+      "@/routes/*": ["server/routes/*"],
+      "@/service/*": ["server/service/*"],
+      "@/dao/*": ["server/dao/*"],
+      "@/sdks/*": ["server/sdks/*"],
+      "@/utils/*": ["server/utils/*"]
     }
   },
   "plugins": [

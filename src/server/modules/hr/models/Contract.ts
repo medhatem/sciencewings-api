@@ -1,29 +1,24 @@
 import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { container, provideSingleton } from '@di/index';
+import { container, provide } from '@/di/index';
+import { ContractType } from '@/modules/hr/models/ContractType';
+import { Group } from '@/modules/hr/models/Group';
+import { Job } from '@/modules/hr/models/Job';
+import { Member } from '@/modules/hr/models/Member';
+import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { BaseModel } from '@/modules/base/models/BaseModel';
 
-import { BaseModel } from '../../base/models/BaseModel';
-import { ContractType } from './ContractType';
-import { Group } from './Group';
-import { Member } from './Member';
-import { Job } from './Job';
-import { Organization } from '../../organizations/models/Organization';
-import { PayrollStructureType } from './PayrollStructureType';
-import { ResourceCalendar } from '../../resources/models/ResourceCalendar';
-import { User } from '../../users/models/User';
-
-@provideSingleton()
+@provide()
 @Entity()
 export class Contract extends BaseModel<Contract> {
-  constructor() {
-    super();
-  }
-
   static getInstance(): Contract {
     return container.get(Contract);
   }
 
   @PrimaryKey()
-  id!: number;
+  id?: number;
+
+  @ManyToOne({ entity: () => Member, primary: true, unique: false })
+  member!: Member;
 
   @Property()
   name!: string;
@@ -31,27 +26,18 @@ export class Contract extends BaseModel<Contract> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => PayrollStructureType, onDelete: 'set null', nullable: true })
-  structureType?: PayrollStructureType;
-
-  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
-  member?: Member;
-
   @ManyToOne({ entity: () => Group, onDelete: 'set null', nullable: true })
   group?: Group;
 
   @ManyToOne({ entity: () => Job, onDelete: 'set null', nullable: true })
   job?: Job;
 
-  @Index({ name: 'hr_contract_date_start_index' })
+  @Index({ name: 'hr_contract_dateStart_index' })
   @Property({ columnType: 'date' })
   dateStart!: Date;
 
   @Property({ columnType: 'date', nullable: true })
   dateEnd?: Date;
-
-  @Property({ columnType: 'date', nullable: true })
-  trialDateEnd?: Date;
 
   @ManyToOne({
     entity: () => ResourceCalendar,
@@ -70,15 +56,12 @@ export class Contract extends BaseModel<Contract> {
   @Property({ nullable: true })
   state?: string;
 
-  @ManyToOne({ entity: () => Organization })
-  organization!: Organization;
-
   @ManyToOne({ entity: () => ContractType, onDelete: 'set null', nullable: true })
   contractType?: ContractType;
 
   @Property({ nullable: true })
   kanbanState?: string;
 
-  @ManyToOne({ entity: () => User, onDelete: 'set null', nullable: true })
-  hrResponsible?: User;
+  @ManyToOne({ entity: () => Member, onDelete: 'set null', nullable: true })
+  supervisor?: Member;
 }
