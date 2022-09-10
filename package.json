@@ -15,7 +15,7 @@
     "stop-local-containers": "docker-compose -f devops/local/docker-compose.yml down",
     "start-staging-containers": "docker-compose -f devops/staging/docker-compose.yml up",
     "stop-staging-containers": "docker-compose -f devops/staging/docker-compose.yml down",
-    "swagger-gen": "npm run add-dtos-imports-to-swagger && node node_modules/typescript-rest-swagger/dist/cli.js -c ./swaggerConfig.json -p './src/tsconfig.json'",
+    "swagger-gen": "npm run add-dtos-imports-to-swagger & node node_modules/typescript-rest-swagger/dist/cli.js -c ./swaggerConfig.json -p './src/tsconfig.json'",
     "add-dtos-imports-to-swagger": "node dist/server/scripts/swaggerConfig-addEntryFile.js",
     "dev": "nodemon --ignore 'dist/**/swagger.json' --ignore 'dist/**/swagger.yaml'  ./dist/server/index.js ",
     "start": "node ./dist/server/index.js",
@@ -76,16 +76,15 @@
     "typescript-rest": "^3.0.4",
     "typescript-rest-swagger": "^1.1.7",
     "uuid": "^8.3.2",
-    "winston": "^3.5.1"
+    "winston": "^3.5.1",
+    "swagger2openapi": "7.0.6"
   },
   "devDependencies": {
-    "@mikro-orm/migrations": "^4.5.10",
     "@types/bcrypt": "latest",
     "@types/body-parser": "^1.19.1",
     "@types/cors": "latest",
     "@types/express": "latest",
     "@types/inversify-inject-decorators": "^2.0.0",
-    "@types/joi": "latest",
     "@types/jsonwebtoken": "latest",
     "@types/morgan": "^1.9.3",
     "@types/node": "^16.11.11",
@@ -106,6 +105,11 @@
     "nodemon": "latest",
     "sinon": "latest",
     "tsconfig-paths": "^3.12.0",
-    "typescript": "latest"
+    "typescript": "4.6.4"
+  },
+  "overrides": {
+    "typescript-rest-swagger": {
+      "typescript": "~4.6.2"
+    }
   }
 }
