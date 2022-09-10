@@ -13,11 +13,11 @@ export class ReservationDTO extends BaseBodyDTO {
   @JsonProperty()
   title: string;
 
-  @JsonProperty()
-  dateFrom: string;
+  @JsonProperty({ name: 'dateFrom' })
+  start: string;
 
-  @JsonProperty()
-  dateTo: string;
+  @JsonProperty({ name: 'dateTo' })
+  end: string;
 }
 @JsonObject()
 @unique

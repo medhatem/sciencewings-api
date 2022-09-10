@@ -28,7 +28,6 @@ export class ReservationService extends BaseService<Reservation> implements IRes
   @log()
   async getEventsByRange(resourceId: number, start: Date, end: Date): Promise<any> {
     const resource = await this.resourceService.get(resourceId);
-
     if (!resource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
     }
@@ -38,8 +37,8 @@ export class ReservationService extends BaseService<Reservation> implements IRes
     const reservations = await this.getByCriteria<FETCH_STRATEGY.ALL>(
       {
         resourceCalendar: calendar.id,
-        dateFrom: { $lte: start },
-        dateTo: { $gte: end },
+        dateFrom: { $lte: end },
+        dateTo: { $gte: start },
       },
       FETCH_STRATEGY.ALL,
     );
@@ -57,8 +56,8 @@ export class ReservationService extends BaseService<Reservation> implements IRes
     const calendar = resource.calendar[0]; // by default we only use one calendar for now
     const event = this.wrapEntity(Reservation.getInstance(), {
       title: payload.title,
-      dateFrom: moment(payload.start).utc().toDate(),
-      dateTo: moment(payload.end).utc().toDate(),
+      dateFrom: moment(payload.start).toDate(),
+      dateTo: moment(payload.end).toDate(),
     });
     event.resourceCalendar = calendar;
 

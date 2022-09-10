@@ -30,7 +30,7 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
 
   @log()
   public async getAll(): Promise<T[]> {
-    return await this.dao.getAll();
+    return this.dao.getAll();
   }
 
   @log()
