@@ -241,8 +241,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     let subInfras: any[] = [];
     let responsible: Member;
     await applyToAll(fetchedInfrastructure, async (infrastructure) => {
-      responsible = infrastructure.responsible as Member;
-      console.log('rrrrrrrrrrrrrrrrrrr', responsible);
+      responsible = infrastructure.responsible;
       await infrastructure.children.init();
       subInfras = infrastructure.children.toArray();
       let resourceNb = await infrastructure.resources.loadCount(true);

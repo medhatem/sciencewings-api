@@ -31,8 +31,6 @@ export class Infrastructure extends BaseModel<Infrastructure> {
 
   @ManyToOne({
     entity: () => Member,
-    lazy: true,
-    eager: false,
     nullable: true,
   })
   public responsible?: Member;
