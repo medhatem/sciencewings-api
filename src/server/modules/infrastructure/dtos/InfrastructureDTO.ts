@@ -62,6 +62,15 @@ export class UpdateInfrastructureDTO extends BaseRequestDTO {
 @JsonObject()
 @unique
 export class InfrastructureResponsableObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    beforeDeserialize: (prop: any) => {
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
+    },
+  })
+  user?: number;
   @JsonProperty()
   name: string;
   @JsonProperty()
