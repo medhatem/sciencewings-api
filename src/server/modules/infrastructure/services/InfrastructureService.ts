@@ -89,7 +89,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (payload.responsibles) {
       const responsables = payload.responsibles;
       await responsables.map(async (res) => {
-        // await applyToAll(responsables, async (res) => {
         const user = await this.userService.get(res);
         if (!user) {
           throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
@@ -172,7 +171,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (payload.responsibles) {
       const responsables = payload.responsibles;
       await responsables.map(async (res) => {
-        // await applyToAll(responsables, async (res) => {
         const user = await this.userService.get(res);
         if (!user) {
           throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
