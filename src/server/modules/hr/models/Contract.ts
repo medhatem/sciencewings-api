@@ -15,8 +15,8 @@ export enum JobLevel {
 }
 
 export enum ContractTypes {
-  CDD = 'Cdd',
-  CDI = 'Cdi',
+  PERMANANT = 'Permanant',
+  CONTRACT_BASE = 'Contract base',
 }
 
 @provide()

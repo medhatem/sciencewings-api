@@ -106,12 +106,12 @@ export class ContractService extends BaseService<Contract> implements IContractS
     });
 
     wrappedContract.member = member;
-    if (payload.dateEnd && payload.contractType !== ContractTypes.CDD) {
-      throw new ValidationError('VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED', { friendly: true });
+    if (payload.dateEnd && payload.contractType !== ContractTypes.CONTRACT_BASE) {
+      throw new ValidationError('VALIDATION.DATEEND.PROVIDED_WITHOUT_CONTRACT_BASE_REQUIRED', { friendly: true });
     }
 
     if (payload.contractType) {
-      if (payload.contractType === ContractTypes.CDD) {
+      if (payload.contractType === ContractTypes.CONTRACT_BASE) {
         if (payload.dateEnd) {
           wrappedContract.contractType = payload.contractType;
           wrappedContract.dateEnd = payload.dateEnd;
@@ -212,11 +212,11 @@ export class ContractService extends BaseService<Contract> implements IContractS
       wrappedContract.supervisor = supervisor;
     }
     if (payload.contractType) {
-      if (payload.contractType === ContractTypes.CDI) {
+      if (payload.contractType === ContractTypes.PERMANANT) {
         wrappedContract.contractType = payload.contractType;
         wrappedContract.dateEnd = null;
       }
-      if (payload.contractType === ContractTypes.CDD) {
+      if (payload.contractType === ContractTypes.CONTRACT_BASE) {
         if (payload.dateEnd) {
           wrappedContract.contractType = payload.contractType;
         } else {
@@ -225,10 +225,10 @@ export class ContractService extends BaseService<Contract> implements IContractS
       }
     }
     if (payload.dateEnd) {
-      if (wrappedContract.contractType === ContractTypes.CDD) {
+      if (wrappedContract.contractType === ContractTypes.CONTRACT_BASE) {
         wrappedContract.dateEnd = payload.dateEnd;
       } else {
-        throw new ValidationError('VALIDATION.DATEEND_JUST_IN_CDD', { friendly: true });
+        throw new ValidationError('VALIDATION.DATEEND_JUST_IN_CONTRACT_BASE', { friendly: true });
       }
     }
     const updatedContract = await this.update(wrappedContract);
