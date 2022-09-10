@@ -84,8 +84,8 @@ export class InfrustructureListLineDTO extends BaseBodyDTO {
   id?: number;
   @JsonProperty()
   name: string;
-  @JsonProperty({ type: InfrastructureResponsableObjectDTO, beforeDeserialize })
-  responsibles: Array<InfrastructureResponsableObjectDTO>;
+  @JsonProperty()
+  responsibles: InfrastructureResponsableObjectDTO;
   @JsonProperty()
   resourcesNb: number;
   @JsonProperty({ type: SubInfrastructureObjectDTO, beforeDeserialize })
