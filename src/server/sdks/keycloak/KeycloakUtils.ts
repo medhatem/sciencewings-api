@@ -125,10 +125,10 @@ export class KeycloakUtil {
 
   /**
    *
-   * update a Kc group name
+   * update a Kc group
    *
    * @param KcGroupid of the group
-   * @param newName of the group
+   * @param payload for the update
    */
   async updateGroup(KcGroupid: string, payload: GroupRepresentation): Promise<any> {
     return await (
@@ -156,8 +156,41 @@ export class KeycloakUtil {
     });
   }
 
-  /*
-   * reset a keycloak user password
+  /**
+   *
+   * create a keycloak user
+   *
+   * @param email to get users by
+   */
+  async createKcUser(email: string): Promise<UserRepresentation> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.create({
+      email: email,
+      firstName: '',
+      lastName: '',
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+  }
+
+  /**
+   *
+   * update a Kc user attribute
+   *
+   * @param KcUserId of the group
+   * @param payload tha data for the update
+   */
+  async updateKcUser(KcUserId: string, payload: UserRepresentation): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).groups.update(
+      { id: KcUserId, realm: getConfig('keycloak.clientValidation.realmName') },
+      {
+        ...payload,
+      },
+    );
+  }
+  /* reset a keycloak user password
    *
    * @param id of the user to fetch
    * @param newPassword the new password

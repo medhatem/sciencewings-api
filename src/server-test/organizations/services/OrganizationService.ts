@@ -6,7 +6,6 @@ import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressService } from '@/modules/address/services/AddressService';
 import { AddressType } from '@/modules/address/models/Address';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Collection } from '@mikro-orm/core';
 import { Configuration } from '@/configuration/Configuration';
 import { Email } from '@/utils/Email';
 import { Group } from '@/modules/hr/models/Group';
@@ -14,7 +13,6 @@ import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Logger } from '@/utils/Logger';
-import { Member } from '@/modules/hr/models/Member';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
 import { OrganizationDao } from '@/modules/organizations/daos/OrganizationDao';
 import { OrganizationLabelService } from '@/modules/organizations/services/OrganizationLabelService';
@@ -857,26 +855,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get member', () => {
     const orgId = 1;
+    const filterStatus: string = '';
     test('Should fail on organization not found', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
       try {
-        await container.get(OrganizationService).getMembers(orgId);
+        await container.get(OrganizationService).getMembers(orgId, filterStatus);
         expect.fail('unexpected success');
       } catch (error) {
         expect(error.message).to.equal(`ORG.NON_EXISTANT_DATA {{org}}`);
       }
-    });
-    test('Should return collection of members', async () => {
-      mockMethodWithResult(
-        organizationDAO,
-        'get',
-        [orgId],
-        Promise.resolve({ members: new Collection<Member>(Member, []) }),
-      );
-
-      const members = await container.get(OrganizationService).getMembers(orgId);
-      expect(members).to.have.length(0);
     });
   });
 });

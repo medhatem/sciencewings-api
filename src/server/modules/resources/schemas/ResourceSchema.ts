@@ -18,7 +18,6 @@ export const ResourceCalendarSchema = Joi.object({
 const ResourceSchema = Joi.object({
   // base
   active: Joi.boolean(),
-  organization: Joi.number(),
   user: Joi.number(),
   timezone: Joi.string(),
   tags: Joi.array(),
@@ -37,12 +36,14 @@ const ResourceSchema = Joi.object({
 
 export const CreateResourceSchema = ResourceSchema.keys({
   name: Joi.string().required(),
-  description: Joi.string().required(),
+  description: Joi.string(),
+  organization: Joi.number().required(),
   resourceType: Joi.string().required(),
   resourceClass: Joi.string().required(),
 });
 
 export const UpdateResourceSchema = ResourceSchema.keys({
+  organization: Joi.number().required(),
   name: Joi.string(),
   description: Joi.string(),
   resourceType: Joi.string(),
@@ -71,8 +72,10 @@ export const ResourceReservationVisibilitySchema = Joi.object({
 
 export const ResourceGeneralStatusSchema = ResourceSchema.keys({
   resourceType: Joi.string(),
+  statusType: Joi.string(),
   statusDescription: Joi.string().required(),
-  memberId: Joi.number().required(),
+  user: Joi.number().required(),
+  organization: Joi.number().required(),
 });
 
 export const ResourceGeneralVisibilitySchema = ResourceSchema.keys({

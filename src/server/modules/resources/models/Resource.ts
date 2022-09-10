@@ -3,10 +3,11 @@ import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { ResourceCalendar } from './ResourceCalendar';
-import { ResourceTag } from './ResourceTag';
-import { ResourceSettings } from './ResourceSettings';
+import { ResourceCalendar } from '@/modules/resources/models//ResourceCalendar';
+import { ResourceTag } from '@/modules/resources/models//ResourceTag';
+import { ResourceSettings } from '@/modules/resources/models//ResourceSettings';
 import { Infrastructure } from '@/modules/infrastructure';
+import { ResourceStatus } from '@/modules/resources/models//ResourceStatus';
 
 @provide()
 @Entity()
@@ -25,17 +26,11 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   name!: string;
 
-  @Property()
-  description!: string;
+  @Property({ nullable: true })
+  description?: string;
 
-  @ManyToMany({
-    entity: () => Member,
-    nullable: true,
-    mappedBy: (entity) => entity.resources,
-    lazy: true,
-    eager: false,
-  })
-  public managers? = new Collection<Member>(this);
+  @ManyToMany({ entity: () => Member, mappedBy: (entity) => entity.resources })
+  managers = new Collection<Member>(this);
 
   @ManyToMany({
     entity: () => ResourceTag,
@@ -66,12 +61,15 @@ export class Resource extends BaseModel<Resource> {
   })
   calendar? = new Collection<ResourceCalendar>(this);
 
-  @Property()
-  timezone!: string;
+  @Property({ nullable: true })
+  timezone?: string;
 
   @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
-  settings: ResourceSettings;
+  settings?: ResourceSettings;
 
-  @ManyToOne({ entity: () => Infrastructure, onDelete: 'cascade' })
+  @ManyToOne({ entity: () => Infrastructure, nullable: true, onDelete: 'cascade' })
   infrastructure?: Infrastructure;
+
+  @OneToOne({ entity: () => ResourceStatus, nullable: true, unique: false })
+  status?: ResourceStatus;
 }

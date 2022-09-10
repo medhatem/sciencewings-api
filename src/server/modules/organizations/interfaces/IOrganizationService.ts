@@ -19,7 +19,7 @@ export abstract class IOrganizationService extends IBaseService<any> {
   deleteOrganization: (orgId: number) => Promise<number>;
   addPhoneToOrganization: (payload: PhoneRO, orgId: number) => Promise<number>;
   addAddressToOrganization: (payload: AddressRO, orgId: number) => Promise<number>;
-  getMembers: (orgId: number) => Promise<Member[]>;
+  getMembers: (orgId: number, statusFilter: string) => Promise<Member[]>;
   getOrganizationSettingsById: (organizationId: number) => Promise<OrganizationSettings>;
   updateOrganizationsSettingsProperties: (
     payload:
