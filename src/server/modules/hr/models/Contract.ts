@@ -7,7 +7,7 @@ import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 
 export enum JobLevel {
-  INTERN = 'Intern',
+  INTERNSHIP = 'Internship',
   JUNIOR = 'Junior',
   MID = 'Midlle',
   MID_SENIOR = 'Mid-senior',
