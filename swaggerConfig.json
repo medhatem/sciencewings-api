@@ -10,10 +10,7 @@
       "./src/server/modules/phones/dtos/index.ts",
       "./src/server/modules/resources/dtos/index.ts",
       "./src/server/modules/users/dtos/index.ts",
-      "./src/server/modules/users/routes/index.ts",
-      "./src/server/modules/users/models/index.ts",
-      "./src/server/modules/users/interfaces/index.ts",
-      "node_modules/typescript-rest/src/server/model/errors.ts"
+      "./src/server/routes/index.ts"
     ],
     "securityDefinitions": {
       "api_key": {
