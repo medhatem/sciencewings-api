@@ -71,8 +71,9 @@
   "VALIDATION.JOBLEVEL_REQUIRED": "le niveau de travaille est requise",
   "VALIDATION.USER_REQUIRED": "L'utilisateur' est requise",
   "VALIDATION.WAGE_REQUIRED": "La salaire est requise",
-  "VALIDATION.DATEEND_REQUIRED": "la date de fin est requise pou le contrat CDD",
-  "VALIDATION.DATEEND.PROVIDED_WITHOUT_CDD_REQUIRED": "Ne pouvez pas ajouter une date sand contrat CDD",
+  "VALIDATION.DATEEND_REQUIRED": "la date de fin est requise pou le contrat contrat de base",
+  "VALIDATION.DATEEND.PROVIDED_WITHOUT_CONTRACT_BASE_REQUIRED": "Ne pouvez pas ajouter une date sand contrat contrat de base",
+  "VALIDATION.DATEEND_JUST_IN_CONTRACT_BASE": "Vous pouvez ajouter une date de fin justque en contrat contrat de base",
 
   "required {{field}}": "{{field}} est requi"
 }
