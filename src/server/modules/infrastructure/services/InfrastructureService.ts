@@ -164,7 +164,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       wrappedInfustructure.organization = organization;
     }
 
-    let fetchedResponsables;
     if (payload.responsible) {
       const user = await this.userService.get(payload.responsible);
       if (!user) {
@@ -180,8 +179,8 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
           friendly: false,
         });
       }
+      wrappedInfustructure.responsible = responsable;
     }
-    wrappedInfustructure.responsible = fetchedResponsables;
 
     // check if the key is unique
     const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
