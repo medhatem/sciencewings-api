@@ -11,6 +11,7 @@ import {
   CreateInfrastructureDTO,
   GetAllInfrastructuresDTO,
   infrastructureGetDTO,
+  InfrastructureListRequestDTO,
   UpdateInfrastructureDTO,
 } from '@/modules/infrastructure/dtos/InfrastructureDTO';
 
@@ -78,5 +79,23 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     const result = await this.InfrastructureService.getAllOgranizationInfrastructures(orgId);
 
     return new GetAllInfrastructuresDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+  }
+
+  /**
+   * get the list of infrastructure of a given organization
+   * @param orgId: organization id
+   */
+  @GET
+  @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
+  @Security()
+  @LoggerStorage()
+  @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure list Successfully')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllInfrastructuresOfAgivenOrganization(
+    @PathParam('orgId') orgId: number,
+  ): Promise<InfrastructureListRequestDTO> {
+    const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(orgId);
+
+    return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });
   }
 }
