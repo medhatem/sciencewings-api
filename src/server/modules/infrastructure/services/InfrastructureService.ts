@@ -21,6 +21,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
+import { Member } from '@/modules/hr';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -86,26 +87,31 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
 
-    let fetchedResponsables;
-    if (payload.responsibles) {
-      const responsables = payload.responsibles;
-      await responsables.map(async (res) => {
-        const user = await this.userService.get(res);
-        if (!user) {
-          throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
-            variables: { user: `${res}` },
-            friendly: false,
-          });
-        }
-        const responsable = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
-        if (!responsable) {
-          throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
-            variables: { member: `${res}` },
-            friendly: false,
-          });
-        }
-        fetchedResponsables.push(responsable);
-      });
+    const wrappedInfustructure = this.wrapEntity(Infrastructure.getInstance(), {
+      name: payload.name,
+      description: payload.description,
+      key: payload.key,
+    });
+
+    if (payload.responsible) {
+      const user = await this.userService.get(payload.responsible);
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
+          variables: { user: `${payload.responsible}` },
+          friendly: false,
+        });
+      }
+      const responsable = (await this.memberService.getByCriteria(
+        { user, organization },
+        FETCH_STRATEGY.SINGLE,
+      )) as Member;
+      if (!responsable) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
+          variables: { member: `${payload.responsible}` },
+          friendly: false,
+        });
+      }
+      wrappedInfustructure.responsible = responsable;
     }
     // check the existance of the resources
     let fetchedResources;
@@ -122,14 +128,8 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     }
 
-    const wrappedInfustructure = this.wrapEntity(Infrastructure.getInstance(), {
-      name: payload.name,
-      description: payload.description,
-      key: payload.key,
-    });
     wrappedInfustructure.organization = organization;
     wrappedInfustructure.resources = fetchedResources;
-    wrappedInfustructure.responsibles = fetchedResponsables;
     wrappedInfustructure.parent = fetchedParent;
 
     const createdInfustructure = await this.create(wrappedInfustructure);
@@ -168,28 +168,24 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       wrappedInfustructure.organization = organization;
     }
 
-    let fetchedResponsables;
-    if (payload.responsibles) {
-      const responsables = payload.responsibles;
-      await responsables.map(async (res) => {
-        const user = await this.userService.get(res);
-        if (!user) {
-          throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
-            variables: { user: `${res}` },
-            friendly: false,
-          });
-        }
-        const responsable = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
-        if (!responsable) {
-          throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
-            variables: { member: `${res}` },
-            friendly: false,
-          });
-        }
-        fetchedResponsables.push(responsable);
-      });
-      wrappedInfustructure.responsibles = fetchedResponsables;
+    if (payload.responsible) {
+      const user = await this.userService.get(payload.responsible);
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
+          variables: { user: `${payload.responsible}` },
+          friendly: false,
+        });
+      }
+      const responsable = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+      if (!responsable) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT_DATA {{member}}', {
+          variables: { member: `${payload.responsible}` },
+          friendly: false,
+        });
+      }
+      wrappedInfustructure.responsible = responsable;
     }
+
     // check if the key is unique
     const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
 
@@ -242,17 +238,16 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       FETCH_STRATEGY.ALL,
     )) as Infrastructure[];
     let InfrastructureList: infrastructurelistline[] = [];
-    let responsibleList: any[] = [];
     let subInfras: any[] = [];
+    let responsible: Member;
     await applyToAll(fetchedInfrastructure, async (infrastructure) => {
-      await infrastructure.responsibles.init();
-      responsibleList = infrastructure.responsibles.toArray();
+      responsible = infrastructure.responsible;
       await infrastructure.children.init();
       subInfras = infrastructure.children.toArray();
       let resourceNb = await infrastructure.resources.loadCount(true);
       InfrastructureList.push({
         name: infrastructure.name,
-        responsibles: responsibleList,
+        responsible: responsible,
         resourcesNb: resourceNb,
         id: infrastructure.id,
         subInfrastructure: subInfras,
