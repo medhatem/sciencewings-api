@@ -25,6 +25,9 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   @Property({ nullable: true })
   description?: string;
 
+  @Property({ default: false })
+  default?: boolean;
+
   @Unique()
   @Property()
   key!: string;
@@ -59,5 +62,5 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   resources? = new Collection<Resource>(this);
 
   @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
-  organization!: Organization;
+  public organization!: Organization;
 }
