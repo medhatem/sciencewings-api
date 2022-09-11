@@ -5,7 +5,7 @@ export const CreateOrganizationSchema = Joi.object({
   key: Joi.string().required().messages({ 'any.required': 'VALIDATION.KEY_REQUIRED' }),
   default: Joi.boolean(),
   resources: Joi.array(),
-  responsables: Joi.array(),
+  responsible: Joi.number(),
   parent: Joi.number().allow(null),
   organization: Joi.number().required().messages({ 'any.required': 'VALIDATION.ORGANIZATION_REQUIRED' }),
 });
@@ -14,7 +14,7 @@ export const UpdateInfrastructureSchema = Joi.object({
   name: Joi.string(),
   key: Joi.string(),
   resources: Joi.array(),
-  responsables: Joi.array(),
+  responsible: Joi.number(),
   parent: Joi.number().allow(null),
   organization: Joi.number(),
 });
