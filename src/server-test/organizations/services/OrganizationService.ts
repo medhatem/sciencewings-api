@@ -26,7 +26,6 @@ import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
 
 import Sinon = require('sinon');
-
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
 

@@ -14,6 +14,9 @@ export class InfrastructureRO {
   key: string;
 
   @JsonProperty()
+  default?: boolean;
+
+  @JsonProperty()
   responsible?: number;
 
   @JsonProperty()
