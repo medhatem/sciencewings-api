@@ -80,8 +80,9 @@ export class Member extends BaseModel<Member> {
   @ManyToMany({ entity: () => Resource })
   resources? = new Collection<Resource>(this);
 
-  @ManyToMany({
+  @OneToMany({
     entity: () => Infrastructure,
+    mappedBy: (entity) => entity.responsible,
     nullable: true,
   })
   public Infrastructures? = new Collection<Infrastructure>(this);

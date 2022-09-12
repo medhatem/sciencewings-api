@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Organization } from '@/modules/organizations/models/Organization';
@@ -25,18 +25,18 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   @Property({ nullable: true })
   description?: string;
 
+  @Property({ default: false })
+  default?: boolean;
+
   @Unique()
   @Property()
   key!: string;
 
-  @ManyToMany({
+  @ManyToOne({
     entity: () => Member,
-    mappedBy: (entity) => entity.Infrastructures,
-    lazy: true,
-    eager: false,
     nullable: true,
   })
-  public responsibles? = new Collection<Member>(this);
+  public responsible?: Member;
 
   @ManyToOne({
     entity: () => Infrastructure,
@@ -62,5 +62,5 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   resources? = new Collection<Resource>(this);
 
   @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
-  organization!: Organization;
+  public organization!: Organization;
 }
