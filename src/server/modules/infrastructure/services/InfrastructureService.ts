@@ -93,6 +93,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       key: payload.key,
     });
 
+    if (payload.default) {
+      wrappedInfustructure.default = payload.default;
+    }
+
     if (payload.responsible) {
       const user = await this.userService.get(payload.responsible);
       if (!user) {
@@ -128,12 +132,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     }
 
-    const wrappedInfustructure = this.wrapEntity(Infrastructure.getInstance(), {
-      name: payload.name,
-      description: payload.description,
-      key: payload.key,
-      default: payload.default,
-    });
     wrappedInfustructure.organization = organization;
     wrappedInfustructure.resources = fetchedResources;
     wrappedInfustructure.parent = fetchedParent;
@@ -224,7 +222,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       }
       wrappedInfustructure.parent = fetchedParent;
     }
-
     const createdInfustructure = await this.update(wrappedInfustructure);
     return createdInfustructure.id;
   }
