@@ -222,7 +222,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       }
       wrappedInfustructure.parent = fetchedParent;
     }
-
     const createdInfustructure = await this.update(wrappedInfustructure);
     return createdInfustructure.id;
   }
