@@ -36,6 +36,7 @@ import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
 import { Infrastructure, InfrastructureService } from '@/modules/infrastructure';
+import { OrganizationSettings } from '../models';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -356,7 +357,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
    *
    */
   @log()
-  public async getOrganizationSettingsById(organizationId: number): Promise<any> {
+  public async getOrganizationSettingsById(organizationId: number): Promise<OrganizationSettings> {
     const fetchedOrganization = await this.get(organizationId);
 
     if (!fetchedOrganization) {
@@ -366,9 +367,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
     }
 
-    return {
-      settings: fetchedOrganization.settings,
-    };
+    return fetchedOrganization.settings;
   }
 
   /* Update the reservation, invoices or access settings of an organization ,
