@@ -35,14 +35,14 @@ export class Contract extends BaseModel<Contract> {
   @ManyToOne({ entity: () => Job, nullable: true })
   job?: Job;
 
-  @Property()
-  jobLevel!: JobLevel;
+  @Property({ nullable: true })
+  jobLevel?: JobLevel;
 
-  @Property()
-  wage!: number;
+  @Property({ nullable: true })
+  wage?: number;
 
-  @Property()
-  contractType!: ContractTypes;
+  @Property({ nullable: true })
+  contractType?: ContractTypes;
 
   @Property({ nullable: true })
   description?: string;

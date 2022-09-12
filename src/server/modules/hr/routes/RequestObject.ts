@@ -30,13 +30,13 @@ export class CreateContractRO {
   user!: number;
 
   @JsonProperty()
-  jobLevel!: JobLevel;
+  jobLevel?: JobLevel;
 
   @JsonProperty()
-  wage!: number;
+  wage?: number;
 
   @JsonProperty()
-  contractType!: ContractTypes;
+  contractType?: ContractTypes;
 
   @JsonProperty()
   dateStart!: Date;
