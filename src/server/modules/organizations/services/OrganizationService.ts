@@ -134,6 +134,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
+      const organizationSetting = await this.organizationSettingsService.create({});
+      wrappedOrganization.settings = organizationSetting;
 
       organization = await this.create(wrappedOrganization);
       const memberEvent = new MemberEvent();
