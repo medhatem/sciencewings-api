@@ -22,7 +22,7 @@ import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
 import { Infrastructure } from '@/modules/infrastructure/models';
 import { ResourceTag } from '@/modules/resources';
-import { OrganizationSettings } from './OrganizationSettings';
+import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
