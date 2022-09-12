@@ -91,6 +91,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       name: payload.name,
       description: payload.description,
       key: payload.key,
+      default: payload.default,
     });
 
     if (payload.responsible) {
@@ -128,12 +129,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     }
 
-    const wrappedInfustructure = this.wrapEntity(Infrastructure.getInstance(), {
-      name: payload.name,
-      description: payload.description,
-      key: payload.key,
-      default: payload.default,
-    });
     wrappedInfustructure.organization = organization;
     wrappedInfustructure.resources = fetchedResources;
     wrappedInfustructure.parent = fetchedParent;
