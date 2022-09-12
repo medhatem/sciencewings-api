@@ -9,10 +9,10 @@ const ContractSchema = Joi.object({
 
 export const CreateContractSchema = ContractSchema.keys({
   name: Joi.string().required().messages({ 'any.required': 'VALIDATION.NAME_REQUIRED' }),
-  jobLevel: Joi.string().required().messages({ 'any.required': 'VALIDATION.JOBLEVEL_REQUIRED' }),
+  jobLevel: Joi.string(),
   user: Joi.number().required().messages({ 'any.required': 'VALIDATION.USER_REQUIRED' }),
   dateStart: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATESTART_REQUIRED' }),
-  wage: Joi.number().required().messages({ 'any.required': 'VALIDATION.WAGE_REQUIRED' }),
+  wage: Joi.number(),
   organization: Joi.number().required().messages({ 'any.required': 'VALIDATION.ORGANIZATION_REQUIRED' }),
 });
 
