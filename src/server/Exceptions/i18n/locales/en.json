@@ -31,6 +31,8 @@
 
   "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} is not found",
 
+  "RESOURCE_TAG.NON_EXISTANT {{tag}}": "Resource tag: {{tag}} does not exist",
+
   "PROJECT.NON_EXISTANT {{project}}": "Project: {{project}} not found",
   "PROJECT.NOT_FOR_THIS_ORG {{project,org}}": "Project: {{project}} not belong to this organization: {{org}}.",
   "PROJECT.KEY_IS_NOT_UNIQUE {{key}}": "Project key: {{key}} already in use.",
@@ -65,5 +67,11 @@
   "VALIDATION.DURATION_REQUIRED": "duration is required",
   "VALIDATION.TITLE_REQUIRED": "Title is required",
   "VALIDATION.DATESTART_REQUIRED": "Date start is required",
+  "VALIDATION.JOBLEVEL_REQUIRED": "Job Level is required",
+  "VALIDATION.USER_REQUIRED": "User is required",
+  "VALIDATION.WAGE_REQUIRED": "Wage is required",
+  "VALIDATION.DATEEND_JUST_IN_CONTRACT_BASE": "You can add an End date just in CONTRACT BASE",
+  "VALIDATION.DATEEND_REQUIRED": "Date end is required for CONTRACT BASE contract",
+  "VALIDATION.DATEEND.PROVIDED_WITHOUT_CONTRACT_BASE_REQUIRED": "Can not set end date without CONTRACT BASE contract",
   "required {{field}}": "{{field}} is required"
 }

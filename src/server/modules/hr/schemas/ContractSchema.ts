@@ -1,24 +1,19 @@
 import Joi = require('joi');
 
 const ContractSchema = Joi.object({
-  active: Joi.boolean(),
-  member: Joi.number(),
-  group: Joi.number(),
-  job: Joi.number(),
+  contractType: Joi.string(),
   dateEnd: Joi.date(),
-  resourceCalendar: Joi.number(),
-  notes: Joi.string(),
-  state: Joi.string(),
-  kanbanState: Joi.string(),
   supervisor: Joi.number(),
-  hrResponsible: Joi.number(),
+  description: Joi.string(),
 });
 
 export const CreateContractSchema = ContractSchema.keys({
-  name: Joi.string().required(),
-  dateStart: Joi.date().required(),
-  wage: Joi.number().required(),
-  organization: Joi.number().required(),
+  name: Joi.string().required().messages({ 'any.required': 'VALIDATION.NAME_REQUIRED' }),
+  jobLevel: Joi.string(),
+  user: Joi.number().required().messages({ 'any.required': 'VALIDATION.USER_REQUIRED' }),
+  dateStart: Joi.date().required().messages({ 'any.required': 'VALIDATION.DATESTART_REQUIRED' }),
+  wage: Joi.number(),
+  organization: Joi.number().required().messages({ 'any.required': 'VALIDATION.ORGANIZATION_REQUIRED' }),
 });
 
 export const UpdateContractSchema = ContractSchema.keys({

@@ -21,6 +21,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
 import { Infrastructure } from '@/modules/infrastructure/models';
+import { ResourceTag } from '@/modules/resources';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -151,4 +152,12 @@ export class Organization extends BaseModel<Organization> {
 
   @OneToMany({ entity: () => Infrastructure, mappedBy: (entity) => entity.organization })
   infrastructure? = new Collection<Infrastructure>(this);
+
+  @OneToMany({
+    entity: () => ResourceTag,
+    mappedBy: 'organization',
+    lazy: true,
+    eager: false,
+  })
+  public tags? = new Collection<ResourceTag>(this);
 }

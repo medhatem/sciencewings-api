@@ -28,9 +28,11 @@
 
   "RESOURCE.NON_EXISTANT {{resource}}": "Resource: {{resource}} n'existe pas",
 
-  "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource not found",
+  "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource n'existe pas",
 
-  "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} is not found",
+  "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} n'existe pas",
+
+  "RESOURCE_TAG.NON_EXISTANT {{tag}}": "Resource tag: {{tag}} n'existe pas",
 
   "PROJECT.NON_EXISTANT {{project}}": "Projet: {{project}} est introuvable. ",
   "PROJECT.NOT_FOR_THIS_ORG {{project,org}}": "Le projet: {{project}} N'appartient pas à cette organisation: {{org}}.",
@@ -66,6 +68,12 @@
   "VALIDATION.DATESTART_REQUIRED": "La date du debut est requise",
   "VALIDATION.KEY_REQUIRED": "La clé est requise",
   "VALIDATION.ORGANIZATION_REQUIRED": "L'organisation est requise",
+  "VALIDATION.JOBLEVEL_REQUIRED": "le niveau de travaille est requise",
+  "VALIDATION.USER_REQUIRED": "L'utilisateur' est requise",
+  "VALIDATION.WAGE_REQUIRED": "La salaire est requise",
+  "VALIDATION.DATEEND_REQUIRED": "la date de fin est requise pou le contrat contrat de base",
+  "VALIDATION.DATEEND.PROVIDED_WITHOUT_CONTRACT_BASE_REQUIRED": "Ne pouvez pas ajouter une date sand contrat contrat de base",
+  "VALIDATION.DATEEND_JUST_IN_CONTRACT_BASE": "Vous pouvez ajouter une date de fin justque en contrat contrat de base",
 
   "required {{field}}": "{{field}} est requi"
 }
