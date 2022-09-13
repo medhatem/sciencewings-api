@@ -65,9 +65,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const userId = 1;
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(resourceService, 'createResource', [payload], Promise.reject(new Error('Failed')));
+      mockMethodWithResult(resourceService, 'createResource', [userId, payload], Promise.reject(new Error('Failed')));
       try {
-        await resourceRoute.createResource({} as any, payload);
+        await resourceRoute.createResource({ userId } as any, payload);
+        expect.fail('unexpected sucess ');
       } catch (error) {
         expect(error.message).to.equal('Failed');
       }
@@ -86,10 +87,12 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       resourceClass: 'TECH',
       organization: 1,
     };
+    const userId = 1;
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(resourceService, 'updateResource', [payload], Promise.reject(new Error('Failed')));
+      mockMethodWithResult(resourceService, 'updateResource', [payload, userId], Promise.reject(new Error('Failed')));
       try {
-        await resourceRoute.updateResource({} as any, 1);
+        await resourceRoute.updateResource(payload, userId);
+        expect.fail('unexpected sucess ');
       } catch (error) {
         expect(error.message).to.equal('Failed');
       }
