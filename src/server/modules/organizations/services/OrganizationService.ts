@@ -35,6 +35,7 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
+import { Infrastructure, InfrastructureService } from '@/modules/infrastructure';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -183,6 +184,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
         });
       }),
     );
+    //create a default infastructure
+    const infraService = InfrastructureService.getInstance();
+    const defaultInfrastructure = Infrastructure.getInstance();
+    defaultInfrastructure.name = `${organization.name}_defaultInfra`;
+    defaultInfrastructure.organization = organization;
+    defaultInfrastructure.key = `${organization.name}_defaultInfra`;
+    defaultInfrastructure.default = true;
+    await infraService.create(defaultInfrastructure);
     return organization.id;
   }
 

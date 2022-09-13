@@ -6,6 +6,7 @@ import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 import { userStatus } from '@/modules/users/models/User';
 import { JobLevel, ContractTypes } from '@/modules/hr/models/Contract';
+import { JobState } from '@/modules/hr/models/Job';
 
 @JsonObject()
 @unique
@@ -39,6 +40,43 @@ export class CreateContractRO {
 
   @JsonProperty()
   dateStart!: Date;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  supervisor?: number;
+
+  @JsonProperty()
+  description?: string;
+}
+
+@JsonObject()
+@unique
+export class UpdateContractRO {
+  @JsonProperty()
+  jobName?: string;
+
+  @JsonProperty()
+  state?: JobState;
+
+  @JsonProperty()
+  organization!: number;
+
+  @JsonProperty()
+  user?: number;
+
+  @JsonProperty()
+  jobLevel?: JobLevel;
+
+  @JsonProperty()
+  wage?: number;
+
+  @JsonProperty()
+  contractType?: ContractTypes;
+
+  @JsonProperty()
+  dateStart?: Date;
 
   @JsonProperty()
   dateEnd?: Date;

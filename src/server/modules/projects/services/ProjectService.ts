@@ -57,6 +57,9 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     const fetchedProjects = (await this.dao.getByCriteria<FETCH_STRATEGY.ALL>({ organization }, FETCH_STRATEGY.ALL, {
       populate: ['members'] as never,
     })) as Project[];
+    fetchedProjects.map(async (project) => {
+      await project.members.init();
+    });
     return fetchedProjects;
   }
   /**

@@ -6,7 +6,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Contract, ContractTypes } from '@/modules/hr/models/Contract';
 import { ContractDao } from '@/modules/hr/daos/ContractDao';
-import { CreateContractRO } from '@/modules/hr/routes/RequestObject';
+import { CreateContractRO, UpdateContractRO } from '@/modules/hr/routes/RequestObject';
 import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
@@ -63,54 +63,9 @@ export class ContractService extends BaseService<Contract> implements IContractS
       throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${userId}` } });
     }
     const fetchedContracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
-      populate: ['job'] as never,
+      populate: ['job', 'supervisor'] as never,
     })) as Contract[];
     return fetchedContracts;
-  }
-
-  /**
-   * check the existence of optional properties for a given contract
-   * @param payload
-   * @returns Optional Properties
-   */
-  @log()
-  private async checkForOptionalPropertiesInContract(payload: any): Promise<any> {
-    let member, group, job, resourceCalendar, hrResponsible;
-    if (payload.member) {
-      member = await this.memberService.get(payload.member);
-      if (!member) {
-        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${payload.member}` } });
-      }
-    }
-    if (payload.group) {
-      group = await this.groupService.get(payload.member);
-      if (!group) {
-        throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${payload.group}` } });
-      }
-    }
-    if (payload.job) {
-      job = await this.jobService.get(payload.member);
-      if (!job) {
-        throw new NotFoundError('JOB.NON_EXISTANT {{job}}', { variables: { job: `${payload.job}` } });
-      }
-    }
-    if (payload.resourceCalendar) {
-      resourceCalendar = await this.resourceCalendarSerivce.get(payload.resourceCalendar);
-      if (!resourceCalendar) {
-        throw new NotFoundError('RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}', {
-          variables: { calendar: `${payload.resourceCalendar}` },
-        });
-      }
-    }
-    if (payload.hrResponsible) {
-      hrResponsible = await this.userService.get(payload.hrResponsible);
-      if (!hrResponsible) {
-        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', {
-          variables: { member: `${payload.hrResponsible}` },
-        });
-      }
-    }
-    return { member, group, job, resourceCalendar, hrResponsible };
   }
 
   /**
@@ -205,37 +160,91 @@ export class ContractService extends BaseService<Contract> implements IContractS
 
   /**
    * Override the update method
+   * @param orgId of organization id
+   * @param userId of user id
    */
+
   @log()
   @validate
   public async updateContract(
-    @validateParam(UpdateContractSchema) payload: CreateContractRO,
+    @validateParam(UpdateContractSchema) payload: UpdateContractRO,
     id: number,
   ): Promise<number> {
-    const currentContract = await this.dao.get(id);
-    if (currentContract === null) {
-      throw new NotFoundError('CONTRACT.NON_EXISTANT {{contract}}', { variables: { contract: `${id}` } });
+    const contract = await this.dao.get(id);
+    if (!contract) {
+      throw new NotFoundError('CONTRACT.NON_EXISTANT {{contract}}', {
+        variables: { contract: `${id}` },
+        friendly: true,
+      });
     }
+    const wrappedContract = this.wrapEntity(contract, {
+      ...Contract,
+      jobLevel: payload?.jobLevel || contract.jobLevel,
+      wage: payload?.wage || contract.wage,
+      dateStart: payload?.dateStart || contract.dateStart,
+      description: payload?.description || contract.description,
+    });
+    if (payload.supervisor && contract.supervisor && contract.supervisor.user.id !== payload.supervisor) {
+      const organization = await this.origaniaztionService.get(payload.organization);
 
-    let organization;
-    if (payload.organization) {
-      organization = await this.origaniaztionService.get(payload.organization);
       if (!organization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
+        throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+          variables: { org: `${payload.organization}` },
+          isOperational: true,
+          friendly: true,
+        });
+      }
+      const user = await this.userService.get(payload.supervisor);
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+          variables: { user: `${payload.supervisor}` },
+          friendly: true,
+        });
+      }
+
+      const supervisor = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+      if (!supervisor) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', {
+          variables: { member: `${payload.supervisor}` },
+          friendly: true,
+        });
+      }
+      wrappedContract.supervisor = supervisor;
+    }
+    if (payload.contractType) {
+      if (payload.contractType === ContractTypes.PERMANANT) {
+        wrappedContract.contractType = payload.contractType;
+        wrappedContract.dateEnd = null;
+      }
+      if (payload.contractType === ContractTypes.CONTRACT_BASE) {
+        if (payload.dateEnd) {
+          wrappedContract.contractType = payload.contractType;
+        } else {
+          throw new ValidationError('VALIDATION.DATEEND_REQUIRED', { friendly: true });
+        }
       }
     }
+    if (payload.dateEnd) {
+      if (wrappedContract.contractType === ContractTypes.CONTRACT_BASE) {
+        wrappedContract.dateEnd = payload.dateEnd;
+      } else {
+        throw new ValidationError('VALIDATION.DATEEND_JUST_IN_CONTRACT_BASE', { friendly: true });
+      }
+    }
+    const updatedContract = await this.update(wrappedContract);
 
-    const entities = await this.checkForOptionalPropertiesInContract(payload);
-
-    const contract = this.wrapEntity(currentContract, {
-      ...currentContract,
-      ...payload,
-      organization: organization,
-      ...entities,
-    });
-
-    const updatedContract = await this.update(contract);
-
+    if (
+      (payload.jobName || payload.state) &&
+      (payload.jobName !== contract.job.name || payload.state !== contract.job.state)
+    ) {
+      const job = (await this.jobService.getByCriteria({ contracts: contract }, FETCH_STRATEGY.SINGLE)) as Job;
+      const wrappedJob = this.jobService.wrapEntity(job, {
+        ...job,
+        name: payload?.jobName || job.name,
+        state: payload?.state || job.state,
+      });
+      this.jobService.update(wrappedJob);
+    }
     return updatedContract.id;
   }
 }
