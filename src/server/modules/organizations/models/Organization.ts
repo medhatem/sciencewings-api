@@ -22,6 +22,7 @@ import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
 import { Infrastructure } from '@/modules/infrastructure/models';
 import { ResourceTag } from '@/modules/resources';
+import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -160,4 +161,7 @@ export class Organization extends BaseModel<Organization> {
     eager: false,
   })
   public tags? = new Collection<ResourceTag>(this);
+
+  @OneToOne({ entity: () => OrganizationSettings, nullable: true, unique: false })
+  settings?: OrganizationSettings;
 }

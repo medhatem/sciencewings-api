@@ -26,6 +26,7 @@ import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
 
 import Sinon = require('sinon');
+import { InfrastructureService } from '@/modules/infrastructure';
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
 
@@ -39,6 +40,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let labelService: SinonStubbedInstance<OrganizationLabelService>;
   let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
+  let infraService: SinonStubbedInstance<InfrastructureService>;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
     stub(Keycloak, 'getInstance').returns({
@@ -70,21 +72,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     } as any);
 
     containerStub.withArgs(BaseService).returns(new BaseService({} as any));
-    containerStub
-      .withArgs(OrganizationService)
-      .returns(
-        new OrganizationService(
-          organizationDAO,
-          organizationSettingsService,
-          userService,
-          labelService,
-          addressService,
-          phoneService,
-          emailService,
-          Keycloak.getInstance(),
-          keycloakUtil,
-        ),
-      );
   }
 
   beforeEach(() => {
@@ -97,7 +84,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     phoneService = createStubInstance(PhoneService);
     labelService = createStubInstance(OrganizationLabelService);
     keycloakUtil = createStubInstance(KeycloakUtil);
-
+    infraService = createStubInstance(InfrastructureService);
+    infraService.wrapEntity = (() => {
+      return {};
+    }) as any;
     containerStub = stub(container, 'get');
     containerStub.withArgs(Configuration).returns({
       getConfiguration: stub(),
@@ -122,6 +112,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           emailService,
           Keycloak.getInstance(),
           keycloakUtil,
+          infraService,
         ),
       );
   });
@@ -654,7 +645,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(MemberEvent.prototype, 'createMember').returns(Promise.resolve({ user: {}, organization: {} }));
       //mock admon group creation to fail
       const createGroupStub = stub(GroupEvent.prototype, 'createGroup');
-
       createGroupStub
         .withArgs('244', Sinon.match.any, `${grpPrifix}admin`)
         .returns(Promise.resolve({ id: 111 } as Group));
