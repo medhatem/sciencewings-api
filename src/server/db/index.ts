@@ -18,6 +18,7 @@ export async function startDB(config: ServerDBConfig) {
   });
   await connection.connect();
   await connection.getSchemaGenerator().dropSchema();
+
   await connection.getSchemaGenerator().updateSchema();
   /*   await connection.close(true);
    */ return connection;
