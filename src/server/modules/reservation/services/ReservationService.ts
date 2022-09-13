@@ -42,7 +42,6 @@ export class ReservationService extends BaseService<Reservation> implements IRes
       },
       FETCH_STRATEGY.ALL,
     );
-
     return reservations;
   }
 
@@ -56,8 +55,8 @@ export class ReservationService extends BaseService<Reservation> implements IRes
     const calendar = resource.calendar[0]; // by default we only use one calendar for now
     const event = this.wrapEntity(Reservation.getInstance(), {
       title: payload.title,
-      dateFrom: moment(payload.start).toDate(),
-      dateTo: moment(payload.end).toDate(),
+      dateFrom: moment(payload.start).tz('utc').toDate(),
+      dateTo: moment(payload.end).tz('utc').toDate(),
     });
     event.resourceCalendar = calendar;
 
