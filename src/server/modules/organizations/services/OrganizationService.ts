@@ -35,6 +35,8 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
+
+import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 
@@ -137,6 +139,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
+      const organizationSetting = await this.organizationSettingsService.create({});
+      wrappedOrganization.settings = organizationSetting;
 
       organization = await this.create(wrappedOrganization);
       const memberEvent = new MemberEvent();
@@ -360,7 +364,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
    *
    */
   @log()
-  public async getOrganizationSettingsById(organizationId: number): Promise<any> {
+  public async getOrganizationSettingsById(organizationId: number): Promise<OrganizationSettings> {
     const fetchedOrganization = await this.get(organizationId);
 
     if (!fetchedOrganization) {
@@ -370,9 +374,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
     }
 
-    return {
-      settings: fetchedOrganization.settings,
-    };
+    return fetchedOrganization.settings;
   }
 
   /* Update the reservation, invoices or access settings of an organization ,
