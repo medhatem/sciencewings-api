@@ -150,8 +150,14 @@ export class Member extends BaseModel<Member> {
   @Property({ columnType: 'date', nullable: true })
   joinedDate?: Date;
 
-  @ManyToOne({ entity: () => Contract, onDelete: 'set null', nullable: true })
-  contract?: Contract;
+  @OneToMany({
+    entity: () => Contract,
+    mappedBy: (entity) => entity.member,
+    nullable: true,
+    lazy: true,
+    eager: false,
+  })
+  public contract? = new Collection<Contract>(this);
 
   @ManyToMany({ entity: () => Project, owner: true, pivotEntity: () => ProjectMember })
   projects? = new Collection<Project>(this);
@@ -167,4 +173,13 @@ export class Member extends BaseModel<Member> {
 
   @ManyToMany({ entity: () => ProjectTask, nullable: true })
   task? = new Collection<ProjectTask>(this);
+
+  @OneToMany({
+    entity: () => Contract,
+    mappedBy: (entity) => entity.supervisor,
+    nullable: true,
+    lazy: true,
+    eager: false,
+  })
+  public contractSupervized? = new Collection<Contract>(this);
 }

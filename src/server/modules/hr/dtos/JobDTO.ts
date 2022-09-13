@@ -1,6 +1,7 @@
 import { BaseBodyDTO, BaseErrorDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
+import { JobState } from '@/modules/hr/models/Job';
 
 @JsonObject()
 @unique
@@ -11,6 +12,12 @@ export class JobDTO extends BaseRequestDTO {}
 export class JobBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
+
+  @JsonProperty()
+  name?: string;
+
+  @JsonProperty()
+  state?: JobState;
 }
 
 @JsonObject()
