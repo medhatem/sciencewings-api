@@ -4,6 +4,7 @@ import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 export type infrastructurelistline = {
   id: number;
   name: string;
+  key: string;
   resourcesNb: number;
   responsible: Member;
   subInfrastructure: Array<Infrastructure>;
