@@ -1,3 +1,5 @@
+import { Project } from '@/modules/projects/models/Project';
+
 export type EmailMessage = {
   to: string;
   from: string;
@@ -24,4 +26,5 @@ export type ProjectList = {
   responsable: string;
   members: number;
   startDate: Date;
+  projectDao: Project;
 };

@@ -3,6 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { beforeDeserialize } from '@/utils/utilities';
 import { MemberDTO } from '@/modules/hr';
+import { ProjectDTO } from '@/modules/projects/dtos/projectDTO';
 
 @JsonObject()
 @unique
@@ -30,6 +31,8 @@ export class ProjectListDTO extends BaseBodyDTO {
   members: number;
   @JsonProperty()
   creatingDate: string;
+  @JsonProperty()
+  projectDto: string;
 }
 @JsonObject()
 @unique
@@ -45,5 +48,5 @@ export class ProjectListBodyDTO extends BaseBodyDTO {
 @unique
 export class ProjectListRequestDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: ProjectListBodyDTO;
+  body: ProjectDTO;
 }

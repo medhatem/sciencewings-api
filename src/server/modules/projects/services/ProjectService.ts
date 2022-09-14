@@ -348,6 +348,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         members: membersLength,
         creatingDate: project.createdAt.toString(),
         id: project.id,
+        projectDto: project,
       });
     });
     return projectList;
