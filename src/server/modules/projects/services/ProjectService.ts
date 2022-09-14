@@ -202,7 +202,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     const isThisOrgWorkOnProject = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
     if (
       isThisOrgWorkOnProject.find((p) => {
-        return p.id === project.id;
+        p.id === project.id;
       })
     ) {
     } else {
