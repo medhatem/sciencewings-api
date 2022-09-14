@@ -13,7 +13,6 @@ import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { CalendarService } from '@/modules/reservation/services/CalendarService';
-import { Collection } from '@mikro-orm/core';
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
 import { MemberService } from '@/modules/hr/services/MemberService';
@@ -32,7 +31,6 @@ import { mockMethodWithResult } from '@/utils/utilities';
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
-import Sinon = require('sinon');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceDao: SinonStubbedInstance<ResourceDao>;
