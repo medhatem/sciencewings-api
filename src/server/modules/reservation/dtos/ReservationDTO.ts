@@ -18,6 +18,14 @@ export class ReservationDTO extends BaseBodyDTO {
 
   @JsonProperty({ name: 'dateTo' })
   end: string;
+
+  @JsonProperty({
+    name: 'user',
+    beforeDeserialize: (prop) => {
+      return prop.id;
+    },
+  })
+  userId: number;
 }
 @JsonObject()
 @unique

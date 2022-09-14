@@ -6,15 +6,23 @@ import { BaseService } from '@/modules/base/services/BaseService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IReservationService } from '@/modules/reservation/interfaces/IReservationService';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
+import { IUserService } from '@/modules/users';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { Reservation } from '@/modules/reservation/models/Reservation';
 import { ReservationRO } from '@/modules/reservation/routes/RequestObject';
 import { ResourceEventDao } from '@/modules/resources/daos/ResourceEventDAO';
 import { log } from '@/decorators/log';
+import { validate } from '@/decorators/validate';
+import { validateParam } from '@/decorators/validateParam';
+import { CreateReservationSchema } from '../schemas/ReservationCreationSchema';
 
 @provideSingleton(IReservationService)
 export class ReservationService extends BaseService<Reservation> implements IReservationService {
-  constructor(public dao: ResourceEventDao, private resourceService: IResourceService) {
+  constructor(
+    public dao: ResourceEventDao,
+    private resourceService: IResourceService,
+    private userService: IUserService,
+  ) {
     super(dao);
   }
 
@@ -42,14 +50,23 @@ export class ReservationService extends BaseService<Reservation> implements IRes
       },
       FETCH_STRATEGY.ALL,
     );
+
     return reservations;
   }
 
   @log()
-  async createReservation(resourceId: number, payload: ReservationRO): Promise<Reservation> {
+  @validate
+  async createReservation(
+    resourceId: number,
+    @validateParam(CreateReservationSchema) payload: ReservationRO,
+  ): Promise<Reservation> {
     const resource = await this.resourceService.get(resourceId);
     if (!resource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
+    }
+    const user = await this.userService.get(payload.userId);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload.userId}` } });
     }
     await resource.calendar.init();
     const calendar = resource.calendar[0]; // by default we only use one calendar for now
@@ -58,8 +75,9 @@ export class ReservationService extends BaseService<Reservation> implements IRes
       dateFrom: moment(payload.start).tz('utc').toDate(),
       dateTo: moment(payload.end).tz('utc').toDate(),
     });
-    event.resourceCalendar = calendar;
 
+    event.resourceCalendar = calendar;
+    event.user = user;
     await this.create(event);
     return event;
   }

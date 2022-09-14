@@ -13,4 +13,7 @@ export class ReservationRO {
 
   @JsonProperty()
   end: Date;
+
+  @JsonProperty()
+  userId: number;
 }
