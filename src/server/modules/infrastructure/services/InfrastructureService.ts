@@ -251,6 +251,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       let resourceNb = await infrastructure.resources.loadCount(true);
       InfrastructureList.push({
         name: infrastructure.name,
+        key: infrastructure.key,
         responsible: responsible,
         resourcesNb: resourceNb,
         id: infrastructure.id,

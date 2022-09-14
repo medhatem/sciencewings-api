@@ -94,6 +94,8 @@ export class InfrustructureListLineDTO extends BaseBodyDTO {
   @JsonProperty()
   name: string;
   @JsonProperty()
+  key: string;
+  @JsonProperty()
   responsible: InfrastructureResponsableObjectDTO;
   @JsonProperty()
   resourcesNb: number;

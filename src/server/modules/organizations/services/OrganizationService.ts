@@ -39,10 +39,13 @@ import { InternalServerError, NotFoundError } from '@/Exceptions';
 import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   @lazyInject(IInfrastructureService) public infraService: IInfrastructureService;
+  @lazyInject(IMemberService) public memberService: IMemberService;
+
   constructor(
     public dao: OrganizationDao,
     public organizationSettingsService: IOrganizationSettingsService,
@@ -54,9 +57,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
     @unmanaged() infraService: IInfrastructureService,
+    @unmanaged() memberService: IMemberService,
   ) {
     super(dao);
-    this.infraService = infraService;
+    //this.infraService = infraService;
   }
 
   static getInstance(): IOrganizationService {
@@ -193,11 +197,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }),
     );
     //create a default infastructure
+
+    const responsable = (await this.memberService.getByCriteria(
+      { user, organization },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+
     const defaultInfrastructure = this.infraService.wrapEntity(Infrastructure.getInstance(), {
       name: `${organization.name}_defaultInfra`,
       key: `${organization.name}_defaultInfra`,
       default: true,
     });
+    defaultInfrastructure.responsible = responsable;
     defaultInfrastructure.organization = organization;
     await this.infraService.create(defaultInfrastructure);
     return organization.id;
