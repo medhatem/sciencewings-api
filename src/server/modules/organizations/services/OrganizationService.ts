@@ -1,5 +1,5 @@
 import { Member } from '@/modules/hr/models/Member';
-import { container, provideSingleton, lazyInject, unmanaged } from '@/di/index';
+import { container, provideSingleton, lazyInject } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
   CreateOrganizationRO,
@@ -56,8 +56,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public emailService: Email,
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
-    @unmanaged() infraService: IInfrastructureService,
-    @unmanaged() memberService: IMemberService,
   ) {
     super(dao);
     //this.infraService = infraService;
@@ -340,7 +338,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return existingOrg.members.toArray().map((el: any) => ({ ...el }));
     } else {
       let status = statusFilter.split(',');
-      const members = await existingOrg.members.init({ where: { membership: status } });
+      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
       return members.toArray().map((member: any) => ({ ...member }));
     }
   }

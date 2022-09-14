@@ -10,6 +10,8 @@ import { Configuration } from '@/configuration/Configuration';
 import { Email } from '@/utils/Email';
 import { Group } from '@/modules/hr/models/Group';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
+// import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { InfrastructureService } from '@/modules/infrastructure/services/InfrastructureService';
 import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Logger } from '@/utils/Logger';
@@ -26,8 +28,6 @@ import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
 
 import Sinon = require('sinon');
-import { InfrastructureService } from '@/modules/infrastructure';
-import { IMemberService } from '@/modules/hr';
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
 
@@ -42,7 +42,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
   let infraService: SinonStubbedInstance<InfrastructureService>;
-  let memberService: SinonStubbedInstance<IMemberService>;
+  // let memberService: SinonStubbedInstance<IMemberService>;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
     stub(Keycloak, 'getInstance').returns({
@@ -114,8 +114,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           emailService,
           Keycloak.getInstance(),
           keycloakUtil,
-          infraService,
-          memberService,
         ),
       );
   });

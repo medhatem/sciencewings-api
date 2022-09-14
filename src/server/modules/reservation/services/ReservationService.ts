@@ -6,7 +6,7 @@ import { BaseService } from '@/modules/base/services/BaseService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IReservationService } from '@/modules/reservation/interfaces/IReservationService';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
-import { IUserService } from '@/modules/users';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { Reservation } from '@/modules/reservation/models/Reservation';
 import { ReservationRO } from '@/modules/reservation/routes/RequestObject';

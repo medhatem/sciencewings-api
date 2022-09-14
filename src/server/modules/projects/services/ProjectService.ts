@@ -1,4 +1,4 @@
-import { IOrganizationService } from '@/modules/organizations/interfaces';
+import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { Project, ProjectStatus } from '@/modules/projects/models/Project';
 import { ProjectDao } from '@/modules/projects/daos/projectDAO';
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -20,7 +20,7 @@ import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
 import { RolesList, ProjectMemberStatus, ProjectMember } from '@/modules/projects/models/ProjectMember';
-import { IUserService } from '@/modules/users';
+import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { applyToAll } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { ConflictError } from '@/Exceptions/ConflictError';

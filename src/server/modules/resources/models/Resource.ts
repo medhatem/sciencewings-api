@@ -3,7 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Calendar } from '@/modules/reservation/models/Calendar';
-import { Infrastructure } from '@/modules/infrastructure';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ResourceSettings } from '@/modules/resources/models//ResourceSettings';

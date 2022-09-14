@@ -15,7 +15,7 @@ import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Calendar } from '@/modules/reservation/models/Calendar';
 import { Contract } from '@/modules/hr/models/Contract';
 import { Group } from '@/modules/hr/models/Group';
-import { Infrastructure } from '@/modules/infrastructure';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { Job } from '@/modules/hr/models/Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';

@@ -3,7 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Calendar } from './Calendar';
-import { User } from '@/modules/users';
+import { User } from '@/modules/users/models/User';
 
 @provide()
 @Entity()
