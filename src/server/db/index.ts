@@ -14,11 +14,12 @@ export async function startDB(config: ServerDBConfig) {
     allowGlobalContext: true,
     user: config.dbUsername,
     password: config.dbPassword,
+    forceUtcTimezone: true,
     entities: ['dist/server/modules/**/models/*'],
   });
   await connection.connect();
-  await connection.getSchemaGenerator().dropSchema();
-  await connection.getSchemaGenerator().updateSchema();
+  // await connection.getSchemaGenerator().dropSchema();
+  // await connection.getSchemaGenerator().updateSchema();
   /*   await connection.close(true);
    */ return connection;
 }

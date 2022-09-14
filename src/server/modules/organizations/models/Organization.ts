@@ -13,16 +13,16 @@ import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address/models/Address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
 import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLabel';
+import { OrganizationSettings } from './OrganizationSettings';
 import { Phone } from '@/modules/phones/models/Phone';
 import { Resource } from '@/modules/resources/models/Resource';
+import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
-import { Infrastructure } from '@/modules/infrastructure/models';
-import { ResourceTag } from '@/modules/resources';
-import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -162,6 +162,6 @@ export class Organization extends BaseModel<Organization> {
   })
   public tags? = new Collection<ResourceTag>(this);
 
-  @OneToOne({ entity: () => OrganizationSettings, nullable: true, unique: false })
+  @OneToOne({ entity: () => OrganizationSettings, nullable: true })
   settings?: OrganizationSettings;
 }

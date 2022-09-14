@@ -36,10 +36,10 @@ import {
 } from '@/modules/resources/schemas/ResourceSchema';
 import { log } from '@/decorators/log';
 import { ResourceCalendarRO, ResourceRO } from '@/modules/resources/routes/RequestObject';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
+import { Calendar } from '@/modules/reservation/models/Calendar';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { IResourceCalendarService } from '@/modules/resources/interfaces/IResourceCalendarService';
+import { ICalendarService } from '@/modules/reservation/interfaces/ICalendarService';
 import { IResourceSettingsService } from '@/modules/resources/interfaces/IResourceSettingsService';
 import { IResourceTagService } from '@/modules/resources/interfaces/IResourceTagService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -48,7 +48,7 @@ import { IResourceStatusHistoryService } from '@/modules/resources/interfaces/IR
 import { IResourceStatusService } from '@/modules/resources/interfaces/IResourceStatusService';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
-import { Member } from '@/modules/hr';
+import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
 @provideSingleton(IResourceService)
@@ -60,7 +60,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public userService: IUserService,
     public resourceSettingsService: IResourceSettingsService,
     public resourceRateService: IResourceRateService,
-    public resourceCalendarService: IResourceCalendarService,
+    public resourceCalendarService: ICalendarService,
     public resourceTagService: IResourceTagService,
     public resourceStatusHistoryService: IResourceStatusHistoryService,
     public resourceStatusService: IResourceStatusService,
@@ -134,10 +134,18 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     const resourceSetting = await this.resourceSettingsService.create({});
     wrappedResource.settings = resourceSetting;
+    const calendar = await this.resourceCalendarService.create({
+      name: `${wrappedResource.name}-calendar`,
+      active: true,
+      organization: organization,
+    });
 
+    console.log('calendar is ', calendar);
     const createdResource = await this.create(wrappedResource);
     await createdResource.managers.init();
     createdResource.managers.add(manager);
+    await wrappedResource.calendar.init();
+    wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
     return createdResource.id;
   }
@@ -214,7 +222,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
   @validate
   public async createResourceCalendar(
     @validateParam(ResourceCalendarSchema) payload: ResourceCalendarRO,
-  ): Promise<ResourceCalendar> {
+  ): Promise<Calendar> {
     let organization = null;
     if (payload.organization) {
       organization = await this.organizationService.get(payload.organization);
@@ -223,7 +231,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       }
     }
 
-    const resourceCalendar: ResourceCalendar = this.resourceCalendarService.wrapEntity(new ResourceCalendar(), {
+    const resourceCalendar: Calendar = this.resourceCalendarService.wrapEntity(new Calendar(), {
       ...payload,
       organization,
     });

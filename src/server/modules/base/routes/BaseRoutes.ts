@@ -26,7 +26,7 @@ export class BaseRoutes<T extends BaseModel<T>> {
   @Security()
   @Response<BaseRequestDTO>(200, 'success')
   public async getById(@PathParam('id') id: number): Promise<BaseRequestDTO> {
-    const result = await this.service.get(id, { populate: true });
+    const result = await this.service.get(id);
 
     return this.getDTOMapper.deserialize({
       body: { statusCode: 200, data: [...([result] || [])] },

@@ -1,7 +1,7 @@
+import { Calendar } from '@/modules/reservation/models/Calendar';
+import { CalendarDao } from '@/modules/reservation/daos/CalendarDAO';
 import { Logger } from '@/utils/Logger';
 import { Resource } from '@/modules/resources/models/Resource';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
-import { ResourceCalendarDao } from '@/modules/resources/daos/ResourceCalendarDAO';
 import { ResourceDao } from '@/modules/resources/daos/ResourceDao';
 import { applyToAll } from '@/utils/utilities';
 import { connection } from '@/db/index';
@@ -15,14 +15,14 @@ import { wrap } from '@mikro-orm/core';
  */
 @provideSingleton()
 export class SeedResources {
-  constructor(private dao: ResourceDao, private calendarDAO: ResourceCalendarDao, private logger: Logger) {}
+  constructor(private dao: ResourceDao, private calendarDAO: CalendarDao, private logger: Logger) {}
 
   async createResources(users: any, organizations: any) {
     try {
       const repository = connection.em.getRepository(Resource as any);
       await applyToAll(users, async (user: any, idx: number) => {
         const tz = faker.address.timeZone();
-        const _calendar = wrap(new ResourceCalendar()).assign({
+        const _calendar = wrap(new Calendar()).assign({
           name: faker.company.bsNoun(),
           timezone: tz,
         });

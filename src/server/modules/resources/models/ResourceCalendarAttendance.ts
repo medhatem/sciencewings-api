@@ -2,8 +2,8 @@ import { Entity, Index, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Calendar } from '@/modules/reservation/models/Calendar';
 import { Resource } from './Resource';
-import { ResourceCalendar } from './ResourceCalendar';
 
 @provide()
 @Entity()
@@ -39,8 +39,8 @@ export class ResourceCalendarAttendance extends BaseModel<ResourceCalendarAttend
   @Property({ columnType: 'float8' })
   hourTo!: number;
 
-  @ManyToOne({ entity: () => ResourceCalendar, onDelete: 'cascade' })
-  calendar: ResourceCalendar;
+  @ManyToOne({ entity: () => Calendar, onDelete: 'cascade' })
+  calendar: Calendar;
 
   @Property()
   dayPeriod!: string;

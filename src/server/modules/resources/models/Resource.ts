@@ -1,13 +1,14 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
+
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Calendar } from '@/modules/reservation/models/Calendar';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { ResourceCalendar } from '@/modules/resources/models//ResourceCalendar';
-import { ResourceTag } from '@/modules/resources/models//ResourceTag';
 import { ResourceSettings } from '@/modules/resources/models//ResourceSettings';
-import { Infrastructure } from '@/modules/infrastructure';
 import { ResourceStatus } from '@/modules/resources/models//ResourceStatus';
+import { ResourceTag } from '@/modules/resources/models//ResourceTag';
 
 @provide()
 @Entity()
@@ -53,13 +54,13 @@ export class Resource extends BaseModel<Resource> {
   resourceClass!: string;
 
   @OneToMany({
-    entity: () => ResourceCalendar,
+    entity: () => Calendar,
     mappedBy: (entity) => entity.resource,
     nullable: true,
     lazy: true,
     eager: false,
   })
-  calendar? = new Collection<ResourceCalendar>(this);
+  calendar? = new Collection<Calendar>(this);
 
   @Property({ nullable: true })
   timezone?: string;
