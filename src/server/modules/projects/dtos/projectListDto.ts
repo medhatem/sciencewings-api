@@ -48,5 +48,5 @@ export class ProjectListBodyDTO extends BaseBodyDTO {
 @unique
 export class ProjectListRequestDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: ProjectDTO;
+  body: ProjectListBodyDTO;
 }
