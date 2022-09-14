@@ -1,13 +1,14 @@
-import intern from 'intern';
-import { stub, restore, SinonStubbedInstance, createStubInstance } from 'sinon';
-const { suite, test } = intern.getPlugin('interface.tdd');
-const { expect } = intern.getPlugin('chai');
+import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
-import { container } from '@/di';
+
 import { Configuration } from '@/configuration/Configuration';
 import { Logger } from '@/utils/Logger';
-import { ResourceEventService } from '@/modules/resources/services/ResourceEventService';
 import { ResourceEventDao } from '@/modules/resources/daos/ResourceEventDAO';
+import { ResourceEventService } from '@/modules/resources/services/ResourceEventService';
+import { container } from '@/di';
+import intern from 'intern';
+const { suite, test } = intern.getPlugin('interface.tdd');
+const { expect } = intern.getPlugin('chai');
 
 suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.length), (): void => {
   let resourceEventDao: SinonStubbedInstance<ResourceEventDao>;

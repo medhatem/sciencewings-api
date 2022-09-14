@@ -1,5 +1,5 @@
 import { Member } from '@/modules/hr/models/Member';
-import { container, provideSingleton } from '@/di/index';
+import { container, provideSingleton, lazyInject } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
   CreateOrganizationRO,
@@ -35,10 +35,17 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
-import { Infrastructure, InfrastructureService } from '@/modules/infrastructure';
+
+import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
+import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
+  @lazyInject(IInfrastructureService) public infraService: IInfrastructureService;
+  @lazyInject(IMemberService) public memberService: IMemberService;
+
   constructor(
     public dao: OrganizationDao,
     public organizationSettingsService: IOrganizationSettingsService,
@@ -51,6 +58,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
+    //this.infraService = infraService;
   }
 
   static getInstance(): IOrganizationService {
@@ -133,6 +141,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
+      const organizationSetting = await this.organizationSettingsService.create({});
+      wrappedOrganization.settings = organizationSetting;
 
       organization = await this.create(wrappedOrganization);
       const memberEvent = new MemberEvent();
@@ -146,6 +156,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
       ]);
     } catch (error) {
+      console.log('error is ', error);
       await Promise.all<any>(
         [
           keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
@@ -185,13 +196,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }),
     );
     //create a default infastructure
-    const infraService = InfrastructureService.getInstance();
-    const defaultInfrastructure = Infrastructure.getInstance();
-    defaultInfrastructure.name = `${organization.name}_defaultInfra`;
+
+    const responsable = (await this.memberService.getByCriteria(
+      { user, organization },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+
+    const defaultInfrastructure = this.infraService.wrapEntity(Infrastructure.getInstance(), {
+      name: `${organization.name}_defaultInfra`,
+      key: `${organization.name}_defaultInfra`,
+      default: true,
+    });
+    defaultInfrastructure.responsible = responsable;
     defaultInfrastructure.organization = organization;
-    defaultInfrastructure.key = `${organization.name}_defaultInfra`;
-    defaultInfrastructure.default = true;
-    await infraService.create(defaultInfrastructure);
+    await this.infraService.create(defaultInfrastructure);
     return organization.id;
   }
 
@@ -320,7 +338,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return existingOrg.members.toArray().map((el: any) => ({ ...el }));
     } else {
       let status = statusFilter.split(',');
-      const members = await existingOrg.members.init({ where: { membership: status } });
+      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
       return members.toArray().map((member: any) => ({ ...member }));
     }
   }
@@ -356,7 +374,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
    *
    */
   @log()
-  public async getOrganizationSettingsById(organizationId: number): Promise<any> {
+  public async getOrganizationSettingsById(organizationId: number): Promise<OrganizationSettings> {
     const fetchedOrganization = await this.get(organizationId);
 
     if (!fetchedOrganization) {
@@ -366,9 +384,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
     }
 
-    return {
-      settings: fetchedOrganization.settings,
-    };
+    return fetchedOrganization.settings;
   }
 
   /* Update the reservation, invoices or access settings of an organization ,

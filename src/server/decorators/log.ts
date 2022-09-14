@@ -1,4 +1,4 @@
-import { LogLevel, LogOptions, Logger } from '@/utils/Logger';
+import { LogLevel, LogOptions } from '@/utils/Logger';
 
 import { getConfig } from '../configuration/Configuration';
 
@@ -30,7 +30,7 @@ export function log(
 ): (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => any {
   return (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>): any => {
     const originalFunction: any = descriptor.value;
-    const className: string = target.constructor.name;
+    // const className: string = target.constructor.name;
     descriptor.value = async function (...args: any[]) {
       if (
         !getConfig('logger.displayAutoLogs') ||

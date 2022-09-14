@@ -1,6 +1,7 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-import { unique } from '@/decorators/unique';
+
+import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { MemberDTO } from '@/modules/hr';
 import { ProjectDTO } from '@/modules/projects/dtos/projectDTO';

@@ -1,8 +1,20 @@
-import { Collection, DateType, Entity, Index, ManyToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import {
+  Collection,
+  DateType,
+  Entity,
+  Index,
+  ManyToMany,
+  OneToMany,
+  PrimaryKey,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
+
 import { Address } from '@/modules/address/models/Address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { Phone } from '@/modules/phones/models/Phone';
+import { Reservation } from '@/modules/reservation/models/Reservation';
 
 export enum userStatus {
   INVITATION_PENDING = 'INVITATION_PENDING',
@@ -68,4 +80,7 @@ export class User extends BaseModel<User> {
 
   @Property({ nullable: true })
   status?: userStatus;
+
+  @OneToMany({ entity: () => Reservation, mappedBy: (r) => r.user, nullable: true })
+  reservations? = new Collection<Reservation>(this);
 }
