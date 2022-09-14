@@ -1,4 +1,4 @@
-FROM node:14 as  nodejs-env
+FROM node:16 as  nodejs-env
 
 WORKDIR /app
 ADD package.json /app/package.json
