@@ -19,7 +19,7 @@ const ProjectSchema = Joi.object({
 export const CreateProjectSchema = ProjectSchema.keys({
   title: Joi.string().required().messages({ 'any.required': 'VALIDATION.TITLE_REQUIRED' }),
   key: Joi.string().required().messages({ 'any.required': 'VALIDATION.KEY_REQUIRED' }),
-  description: Joi.string().required().messages({ 'any.required': 'VALIDATION.DESCRIPTION_REQUIRED' }),
+  description: Joi.string().allow('', null),
   organization: Joi.number().required(),
 });
 

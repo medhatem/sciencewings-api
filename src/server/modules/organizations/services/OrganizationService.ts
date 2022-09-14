@@ -156,7 +156,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
       ]);
     } catch (error) {
-      console.log('error is ', error);
       await Promise.all<any>(
         [
           keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
@@ -337,7 +336,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
       return existingOrg.members.toArray().map((el: any) => ({ ...el }));
     } else {
-      let status = statusFilter.split(',');
+      const status = statusFilter.split(',');
       const members = await existingOrg.members.init({ where: { membership: status as any } as any });
       return members.toArray().map((member: any) => ({ ...member }));
     }

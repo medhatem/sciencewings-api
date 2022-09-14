@@ -140,7 +140,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       organization: organization,
     });
 
-    console.log('calendar is ', calendar);
     const createdResource = await this.create(wrappedResource);
     await createdResource.managers.init();
     createdResource.managers.add(manager);
@@ -175,8 +174,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       timezone: payload.timezone || fetchedResource.timezone,
     });
 
-    let existingTags: any[] = [];
-    let newTags: any[] = [];
+    const existingTags: any[] = [];
+    const newTags: any[] = [];
 
     if (payload.tags) {
       /**
@@ -187,7 +186,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       payload.tags.map((tag) => ('id' in tag ? existingTags.push(tag) : newTags.push(tag)));
       await fetchedResource.tags.init();
       await applyToAll(existingTags, async (existingTag) => {
-        let fetchedExistingTag = await this.resourceTagService.getByCriteria(
+        const fetchedExistingTag = await this.resourceTagService.getByCriteria(
           {
             id: existingTag.id,
             organization,
@@ -203,7 +202,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
 
       await applyToAll(newTags, async (newTag) => {
-        let tag: ResourceTag = this.resourceTagService.wrapEntity(ResourceTag.getInstance(), {
+        const tag: ResourceTag = this.resourceTagService.wrapEntity(ResourceTag.getInstance(), {
           title: newTag.title,
         });
         const createdTag = await this.resourceTagService.create(tag);

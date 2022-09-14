@@ -46,6 +46,6 @@ export class ProjectMember extends BaseModel<ProjectMember> {
   @Property()
   role: RolesList;
 
-  @Property()
-  status: ProjectMemberStatus;
+  @Property({ nullable: true })
+  status?: ProjectMemberStatus;
 }
