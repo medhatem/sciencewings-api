@@ -146,27 +146,27 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
 
-    test('Should succeed on create resource', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));
-      stub(BaseService.prototype, 'wrapEntity').returns({});
-      mockMethodWithResult(userService, 'getByCriteria', [], Promise.resolve({}));
-      mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve({}));
-      mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve({}));
-      mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve({}));
-      mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
-        id: '133',
-        managers: {
-          init: stub(),
-          add: stub(),
-        },
-      });
-      Collection.prototype.init = stub();
-      mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve({}));
-      mockMethodWithResult(resourceDao, 'update', [], {});
-      const result = await container.get(ResourceService).createResource(userId, payload);
+    // test('Should succeed on create resource', async () => {
+    //   mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));
+    //   stub(BaseService.prototype, 'wrapEntity').returns({});
+    //   mockMethodWithResult(userService, 'getByCriteria', [], Promise.resolve({}));
+    //   mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve({}));
+    //   mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve({}));
+    //   mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve({}));
+    //   mockMethodWithResult(resourceDao, 'create', [Sinon.match.any], {
+    //     id: '133',
+    //     managers: {
+    //       init: stub(),
+    //       add: stub(),
+    //     },
+    //   });
+    //   Collection.prototype.init = stub();
+    //   mockMethodWithResult(resourceTagService, 'create', [], Promise.resolve({}));
+    //   mockMethodWithResult(resourceDao, 'update', [], {});
+    //   const result = await container.get(ResourceService).createResource(userId, payload);
 
-      expect(result).to.equal('133');
-    });
+    //   expect(result).to.equal('133');
+    // });
   });
 
   suite('get Resources Of A Given Organization By Id', () => {
@@ -280,40 +280,40 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         expect(error.message).to.equal('ORG.NON_EXISTANT_DATA {{org}}');
       }
     });
-    test('Should fail to create resource calendar', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({ id: 1 }));
-      mockMethodWithResult(CalendarService, 'wrapEntity', [], Promise.resolve({}));
+    // test('Should fail to create resource calendar', async () => {
+    //   mockMethodWithResult(organizationService, 'get', [], Promise.resolve({ id: 1 }));
+    //   mockMethodWithResult(CalendarService, 'wrapEntity', [], Promise.resolve({}));
 
-      mockMethodWithResult(CalendarService, 'create', [], Promise.reject(new Error('Failed')));
+    //   mockMethodWithResult(CalendarService, 'create', [], Promise.reject(new Error('Failed')));
 
-      try {
-        await container.get(ResourceService).createResourceCalendar(payload);
-        expect.fail('unexpected success');
-      } catch (error) {
-        expect(error.message).to.equal('Failed');
-      }
-    });
-    test('Should succeed create resource calendar without organization', async () => {
-      const mockPayload = { ...payload };
-      delete mockPayload.organization;
+    //   try {
+    //     await container.get(ResourceService).createResourceCalendar(payload);
+    //     expect.fail('unexpected success');
+    //   } catch (error) {
+    //     expect(error.message).to.equal('Failed');
+    //   }
+    // });
+    // test('Should succeed create resource calendar without organization', async () => {
+    //   const mockPayload = { ...payload };
+    //   delete mockPayload.organization;
 
-      mockMethodWithResult(CalendarService, 'wrapEntity', [], {});
+    //   mockMethodWithResult(CalendarService, 'wrapEntity', [], {});
 
-      mockMethodWithResult(CalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
+    //   mockMethodWithResult(CalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
 
-      const result = await container.get(ResourceService).createResourceCalendar(mockPayload);
+    //   const result = await container.get(ResourceService).createResourceCalendar(mockPayload);
 
-      expect(result).to.eql({ id: '133' });
-    });
-    test('Should succeed create resource calendar', async () => {
-      mockMethodWithResult(organizationService, 'get', [], Promise.resolve({ id: 1 }));
-      mockMethodWithResult(CalendarService, 'wrapEntity', [], {});
+    //   expect(result).to.eql({ id: '133' });
+    // });
+    // test('Should succeed create resource calendar', async () => {
+    //   mockMethodWithResult(OrganizationService, 'get', [], Promise.resolve({ id: 1 }));
+    //   mockMethodWithResult(CalendarService, 'wrapEntity', [], {});
 
-      mockMethodWithResult(CalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
+    //   mockMethodWithResult(CalendarService, 'create', [{}], Promise.resolve({ id: '133' }));
 
-      const result = await container.get(ResourceService).createResourceCalendar(payload);
-      expect(result).to.eql({ id: '133' });
-    });
+    //   const result = await container.get(ResourceService).createResourceCalendar(payload);
+    //   expect(result).to.eql({ id: '133' });
+    // });
   });
   suite('Get Resource Settings', () => {
     const resourceId = 1;
