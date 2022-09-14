@@ -19,6 +19,7 @@ export type OrgKey = {
 };
 
 export type ProjectList = {
+  id: number;
   title: string;
   responsable: string;
   members: number;
