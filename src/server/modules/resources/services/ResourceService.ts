@@ -140,7 +140,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       organization: organization,
     });
 
-    console.log('calendar is ', calendar);
     const createdResource = await this.create(wrappedResource);
     await createdResource.managers.init();
     createdResource.managers.add(manager);

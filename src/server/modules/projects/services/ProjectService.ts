@@ -227,7 +227,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
-    console.log('ANI HNA CHECK ');
     const checkIfMemberAlreadyInProject: ProjectMember = await this.projectMemberService.getByCriteria(
       { member, project },
       FETCH_STRATEGY.SINGLE,
@@ -235,14 +234,12 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         populate: true,
       },
     );
-    console.log('checkIfMemberAlreadyInProject ');
 
     if (checkIfMemberAlreadyInProject) {
       throw new ConflictError('PROJECT.MEMBER_IS_ALREADY_PARTICIPATE_IN_PROJECT {{member}}', {
         variables: { member: `${member.name}` },
       });
     }
-    console.log('wrappedProjectMember ');
 
     const wrappedProjectMember = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
       status: payload.status,
@@ -250,7 +247,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     });
     wrappedProjectMember.project = project;
     wrappedProjectMember.member = member;
-    console.log('BEFORE CREATE PROJECT MEMBER');
     const createdProjectMember = await this.projectMemberService.create(wrappedProjectMember);
 
     projectMembers.push(createdProjectMember);
