@@ -26,5 +26,5 @@ export type ProjectList = {
   responsable: string;
   members: number;
   startDate: Date;
-  projectDao: Project;
+  projectDto: Project;
 };
