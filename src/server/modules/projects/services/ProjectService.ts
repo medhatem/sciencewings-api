@@ -200,12 +200,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     // check if the organization really work on this project we want to add participant too.
     const isThisOrgWorkOnProject = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
-    if (
-      isThisOrgWorkOnProject.find((p) => {
-        p.id === project.id;
-      })
-    ) {
-    } else {
+    let contain;
+    isThisOrgWorkOnProject.filter((p) => {
+      p.id === project.id ? (contain = true) : (contain = false);
+    });
+    if (contain) {
       throw new NotFoundError('PROJECT.NOT_FOR_THIS_ORG {{project,org}}', {
         variables: { project: `${id}`, org: `${payload.orgId}` },
       });
