@@ -138,7 +138,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${projetcId}` } });
     }
     // check if the project key is unique
-    if (payload.key) {
+    if (payload.key && project.key !== payload.key) {
       const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
       if (ifProjectKeyIsUnique) {
         throw new ConflictError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', { variables: { key: `${payload.key}` } });
@@ -236,7 +236,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       });
     }
     const wrappedProjectMember = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
-      status: payload.status as ProjectMemberStatus,
+      status: payload.status,
       role: payload.role as ProjectMemberStatus,
     });
     wrappedProjectMember.project = project;

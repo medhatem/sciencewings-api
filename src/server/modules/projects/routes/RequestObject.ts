@@ -60,7 +60,7 @@ export class ProjectMemberRo {
   userId: number;
 
   @JsonProperty()
-  status: string;
+  status?: string;
 
   @JsonProperty()
   role: string;
