@@ -199,20 +199,29 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     }
 
     // check if the organization really work on this project we want to add participant too.
-    const isThisOrgWorkOnProject = await this.dao.getByCriteria({ organization });
-    if (project !== isThisOrgWorkOnProject) {
+    const isThisOrgWorkOnProject = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
+    if (
+      isThisOrgWorkOnProject.find((p) => {
+        console.log('p====', p.id);
+        console.log('project====', project.id);
+
+        return p.id === project.id;
+      })
+    ) {
+    } else {
       throw new NotFoundError('PROJECT.NOT_FOR_THIS_ORG {{project,org}}', {
         variables: { project: `${id}`, org: `${payload.orgId}` },
       });
     }
     const projectMembers: ProjectMember[] = [];
 
-    // await applyToAll(payload.listMembers, async (projectMember) => {
-
     const user = await this.userService.get(payload.userId);
 
     if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload.userId}` } });
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+        variables: { user: `${payload.userId}` },
+        friendly: true,
+      });
     }
 
     const member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
@@ -222,7 +231,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
-
+    console.log('ANI HNA CHECK ');
     const checkIfMemberAlreadyInProject: ProjectMember = await this.projectMemberService.getByCriteria(
       { member, project },
       FETCH_STRATEGY.SINGLE,
@@ -230,18 +239,22 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         populate: true,
       },
     );
+    console.log('checkIfMemberAlreadyInProject ');
+
     if (checkIfMemberAlreadyInProject) {
       throw new ConflictError('PROJECT.MEMBER_IS_ALREADY_PARTICIPATE_IN_PROJECT {{member}}', {
         variables: { member: `${member.name}` },
       });
     }
+    console.log('wrappedProjectMember ');
+
     const wrappedProjectMember = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
       status: payload.status,
       role: payload.role as ProjectMemberStatus,
     });
     wrappedProjectMember.project = project;
     wrappedProjectMember.member = member;
-
+    console.log('BEFORE CREATE PROJECT MEMBER');
     const createdProjectMember = await this.projectMemberService.create(wrappedProjectMember);
 
     projectMembers.push(createdProjectMember);

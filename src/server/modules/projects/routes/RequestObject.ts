@@ -92,7 +92,7 @@ export class ProjectRO {
   key: string;
 
   @JsonProperty()
-  description: string;
+  description?: string;
 
   @JsonProperty()
   active?: boolean;
