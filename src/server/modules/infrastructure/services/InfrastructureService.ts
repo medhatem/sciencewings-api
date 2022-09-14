@@ -241,14 +241,14 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       { organization },
       FETCH_STRATEGY.ALL,
     )) as Infrastructure[];
-    let InfrastructureList: infrastructurelistline[] = [];
+    const InfrastructureList: infrastructurelistline[] = [];
     let subInfras: any[] = [];
     let responsible: Member;
     await applyToAll(fetchedInfrastructure, async (infrastructure) => {
       responsible = infrastructure.responsible;
       await infrastructure.children.init();
       subInfras = infrastructure.children.toArray();
-      let resourceNb = await infrastructure.resources.loadCount(true);
+      const resourceNb = await infrastructure.resources.loadCount(true);
       InfrastructureList.push({
         name: infrastructure.name,
         key: infrastructure.key,

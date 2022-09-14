@@ -145,12 +145,12 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       }
     }
     if (payload.newManager) {
-      let oldManager = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.SINGLE, {
+      const oldManager = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.SINGLE, {
         filters: { manager: true },
       });
 
       if (oldManager.id == payload.newManager) {
-        let newManager = await this.projectMemberService.get(payload.newManager);
+        const newManager = await this.projectMemberService.get(payload.newManager);
 
         // Role changing
         await this.projectMemberService.update(
@@ -302,7 +302,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         variables: { org: `${payload.orgId}` },
       });
     }
-    let member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
+    const member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
       populate: true,
     });
 
@@ -339,14 +339,14 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
     const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
-    let projectList: any[] = [];
+    const projectList: any[] = [];
     let responsable;
     await applyToAll(fetchedProjects, async (project) => {
       responsable = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.SINGLE, {
         populate: ['member'] as never,
         filters: { manager: true },
       });
-      let membersLength = await project.members.loadCount(true);
+      const membersLength = await project.members.loadCount(true);
       projectList.push({
         title: project.title,
         responsable: {

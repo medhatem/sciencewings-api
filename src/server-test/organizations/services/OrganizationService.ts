@@ -845,7 +845,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
   suite('get member', () => {
     const orgId = 1;
-    const filterStatus: string = '';
+    const filterStatus = '';
     test('Should fail on organization not found', async () => {
       // check if the organization already exist
       mockMethodWithResult(organizationDAO, 'get', [orgId], Promise.resolve(null));
