@@ -3,8 +3,8 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { beforeDeserialize } from '@/utils/utilities';
-import { MemberDTO } from '@/modules/hr';
 import { ProjectDTO } from '@/modules/projects/dtos/projectDTO';
+import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
