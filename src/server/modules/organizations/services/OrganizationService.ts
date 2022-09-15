@@ -374,7 +374,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
    */
   @log()
   public async getOrganizationSettingsById(organizationId: number): Promise<OrganizationSettings> {
-    const fetchedOrganization = await this.get(organizationId);
+    const fetchedOrganization = await this.get(organizationId, { populate: ['settings'] as any });
 
     if (!fetchedOrganization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
@@ -382,7 +382,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-
     return fetchedOrganization.settings;
   }
 
