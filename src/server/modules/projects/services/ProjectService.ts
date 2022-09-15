@@ -101,9 +101,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
     // add the user who create the project as a manager of project
-    const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE, {
-      populate: true,
-    });
+    const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
@@ -114,14 +112,14 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       description: payload.description,
       status: ProjectStatus.TODO,
     });
-    wrappedProject.organization = organization;
+    wrappedProject.organization = organization.id;
     const project = await this.create(wrappedProject);
     const participant = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
       role: RolesList.MANAGER,
       status: ProjectMemberStatus.ACTIVE,
     });
     participant.member = member;
-    participant.project = project;
+    participant.project = project.id;
     await this.projectMemberService.create(participant);
     return project.id;
   }
@@ -198,17 +196,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       });
     }
 
-    // check if the organization really work on this project we want to add participant too.
-    const isThisOrgWorkOnProject = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
-    let contain;
-    isThisOrgWorkOnProject.filter((p) => {
-      p.id === project.id ? (contain = true) : (contain = false);
-    });
-    if (contain) {
-      throw new NotFoundError('PROJECT.NOT_FOR_THIS_ORG {{project,org}}', {
-        variables: { project: `${id}`, org: `${payload.orgId}` },
-      });
-    }
     const projectMembers: ProjectMember[] = [];
 
     const user = await this.userService.get(payload.userId);
@@ -220,19 +207,17 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       });
     }
 
-    const member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
-      populate: true,
-    });
+    const member: Member = await this.memberService.getByCriteria(
+      { user: user.id, organization: organization.id },
+      FETCH_STRATEGY.SINGLE,
+    );
 
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
     const checkIfMemberAlreadyInProject: ProjectMember = await this.projectMemberService.getByCriteria(
-      { member, project },
+      { member, project: project.id },
       FETCH_STRATEGY.SINGLE,
-      {
-        populate: true,
-      },
     );
 
     if (checkIfMemberAlreadyInProject) {
@@ -245,7 +230,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       status: payload.status,
       role: payload.role as ProjectMemberStatus,
     });
-    wrappedProjectMember.project = project;
+    wrappedProjectMember.project = project.id;
     wrappedProjectMember.member = member;
     const createdProjectMember = await this.projectMemberService.create(wrappedProjectMember);
 
@@ -298,9 +283,7 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         variables: { org: `${payload.orgId}` },
       });
     }
-    const member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {
-      populate: true,
-    });
+    const member: Member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE, {});
 
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
@@ -308,9 +291,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     const fetchedProjectParticipants = await this.projectMemberService.getByCriteria(
       { project, member },
       FETCH_STRATEGY.SINGLE,
-      {
-        populate: true,
-      },
     );
 
     const wrappedParticipant = this.wrapEntity(fetchedProjectParticipants, {

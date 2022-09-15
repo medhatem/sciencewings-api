@@ -78,15 +78,15 @@ export class MemberService extends BaseService<Member> implements IMemberService
     }
 
     const wrappedMember = this.wrapEntity(Member.getInstance(), {
-      name: user.firstname + ' ' + user.lastname,
+      name: user?.firstname + ' ' + user?.lastname,
       workEmail: user.email,
       status: userStatus.INVITATION_PENDING,
       membership: MembershipStatus.PENDING,
       joinDate: new Date(),
       memberType: MemberTypeEnum.REGULAR,
     });
-    wrappedMember.user = user;
-    wrappedMember.organization = existingOrg;
+    wrappedMember.user = user.id;
+    wrappedMember.organization = existingOrg.id;
 
     const createdMemberResult = await this.dao.create(wrappedMember);
 
@@ -238,7 +238,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     const memberResult = await this.getByCriteria(
       { user: payload.userId, organization: payload.orgId },
       FETCH_STRATEGY.SINGLE,
-      { populate: true },
     );
 
     if (!memberResult) {
