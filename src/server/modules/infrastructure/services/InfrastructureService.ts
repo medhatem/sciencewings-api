@@ -91,7 +91,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       name: payload.name,
       description: payload.description,
       key: payload.key,
-      default: payload.default,
+      default: payload.default || false,
     });
 
     if (payload.default) {
