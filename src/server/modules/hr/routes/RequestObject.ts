@@ -274,3 +274,13 @@ export class GroupRO {
   @JsonProperty()
   description: string;
 }
+
+@JsonObject()
+@unique
+export class GroupMembership {
+  @JsonProperty()
+  user: number;
+
+  @JsonProperty()
+  organization: number;
+}

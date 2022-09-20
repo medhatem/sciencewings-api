@@ -19,3 +19,8 @@ export const UpdateGroupSchema = GroupSchema.keys({
 export const UpdateGroupMember = GroupSchema.keys({
   members: Joi.array(),
 });
+
+export const GroupMembershipSchema = GroupSchema.keys({
+  user: Joi.number().required(),
+  organization: Joi.number().required(),
+});

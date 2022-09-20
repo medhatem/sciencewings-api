@@ -4,7 +4,7 @@ import { Group } from '@/modules/hr/models/Group';
 import { Path, PathParam, POST, PUT, Security, DELETE, GET } from 'typescript-rest';
 import { GroupDTO, CreateGroupDTO, UpdateGroupDTO } from '@/modules/hr/dtos/GroupDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { GroupRO } from '@/modules/hr/routes/RequestObject';
+import { GroupMembership, GroupRO } from '@/modules/hr/routes/RequestObject';
 import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
 import { Response } from 'typescript-rest-swagger';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
@@ -81,17 +81,14 @@ export class GroupRoutes extends BaseRoutes<Group> {
    * @returns the inserted member id
    */
   @POST
-  @Path('/groupMember/:groupid/:memberid')
+  @Path('/groupMember/:groupid')
   @Security()
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateGroupMember(
-    @PathParam('memberid') memberid: number,
-    @PathParam('groupid') groupid: number,
-  ): Promise<GroupDTO> {
-    const result = await this.groupService.addGroupMember(memberid, groupid);
+  public async updateGroupMember(member: GroupMembership, @PathParam('groupid') groupid: number): Promise<GroupDTO> {
+    const result = await this.groupService.addGroupMember(member, groupid);
 
     return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
@@ -103,17 +100,14 @@ export class GroupRoutes extends BaseRoutes<Group> {
    * @returns the deleted member id
    */
   @DELETE
-  @Path('/groupMember/:groupid/:memberid')
+  @Path('/groupMember/:groupid')
   @Security()
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async deleteGroupMember(
-    @PathParam('memberid') memberid: number,
-    @PathParam('groupid') groupid: number,
-  ): Promise<GroupDTO> {
-    const result = await this.groupService.deleteGroupMember(memberid, groupid);
+  public async deleteGroupMember(member: GroupMembership, @PathParam('groupid') groupid: number): Promise<GroupDTO> {
+    const result = await this.groupService.deleteGroupMember(member, groupid);
 
     return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
