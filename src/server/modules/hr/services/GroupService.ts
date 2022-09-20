@@ -5,11 +5,11 @@ import { Group } from '@/modules/hr/models/Group';
 import { GroupDAO } from '@/modules/hr/daos/GroupDAO';
 import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
 import { log } from '@/decorators/log';
-import { GroupMembership, GroupRO } from '@/modules/hr/routes/RequestObject';
+import { GroupRO } from '@/modules/hr/routes/RequestObject';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
-import { CreateGroupSchema, UpdateGroupSchema, GroupMembershipSchema } from '@/modules/hr/schemas/GroupSchema';
+import { CreateGroupSchema, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { applyToAll } from '@/utils/utilities';
@@ -137,27 +137,22 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  @validate
-  public async addGroupMember(
-    @validateParam(GroupMembershipSchema) member: GroupMembership,
-    groupId: number,
-  ): Promise<number> {
-    const fetchedGroup = await this.dao.get(groupId);
+  public async addGroupMember(memberUserId: number, groupId: number): Promise<number> {
+    const fetchedGroup = (await this.dao.get(groupId)) as Group;
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
-
-    const organization = await this.organizationService.get(member.organization);
+    const organization = await this.organizationService.get(fetchedGroup.organization.id);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
-        variables: { org: `${member.organization}` },
+        variables: { org: `${fetchedGroup.organization.id}` },
         friendly: false,
       });
     }
 
-    const user = await this.userService.get(member.user);
+    const user = await this.userService.get(memberUserId);
     if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${member.user}` } });
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${memberUserId}` } });
     }
 
     const fetchedMember = (await this.memberService.getByCriteria(
@@ -177,27 +172,23 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  @validate
-  public async deleteGroupMember(
-    @validateParam(GroupMembershipSchema) member: GroupMembership,
-    groupId: number,
-  ): Promise<number> {
+  public async deleteGroupMember(memberUserId: number, groupId: number): Promise<number> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
 
-    const organization = await this.organizationService.get(member.organization);
+    const organization = await this.organizationService.get(fetchedGroup.organization.id);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
-        variables: { org: `${member.organization}` },
+        variables: { org: `${fetchedGroup.organization.id}` },
         friendly: false,
       });
     }
 
-    const user = await this.userService.get(member.user);
+    const user = await this.userService.get(memberUserId);
     if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${member.user}` } });
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${memberUserId}` } });
     }
 
     const fetchedMember = (await this.memberService.getByCriteria(

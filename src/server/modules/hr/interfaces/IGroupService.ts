@@ -6,6 +6,6 @@ export abstract class IGroupService extends IBaseService<any> {
   updateGroup: (payload: GroupRO, groupId: number) => Promise<number>;
   getOrganizationGroup: (organizationId: number) => Promise<any>;
   deleteGroup: (groupId: number) => Promise<number>;
-  addGroupMember: (member: any, groupId: number) => Promise<number>;
-  deleteGroupMember: (member: any, groupId: number) => Promise<number>;
+  addGroupMember: (memberUserId: number, groupId: number) => Promise<number>;
+  deleteGroupMember: (memberUserId: number, groupId: number) => Promise<number>;
 }
