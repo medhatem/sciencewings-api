@@ -64,6 +64,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
   static getInstance(): IOrganizationService {
     return container.get(IOrganizationService);
   }
+  @log()
+  public async getOrganizationById(id: number): Promise<Organization> {
+    const organization = await this.dao.get(id);
+    return organization
+  }
 
   /**
    * create a new organization in multiple steps
@@ -118,7 +123,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialLinkedin: payload.socialLinkedin || null,
     });
     wrappedOrganization.parent = parent;
-    wrappedOrganization.direction = user;
+    wrappedOrganization.owner = user;
     const groupName = `${orgPrifix}${payload.name}`;
     // create keycloak organization
     const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
@@ -239,15 +244,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
       ...payload,
     });
 
-    if (payload.direction) {
-      const direction = await this.userService.get(payload.direction);
-      if (!direction) {
+    if (payload.owner) {
+      const owner = await this.userService.get(payload.owner);
+      if (!owner) {
         throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
-          variables: { user: `${payload.direction}` },
+          variables: { user: `${payload.owner}` },
           friendly: false,
         });
       }
-      wrappedOrganization.direction = direction;
+      wrappedOrganization.owner = owner;
     }
 
     if (payload.parent) {
