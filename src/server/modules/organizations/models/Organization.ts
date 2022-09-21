@@ -58,7 +58,7 @@ export class Organization extends BaseModel<Organization> {
   name!: string;
 
   @Property({ nullable: true })
-  description!: string;
+  description?: string;
 
   @Property()
   email!: string;
