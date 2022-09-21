@@ -279,7 +279,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         variables: { resource: `${resourceId}` },
       });
     }
-
+    await fetchedInfrastructure.resources.init();
     fetchedInfrastructure.resources.add(fetchedResource);
     this.dao.update(fetchedInfrastructure);
     return infrastructureId;
