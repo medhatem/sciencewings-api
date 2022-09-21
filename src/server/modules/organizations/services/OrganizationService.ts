@@ -254,7 +254,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     if (payload.phone) {
-      const phone = await this.phoneService.getByCriteria({ organization }, FETCH_STRATEGY.SINGLE);
+      const phone = await this.phoneService.get(payload.phone.id);
       const updatedPhone = this.phoneService.wrapEntity(phone, {
         ...phone,
         phoneLabel: payload.phone.phoneLabel,
