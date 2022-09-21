@@ -22,6 +22,7 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
+import { ftruncate } from 'fs';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -259,5 +260,29 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     });
     return InfrastructureList;
+  }
+
+  /**
+   * delete a resource from a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async deleteResourceFromGivenInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const fetchedInfrastructure = await this.dao.get(infrastructureId);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    const fetchedResource = await this.resourceService.get(resourceId);
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.remove(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
   }
 }

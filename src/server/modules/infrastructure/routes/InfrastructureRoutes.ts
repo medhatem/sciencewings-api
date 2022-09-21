@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@/di/index';
-import { GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { DELETE, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
@@ -10,6 +10,7 @@ import { InfrastructureRO, UpdateinfrastructureRO } from './RequestObject';
 import {
   CreateInfrastructureDTO,
   GetAllInfrastructuresDTO,
+  GetInfrastructureDTO,
   infrastructureGetDTO,
   InfrastructureListRequestDTO,
   UpdateInfrastructureDTO,
@@ -97,5 +98,27 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(orgId);
 
     return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });
+  }
+
+  /**
+   * delete a resource from a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   * @returns the updated infrastructure id
+   */
+  @DELETE
+  @Path('/infraResources/:infrastructureId/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetInfrastructureDTO>(204, 'infrastructure updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async deleteResourceFromGivenInfrastructure(
+    @PathParam('resourceId') resourceId: number,
+    @PathParam('infrastructureId') infrastructureId: number,
+  ): Promise<GetInfrastructureDTO> {
+    const result = await this.InfrastructureService.deleteResourceFromGivenInfrastructure(resourceId, infrastructureId);
+
+    return new GetInfrastructureDTO({ body: { id: result, statusCode: 204 } });
   }
 }
