@@ -1,4 +1,4 @@
-import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToMany, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -31,6 +31,6 @@ export class Phone extends BaseModel<Phone> {
   @ManyToMany({ entity: () => User, nullable: true })
   user?: User;
 
-  @ManyToMany({ entity: () => Organization, nullable: true })
+  @OneToOne({ entity: () => Organization, nullable: true })
   organization?: Organization;
 }

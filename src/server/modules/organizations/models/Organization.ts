@@ -63,13 +63,11 @@ export class Organization extends BaseModel<Organization> {
   @Property()
   email!: string;
 
-  @ManyToMany({
+  @OneToOne({
     entity: () => Phone,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
+    nullable: true,
   })
-  public phones = new Collection<Phone>(this);
+  phone?: Phone;
 
   // e.i: Public, Service, Institut
   @Property()

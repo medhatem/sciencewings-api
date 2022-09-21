@@ -13,10 +13,9 @@ export class CreateOrganizationRO {
   @JsonProperty()
   email: string;
 
-  @JsonProperty({
-    type: PhoneRO,
-  })
-  phones?: Array<PhoneRO>;
+  @JsonProperty()
+  phone?: PhoneRO;
+
   @JsonProperty()
   type: string;
 
@@ -59,6 +58,9 @@ export class UpdateOrganizationRO {
 
   @JsonProperty()
   email?: string;
+
+  @JsonProperty()
+  phone?: PhoneRO;
 
   @JsonProperty()
   type?: string;
