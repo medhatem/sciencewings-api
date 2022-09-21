@@ -22,6 +22,7 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
+import { Resource } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -273,15 +274,18 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
     }
 
-    const fetchedResource = await this.resourceService.get(resourceId);
+    const fetchedResource = (await this.resourceService.get(resourceId)) as Resource;
     if (!fetchedResource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
         variables: { resource: `${resourceId}` },
       });
     }
+    console.log('resouuuuuuuuuuuuuuuuuuuuuuurce', fetchedResource);
     await fetchedInfrastructure.resources.init();
     fetchedInfrastructure.resources.remove(fetchedResource);
+    console.log('infraaaaaaaa1', fetchedInfrastructure);
     this.dao.update(fetchedInfrastructure);
+    console.log('infraaaaaaaa2', fetchedInfrastructure);
     return infrastructureId;
   }
 }
