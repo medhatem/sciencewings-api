@@ -67,6 +67,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   public async getOrganizationById(id: number): Promise<Organization> {
     const organization = await this.dao.get(id);
+    console.log('organization============= ', organization);
     return organization;
   }
 
@@ -121,7 +122,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
     });
+    const organizationPhone = await this.phoneService.create({
+      phoneLabel: payload.phone.phoneLabel,
+      phoneCode: payload.phone.phoneCode,
+      phoneNumber: payload.phone.phoneNumber,
+    });
 
+    wrappedOrganization.phone = organizationPhone;
     wrappedOrganization.parent = parent;
     wrappedOrganization.owner = user;
 
@@ -189,12 +196,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         }),
       ),
     );
-    await this.phoneService.create({
-      phoneLabel: payload.phone.phoneLabel,
-      phoneCode: payload.phone.phoneCode,
-      phoneNumber: payload.phone.phoneNumber,
-      organization,
-    });
 
     //create a default infastructure
 
