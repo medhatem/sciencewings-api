@@ -6,6 +6,7 @@ import { PhoneInformationDTO } from '@/modules/phones/dtos/PhoneDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
+import { OrganizationSettingsBodyDTO } from '@/modules/organizations/dtos/OrganizationSettingsDTO';
 
 @JsonObject()
 @unique
@@ -31,6 +32,9 @@ export class OrganizationInformationDTO extends BaseBodyDTO {
 
   @JsonProperty()
   owner?: UserDTO;
+
+  @JsonProperty()
+  settings?: OrganizationSettingsBodyDTO;
 }
 @JsonObject()
 @unique
