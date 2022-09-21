@@ -64,6 +64,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
   static getInstance(): IOrganizationService {
     return container.get(IOrganizationService);
   }
+  /**
+   * Get one organization by id
+   **/
   @log()
   public async getOrganizationById(id: number): Promise<Organization> {
     const organization = await this.dao.get(id);
