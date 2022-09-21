@@ -137,7 +137,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  public async addGroupMember(memberUserId: number, groupId: number): Promise<number> {
+  public async addGroupMember(UserID: number, groupId: number): Promise<number> {
     const fetchedGroup = (await this.dao.get(groupId)) as Group;
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
@@ -150,9 +150,9 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       });
     }
 
-    const user = await this.userService.get(memberUserId);
+    const user = await this.userService.get(UserID);
     if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${memberUserId}` } });
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${UserID}` } });
     }
 
     const fetchedMember = (await this.memberService.getByCriteria(
@@ -172,7 +172,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  public async deleteGroupMember(memberUserId: number, groupId: number): Promise<number> {
+  public async deleteGroupMember(UserID: number, groupId: number): Promise<number> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
@@ -186,9 +186,9 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       });
     }
 
-    const user = await this.userService.get(memberUserId);
+    const user = await this.userService.get(UserID);
     if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${memberUserId}` } });
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${UserID}` } });
     }
 
     const fetchedMember = (await this.memberService.getByCriteria(

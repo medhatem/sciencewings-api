@@ -7,5 +7,5 @@ export abstract class IGroupService extends IBaseService<any> {
   getOrganizationGroup: (organizationId: number) => Promise<any>;
   deleteGroup: (groupId: number) => Promise<number>;
   addGroupMember: (memberUserId: number, groupId: number) => Promise<number>;
-  deleteGroupMember: (memberUserId: number, groupId: number) => Promise<number>;
+  deleteGroupMember: (UserID: number, groupId: number) => Promise<number>;
 }

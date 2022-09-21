@@ -81,17 +81,17 @@ export class GroupRoutes extends BaseRoutes<Group> {
    * @returns the inserted member id
    */
   @POST
-  @Path('/groupMember/:groupid/:memberUserId')
+  @Path('/groupMember/:groupid/:UserID')
   @Security()
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updateGroupMember(
-    @PathParam('memberUserId') memberUserId: number,
+    @PathParam('UserID') UserID: number,
     @PathParam('groupid') groupid: number,
   ): Promise<GroupDTO> {
-    const result = await this.groupService.addGroupMember(memberUserId, groupid);
+    const result = await this.groupService.addGroupMember(UserID, groupid);
 
     return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
@@ -103,17 +103,17 @@ export class GroupRoutes extends BaseRoutes<Group> {
    * @returns the deleted member id
    */
   @DELETE
-  @Path('/groupMember/:groupid/:memberUserId')
+  @Path('/groupMember/:groupid/:UserID')
   @Security()
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async deleteGroupMember(
-    @PathParam('memberUserId') memberUserId: number,
+    @PathParam('UserID') UserID: number,
     @PathParam('groupid') groupid: number,
   ): Promise<GroupDTO> {
-    const result = await this.groupService.deleteGroupMember(memberUserId, groupid);
+    const result = await this.groupService.deleteGroupMember(UserID, groupid);
 
     return new GroupDTO({ body: { id: result, statusCode: 204 } });
   }
