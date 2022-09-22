@@ -76,9 +76,8 @@ export class GroupRoutes extends BaseRoutes<Group> {
 
   /**
    * add group memebers by id
-   * @param payload
-   * @param id
-   * @returns the inserted member id
+   * @param userId the member user id
+   * @param groupid the group id
    */
   @POST
   @Path('/groupMember/:groupid/:userId')
@@ -98,9 +97,8 @@ export class GroupRoutes extends BaseRoutes<Group> {
 
   /**
    * delete group memebers by id
-   * @param payload
-   * @param id
-   * @returns the added in group id
+   * @param userId the member user id
+   * @param groupid the group id
    */
   @DELETE
   @Path('/groupMember/:groupid/:userId')
