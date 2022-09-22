@@ -119,23 +119,8 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       }
       wrappedInfustructure.responsible = responsable;
     }
-    // check the existance of the resources
-    let fetchedResources;
-    if (payload.resources) {
-      const resources = payload.resources;
-      await applyToAll(resources, async (resource) => {
-        const fetchedResource = await this.resourceService.get(resource);
-        if (!fetchedResource) {
-          throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
-            variables: { resource: `${resource}` },
-          });
-        }
-        fetchedResources.push(fetchedResource);
-      });
-    }
 
     wrappedInfustructure.organization = organization;
-    wrappedInfustructure.resources = fetchedResources;
     wrappedInfustructure.parent = fetchedParent;
 
     const createdInfustructure = await this.create(wrappedInfustructure);
@@ -197,22 +182,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
 
     if (keyExistingTest) {
       throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
-    }
-
-    // check the existance of the resources
-    let fetchedResources;
-    if (payload.resources) {
-      const resources = payload.resources;
-      await applyToAll(resources, async (resource) => {
-        const fetchedResource = await this.resourceService.get(resource);
-        if (!fetchedResource) {
-          throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
-            variables: { resource: `${resource}` },
-          });
-        }
-        fetchedResources.push(fetchedResource);
-      });
-      wrappedInfustructure.resources.add(fetchedResources);
     }
 
     // check the existance of the parent
@@ -280,12 +249,13 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         variables: { resource: `${resourceId}` },
       });
     }
-    console.log('resouuuuuuuuuuuuuuuuuuuuuuurce', fetchedResource);
+
     await fetchedInfrastructure.resources.init();
+
     fetchedInfrastructure.resources.remove(fetchedResource);
-    console.log('infraaaaaaaa1', fetchedInfrastructure);
+
     this.dao.update(fetchedInfrastructure);
-    console.log('infraaaaaaaa2', fetchedInfrastructure);
+
     return infrastructureId;
   }
 }
