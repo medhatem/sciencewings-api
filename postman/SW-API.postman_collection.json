@@ -21,7 +21,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"testingground2\",\n      \"description\": \"testingground2\",\n    \"email\": \"testingground1@gmail.com\",\n    \"phones\": [\n        {\n            \"phoneLabel\": \"personal\",\n            \"phoneCode\": \"dz\",\n            \"phoneNumber\": \"541110222\"\n        }\n    ],\n    \"type\": \"Public\",\n    \"labels\": [\"x\",\"y\",\"z\"],\n    \"members\": [],\n    \"social\": [],\n    \"direction\": 1,\n    \"adminContact\": 1,\n    \"addresses\": [\n        {\n            \"country\": \"Canada\",\n            \"province\": \"Ontario\",\n            \"code\": \"5L8 G9S\",\n            \"type\": \"ORGANIZATION\",\n            \"street\": \"487 Yardley Cres\",\n            \"appartement\": \"12\",\n            \"city\": \"Ontario\"\n        }\n    ]\n}",
+							"raw": "{\n    \"name\": \"testingground2\",\n      \"description\": \"testingground2\",\n    \"email\": \"testingground1@gmail.com\",\n    \"phones\": [\n        {\n            \"phoneLabel\": \"personal\",\n            \"phoneCode\": \"dz\",\n            \"phoneNumber\": \"541110222\"\n        }\n    ],\n    \"type\": \"Public\",\n    \"labels\": [\"x\",\"y\",\"z\"],\n    \"members\": [],\n    \"social\": [],\n    \"owner\": 1,\n    \"adminContact\": 1,\n    \"addresses\": [\n        {\n            \"country\": \"Canada\",\n            \"province\": \"Ontario\",\n            \"code\": \"5L8 G9S\",\n            \"type\": \"ORGANIZATION\",\n            \"street\": \"487 Yardley Cres\",\n            \"appartement\": \"12\",\n            \"city\": \"Ontario\"\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"

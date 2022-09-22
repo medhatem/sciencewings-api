@@ -67,7 +67,7 @@ export class UpdateOrganizationRO {
   labels?: Array<string>;
 
   @JsonProperty()
-  direction?: number;
+  owner?: number;
 
   @JsonProperty()
   socialFacebook?: string;
