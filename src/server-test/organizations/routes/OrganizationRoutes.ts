@@ -96,7 +96,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       email: 'test',
       type: 'test',
       labels: [''],
-      direction: 1,
+      owner: 1,
       socialFacebook: 'test',
       socialTwitter: 'test',
       socialGithub: 'test',
