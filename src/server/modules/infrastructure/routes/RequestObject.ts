@@ -23,9 +23,6 @@ export class InfrastructureRO {
   parent?: number;
 
   @JsonProperty()
-  resources?: Array<number>;
-
-  @JsonProperty()
   organization: number;
 }
 @JsonObject()
@@ -45,9 +42,6 @@ export class UpdateinfrastructureRO {
 
   @JsonProperty()
   parent?: number;
-
-  @JsonProperty()
-  resources?: Array<number>;
 
   @JsonProperty()
   organization?: number;
