@@ -70,7 +70,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
   @log()
   public async getOrganizationById(id: number): Promise<Organization> {
     const organization = await this.dao.get(id);
-    console.log('organization============= ', organization);
     return organization;
   }
 

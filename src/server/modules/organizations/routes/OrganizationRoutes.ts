@@ -71,7 +71,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @ContextRequest request: UserRequest,
   ): Promise<CreateOrganizationDTO> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
-    console.log('result ===========', result);
     return new CreateOrganizationDTO({ body: { id: result, statusCode: 201 } });
   }
   /**
