@@ -16,12 +16,15 @@ import { applyToAll } from '@/utils/utilities';
 import { grpPrifix } from '@/modules/prifixConstants';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { IUserService } from '@/modules/users/interfaces';
+import { Member } from '../models/Member';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
   constructor(
     public dao: GroupDAO,
     public organizationService: IOrganizationService,
+    public userService: IUserService,
     public memberService: IMemberService,
     public keycloakUtils: KeycloakUtil,
   ) {
@@ -134,24 +137,33 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  @validate
-  public async addGroupMember(member: any, groupId: number): Promise<number> {
-    const fetchedGroup = await this.dao.get(groupId);
+  public async addGroupMember(userId: number, groupId: number): Promise<number> {
+    const fetchedGroup = (await this.dao.get(groupId)) as Group;
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
-    const fetchedMember = await this.memberService.getByCriteria(
-      {
-        user: member.user,
-        organization: member.organization,
-      },
+    const organization = await this.organizationService.get(fetchedGroup.organization.id);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${fetchedGroup.organization.id}` },
+        friendly: false,
+      });
+    }
+
+    const user = await this.userService.get(userId);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
+    }
+
+    const fetchedMember = (await this.memberService.getByCriteria(
+      { user, organization },
       FETCH_STRATEGY.SINGLE,
-    );
+    )) as Member;
     if (!fetchedMember) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
 
-    if (!fetchedGroup.members.isInitialized) fetchedGroup.members.init();
+    await fetchedGroup.members.init();
 
     fetchedGroup.members.add(fetchedMember);
     this.dao.update(fetchedGroup);
@@ -160,24 +172,34 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  @validate
-  public async deleteGroupMember(member: any, groupId: number): Promise<number> {
+  public async deleteGroupMember(userId: number, groupId: number): Promise<number> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
-    const fetchedMember = await this.memberService.getByCriteria(
-      {
-        user: member.user,
-        organization: member.organization,
-      },
+
+    const organization = await this.organizationService.get(fetchedGroup.organization.id);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${fetchedGroup.organization.id}` },
+        friendly: false,
+      });
+    }
+
+    const user = await this.userService.get(userId);
+    if (!user) {
+      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
+    }
+
+    const fetchedMember = (await this.memberService.getByCriteria(
+      { user, organization },
       FETCH_STRATEGY.SINGLE,
-    );
+    )) as Member;
     if (!fetchedMember) {
       throw new NotFoundError('MEMBER.NON_EXISTANT');
     }
 
-    if (!fetchedGroup.members.isInitialized) fetchedGroup.members.init();
+    await fetchedGroup.members.init();
 
     fetchedGroup.members.remove(fetchedMember);
 
