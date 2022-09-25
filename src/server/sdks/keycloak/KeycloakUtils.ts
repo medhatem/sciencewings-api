@@ -177,13 +177,13 @@ export class KeycloakUtil {
    *
    * update a Kc user attribute
    *
-   * @param KcUserId of the group
+   * @param KcUserId  keycloakUser id of the user
    * @param payload tha data for the update
    */
   async updateKcUser(KcUserId: string, payload: UserRepresentation): Promise<any> {
     return await (
       await this.keycloak.getAdminClient()
-    ).groups.update(
+    ).users.update(
       { id: KcUserId, realm: getConfig('keycloak.clientValidation.realmName') },
       {
         ...payload,
