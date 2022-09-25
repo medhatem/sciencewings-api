@@ -680,9 +680,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       }
     });
 
-    test('Should fail on find the direction', async () => {
+    test('Should fail on find the owner', async () => {
       const mackPayload = { ...payload };
-      mackPayload.direction = 2;
+      mackPayload.owner = 2;
       // set organization to exist
       mockMethodWithResult(organizationDAO, 'get', [OrgId], Promise.resolve({ kcid }));
       //mock keycloak organization update
@@ -693,8 +693,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         Promise.resolve(),
       );
 
-      // set direction to null
-      mockMethodWithResult(userService, 'get', [mackPayload.direction], Promise.resolve(null));
+      // set owner to null
+      mockMethodWithResult(userService, 'get', [mackPayload.owner], Promise.resolve(null));
 
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stubKeyclockInstanceWithBaseService([]);
@@ -746,8 +746,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       );
       // set owner to exist
       mockMethodWithResult(userService, 'get', [userId], Promise.resolve({}));
-      // set direction to exist
-      mockMethodWithResult(userService, 'get', [payload.direction], Promise.resolve({}));
+      // set owner to exist
+      mockMethodWithResult(userService, 'get', [payload.owner], Promise.resolve({}));
       // prepare base
       stub(BaseService.prototype, 'wrapEntity').returns({});
       stubKeyclockInstanceWithBaseService([{}]);
