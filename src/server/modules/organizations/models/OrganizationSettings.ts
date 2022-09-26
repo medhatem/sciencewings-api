@@ -1,6 +1,11 @@
-import { BooleanType, DateType, Entity, PrimaryKey, Property, StringType } from '@mikro-orm/core';
+import { BooleanType, DateType, Entity, EnumType, PrimaryKey, Property, StringType } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+
+export enum AccountNumberVisibilty {
+  EVERYONE = 'EVERYONE',
+  MEMBER = 'MEMBER',
+}
 
 @provide()
 @Entity()
@@ -33,8 +38,8 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   requireReasonWhenEditingReservation = true;
   @Property({ nullable: true, type: BooleanType })
   hideOrganizationCalendar = true;
-  @Property({ nullable: true, type: BooleanType })
-  hideAccountNumberWhenMakingReservation = true;
+  @Property({ nullable: true, type: EnumType })
+  hideAccountNumberWhenMakingReservation = AccountNumberVisibilty.EVERYONE;
   @Property({ nullable: true, type: BooleanType })
   showResourceImagesInReservation = true;
   @Property({ nullable: true, type: StringType })

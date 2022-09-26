@@ -10,6 +10,13 @@ import { OrganizationSettingsBodyDTO } from '@/modules/organizations/dtos/Organi
 
 @JsonObject()
 @unique
+export class OrganizationLabelsDTO {
+  @JsonProperty()
+  name: string;
+}
+
+@JsonObject()
+@unique
 export class OrganizationInformationDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
@@ -35,6 +42,15 @@ export class OrganizationInformationDTO extends BaseBodyDTO {
 
   @JsonProperty()
   settings?: OrganizationSettingsBodyDTO;
+
+  @JsonProperty()
+  parent?: OrganizationInformationDTO;
+
+  @JsonProperty({
+    type: OrganizationInformationDTO,
+    beforeDeserialize,
+  })
+  labels?: Array<OrganizationInformationDTO>;
 }
 @JsonObject()
 @unique
