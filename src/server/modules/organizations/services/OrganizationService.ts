@@ -36,7 +36,7 @@ import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
 
-import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
+import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
@@ -159,7 +159,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
-      const organizationSetting = await this.organizationSettingsService.create({});
+      const organizationSetting = await this.organizationSettingsService.create({
+        hideAccountNumberWhenMakingReservation: AccountNumberVisibilty.EVERYONE,
+      });
       wrappedOrganization.settings = organizationSetting;
       organization = await this.create(wrappedOrganization);
 
@@ -180,6 +182,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
           organization && this.remove(organization.id),
         ].filter(Boolean),
       );
+      console.log('errorr ===== ', error);
       throw new InternalServerError('SOMETHING_WENT_WRONG');
     }
 
