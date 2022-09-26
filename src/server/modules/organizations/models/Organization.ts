@@ -23,6 +23,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
+import { Calendar } from '@/modules/reservation';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -162,4 +163,7 @@ export class Organization extends BaseModel<Organization> {
 
   @OneToOne({ entity: () => OrganizationSettings, nullable: true })
   settings?: OrganizationSettings;
+
+  @OneToMany({ entity: () => Calendar, mappedBy: (member) => member.organization, nullable: true })
+  calendar? = new Collection<Calendar>(this);
 }

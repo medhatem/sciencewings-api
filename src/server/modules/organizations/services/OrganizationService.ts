@@ -136,7 +136,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.phone = organizationPhone;
     wrappedOrganization.parent = parent;
     wrappedOrganization.owner = user;
-
     const groupName = `${orgPrifix}${payload.name}`;
     // create keycloak organization
     const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);

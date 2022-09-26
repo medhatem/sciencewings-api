@@ -56,7 +56,7 @@ export class SeedOrganizations {
         };
 
         org.phone = phone;
-        org.direction = user;
+        org.owner = user;
         org.admin_contact = user;
         org.address = [address];
         org.labels = [address];

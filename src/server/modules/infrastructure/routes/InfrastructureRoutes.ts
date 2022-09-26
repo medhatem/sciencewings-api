@@ -10,6 +10,7 @@ import { InfrastructureRO, UpdateinfrastructureRO } from './RequestObject';
 import {
   CreateInfrastructureDTO,
   GetAllInfrastructuresDTO,
+  GetInfrastructureDTO,
   infrastructureGetDTO,
   InfrastructureListRequestDTO,
   UpdateInfrastructureDTO,
@@ -97,5 +98,21 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(orgId);
 
     return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });
+  }
+
+  /**
+   * get an infastructure with a given Id
+   * @param infraId: infastructure id
+   */
+  @GET
+  @Path('/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure ')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getInfrastructureById(@PathParam('id') id: number): Promise<GetInfrastructureDTO> {
+    const result = await this.InfrastructureService.getInfrastructureById(id);
+
+    return new GetInfrastructureDTO({ body: { ...result, statusCode: 200 } });
   }
 }

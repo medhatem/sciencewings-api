@@ -76,7 +76,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (payload.parent) {
       fetchedParent = await this.dao.get(payload.parent);
       if (!fetchedParent) {
-        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
+        throw new NotFoundError('INFRA.NON_EXISTANT_PARENT_INFRA', { friendly: true });
       }
     }
 
@@ -118,27 +118,21 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       }
       wrappedInfustructure.responsible = responsable;
     }
-    // check the existance of the resources
-    let fetchedResources;
-    if (payload.resources) {
-      const resources = payload.resources;
-      await applyToAll(resources, async (resource) => {
-        const fetchedResource = await this.resourceService.get(resource);
-        if (!fetchedResource) {
-          throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
-            variables: { resource: `${resource}` },
-          });
-        }
-        fetchedResources.push(fetchedResource);
-      });
-    }
 
     wrappedInfustructure.organization = organization;
-    wrappedInfustructure.resources = fetchedResources;
     wrappedInfustructure.parent = fetchedParent;
 
     const createdInfustructure = await this.create(wrappedInfustructure);
     return createdInfustructure.id;
+  }
+
+  @log()
+  public async getInfrastructureById(infraId: number): Promise<Infrastructure> {
+    const infrastructure = await this.dao.get(infraId);
+    if (!infrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_PARENT_INFRA', { friendly: true });
+    }
+    return infrastructure;
   }
 
   /**
@@ -196,22 +190,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
 
     if (keyExistingTest) {
       throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
-    }
-
-    // check the existance of the resources
-    let fetchedResources;
-    if (payload.resources) {
-      const resources = payload.resources;
-      await applyToAll(resources, async (resource) => {
-        const fetchedResource = await this.resourceService.get(resource);
-        if (!fetchedResource) {
-          throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
-            variables: { resource: `${resource}` },
-          });
-        }
-        fetchedResources.push(fetchedResource);
-      });
-      wrappedInfustructure.resources.add(fetchedResources);
     }
 
     // check the existance of the parent
