@@ -7,6 +7,7 @@ import {
   ResourceTimerRestrictionRO,
   ResourcesSettingsReservationGeneralRO,
   ResourcesSettingsReservationUnitRO,
+  UpdateResourceRO,
 } from '@/modules/resources/routes/RequestObject';
 import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
@@ -28,6 +29,7 @@ import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
+import { InfrastructureService } from '@/modules/infrastructure/services/InfrastructureService';
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -43,7 +45,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let resourceTagService: SinonStubbedInstance<ResourceTagService>;
   let resourceStatusHistoryService: SinonStubbedInstance<ResourceStatusHistoryService>;
   let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
-
+  let infrastructureService: SinonStubbedInstance<InfrastructureService>;
   beforeEach(() => {
     createStubInstance(Configuration);
     resourceDao = createStubInstance(ResourceDao);
@@ -56,6 +58,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     resourceTagService = createStubInstance(ResourceTagService);
     resourceStatusHistoryService = createStubInstance(ResourceStatusHistoryService);
     resourceStatusService = createStubInstance(ResourceStatusService);
+    infrastructureService = createStubInstance(InfrastructureService);
 
     const mockedContainer = stub(container, 'get');
     mockedContainer.withArgs(Configuration).returns({
@@ -82,6 +85,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           resourceTagService,
           resourceStatusHistoryService,
           resourceStatusService,
+          infrastructureService,
         ),
       );
   });
@@ -102,6 +106,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       resourceType: 'USER',
       resourceClass: 'TECH',
       organization: 1,
+      infrastructure: 1,
     };
     const userId = 1;
     test('Should fail on organization not found', async () => {
@@ -135,7 +140,9 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve({}));
       mockMethodWithResult(resourceStatusService, 'get', [], Promise.resolve({}));
       mockMethodWithResult(resourceSettingsService, 'create', [], Promise.resolve(1));
+      mockMethodWithResult(infrastructureService, 'get', [payload.infrastructure], Promise.resolve({}));
       mockMethodWithResult(resourceDao, 'create', [], Promise.reject(new Error('Failed')));
+
       try {
         await container.get(ResourceService).createResource({} as any, payload);
         expect.fail('unexpected success');
@@ -199,7 +206,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
   suite('update resource', () => {
     const resourceId = 1;
-    const payload: ResourceRO = {
+    const payload: UpdateResourceRO = {
       name: 'resource_dash_one',
       organization: 1,
     } as any;

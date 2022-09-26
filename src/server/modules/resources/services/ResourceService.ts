@@ -120,13 +120,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       active: true,
     });
 
-    const fetchedInfrastructure = await this.infrastructureService.get(payload.infrastructure);
-    if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
-        variables: { infra: `${payload.infrastructure}` },
-      });
-    }
-    wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
     const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
     const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
@@ -148,6 +141,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       active: true,
       organization: organization,
     });
+
+    const fetchedInfrastructure = await this.infrastructureService.get(payload.infrastructure);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
+        variables: { infra: `${payload.infrastructure}` },
+      });
+    }
+    wrappedResource.infrastructure = fetchedInfrastructure;
 
     const createdResource = await this.create(wrappedResource);
     await createdResource.managers.init();
