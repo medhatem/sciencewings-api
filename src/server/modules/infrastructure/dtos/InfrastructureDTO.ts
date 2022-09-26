@@ -3,18 +3,48 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { unique } from '@/decorators/unique';
 import { beforeDeserialize } from '@/utils/utilities';
+import { MemberDTO } from '@/modules/hr';
+import { ResourceDTO } from '@/modules/resources';
+import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 
 @JsonObject()
 @unique
 export class InfrastructureDTO extends BaseBodyDTO {
   @JsonProperty()
   id?: number;
+
   @JsonProperty()
   name?: string;
+
   @JsonProperty()
   description?: string;
+
   @JsonProperty()
   key?: string;
+
+  @JsonProperty()
+  default?: boolean;
+
+  @JsonProperty()
+  responsible?: MemberDTO;
+
+  @JsonProperty()
+  organization?: OrganizationInformationDTO;
+
+  @JsonProperty({
+    type: ResourceDTO,
+    beforeDeserialize,
+  })
+  resources?: Array<ResourceDTO>;
+
+  @JsonProperty()
+  parent?: InfrastructureDTO;
+
+  @JsonProperty({
+    type: InfrastructureDTO,
+    beforeDeserialize,
+  })
+  children?: Array<InfrastructureDTO>;
 }
 @JsonObject()
 @unique
