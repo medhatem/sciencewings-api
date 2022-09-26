@@ -51,6 +51,7 @@ import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
+import { IInfrastructureService } from '@/modules/infrastructure';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -64,6 +65,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public resourceTagService: IResourceTagService,
     public resourceStatusHistoryService: IResourceStatusHistoryService,
     public resourceStatusService: IResourceStatusService,
+    public infrastructureService: IInfrastructureService,
   ) {
     super(dao);
   }
@@ -118,6 +120,13 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       active: true,
     });
 
+    const fetchedInfrastructure = await this.infrastructureService.get(payload.infrastructure);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
+        variables: { infra: `${payload.infrastructure}` },
+      });
+    }
+    wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
     const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
     const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
