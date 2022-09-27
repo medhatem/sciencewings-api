@@ -272,5 +272,5 @@ export class GroupRO {
   members?: number[];
 
   @JsonProperty()
-  description: string;
+  description?: string;
 }
