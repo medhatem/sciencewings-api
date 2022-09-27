@@ -181,7 +181,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
           organization && this.remove(organization.id),
         ].filter(Boolean),
       );
-      console.log('errorr ===== ', error);
       throw new InternalServerError('SOMETHING_WENT_WRONG');
     }
 
@@ -268,7 +267,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         phoneCode: payload.phone.phoneCode,
         phoneNumber: payload.phone.phoneNumber,
       });
-      this.phoneService.update(updatedPhone);
+      await this.phoneService.update(updatedPhone);
     }
 
     if (payload.parent) {
