@@ -34,6 +34,7 @@ export const UpdateOrganizationSchema = organizationSchema.keys({
   owner: Joi.number(),
   adminContact: Joi.number(),
 });
+
 export const OrganizationMemberSettingsSchema = Joi.object({
   membersCanEditAccountNumbers: Joi.boolean(),
   promptForAccouantNumbers: Joi.boolean(),
@@ -45,7 +46,7 @@ export const OrganizationReservationSettingsSchema = Joi.object({
   approversCanEditReservations: Joi.boolean(),
   requireReasonWhenEditingReservation: Joi.boolean(),
   hideOrganizationCalendar: Joi.boolean(),
-  hideAccountNumberWhenMakingReservation: Joi.boolean(),
+  hideAccountNumberWhenMakingReservation: Joi.string(),
   showResourceImagesInReservation: Joi.boolean(),
   confirmationEmailWhenMakingReservation: Joi.string().allow(''),
   attachedIcsCalendarFeeds: Joi.boolean(),

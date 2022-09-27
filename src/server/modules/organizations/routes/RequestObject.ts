@@ -3,6 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
+import { AccountNumberVisibilty } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
@@ -129,7 +130,7 @@ export class OrganizationReservationSettingsRO {
   @JsonProperty()
   hideOrganizationCalendar?: boolean;
   @JsonProperty()
-  hideAccountNumberWhenMakingReservation?: boolean;
+  hideAccountNumberWhenMakingReservation?: AccountNumberVisibilty;
   @JsonProperty()
   showResourceImagesInReservation?: boolean;
   @JsonProperty()
