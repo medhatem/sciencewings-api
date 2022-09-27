@@ -5,6 +5,7 @@ import { infrastructurelistline } from '@/modules/infrastructure/infastructureTy
 export abstract class IInfrastructureService extends IBaseService<any> {
   getAllOgranizationInfrastructures: (orgId: number) => Promise<Infrastructure[]>;
   createinfrastructure: (payload: InfrastructureRO) => Promise<number>;
+  getInfrastructureById: (infraId: number) => Promise<Infrastructure>;
   updateInfrastructure: (payload: UpdateinfrastructureRO, resourceId: number) => Promise<number>;
   getAllInfrastructuresOfAgivenOrganization: (orgId: number) => Promise<infrastructurelistline[]>;
   addResourceToInfrastructure: (resourceId: number, infrastructureId: number) => Promise<number>;
