@@ -59,6 +59,6 @@ export class Infrastructure extends BaseModel<Infrastructure> {
   })
   resources? = new Collection<Resource>(this);
 
-  @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade' })
   public organization!: Organization;
 }

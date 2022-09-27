@@ -121,4 +121,19 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
 
     return new GetInfrastructureDTO({ body: { id: result, statusCode: 204 } });
   }
+  /**
+   * get an infastructure with a given Id
+   * @param infraId: infastructure id
+   */
+  @GET
+  @Path('/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure ')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getInfrastructureById(@PathParam('id') id: number): Promise<GetInfrastructureDTO> {
+    const result = await this.InfrastructureService.getInfrastructureById(id);
+
+    return new GetInfrastructureDTO({ body: { ...result, statusCode: 200 } });
+  }
 }

@@ -77,7 +77,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (payload.parent) {
       fetchedParent = await this.dao.get(payload.parent);
       if (!fetchedParent) {
-        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
+        throw new NotFoundError('INFRA.NON_EXISTANT_PARENT_INFRA', { friendly: true });
       }
     }
 
@@ -125,6 +125,15 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
 
     const createdInfustructure = await this.create(wrappedInfustructure);
     return createdInfustructure.id;
+  }
+
+  @log()
+  public async getInfrastructureById(infraId: number): Promise<Infrastructure> {
+    const infrastructure = await this.dao.get(infraId);
+    if (!infrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_PARENT_INFRA', { friendly: true });
+    }
+    return infrastructure;
   }
 
   /**
