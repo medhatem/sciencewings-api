@@ -149,6 +149,14 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
+
+    // check if the key is unique
+    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
+
+    if (keyExistingTest) {
+      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
+    }
+
     const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
       ...fetchedInfrastructure,
       name: payload.name || fetchedInfrastructure.name,
@@ -183,13 +191,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         });
       }
       wrappedInfustructure.responsible = responsable;
-    }
-
-    // check if the key is unique
-    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
-
-    if (keyExistingTest) {
-      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
 
     // check the existance of the parent
