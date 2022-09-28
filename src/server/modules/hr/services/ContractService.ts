@@ -44,7 +44,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
    * @param userId of user id
    */
   @log()
-  public async getAllMemberContracts(userId: number, orgId: number): Promise<Contract[]> {
+  public async getAllMemberContracts(orgId: number, userId: number): Promise<Contract[]> {
     const organization = await this.origaniaztionService.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
