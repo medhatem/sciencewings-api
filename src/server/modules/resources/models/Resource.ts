@@ -44,7 +44,7 @@ export class Resource extends BaseModel<Resource> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
   organization?: Organization;
 
   @Property()
@@ -68,7 +68,7 @@ export class Resource extends BaseModel<Resource> {
   @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
   settings?: ResourceSettings;
 
-  @ManyToOne({ entity: () => Infrastructure, nullable: true, onDelete: 'cascade' })
+  @ManyToOne({ entity: () => Infrastructure, nullable: false, onDelete: 'set null' })
   infrastructure!: Infrastructure;
 
   @OneToOne({ entity: () => ResourceStatus, nullable: true, unique: false })
