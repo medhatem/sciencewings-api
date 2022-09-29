@@ -246,9 +246,9 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    */
   @log()
   public async addResourceToInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
-    let fetchedInfrastructure;
-    let fetchedResource;
-    [fetchedInfrastructure, fetchedResource] = await Promise.all([
+    // let fetchedInfrastructure;
+    // let fetchedResource;
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
       this.dao.get(infrastructureId),
       await this.resourceService.get(resourceId),
     ]);
