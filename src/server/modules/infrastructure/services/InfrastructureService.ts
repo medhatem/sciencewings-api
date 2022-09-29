@@ -248,14 +248,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   public async addResourceToInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
     let fetchedInfrastructure;
     let fetchedResource;
-
     [fetchedInfrastructure, fetchedResource] = await Promise.all([
       this.dao.get(infrastructureId),
       await this.resourceService.get(resourceId),
     ]);
-
-    console.log('loooooooooooooooooooooooooog', fetchedInfrastructure);
-    console.log('loooooooooooooooooooooooooog', fetchedResource);
 
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
