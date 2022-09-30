@@ -51,7 +51,7 @@ import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
-import { IInfrastructureService } from '@/modules/infrastructure';
+import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -113,13 +113,22 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
     }
+
+    const fetchedInfrastructure = (await this.infrastructureService.get(payload.infrastructure)) as Infrastructure;
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
+        variables: { infra: `${payload.infrastructure}` },
+      });
+    }
+    // wrappedResource.infrastructure = fetchedInfrastructure;
     const wrappedResource = this.wrapEntity(Resource.getInstance(), {
       name: payload.name,
       resourceType: payload.resourceType,
       resourceClass: payload.resourceClass,
       active: true,
+      //infrastructure: fetchedInfrastructure,
     });
-
+    wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
     const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
     const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
@@ -141,14 +150,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       active: true,
       organization: organization,
     });
-
-    const fetchedInfrastructure = await this.infrastructureService.get(payload.infrastructure);
-    if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
-        variables: { infra: `${payload.infrastructure}` },
-      });
-    }
-    wrappedResource.infrastructure = fetchedInfrastructure;
 
     const createdResource = await this.create(wrappedResource);
     await createdResource.managers.init();

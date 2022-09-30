@@ -68,7 +68,7 @@ export class Resource extends BaseModel<Resource> {
   @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
   settings?: ResourceSettings;
 
-  @ManyToOne({ entity: () => Infrastructure })
+  @ManyToOne({ entity: () => Infrastructure, nullable: false })
   infrastructure!: Infrastructure;
 
   @OneToOne({ entity: () => ResourceStatus, nullable: true, unique: false })
