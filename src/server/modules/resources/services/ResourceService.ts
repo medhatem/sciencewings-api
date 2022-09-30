@@ -120,14 +120,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         variables: { infra: `${payload.infrastructure}` },
       });
     }
-    // wrappedResource.infrastructure = fetchedInfrastructure;
+
     const wrappedResource = this.wrapEntity(Resource.getInstance(), {
       name: payload.name,
       resourceType: payload.resourceType,
       resourceClass: payload.resourceClass,
       active: true,
-      //infrastructure: fetchedInfrastructure,
     });
+
     wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
     const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
