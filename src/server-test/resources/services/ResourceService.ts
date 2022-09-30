@@ -121,6 +121,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     test('Should fail on manager does not exist', async () => {
       mockMethodWithResult(organizationService, 'get', [], Promise.resolve({}));
+      mockMethodWithResult(infrastructureService, 'get', [payload.infrastructure], Promise.resolve({}));
       stub(BaseService.prototype, 'wrapEntity').returns({});
       mockMethodWithResult(userService, 'getByCriteria', [], Promise.resolve({}));
       mockMethodWithResult(memberService, 'getByCriteria', [], Promise.resolve(null));
