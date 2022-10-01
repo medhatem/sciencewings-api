@@ -28,6 +28,7 @@ import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
+import { InfrastructureService } from '@/modules/infrastructure/services/InfrastructureService';
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -43,6 +44,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let resourceTagService: SinonStubbedInstance<ResourceTagService>;
   let resourceStatusHistoryService: SinonStubbedInstance<ResourceStatusHistoryService>;
   let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
+  let infrastructureService: SinonStubbedInstance<InfrastructureService>;
 
   beforeEach(() => {
     createStubInstance(Configuration);
@@ -56,7 +58,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     resourceTagService = createStubInstance(ResourceTagService);
     resourceStatusHistoryService = createStubInstance(ResourceStatusHistoryService);
     resourceStatusService = createStubInstance(ResourceStatusService);
-
+    infrastructureService = createStubInstance(InfrastructureService);
     const mockedContainer = stub(container, 'get');
     mockedContainer.withArgs(Configuration).returns({
       getConfiguration: stub(),
@@ -82,6 +84,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           resourceTagService,
           resourceStatusHistoryService,
           resourceStatusService,
+          infrastructureService,
         ),
       );
   });
