@@ -61,6 +61,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       resourceType: 'USER',
       resourceClass: 'TECH',
       organization: 1,
+      infrastructure: 1,
     };
     const userId = 1;
 
@@ -86,6 +87,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       resourceType: 'USER',
       resourceClass: 'TECH',
       organization: 1,
+      infrastructure: 1,
     };
     const userId = 1;
     test('Should fail on throw error', async () => {

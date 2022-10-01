@@ -1,5 +1,5 @@
 import { BaseService } from '@/modules/base/services/BaseService';
-import { provideSingleton, container } from '@/di/index';
+import { provideSingleton, container, lazyInject } from '@/di/index';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { infrastructureDAO } from '@/modules/infrastructure/daos/infrastructureDAO';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
@@ -16,22 +16,24 @@ import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
-import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
+import { IResourceService } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
+  @lazyInject(IResourceService) public resourceService: IResourceService;
+
   constructor(
     public dao: infrastructureDAO,
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
     public userService: IUserService,
-    public resourceService: IResourceService,
-  ) {
+  ) //public resourceService: IResourceService,
+  {
     super(dao);
   }
   static getInstance(): IInfrastructureService {
