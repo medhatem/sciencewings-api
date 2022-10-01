@@ -10,7 +10,7 @@
   "ORG.NON_EXISTANT_PARENT_ORG": "Parent organization does not exist.",
   "INFRA.NON_EXISTANT_PARENT_INFRA": "Parent infrastructure does not exist.",
 
-  "INFRAS.NON_EXISTANT_DATA {{infra}}": "Infrastructure {{infra}} is not found.",
+  "INFRA.NON_EXISTANT_DATA {{infra}}": "Infrastructure {{infra}} is not found.",
 
   "USER.NON_EXISTANT_USER {{user}}": "User {{user}} does not exist",
   "USER.ALREADY_MEMBER {{user}}": "User {{user}} is already a member of the organization.",
