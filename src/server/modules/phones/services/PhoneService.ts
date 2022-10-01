@@ -2,7 +2,6 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { PhoneDao } from '@/modules/phones/daos/PhoneDAO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
@@ -43,12 +42,11 @@ export class PhoneService extends BaseService<Phone> implements IPhoneService {
   }
 
   @log()
-  async createBulkPhoneForOrganization(payload: PhoneRO[], entity: Organization): Promise<void> {
+  async createBulkPhoneForOrganization(payload: PhoneRO[]): Promise<void> {
     if (payload) {
       const phones = await Promise.all(
         payload.map(async (phone) => {
           const wrappedPhone = this.wrapEntity(this.dao.model, this.extractFromRO(phone));
-          wrappedPhone.organization = entity as Organization;
           return wrappedPhone;
         }),
       );

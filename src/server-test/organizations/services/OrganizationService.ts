@@ -133,13 +133,12 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       name: 'testingground2',
       email: 'testingground1@gmail.com',
       type: OrganizationType.SERVICE,
-      phones: [
-        {
-          phoneLabel: 'personal',
-          phoneCode: '+213',
-          phoneNumber: '541110222',
-        } as any,
-      ],
+      phone: {
+        phoneLabel: 'personal',
+        phoneCode: '+213',
+        phoneNumber: '541110222',
+      } as any,
+
       labels: ['x', 'y', 'z'],
       members: [] as any,
       addresses: [

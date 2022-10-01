@@ -5,6 +5,15 @@ import { AddressDTO } from '@/modules/address/dtos/AddressDTO';
 import { PhoneInformationDTO } from '@/modules/phones/dtos/PhoneDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
+import { UserDTO } from '@/modules/users/dtos/UserDTO';
+import { OrganizationSettingsBodyDTO } from '@/modules/organizations/dtos/OrganizationSettingsDTO';
+
+@JsonObject()
+@unique
+export class OrganizationLabelsDTO {
+  @JsonProperty()
+  name: string;
+}
 
 @JsonObject()
 @unique
@@ -24,12 +33,32 @@ export class OrganizationInformationDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   address?: Array<AddressDTO>;
+
+  @JsonProperty()
+  phone?: PhoneInformationDTO;
+
+  @JsonProperty()
+  owner?: UserDTO;
+
+  @JsonProperty()
+  settings?: OrganizationSettingsBodyDTO;
+
+  @JsonProperty()
+  parent?: OrganizationInformationDTO;
+
   @JsonProperty({
-    type: PhoneInformationDTO,
+    type: OrganizationInformationDTO,
     beforeDeserialize,
   })
-  phones?: Array<PhoneInformationDTO>;
+  labels?: Array<OrganizationInformationDTO>;
 }
+@JsonObject()
+@unique
+export class GetOrganizationDTO extends BaseRequestDTO {
+  @JsonProperty()
+  public body?: OrganizationInformationDTO;
+}
+
 @JsonObject()
 @unique
 export class OrganizationBaseBodyGetDTO extends BaseBodyDTO {
