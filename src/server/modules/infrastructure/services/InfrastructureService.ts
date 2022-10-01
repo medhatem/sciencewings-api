@@ -245,11 +245,38 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    * @param resourceId: resource id
    * @param infrastructureId: infrastructure id
    */
+
   @log()
   public async addResourceToInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
     const [fetchedInfrastructure, fetchedResource] = await Promise.all([
       this.dao.get(infrastructureId),
-      await this.resourceService.get(resourceId),
+      this.resourceService.get(resourceId),
+    ]);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.add(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
+  }
+  /**
+   * delete a resource from a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async deleteResourceFromGivenInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      this.resourceService.get(resourceId),
     ]);
 
     if (!fetchedInfrastructure) {
@@ -263,7 +290,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     }
 
     await fetchedInfrastructure.resources.init();
-    fetchedInfrastructure.resources.add(fetchedResource);
+    fetchedInfrastructure.resources.remove(fetchedResource);
     this.dao.update(fetchedInfrastructure);
     return infrastructureId;
   }
