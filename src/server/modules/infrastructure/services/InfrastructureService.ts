@@ -1,5 +1,5 @@
 import { BaseService } from '@/modules/base/services/BaseService';
-import { provideSingleton, container } from '@/di/index';
+import { provideSingleton, container, lazyInject } from '@/di/index';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { infrastructureDAO } from '@/modules/infrastructure/daos/infrastructureDAO';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
@@ -21,9 +21,12 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
+import { IResourceService } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
+  @lazyInject(IResourceService) public resourceService: IResourceService;
+
   constructor(
     public dao: infrastructureDAO,
     public organizationService: IOrganizationService,
@@ -236,5 +239,60 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     });
     return InfrastructureList;
+  }
+
+  /**
+   * add a resource to a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+
+  @log()
+  public async addResourceToInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      this.resourceService.get(resourceId),
+    ]);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.add(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
+  }
+  /**
+   * delete a resource from a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async deleteResourceFromGivenInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      this.resourceService.get(resourceId),
+    ]);
+
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.remove(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
   }
 }
