@@ -22,7 +22,6 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
-import { Resource } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -150,6 +149,14 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
+
+    // check if the key is unique
+    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
+
+    if (keyExistingTest) {
+      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
+    }
+
     const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
       ...fetchedInfrastructure,
       name: payload.name || fetchedInfrastructure.name,
@@ -184,13 +191,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         });
       }
       wrappedInfustructure.responsible = responsable;
-    }
-
-    // check if the key is unique
-    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
-
-    if (keyExistingTest) {
-      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
 
     // check the existance of the parent
@@ -241,18 +241,21 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   }
 
   /**
-   * delete a resource from a given infrastructure
+   * add a resource to a given infrastructure
    * @param resourceId: resource id
    * @param infrastructureId: infrastructure id
    */
+
   @log()
-  public async deleteResourceFromGivenInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
-    const fetchedInfrastructure = await this.dao.get(infrastructureId);
+  public async addResourceToInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      this.resourceService.get(resourceId),
+    ]);
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
     }
 
-    const fetchedResource = (await this.resourceService.get(resourceId)) as Resource;
     if (!fetchedResource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
         variables: { resource: `${resourceId}` },
@@ -260,11 +263,35 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     }
 
     await fetchedInfrastructure.resources.init();
-
-    fetchedInfrastructure.resources.remove(fetchedResource);
-
+    fetchedInfrastructure.resources.add(fetchedResource);
     this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
+  }
+  /**
+   * delete a resource from a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async deleteResourceFromGivenInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      this.resourceService.get(resourceId),
+    ]);
 
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.remove(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
     return infrastructureId;
   }
 }

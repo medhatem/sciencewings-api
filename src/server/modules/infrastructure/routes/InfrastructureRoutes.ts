@@ -118,7 +118,27 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     @PathParam('infrastructureId') infrastructureId: number,
   ): Promise<GetInfrastructureDTO> {
     const result = await this.InfrastructureService.deleteResourceFromGivenInfrastructure(resourceId, infrastructureId);
+    return new GetInfrastructureDTO({ body: { id: result, statusCode: 204 } });
+  }
 
+  /**
+   * add a resource to a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   * @returns the updated infrastructure id
+   */
+  @POST
+  @Path('/infraResources/:infrastructureId/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetInfrastructureDTO>(204, 'infrastructure updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async addResourceToInfrastructure(
+    @PathParam('resourceId') resourceId: number,
+    @PathParam('infrastructureId') infrastructureId: number,
+  ): Promise<GetInfrastructureDTO> {
+    const result = await this.InfrastructureService.addResourceToInfrastructure(resourceId, infrastructureId);
     return new GetInfrastructureDTO({ body: { id: result, statusCode: 204 } });
   }
   /**
