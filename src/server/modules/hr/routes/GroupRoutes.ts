@@ -77,7 +77,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   /**
    * add group memebers by id
    * @param userId the member user id
-   * @param groupid the group id
+   * @param groupId the group id
    */
   @POST
   @Path('/groupMember/:groupId/:userId')

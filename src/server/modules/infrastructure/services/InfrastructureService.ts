@@ -239,4 +239,32 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     });
     return InfrastructureList;
   }
+
+  /**
+   * add a resource to a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async addResourceToInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      await this.resourceService.get(resourceId),
+    ]);
+
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.add(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
+  }
 }
