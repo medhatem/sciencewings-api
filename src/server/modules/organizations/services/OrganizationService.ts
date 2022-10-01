@@ -36,7 +36,7 @@ import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
 
-import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
+import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
@@ -63,6 +63,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
   static getInstance(): IOrganizationService {
     return container.get(IOrganizationService);
+  }
+  /**
+   * Get one organization by id
+   **/
+  @log()
+  public async getOrganizationById(id: number): Promise<Organization> {
+    const organization = await this.dao.get(id, { populate: ['labels', 'phone', 'address'] as never });
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` }, friendly: true });
+    }
+    return organization;
   }
 
   /**
@@ -105,7 +116,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
-
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       email: payload.email,
@@ -117,6 +127,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
     });
+    const organizationPhone = await this.phoneService.create({
+      phoneLabel: payload.phone.phoneLabel,
+      phoneCode: payload.phone.phoneCode,
+      phoneNumber: payload.phone.phoneNumber,
+    });
+
+    wrappedOrganization.phone = organizationPhone;
     wrappedOrganization.parent = parent;
     wrappedOrganization.owner = user;
     const groupName = `${orgPrifix}${payload.name}`;
@@ -141,10 +158,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
-      const organizationSetting = await this.organizationSettingsService.create({});
+      const organizationSetting = await this.organizationSettingsService.create({
+        hideAccountNumberWhenMakingReservation: AccountNumberVisibilty.EVERYONE,
+      });
       wrappedOrganization.settings = organizationSetting;
-
       organization = await this.create(wrappedOrganization);
+
       const memberEvent = new MemberEvent();
       await memberEvent.createMember(user, organization);
 
@@ -184,16 +203,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       ),
     );
 
-    await Promise.all(
-      payload.phones.map((phone) => {
-        this.phoneService.create({
-          phoneLabel: phone.phoneLabel,
-          phoneCode: phone.phoneCode,
-          phoneNumber: phone.phoneNumber,
-          organization,
-        });
-      }),
-    );
     //create a default infastructure
 
     const responsable = (await this.memberService.getByCriteria(
@@ -223,19 +232,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
     orgId: number,
   ): Promise<number> {
-    const fetchedorganization = await this.dao.get(orgId);
-    if (!fetchedorganization) {
+    const organization = await this.dao.get(orgId);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
-    if (fetchedorganization.name !== payload.name) {
+    if (organization.name !== payload.name) {
       //update the Kc group name
-      await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+      await this.keycloakUtils.updateGroup(organization.kcid, {
         name: `${orgPrifix}${payload.name}`,
       });
     }
 
-    const wrappedOrganization = this.wrapEntity(fetchedorganization, {
+    const wrappedOrganization = this.wrapEntity(organization, {
       ...payload,
     });
 
@@ -250,6 +259,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.owner = owner;
     }
 
+    if (payload.phone) {
+      const phone = await this.phoneService.get(payload.phone.id);
+      const updatedPhone = this.phoneService.wrapEntity(phone, {
+        ...phone,
+        phoneLabel: payload.phone.phoneLabel,
+        phoneCode: payload.phone.phoneCode,
+        phoneNumber: payload.phone.phoneNumber,
+      });
+      await this.phoneService.update(updatedPhone);
+    }
+
     if (payload.parent) {
       const parent = await this.dao.get(payload.parent);
       if (!parent) {
@@ -261,10 +281,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const updateResult = await this.dao.update(wrappedOrganization);
     if (!updateResult) {
       //in case we update the name of the org
-      if (fetchedorganization.name !== payload.name) {
+      if (organization.name !== payload.name) {
         //rolback the keyclock updated group name
-        await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
-          name: `${orgPrifix}${fetchedorganization.name}`,
+        await this.keycloakUtils.updateGroup(organization.kcid, {
+          name: `${orgPrifix}${organization.name}`,
         });
       }
     }

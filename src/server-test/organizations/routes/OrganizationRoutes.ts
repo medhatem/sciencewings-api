@@ -52,7 +52,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: CreateOrganizationRO = {
       name: 'test',
       email: 'test',
-      phones: {} as PhoneRO[],
+      phone: {} as PhoneRO,
       addresses: {} as AddressRO[],
       labels: ['0'],
       type: OrganizationType.SERVICE,
