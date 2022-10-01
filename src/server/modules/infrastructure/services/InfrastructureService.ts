@@ -32,8 +32,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
     public userService: IUserService,
-  ) //public resourceService: IResourceService,
-  {
+  ) {
     super(dao);
   }
   static getInstance(): IInfrastructureService {

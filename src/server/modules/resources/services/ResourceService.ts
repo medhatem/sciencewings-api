@@ -185,6 +185,16 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       timezone: payload.timezone || fetchedResource.timezone,
     });
 
+    if (payload.infrastructure) {
+      const fetchedInfrastructure = (await this.infrastructureService.get(payload.infrastructure)) as Infrastructure;
+      if (!fetchedInfrastructure) {
+        throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
+          variables: { infra: `${payload.infrastructure}` },
+        });
+      }
+      resource.infrastructure = fetchedInfrastructure;
+    }
+
     const existingTags: any[] = [];
     const newTags: any[] = [];
 
@@ -209,7 +219,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
             variables: { tag: `${existingTag.id}` },
           });
         }
-        fetchedResource.tags.add(fetchedExistingTag);
+        resource.tags.add(fetchedExistingTag);
       });
 
       await applyToAll(newTags, async (newTag) => {
@@ -219,7 +229,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         const createdTag = await this.resourceTagService.create(tag);
         createdTag.organization = organization;
         await this.resourceTagService.update(createdTag);
-        fetchedResource.tags.add(createdTag);
+        resource.tags.add(createdTag);
       });
     }
 

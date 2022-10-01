@@ -196,6 +196,9 @@ export class UpdateResourceRO {
   description?: string;
 
   @JsonProperty()
+  infrastructure?: number;
+
+  @JsonProperty()
   active?: boolean;
 
   @JsonProperty()

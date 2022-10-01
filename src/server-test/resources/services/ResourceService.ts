@@ -15,6 +15,7 @@ import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
 import { BaseService } from '@/modules/base/services/BaseService';
 import { CalendarService } from '@/modules/reservation/services/CalendarService';
 import { Configuration } from '@/configuration/Configuration';
+import { InfrastructureService } from '@/modules/infrastructure/services/InfrastructureService';
 import { Logger } from '@/utils/Logger';
 import { MemberService } from '@/modules/hr/services/MemberService';
 import { OrganizationService } from '@/modules/organizations/services/OrganizationService';
@@ -29,7 +30,6 @@ import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
-import { InfrastructureService } from '@/modules/infrastructure/services/InfrastructureService';
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -46,6 +46,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let resourceStatusHistoryService: SinonStubbedInstance<ResourceStatusHistoryService>;
   let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
   let infrastructureService: SinonStubbedInstance<InfrastructureService>;
+
   beforeEach(() => {
     createStubInstance(Configuration);
     resourceDao = createStubInstance(ResourceDao);
