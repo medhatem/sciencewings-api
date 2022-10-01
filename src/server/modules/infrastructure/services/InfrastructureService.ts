@@ -21,6 +21,7 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
+import { IResourceService } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -29,6 +30,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
     public userService: IUserService,
+    public resourceService: IResourceService,
   ) {
     super(dao);
   }
