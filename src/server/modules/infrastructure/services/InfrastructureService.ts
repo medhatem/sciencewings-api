@@ -18,7 +18,6 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
 import { IResourceService } from '@/modules/resources';
@@ -150,37 +149,43 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
-
-    // check if the key is unique
-    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
-
-    if (keyExistingTest) {
-      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
-    }
-
     const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
       ...fetchedInfrastructure,
       name: payload.name || fetchedInfrastructure.name,
       description: payload.description || fetchedInfrastructure.description,
       key: payload.key || fetchedInfrastructure.key,
     });
-    let organization: Organization;
-    if (payload.organization) {
-      organization = await this.organizationService.get(payload.organization);
-      if (!organization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
-          variables: { org: `${payload.organization}` },
-          friendly: false,
-        });
+    if (payload.key) {
+      // check if the key is unique
+      const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
+
+      if (keyExistingTest) {
+        throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
       }
-      wrappedInfustructure.organization = organization;
+      fetchedInfrastructure.key = payload.key;
     }
 
+    // const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
+    //   ...fetchedInfrastructure,
+    //   name: payload.name || fetchedInfrastructure.name,
+    //   description: payload.description || fetchedInfrastructure.description,
+    //   key: payload.key || fetchedInfrastructure.key,
+    // });
+
     if (payload.responsible) {
-      const user = await this.userService.get(payload.responsible);
+      const [user, organization] = await Promise.all([
+        this.organizationService.get(fetchedInfrastructure.organization.id),
+        this.userService.get(payload.responsible),
+      ]);
       if (!user) {
         throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
           variables: { user: `${payload.responsible}` },
+          friendly: false,
+        });
+      }
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+          variables: { org: `${fetchedInfrastructure.organization.id}` },
           friendly: false,
         });
       }
