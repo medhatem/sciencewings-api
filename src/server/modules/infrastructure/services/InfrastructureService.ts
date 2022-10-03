@@ -147,7 +147,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   ): Promise<number> {
     const fetchedInfrastructure = await this.dao.get(infraId);
     if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
     const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
       ...fetchedInfrastructure,
@@ -164,13 +164,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       }
       fetchedInfrastructure.key = payload.key;
     }
-
-    // const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
-    //   ...fetchedInfrastructure,
-    //   name: payload.name || fetchedInfrastructure.name,
-    //   description: payload.description || fetchedInfrastructure.description,
-    //   key: payload.key || fetchedInfrastructure.key,
-    // });
 
     if (payload.responsible) {
       const [user, organization] = await Promise.all([
@@ -259,7 +252,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       this.resourceService.get(resourceId),
     ]);
     if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
     }
 
     if (!fetchedResource) {
@@ -286,7 +279,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     ]);
 
     if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
     }
 
     if (!fetchedResource) {
