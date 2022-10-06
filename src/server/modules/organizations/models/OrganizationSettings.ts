@@ -2,6 +2,11 @@ import { BooleanType, DateType, Entity, PrimaryKey, Property, StringType } from 
 import { container, provide } from '@/di/index';
 import { BaseModel } from '@/modules/base/models/BaseModel';
 
+export enum AccountNumberVisibilty {
+  EVERYONE = 'EVERYONE',
+  MEMBER = 'MEMBER',
+}
+
 @provide()
 @Entity()
 export class OrganizationSettings extends BaseModel<OrganizationSettings> {
@@ -33,8 +38,8 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   requireReasonWhenEditingReservation = true;
   @Property({ nullable: true, type: BooleanType })
   hideOrganizationCalendar = true;
-  @Property({ nullable: true, type: BooleanType })
-  hideAccountNumberWhenMakingReservation = true;
+  @Property({ nullable: true })
+  hideAccountNumberWhenMakingReservation: AccountNumberVisibilty;
   @Property({ nullable: true, type: BooleanType })
   showResourceImagesInReservation = true;
   @Property({ nullable: true, type: StringType })

@@ -12,8 +12,10 @@ import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Member } from '@/modules/hr/models/Member';
 import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
+import { Organization } from '@/modules/organizations/models/Organization';
 
 export abstract class IOrganizationService extends IBaseService<any> {
+  getOrganizationById: (organizationId: number) => Promise<Organization>;
   createOrganization: (payload: CreateOrganizationRO, userId: number) => Promise<number>;
   updateOrganizationGeneraleProperties: (payload: UpdateOrganizationRO, orgId: number) => Promise<number>;
   deleteOrganization: (orgId: number) => Promise<number>;

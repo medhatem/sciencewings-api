@@ -51,6 +51,7 @@ import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
+import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -64,6 +65,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public resourceTagService: IResourceTagService,
     public resourceStatusHistoryService: IResourceStatusHistoryService,
     public resourceStatusService: IResourceStatusService,
+    public infrastructureService: IInfrastructureService,
   ) {
     super(dao);
   }
@@ -111,6 +113,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
     }
+
+    const fetchedInfrastructure = (await this.infrastructureService.get(payload.infrastructure)) as Infrastructure;
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
+        variables: { infra: `${payload.infrastructure}` },
+      });
+    }
+
     const wrappedResource = this.wrapEntity(Resource.getInstance(), {
       name: payload.name,
       resourceType: payload.resourceType,
@@ -118,6 +128,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       active: true,
     });
 
+    wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
     const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
     const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
@@ -174,6 +185,16 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       timezone: payload.timezone || fetchedResource.timezone,
     });
 
+    if (payload.infrastructure) {
+      const fetchedInfrastructure = (await this.infrastructureService.get(payload.infrastructure)) as Infrastructure;
+      if (!fetchedInfrastructure) {
+        throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
+          variables: { infra: `${payload.infrastructure}` },
+        });
+      }
+      resource.infrastructure = fetchedInfrastructure;
+    }
+
     const existingTags: any[] = [];
     const newTags: any[] = [];
 
@@ -198,7 +219,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
             variables: { tag: `${existingTag.id}` },
           });
         }
-        fetchedResource.tags.add(fetchedExistingTag);
+        resource.tags.add(fetchedExistingTag);
       });
 
       await applyToAll(newTags, async (newTag) => {
@@ -208,7 +229,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         const createdTag = await this.resourceTagService.create(tag);
         createdTag.organization = organization;
         await this.resourceTagService.update(createdTag);
-        fetchedResource.tags.add(createdTag);
+        resource.tags.add(createdTag);
       });
     }
 

@@ -9,7 +9,9 @@
   "ORG.NON_EXISTANT_DATA {{org}}": "L'organisation {{org}} est introuvable.",
   "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
 
-  "INFRAS.NON_EXISTANT_DATA {{infra}}": "L'infrastructure {{infra}} est introuvable.",
+  "INFRA.NON_EXISTANT_DATA {{infra}}": "L'infrastructure {{infra}} est introuvable.",
+  "INFRA.NON_EXISTANT_PARENT_INFRA": "Le parent de l'infrastructure n'existe pas",
+
 
   "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas",
   "USER.ALREADY_MEMBER {{user}}": "L'utilisateur {{user}} est deja membre de l'organisation.",

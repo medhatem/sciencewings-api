@@ -1,5 +1,5 @@
 import { BaseService } from '@/modules/base/services/BaseService';
-import { provideSingleton, container } from '@/di/index';
+import { provideSingleton, container, lazyInject } from '@/di/index';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { infrastructureDAO } from '@/modules/infrastructure/daos/infrastructureDAO';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
@@ -16,21 +16,21 @@ import { applyToAll } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
-import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
+import { IResourceService } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
+  @lazyInject(IResourceService) public resourceService: IResourceService;
+
   constructor(
     public dao: infrastructureDAO,
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
     public userService: IUserService,
-    public resourceService: IResourceService,
   ) {
     super(dao);
   }
@@ -76,7 +76,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (payload.parent) {
       fetchedParent = await this.dao.get(payload.parent);
       if (!fetchedParent) {
-        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
+        throw new NotFoundError('INFRA.NON_EXISTANT_PARENT_INFRA', { friendly: true });
       }
     }
 
@@ -126,6 +126,15 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     return createdInfustructure.id;
   }
 
+  @log()
+  public async getInfrastructureById(infraId: number): Promise<Infrastructure> {
+    const infrastructure = await this.dao.get(infraId);
+    if (!infrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_PARENT_INFRA', { friendly: true });
+    }
+    return infrastructure;
+  }
+
   /**
    * update an infrastructure
    * @param payload represents the infrastructure information to update
@@ -138,7 +147,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
   ): Promise<number> {
     const fetchedInfrastructure = await this.dao.get(infraId);
     if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRAS.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
     const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
       ...fetchedInfrastructure,
@@ -146,23 +155,30 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       description: payload.description || fetchedInfrastructure.description,
       key: payload.key || fetchedInfrastructure.key,
     });
-    let organization: Organization;
-    if (payload.organization) {
-      organization = await this.organizationService.get(payload.organization);
-      if (!organization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
-          variables: { org: `${payload.organization}` },
-          friendly: false,
-        });
+    if (payload.key) {
+      // check if the key is unique
+      const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
+
+      if (keyExistingTest) {
+        throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
       }
-      wrappedInfustructure.organization = organization;
+      fetchedInfrastructure.key = payload.key;
     }
 
     if (payload.responsible) {
-      const user = await this.userService.get(payload.responsible);
+      const [user, organization] = await Promise.all([
+        this.organizationService.get(fetchedInfrastructure.organization.id),
+        this.userService.get(payload.responsible),
+      ]);
       if (!user) {
         throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
           variables: { user: `${payload.responsible}` },
+          friendly: false,
+        });
+      }
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+          variables: { org: `${fetchedInfrastructure.organization.id}` },
           friendly: false,
         });
       }
@@ -174,13 +190,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         });
       }
       wrappedInfustructure.responsible = responsable;
-    }
-
-    // check if the key is unique
-    const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
-
-    if (keyExistingTest) {
-      throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
     }
 
     // check the existance of the parent
@@ -228,5 +237,60 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     });
     return InfrastructureList;
+  }
+
+  /**
+   * add a resource to a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+
+  @log()
+  public async addResourceToInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      this.resourceService.get(resourceId),
+    ]);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.add(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
+  }
+  /**
+   * delete a resource from a given infrastructure
+   * @param resourceId: resource id
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async deleteResourceFromGivenInfrastructure(resourceId: number, infrastructureId: number): Promise<number> {
+    const [fetchedInfrastructure, fetchedResource] = await Promise.all([
+      this.dao.get(infrastructureId),
+      this.resourceService.get(resourceId),
+    ]);
+
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT_USER {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    await fetchedInfrastructure.resources.init();
+    fetchedInfrastructure.resources.remove(fetchedResource);
+    this.dao.update(fetchedInfrastructure);
+    return infrastructureId;
   }
 }

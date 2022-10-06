@@ -14,5 +14,4 @@ export const UpdateInfrastructureSchema = Joi.object({
   key: Joi.string(),
   responsible: Joi.number(),
   parent: Joi.number().allow(null),
-  organization: Joi.number(),
 });

@@ -172,6 +172,9 @@ export class ResourceRO {
   organization!: number;
 
   @JsonProperty()
+  infrastructure!: number;
+
+  @JsonProperty()
   resourceType!: string;
 
   @JsonProperty()
@@ -191,6 +194,9 @@ export class UpdateResourceRO {
 
   @JsonProperty()
   description?: string;
+
+  @JsonProperty()
+  infrastructure?: number;
 
   @JsonProperty()
   active?: boolean;

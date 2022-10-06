@@ -35,14 +35,11 @@ export class UpdateinfrastructureRO {
   description?: string;
 
   @JsonProperty()
-  key?: number;
+  key?: string;
 
   @JsonProperty()
   responsible?: number;
 
   @JsonProperty()
   parent?: number;
-
-  @JsonProperty()
-  organization?: number;
 }

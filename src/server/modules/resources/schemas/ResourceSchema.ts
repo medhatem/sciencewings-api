@@ -40,10 +40,12 @@ export const CreateResourceSchema = ResourceSchema.keys({
   organization: Joi.number().required(),
   resourceType: Joi.string().required(),
   resourceClass: Joi.string().required(),
+  infrastructure: Joi.number().required(),
 });
 
 export const UpdateResourceSchema = ResourceSchema.keys({
   organization: Joi.number().required(),
+  infrastructure: Joi.number(),
   name: Joi.string(),
   description: Joi.string(),
   resourceType: Joi.string(),

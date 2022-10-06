@@ -23,6 +23,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
+import { Calendar } from '@/modules/reservation';
 
 export enum OrganizationType {
   PUBLIC = 'Public',
@@ -58,18 +59,16 @@ export class Organization extends BaseModel<Organization> {
   name!: string;
 
   @Property({ nullable: true })
-  description!: string;
+  description?: string;
 
   @Property()
   email!: string;
 
-  @ManyToMany({
+  @OneToOne({
     entity: () => Phone,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
+    nullable: true,
   })
-  public phones = new Collection<Phone>(this);
+  phone?: Phone;
 
   // e.i: Public, Service, Institut
   @Property()
@@ -164,4 +163,7 @@ export class Organization extends BaseModel<Organization> {
 
   @OneToOne({ entity: () => OrganizationSettings, nullable: true })
   settings?: OrganizationSettings;
+
+  @OneToMany({ entity: () => Calendar, mappedBy: (member) => member.organization, nullable: true })
+  calendar? = new Collection<Calendar>(this);
 }
