@@ -197,6 +197,7 @@ export class UserService extends BaseService<User> implements IUserService {
   @log()
   async changeUserLanguague(languague: string, userId: number): Promise<number> {
     const user = await this.dao.get(userId);
+    console.log('ussssssssssssssssssssser', user);
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
