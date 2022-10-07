@@ -2,7 +2,7 @@ import { Job } from '@/modules/hr/models/Job';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { provideSingleton, container } from '@/di/index';
+import { provideSingleton, container, lazyInject } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { log } from '@/decorators/log';
@@ -10,9 +10,13 @@ import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
 import { NotFoundError } from '@/Exceptions';
-
+import { Contact } from 'swagger-jsdoc';
+import { applyToAll } from '@/utils/utilities';
+import { IContractService } from '../interfaces/IContractService';
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {
+  @lazyInject(IContractService) public contractService: IContractService;
+
   constructor(public dao: JobDAO, public organizationService: IOrganizationService) {
     super(dao);
   }
@@ -39,18 +43,33 @@ export class JobService extends BaseService<Job> implements IJobService {
    */
   @log()
   @validate
-  public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<void> {
+  public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<number> {
     let organization;
     if (payload.organization) {
       organization = await this.getOrganization(payload.organization);
     }
-
-    await this.create(
-      this.wrapEntity(this.dao.model, {
-        ...payload,
-        organization,
-      }),
-    );
+    const wrappedJob = this.wrapEntity(new Job(), {
+      name: payload.name,
+      description: payload.description || null,
+      state: payload.state,
+    });
+    wrappedJob.organization = organization;
+    let contracts: any[] = [];
+    let contract: Contact;
+    if (payload.contracts) {
+      await applyToAll(payload.contracts, async (contractId) => {
+        contract = this.contractService.get(contractId);
+        if (!contract) {
+          throw new NotFoundError('CONTRACT.NON_EXISTANT {{contract}}', {
+            variables: { contract: `${contractId}` },
+            friendly: true,
+          });
+        }
+        contracts.push(contract);
+      });
+    }
+    const job = await this.dao.create(wrappedJob);
+    return job.id;
   }
 
   /**

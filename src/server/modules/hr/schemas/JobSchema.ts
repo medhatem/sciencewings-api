@@ -1,9 +1,9 @@
 import Joi = require('joi');
 
 export const JobSchema = Joi.object({
-  name: Joi.string().required(),
-  description: Joi.string().required(),
-  organization: Joi.number(),
-  group: Joi.number(),
-  state: Joi.string(),
+  name: Joi.string().required().required(),
+  description: Joi.string(),
+  organization: Joi.number().required(),
+  contracts: Joi.array(),
+  state: Joi.string().required(),
 });
