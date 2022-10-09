@@ -16,7 +16,7 @@ import { ResourceRO } from '@/modules/resources/routes/RequestObject';
 import { ResourceRate } from '@/modules/resources/models/ResourceRate';
 
 export abstract class IResourceService extends IBaseService<any> {
-  getResourcesOfAGivenOrganizationById: (organizationId: number) => Promise<Resource[]>;
+  getResourcesOfAGivenOrganizationById: (organizationId: number, page?: number, limit?: number) => Promise<Resource[]>;
   createResource: (userId: number, payload: ResourceRO) => Promise<number>;
   updateResource: (payload: UpdateResourceRO, resourceId: number) => Promise<number>;
 

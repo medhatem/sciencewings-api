@@ -97,8 +97,16 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceGetDTO> {
-    const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(organizationId);
+  public async getOgranizationResources(
+    @PathParam('organizationId') organizationId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('limit') limit?: number,
+  ): Promise<ResourceGetDTO> {
+    const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(
+      organizationId,
+      page || null,
+      limit || null,
+    );
 
     return new ResourceGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
