@@ -346,7 +346,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
+  public async getMembers(orgId: number, statusFilter?: string, skip?: number, limit?: number): Promise<Member[]> {
     const existingOrg = await this.dao.get(orgId);
     if (!existingOrg) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });

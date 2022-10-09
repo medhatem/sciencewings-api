@@ -171,8 +171,10 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async getUsers(
     @PathParam('id') payload: number,
     @QueryParam('status') status?: string,
+    @QueryParam('skip') skip?: number,
+    @QueryParam('limit') limit?: number,
   ): Promise<OrganizationMembersDTO> {
-    const result = await this.OrganizationService.getMembers(payload, status || null);
+    const result = await this.OrganizationService.getMembers(payload, status || null, skip || null, limit || null);
 
     return new OrganizationMembersDTO({ body: { data: result, statusCode: 200 } });
   }
