@@ -210,15 +210,28 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    * @param orgId: organization id
    */
   @log()
-  public async getAllInfrastructuresOfAgivenOrganization(orgId: number): Promise<infrastructurelistline[]> {
+  public async getAllInfrastructuresOfAgivenOrganization(
+    orgId: number,
+    page?: number,
+    limit?: number,
+  ): Promise<infrastructurelistline[]> {
     const organization = await this.organizationService.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId} ` } });
     }
-    const fetchedInfrastructure = (await this.dao.getByCriteria(
-      { organization },
-      FETCH_STRATEGY.ALL,
-    )) as Infrastructure[];
+
+    let skip;
+    if (page) {
+      skip = (page - 1) * limit;
+    }
+    console.log('page', page);
+    console.log('limit', limit);
+    console.log('skip', skip);
+    const fetchedInfrastructure = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+      refresh: true,
+      offset: skip,
+      limit: limit || 10,
+    })) as Infrastructure[];
     const InfrastructureList: infrastructurelistline[] = [];
     let subInfras: any[] = [];
     let responsible: Member;

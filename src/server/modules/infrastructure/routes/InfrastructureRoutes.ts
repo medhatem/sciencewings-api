@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@/di/index';
-import { DELETE, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { DELETE, GET, Path, PathParam, POST, PUT, QueryParam, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
@@ -94,8 +94,14 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getAllInfrastructuresOfAgivenOrganization(
     @PathParam('orgId') orgId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('limit') limit?: number,
   ): Promise<InfrastructureListRequestDTO> {
-    const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(orgId);
+    const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(
+      orgId,
+      page || null,
+      limit || null,
+    );
 
     return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });
   }
