@@ -253,13 +253,20 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    * @returns
    */
   @log()
-  public async getALLProjectParticipants(id: number): Promise<ProjectMember[]> {
+  public async getALLProjectParticipants(id: number, page?: number, limit?: number): Promise<ProjectMember[]> {
     const project = await this.dao.get(id);
     if (!project) {
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${id}` } });
     }
+
+    let skip;
+    if (page) {
+      skip = (page - 1) * limit;
+    }
     const projectParticipants = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.ALL, {
       refresh: true,
+      offset: skip,
+      limit: limit || 10,
     });
     return projectParticipants;
   }
