@@ -97,7 +97,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       }
     }
     let skip;
-    if (!page) {
+    if (page) {
       skip = (page - 1) * limit;
     }
     const resources = await this.dao.getByCriteria(
