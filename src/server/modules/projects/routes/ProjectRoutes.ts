@@ -171,8 +171,12 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @LoggerStorage()
   @Response<ProjectListRequestDTO>(200, 'Return project list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllOrganizationProjectsList(@PathParam('id') id: number): Promise<ProjectListRequestDTO> {
-    const result = await this.projectService.getAllOrganizationProjectsList(id);
+  public async getAllOrganizationProjectsList(
+    @PathParam('id') id: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('limit') limit?: number,
+  ): Promise<ProjectListRequestDTO> {
+    const result = await this.projectService.getAllOrganizationProjectsList(id, page || null, limit || null);
 
     return new ProjectListRequestDTO({ body: { data: result, statusCode: 200 } });
   }
