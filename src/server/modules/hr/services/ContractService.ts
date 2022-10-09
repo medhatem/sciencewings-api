@@ -44,7 +44,12 @@ export class ContractService extends BaseService<Contract> implements IContractS
    * @param userId of user id
    */
   @log()
-  public async getAllMemberContracts(orgId: number, userId: number): Promise<Contract[]> {
+  public async getAllMemberContracts(
+    orgId: number,
+    userId: number,
+    page?: number,
+    limit?: number,
+  ): Promise<Contract[]> {
     const organization = await this.origaniaztionService.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
@@ -62,8 +67,16 @@ export class ContractService extends BaseService<Contract> implements IContractS
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${userId}` } });
     }
+    let skip;
+    if (page) {
+      skip = (page - 1) * limit;
+    }
+
     const fetchedContracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
       populate: ['job', 'supervisor'] as never,
+      refresh: true,
+      offset: skip,
+      limit: limit || 10,
     })) as Contract[];
     return fetchedContracts;
   }
