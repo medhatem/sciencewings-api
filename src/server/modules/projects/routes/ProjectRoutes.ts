@@ -2,7 +2,7 @@ import { Project } from '@/modules/projects/models/Project';
 import { container, provideSingleton } from '@/di/index';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { ContextRequest, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { ContextRequest, GET, Path, PathParam, POST, PUT, QueryParam, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { CreateProjectDTO, GETProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
 import {
@@ -42,8 +42,12 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Response<ProjectGetDTO>(200, 'Projects extract Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOrganizationProjects(@PathParam('id') id: number): Promise<ProjectGetDTO> {
-    const result = await this.projectService.getOrganizationProjects(id);
+  public async getOrganizationProjects(
+    @PathParam('id') id: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('limit') limit?: number,
+  ): Promise<ProjectGetDTO> {
+    const result = await this.projectService.getOrganizationProjects(id, page || null, limit || null);
 
     return new ProjectGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
