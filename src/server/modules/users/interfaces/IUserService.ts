@@ -17,5 +17,5 @@ export abstract class IUserService extends IBaseService<any> {
 
   getUserByKeycloakId: (payload: string) => Promise<User>;
 
-  changeUserLanguague: (languague: string, userId: number) => Promise<number>;
+  changeUserLanguage: (languague: string, userId: number) => Promise<number>;
 }
