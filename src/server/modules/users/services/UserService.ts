@@ -195,13 +195,13 @@ export class UserService extends BaseService<User> implements IUserService {
   }
 
   @log()
-  async changeUserLanguague(languague: string, userId: number): Promise<number> {
+  async changeUserLanguage(language: string, userId: number): Promise<number> {
     const user = await this.dao.get(userId);
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
 
-    await this.keycloakUtils.updateKcUser(user.keycloakId, { attributes: { locale: languague } });
+    await this.keycloakUtils.updateKcUser(user.keycloakId, { attributes: { locale: language } });
 
     return user.id;
   }

@@ -160,23 +160,23 @@ export class UserRoutes extends BaseRoutes<User> {
   }
 
   /**
-   * update user languague
+   * update user  language
    * Must be authentificated
-   * @param languague: User languague
+   * @param  language: User  language
    */
   @PUT
-  @Path('internationalization/:languague')
+  @Path('internationalization/:language')
   @LoggerStorage()
   @Security()
-  @Response<changeUserLanguageDTO>(204, 'User languague updated Successfully')
+  @Response<changeUserLanguageDTO>(204, 'User  language updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async changeUserLanguague(
-    @PathParam('languague') languague: string,
+  public async changeUserLanguage(
+    @PathParam(' language') language: string,
     @ContextRequest request: UserRequest,
   ): Promise<changeUserLanguageDTO> {
     const userId = request.userId;
-    const result = await this.userService.changeUserLanguague(languague, userId);
+    const result = await this.userService.changeUserLanguage(language, userId);
     return new changeUserLanguageDTO({ body: { id: result, statusCode: 204 } });
   }
 }
