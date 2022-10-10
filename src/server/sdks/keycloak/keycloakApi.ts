@@ -11,6 +11,7 @@ export type UserInformationFromToken = {
   groups: string[];
   roles: string[];
   current_org: string;
+  locale: string;
   preferred_username: string;
   given_name: string;
   family_name: string;

@@ -86,3 +86,17 @@ export class MembershipDto extends BaseRequestDTO {
   @JsonProperty()
   body: GetMembershipBodyDTO;
 }
+
+@JsonObject()
+@unique
+export class changeUserLanguageBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id: number;
+}
+
+@JsonObject()
+@unique
+export class changeUserLanguageDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: changeUserLanguageBodyDTO;
+}
