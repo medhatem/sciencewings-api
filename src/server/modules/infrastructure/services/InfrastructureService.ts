@@ -149,12 +149,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
-    const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
-      ...fetchedInfrastructure,
-      name: payload.name || fetchedInfrastructure.name,
-      description: payload.description || fetchedInfrastructure.description,
-      key: payload.key || fetchedInfrastructure.key,
-    });
     if (payload.key) {
       // check if the key is unique
       const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
@@ -162,8 +156,14 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       if (keyExistingTest) {
         throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
       }
-      fetchedInfrastructure.key = payload.key;
     }
+
+    const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
+      ...fetchedInfrastructure,
+      name: payload.name || fetchedInfrastructure.name,
+      description: payload.description || fetchedInfrastructure.description,
+      key: payload.key || fetchedInfrastructure.key,
+    });
 
     if (payload.responsible) {
       const [user, organization] = await Promise.all([
