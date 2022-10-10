@@ -168,7 +168,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @LoggerStorage()
   @Response<InfrastructureResourcesRequestDTO>(200, 'Return infrastructure resources ')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllRessourcesOfAgivenInfrustructure(
+  public async getAllRessourcesOfAgivenInfrastructure(
     @PathParam('id') id: number,
   ): Promise<InfrastructureResourcesRequestDTO> {
     const result = await this.InfrastructureService.getAllResourcesOfAGivenInfrastructure(id);
