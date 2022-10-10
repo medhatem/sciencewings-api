@@ -11,5 +11,5 @@ export abstract class IInfrastructureService extends IBaseService<any> {
   getAllInfrastructuresOfAgivenOrganization: (orgId: number) => Promise<infrastructurelistline[]>;
   deleteResourceFromGivenInfrastructure: (resourceId: number, infrastructureId: number) => Promise<number>;
   addResourceToInfrastructure: (resourceId: number, infrastructureId: number) => Promise<number>;
-  getAllRessourcesOfAgivenInfrustructure: (infrustructure: number) => Promise<Resource[]>;
+  getAllResourcesOfAGivenInfrastructure: (infrastructureId: number) => Promise<Resource[]>;
 }

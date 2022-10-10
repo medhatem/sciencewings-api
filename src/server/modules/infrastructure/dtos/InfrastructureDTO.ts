@@ -150,7 +150,7 @@ export class InfrastructureListRequestDTO extends BaseRequestDTO {
 }
 @JsonObject()
 @unique
-export class InfrastructurestutusObjectDTO extends BaseBodyDTO {
+export class InfrastructureStatusObjectDTO extends BaseBodyDTO {
   @JsonProperty({
     beforeDeserialize: (prop: any) => {
       if (typeof prop === 'object') {
@@ -164,27 +164,27 @@ export class InfrastructurestutusObjectDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class InfrustructureResourceDetails extends BaseBodyDTO {
+export class InfrastructureResourceDetails extends BaseBodyDTO {
   @JsonProperty()
   name: string;
   @JsonProperty()
-  status: InfrastructurestutusObjectDTO;
+  status: InfrastructureStatusObjectDTO;
   @JsonProperty()
   createdAt: string;
 }
 @JsonObject()
 @unique
-export class InfrustructureResourcesaDetailsList extends BaseBodyDTO {
+export class InfrastructureResourcesDetailsList extends BaseBodyDTO {
   @JsonProperty({
-    type: InfrustructureResourceDetails,
+    type: InfrastructureResourceDetails,
     beforeDeserialize,
   })
-  data: Array<InfrustructureResourceDetails>;
+  data: Array<InfrastructureResourceDetails>;
 }
 
 @JsonObject()
 @unique
-export class InfrastructureresourcesRequestDTO extends BaseRequestDTO {
+export class InfrastructureResourcesRequestDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: InfrustructureResourcesaDetailsList;
+  body: InfrastructureResourcesDetailsList;
 }

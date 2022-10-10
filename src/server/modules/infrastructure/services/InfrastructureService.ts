@@ -299,7 +299,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    * @param infrastructureId: infrastructure id
    */
   @log()
-  public async getAllRessourcesOfAgivenInfrustructure(infrastructureId: number): Promise<Resource[]> {
+  public async getAllResourcesOfAGivenInfrastructure(infrastructureId: number): Promise<Resource[]> {
     const fetchedInfrastructure = await this.dao.get(infrastructureId);
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
