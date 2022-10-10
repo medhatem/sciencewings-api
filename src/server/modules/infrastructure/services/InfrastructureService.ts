@@ -20,7 +20,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
-import { IResourceService } from '@/modules/resources';
+import { IResourceService, Resource } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -292,5 +292,21 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     fetchedInfrastructure.resources.remove(fetchedResource);
     this.dao.update(fetchedInfrastructure);
     return infrastructureId;
+  }
+
+  /**
+   * get all resources of a given infrastructure
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async getAllRessourcesOfAgivenInfrustructure(infrastructureId: number): Promise<Resource[]> {
+    const fetchedInfrastructure = await this.dao.get(infrastructureId);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+    let resources: any[] = [];
+    await fetchedInfrastructure.resources.init();
+    resources = fetchedInfrastructure.resources.toArray();
+    return resources;
   }
 }
