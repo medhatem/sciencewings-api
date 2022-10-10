@@ -2,7 +2,7 @@ import { SinonStubbedInstance, createStubInstance, restore, stub } from 'sinon';
 import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
 
 import { Configuration } from '@/configuration/Configuration';
-import { ContractRO } from '@/modules/hr/routes/RequestObject';
+import { CreateContractRO } from '@/modules/hr/routes/RequestObject';
 import { ContractRoutes } from '@/modules/hr/routes/ContractRoutes';
 import { ContractService } from '@/modules/hr/services/ContractService';
 import { LocalStorage } from '@/utils/LocalStorage';
@@ -45,7 +45,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     expect(instance instanceof ContractRoutes);
   });
   suite('POST contracts/create', () => {
-    const payload = new ContractRO();
+    const payload = new CreateContractRO();
 
     test('Should fail on throw error', async () => {
       mockMethodWithResult(
@@ -69,7 +69,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   });
 
   suite('PUT contracts/update/:id', () => {
-    const payload = new ContractRO();
+    const payload = new CreateContractRO();
 
     test('Should fail on throw error', async () => {
       mockMethodWithResult(contractService, 'updateContract', [payload], Promise.reject(new Error('Failed')));
@@ -196,7 +196,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       name: 'resource_dash_one',
       description: 'string',
       active: true,
-      resourceType: 'USER',
+      statusType: 'USER',
       resourceClass: 'TECH',
       timezone: 'gmt+1',
       tags: [],

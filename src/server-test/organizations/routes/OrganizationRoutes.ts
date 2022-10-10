@@ -52,7 +52,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: CreateOrganizationRO = {
       name: 'test',
       email: 'test',
-      phones: {} as PhoneRO[],
+      phone: {} as PhoneRO,
       addresses: {} as AddressRO[],
       labels: ['0'],
       type: OrganizationType.SERVICE,
@@ -96,7 +96,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       email: 'test',
       type: 'test',
       labels: [''],
-      direction: 1,
+      owner: 1,
       socialFacebook: 'test',
       socialTwitter: 'test',
       socialGithub: 'test',
@@ -198,14 +198,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         Promise.resolve({ isFailure: true, error: 'throwing error' }),
       );
       try {
-        await organizationRoutes.getUsers(1);
+        await organizationRoutes.getUsers(1, null);
       } catch (error) {
         expect(error).to.equal('throwing error');
       }
     });
     test('Should success at returning the right value', async () => {
       mockMethodWithResult(organizationService, 'getMembers', [], Promise.resolve(null));
-      const result = await organizationRoutes.getUsers(1);
+      const result = await organizationRoutes.getUsers(1, null);
       expect(result.body.statusCode).to.equal(200);
     });
   });

@@ -1,8 +1,9 @@
 import { AssignOptions, FindOneOptions, FindOptions } from '@mikro-orm/core';
 
-import { FETCH_STRATEGY } from '../daos';
+import { BaseModel } from '@/modules/base/models/BaseModel';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 
-export abstract class IBaseService<T> {
+export abstract class IBaseService<T extends BaseModel> {
   static getInstance: () => any;
 
   public get: (id: number, options?: FindOneOptions<T>) => Promise<T>;

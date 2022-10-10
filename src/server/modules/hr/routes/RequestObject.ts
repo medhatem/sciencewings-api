@@ -5,54 +5,87 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
 import { userStatus } from '@/modules/users/models/User';
+import { JobLevel, ContractTypes } from '@/modules/hr/models/Contract';
+import { JobState } from '@/modules/hr/models/Job';
 
 @JsonObject()
 @unique
-export class ContractRO {
+export class MemberKeyRO {
   @JsonProperty()
-  id: number;
+  userId: number;
+  @JsonProperty()
+  orgId: number;
+}
 
+@JsonObject()
+@unique
+export class CreateContractRO {
   @JsonProperty()
   name!: string;
-
-  @JsonProperty()
-  completeName?: string;
-
-  @JsonProperty()
-  dateStart!: Date;
-
-  @JsonProperty()
-  wage!: number;
 
   @JsonProperty()
   organization!: number;
 
   @JsonProperty()
-  active?: boolean;
+  user!: number;
 
   @JsonProperty()
-  parent?: number;
+  jobLevel?: JobLevel;
 
   @JsonProperty()
-  manager?: number;
+  wage?: number;
+
+  @JsonProperty()
+  contractType?: ContractTypes;
+
+  @JsonProperty()
+  dateStart!: Date;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  supervisor?: number;
 
   @JsonProperty()
   description?: string;
+}
+
+@JsonObject()
+@unique
+export class UpdateContractRO {
+  @JsonProperty()
+  jobName?: string;
 
   @JsonProperty()
-  member?: number;
+  state?: JobState;
 
   @JsonProperty()
-  group?: number;
+  organization!: number;
 
   @JsonProperty()
-  job?: number;
+  user?: number;
 
   @JsonProperty()
-  resourceCalendar?: number;
+  jobLevel?: JobLevel;
 
   @JsonProperty()
-  hrResponsible?: number;
+  wage?: number;
+
+  @JsonProperty()
+  contractType?: ContractTypes;
+
+  @JsonProperty()
+  dateStart?: Date;
+
+  @JsonProperty()
+  dateEnd?: Date;
+
+  @JsonProperty()
+  supervisor?: number;
+
+  @JsonProperty()
+  description?: string;
 }
 
 @JsonObject()
@@ -97,6 +130,7 @@ export class JobRO {
   @JsonProperty()
   hrResponsible?: number;
 }
+
 @JsonObject()
 @unique
 export class MemberRO {
@@ -238,5 +272,5 @@ export class GroupRO {
   members?: number[];
 
   @JsonProperty()
-  description: string;
+  description?: string;
 }

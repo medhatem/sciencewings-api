@@ -1,11 +1,14 @@
 import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
+
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Calendar } from '@/modules/reservation/models/Calendar';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { ResourceCalendar } from './ResourceCalendar';
-import { ResourceTag } from './ResourceTag';
-import { ResourceSettings } from './ResourceSettings';
+import { ResourceSettings } from '@/modules/resources/models//ResourceSettings';
+import { ResourceStatus } from '@/modules/resources/models//ResourceStatus';
+import { ResourceTag } from '@/modules/resources/models//ResourceTag';
 
 @provide()
 @Entity()
@@ -24,17 +27,11 @@ export class Resource extends BaseModel<Resource> {
   @Property()
   name!: string;
 
-  @Property()
-  description!: string;
+  @Property({ nullable: true })
+  description?: string;
 
-  @ManyToMany({
-    entity: () => Member,
-    nullable: true,
-    mappedBy: (entity) => entity.resources,
-    lazy: true,
-    eager: false,
-  })
-  public managers? = new Collection<Member>(this);
+  @ManyToMany({ entity: () => Member, mappedBy: (entity) => entity.resources })
+  managers = new Collection<Member>(this);
 
   @ManyToMany({
     entity: () => ResourceTag,
@@ -47,7 +44,7 @@ export class Resource extends BaseModel<Resource> {
   @Property({ nullable: true })
   active?: boolean;
 
-  @ManyToOne({ entity: () => Organization, onDelete: 'set null', nullable: true })
+  @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
   organization?: Organization;
 
   @Property()
@@ -57,17 +54,23 @@ export class Resource extends BaseModel<Resource> {
   resourceClass!: string;
 
   @OneToMany({
-    entity: () => ResourceCalendar,
+    entity: () => Calendar,
     mappedBy: (entity) => entity.resource,
     nullable: true,
     lazy: true,
     eager: false,
   })
-  calendar? = new Collection<ResourceCalendar>(this);
+  calendar? = new Collection<Calendar>(this);
 
-  @Property()
-  timezone!: string;
+  @Property({ nullable: true })
+  timezone?: string;
 
   @OneToOne({ entity: () => ResourceSettings, nullable: true, unique: false })
-  settings: ResourceSettings;
+  settings?: ResourceSettings;
+
+  @ManyToOne({ entity: () => Infrastructure, nullable: false })
+  infrastructure!: Infrastructure;
+
+  @OneToOne({ entity: () => ResourceStatus, nullable: true, unique: false })
+  status?: ResourceStatus;
 }

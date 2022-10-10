@@ -1,12 +1,20 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Member } from '@/modules/hr/models/Member';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { ProjectBoard } from '@/modules/projects/models/ProjectBoard';
 import { ProjectTag } from '@/modules/projects/models/ProjectTag';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
+import { ProjectMember } from '@/modules/projects/models/ProjectMember';
+import { Member } from '@/modules/hr/models/Member';
+
+export enum ProjectStatus {
+  TODO = 'To-do',
+  IN_PROGRESS = 'In-progress',
+  REVIEW = 'Review',
+  DONE = 'Done',
+}
 
 @provide()
 @Entity()
@@ -20,25 +28,26 @@ export class Project extends BaseModel<Project> {
   }
 
   @PrimaryKey()
-  id?: number;
+  id: number;
 
   @Property()
   title: string;
 
+  @Unique()
   @Property()
-  description: string;
+  key: string;
 
-  @ManyToMany({ entity: () => Member, owner: true })
-  managers = new Collection<Member>(this);
+  @Property({ nullable: true })
+  description?: string;
 
-  @ManyToMany({ entity: () => Member, owner: true })
-  participants = new Collection<Member>(this);
+  @ManyToMany({ entity: () => Member, owner: true, pivotEntity: () => ProjectMember })
+  public members = new Collection<Member>(this);
 
-  @Property()
-  active: boolean;
+  @Property({ nullable: true })
+  status?: ProjectStatus;
 
-  @Property()
-  dateStart: Date;
+  @Property({ nullable: true })
+  dateStart?: Date;
 
   @Property({ nullable: true })
   dateEnd?: Date;
@@ -61,6 +70,9 @@ export class Project extends BaseModel<Project> {
   })
   public projectBoard? = new Collection<ProjectBoard>(this);
 
-  @ManyToOne({ entity: () => Organization, nullable: true, onDelete: 'cascade' })
-  organization?: Organization;
+  @ManyToOne({ entity: () => Organization, nullable: false, onDelete: 'cascade' })
+  organization: Organization;
+
+  // @ManyToMany({ entity: () => ProjectMember, pivotEntity: () => ProjectMember })
+  // projectMember? = new Collection<ProjectMember>(this);
 }

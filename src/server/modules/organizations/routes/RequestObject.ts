@@ -3,6 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
+import { AccountNumberVisibilty } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
@@ -13,10 +14,9 @@ export class CreateOrganizationRO {
   @JsonProperty()
   email: string;
 
-  @JsonProperty({
-    type: PhoneRO,
-  })
-  phones?: Array<PhoneRO>;
+  @JsonProperty()
+  phone?: PhoneRO;
+
   @JsonProperty()
   type: string;
 
@@ -61,13 +61,16 @@ export class UpdateOrganizationRO {
   email?: string;
 
   @JsonProperty()
+  phone?: PhoneRO;
+
+  @JsonProperty()
   type?: string;
 
   @JsonProperty()
   labels?: Array<string>;
 
   @JsonProperty()
-  direction?: number;
+  owner?: number;
 
   @JsonProperty()
   socialFacebook?: string;
@@ -127,7 +130,7 @@ export class OrganizationReservationSettingsRO {
   @JsonProperty()
   hideOrganizationCalendar?: boolean;
   @JsonProperty()
-  hideAccountNumberWhenMakingReservation?: boolean;
+  hideAccountNumberWhenMakingReservation?: AccountNumberVisibilty;
   @JsonProperty()
   showResourceImagesInReservation?: boolean;
   @JsonProperty()

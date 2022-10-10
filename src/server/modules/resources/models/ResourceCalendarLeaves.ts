@@ -2,9 +2,9 @@ import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Calendar } from '@/modules/reservation/models/Calendar';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Resource } from '@/modules/resources/models/Resource';
-import { ResourceCalendar } from '@/modules/resources/models/ResourceCalendar';
 
 @provide()
 @Entity()
@@ -27,12 +27,12 @@ export class ResourceCalendarLeaves extends BaseModel<ResourceCalendarLeaves> {
   organization?: Organization;
 
   @ManyToOne({
-    entity: () => ResourceCalendar,
+    entity: () => Calendar,
     onDelete: 'set null',
     nullable: true,
     index: 'resource_calendar_leaves_calendar_id_index',
   })
-  calendar?: ResourceCalendar;
+  calendar?: Calendar;
 
   @Property({ columnType: 'timestamp', length: 6 })
   dateFrom!: Date;

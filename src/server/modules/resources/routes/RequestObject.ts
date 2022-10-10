@@ -1,5 +1,6 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
+import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 
 //Resource settings
 @JsonObject()
@@ -58,11 +59,13 @@ export class ResourcesSettingsReservationUnitRO {
 @unique
 export class ResourceSettingsGeneralStatusRO {
   @JsonProperty()
-  resourceStatus: string;
+  statusType: StatusCases;
   @JsonProperty()
   statusDescription: string;
   @JsonProperty()
-  memberId: number;
+  user: number;
+  @JsonProperty()
+  organization: number;
 }
 
 @JsonObject()
@@ -126,19 +129,6 @@ export class ResourceSettingsGeneralPropertiesRO {
 
 @JsonObject()
 @unique
-export class ResourceManagerRO {
-  @JsonProperty()
-  id?: number;
-
-  @JsonProperty()
-  organization: number;
-
-  @JsonProperty()
-  user: number;
-}
-
-@JsonObject()
-@unique
 export class ResourceTagRO {
   @JsonProperty()
   id?: number;
@@ -173,16 +163,16 @@ export class ResourceCalendarRO {
 @unique
 export class ResourceRO {
   @JsonProperty()
-  name: string;
+  name?: string;
 
   @JsonProperty()
-  description: string;
+  description?: string;
 
   @JsonProperty()
-  active?: boolean;
+  organization!: number;
 
   @JsonProperty()
-  organization?: number;
+  infrastructure!: number;
 
   @JsonProperty()
   resourceType!: string;
@@ -191,23 +181,14 @@ export class ResourceRO {
   resourceClass!: string;
 
   @JsonProperty()
-  user?: number;
-
-  @JsonProperty()
-  timezone!: string;
-
-  @JsonProperty()
-  calendar?: Array<ResourceCalendarRO>;
-
-  @JsonProperty()
-  tags?: Array<ResourceTagRO>;
-
-  @JsonProperty()
-  managers?: Array<ResourceManagerRO>;
+  managers?: number[];
 }
 @JsonObject()
 @unique
 export class UpdateResourceRO {
+  @JsonProperty()
+  organization!: number;
+
   @JsonProperty()
   name?: string;
 
@@ -215,10 +196,10 @@ export class UpdateResourceRO {
   description?: string;
 
   @JsonProperty()
-  active?: boolean;
+  infrastructure?: number;
 
   @JsonProperty()
-  organization?: number;
+  active?: boolean;
 
   @JsonProperty()
   resourceType?: string;
@@ -237,9 +218,6 @@ export class UpdateResourceRO {
 
   @JsonProperty()
   tags?: Array<ResourceTagRO>;
-
-  @JsonProperty()
-  managers?: Array<ResourceManagerRO>;
 }
 @JsonObject()
 @unique

@@ -14,6 +14,7 @@ export async function startDB(config: ServerDBConfig) {
     allowGlobalContext: true,
     user: config.dbUsername,
     password: config.dbPassword,
+    forceUtcTimezone: true,
     entities: ['dist/server/modules/**/models/*'],
   });
   await connection.connect();

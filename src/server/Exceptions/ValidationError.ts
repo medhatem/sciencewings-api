@@ -7,6 +7,5 @@ import { BaseHttpError, ErrorParamsOptions } from './BaseHttpError';
 export class ValidationError extends BaseHttpError {
   constructor(message: string, params: ErrorParamsOptions = {}) {
     super(message, { ...params, statusCode: 400 });
-    this.statusCode = 400;
   }
 }

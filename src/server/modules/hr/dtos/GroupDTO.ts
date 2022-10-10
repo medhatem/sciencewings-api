@@ -3,6 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { beforeDeserialize } from '@/utils/utilities';
 
 @JsonObject()
 export class GroupBodyDTO extends BaseBodyDTO {
@@ -37,6 +38,20 @@ class GroupBaseBodyGetDTO extends BaseBodyDTO {
 export class GroupDTO extends BaseRequestDTO {
   @JsonProperty()
   body: GroupBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class OrgGroupsDTO extends BaseBodyDTO {
+  @JsonProperty({ type: GroupBodyDTO, beforeDeserialize })
+  data: Array<GroupBodyDTO>;
+}
+
+@JsonObject()
+@unique
+export class OrgGroupsrequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body?: OrgGroupsDTO;
 }
 
 @JsonObject()

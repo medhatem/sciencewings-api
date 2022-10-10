@@ -22,12 +22,14 @@ export class ResourceStatusHistory extends BaseModel<ResourceStatusHistory> {
   @OneToOne({
     entity: () => Resource,
     nullable: true,
+    unique: false,
   })
   resource: Resource;
 
   @OneToOne({
     entity: () => Member,
     nullable: true,
+    unique: false,
   })
   member: Member;
 

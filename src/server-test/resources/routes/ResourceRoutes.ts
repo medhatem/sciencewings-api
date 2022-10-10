@@ -58,27 +58,25 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceRO = {
       name: 'resource_dash_one',
       description: 'string',
-      active: true,
       resourceType: 'USER',
       resourceClass: 'TECH',
-      timezone: 'gmt+1',
-      tags: [],
       organization: 1,
-      user: 1,
+      infrastructure: 1,
     };
+    const userId = 1;
 
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(resourceService, 'createResource', [payload], Promise.reject(new Error('Failed')));
+      mockMethodWithResult(resourceService, 'createResource', [userId, payload], Promise.reject(new Error('Failed')));
       try {
-        await resourceRoute.createResource(payload);
+        await resourceRoute.createResource({ userId } as any, payload);
+        expect.fail('unexpected sucess ');
       } catch (error) {
         expect(error.message).to.equal('Failed');
       }
     });
     test('Should success at returning the right value', async () => {
-      mockMethodWithResult(resourceService, 'createResource', [payload], 1);
-      const result = await resourceRoute.createResource(payload);
-      expect(result.body.id).to.equal(1);
+      mockMethodWithResult(resourceService, 'createResource', [userId, payload], { body: { id: 1 } });
+      const result = await resourceRoute.createResource({} as any, payload);
       expect(result.body.statusCode).to.equal(201);
     });
   });
@@ -86,19 +84,17 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: ResourceRO = {
       name: 'resource_dash_one',
       description: 'string',
-      active: true,
       resourceType: 'USER',
       resourceClass: 'TECH',
-      timezone: 'gmt+1',
-      tags: [],
       organization: 1,
-      user: 1,
+      infrastructure: 1,
     };
-
+    const userId = 1;
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(resourceService, 'updateResource', [payload], Promise.reject(new Error('Failed')));
+      mockMethodWithResult(resourceService, 'updateResource', [payload, userId], Promise.reject(new Error('Failed')));
       try {
-        await resourceRoute.updateResource(payload, 1);
+        await resourceRoute.updateResource(payload, userId);
+        expect.fail('unexpected sucess ');
       } catch (error) {
         expect(error.message).to.equal('Failed');
       }

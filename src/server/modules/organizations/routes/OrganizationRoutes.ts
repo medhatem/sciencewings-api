@@ -1,7 +1,7 @@
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE } from 'typescript-rest';
+import { Path, POST, Security, ContextRequest, GET, PathParam, PUT, DELETE, QueryParam } from 'typescript-rest';
 import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
@@ -12,7 +12,7 @@ import {
 } from './RequestObject';
 import { UserRequest } from '@/types/UserRequest';
 import { CreateOrganizationDTO } from '@/modules/organizations/dtos/CreateOrganizationDTO';
-import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { GetOrganizationDTO, OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import { UpdateOrganizationDTO } from '@/modules/organizations/dtos/UpdateOrganizationDTO';
@@ -41,6 +41,22 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   static getInstance(): OrganizationRoutes {
     return container.get(OrganizationRoutes);
   }
+  /**
+   * organization by id
+   *
+   * @param id organization id
+   */
+  @GET
+  @Path('/:id')
+  @Security()
+  @LoggerStorage()
+  @Response<GetOrganizationDTO>(200, 'Organization Settings Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getOrganizationById(@PathParam('id') id: number): Promise<GetOrganizationDTO> {
+    const result = await this.OrganizationService.getOrganizationById(id);
+    return new GetOrganizationDTO({ body: { ...result, statusCode: 200 } });
+  }
 
   @POST
   @Path('createOrganization')
@@ -54,7 +70,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @ContextRequest request: UserRequest,
   ): Promise<CreateOrganizationDTO> {
     const result = await this.OrganizationService.createOrganization(payload, request.userId);
-
     return new CreateOrganizationDTO({ body: { id: result, statusCode: 201 } });
   }
   /**
@@ -153,8 +168,11 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @LoggerStorage()
   @Response<OrganizationMembersDTO>(200, 'Return organization members Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getUsers(@PathParam('id') payload: number): Promise<OrganizationMembersDTO> {
-    const result = await this.OrganizationService.getMembers(payload);
+  public async getUsers(
+    @PathParam('id') payload: number,
+    @QueryParam('status') status?: string,
+  ): Promise<OrganizationMembersDTO> {
+    const result = await this.OrganizationService.getMembers(payload, status || null);
 
     return new OrganizationMembersDTO({ body: { data: result, statusCode: 200 } });
   }

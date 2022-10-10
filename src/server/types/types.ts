@@ -1,3 +1,5 @@
+import { Project } from '@/modules/projects/models/Project';
+
 export type EmailMessage = {
   to: string;
   from: string;
@@ -16,4 +18,13 @@ export type MemberKey = {
 export type OrgKey = {
   orgId: number;
   orgName: string;
+};
+
+export type ProjectList = {
+  id: number;
+  title: string;
+  responsable: string;
+  members: number;
+  startDate: Date;
+  projectDto: Project;
 };

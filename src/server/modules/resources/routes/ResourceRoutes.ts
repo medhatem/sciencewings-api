@@ -1,11 +1,12 @@
-import { container, provideSingleton } from '@/di/index';
+import { container, lazyInject, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { Path, POST, Security, GET, PathParam, PUT } from 'typescript-rest';
+import { Path, POST, Security, GET, PathParam, PUT, ContextRequest, QueryParam } from 'typescript-rest';
 import {
   ResourceSettingsGeneralVisibilityRO,
   ResourceSettingsGeneralPropertiesRO,
   ResourceSettingsGeneralStatusRO,
   ResourceRO,
+  UpdateResourceRO,
 } from './RequestObject';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
@@ -30,10 +31,14 @@ import {
 } from './RequestObject';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { GetResourceRateDTO, ResourceRateBodyDTO } from '@/modules/resources/dtos/ResourceRateDTO';
+import { UserRequest } from '@/types/UserRequest';
+import { IReservationService } from '@/modules/reservation/interfaces/IReservationService';
 
 @provideSingleton()
 @Path('resources')
 export class ResourceRoutes extends BaseRoutes<Resource> {
+  @lazyInject(IReservationService) private reservationResourceService: IReservationService;
+
   constructor(private ResourceService: IResourceService) {
     super(ResourceService as any, new ResourceGetDTO(), new UpdateResourceDTO());
   }
@@ -55,8 +60,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async createResource(payload: ResourceRO): Promise<CreateResourceDTO> {
-    const result = await this.ResourceService.createResource(payload);
+  public async createResource(@ContextRequest request: UserRequest, payload: ResourceRO): Promise<CreateResourceDTO> {
+    const result = await this.ResourceService.createResource(request.userId, payload);
     return new CreateResourceDTO({ body: { id: result, statusCode: 201 } });
   }
 
@@ -75,9 +80,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<UpdateResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateResource(payload: ResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
+  public async updateResource(payload: UpdateResourceRO, @PathParam('id') id: number): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.updateResource(payload, id);
-
     return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 
@@ -349,5 +353,46 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.getResourceSettings(resourceId);
 
     return new GetResourceSettingsDTO({ body: { ...result, statusCode: 200 } });
+  }
+  /**
+   * Get a resource settings in the database
+   *
+   * @param resourceId
+   * Requested resource id
+   */
+  @GET
+  @Path('getEventsByRange/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getEventsByRange(
+    @PathParam('resourceId') resourceId: number,
+    @QueryParam('start') start: string,
+    @QueryParam('end') end: string,
+  ): Promise<any> {
+    const result = await this.reservationResourceService.getEventsByRange(resourceId, new Date(start), new Date(end));
+
+    return { result };
+  }
+
+  /**
+   * Get a resource settings in the database
+   *
+   * @param resourceId
+   * Requested resource id
+   */
+  @POST
+  @Path('createReservation/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async createReservation(@PathParam('resourceId') resourceId: number, payload: any): Promise<any> {
+    const result = await this.reservationResourceService.createReservation(resourceId, payload);
+
+    return { result };
   }
 }

@@ -1,5 +1,5 @@
 import { Member } from '@/modules/hr/models/Member';
-import { container, provideSingleton } from '@/di/index';
+import { container, provideSingleton, lazyInject } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
   CreateOrganizationRO,
@@ -28,7 +28,6 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 import { Keycloak } from '@/sdks/keycloak';
 import { MemberEvent } from '@/modules/hr/events/MemberEvent';
-import { getConfig } from '@/configuration/Configuration';
 import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
@@ -37,8 +36,16 @@ import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
 
+import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
+import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
+  @lazyInject(IInfrastructureService) public infraService: IInfrastructureService;
+  @lazyInject(IMemberService) public memberService: IMemberService;
+
   constructor(
     public dao: OrganizationDao,
     public organizationSettingsService: IOrganizationSettingsService,
@@ -51,10 +58,22 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public keycloakUtils: KeycloakUtil,
   ) {
     super(dao);
+    //this.infraService = infraService;
   }
 
   static getInstance(): IOrganizationService {
     return container.get(IOrganizationService);
+  }
+  /**
+   * Get one organization by id
+   **/
+  @log()
+  public async getOrganizationById(id: number): Promise<Organization> {
+    const organization = await this.dao.get(id, { populate: ['labels', 'phone', 'address'] as never });
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` }, friendly: true });
+    }
+    return organization;
   }
 
   /**
@@ -97,7 +116,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
     }
-
     const wrappedOrganization = this.wrapEntity(new Organization(), {
       name: payload.name,
       email: payload.email,
@@ -109,8 +127,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
       socialTwitter: payload.socialTwitter || null,
       socialLinkedin: payload.socialLinkedin || null,
     });
+    const organizationPhone = await this.phoneService.create({
+      phoneLabel: payload.phone.phoneLabel,
+      phoneCode: payload.phone.phoneCode,
+      phoneNumber: payload.phone.phoneNumber,
+    });
+
+    wrappedOrganization.phone = organizationPhone;
     wrappedOrganization.parent = parent;
-    wrappedOrganization.direction = user;
+    wrappedOrganization.owner = user;
     const groupName = `${orgPrifix}${payload.name}`;
     // create keycloak organization
     const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
@@ -133,8 +158,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
-
+      const organizationSetting = await this.organizationSettingsService.create({
+        hideAccountNumberWhenMakingReservation: AccountNumberVisibilty.EVERYONE,
+      });
+      wrappedOrganization.settings = organizationSetting;
       organization = await this.create(wrappedOrganization);
+
       const memberEvent = new MemberEvent();
       await memberEvent.createMember(user, organization);
 
@@ -174,16 +203,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
       ),
     );
 
-    await Promise.all(
-      payload.phones.map((phone) => {
-        this.phoneService.create({
-          phoneLabel: phone.phoneLabel,
-          phoneCode: phone.phoneCode,
-          phoneNumber: phone.phoneNumber,
-          organization,
-        });
-      }),
-    );
+    //create a default infastructure
+
+    const responsable = (await this.memberService.getByCriteria(
+      { user, organization },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+
+    const defaultInfrastructure = this.infraService.wrapEntity(Infrastructure.getInstance(), {
+      name: `${organization.name}_defaultInfra`,
+      key: `${organization.name}_defaultInfra`,
+      default: true,
+    });
+    defaultInfrastructure.responsible = responsable;
+    defaultInfrastructure.organization = organization;
+    await this.infraService.create(defaultInfrastructure);
     return organization.id;
   }
 
@@ -198,31 +232,42 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
     orgId: number,
   ): Promise<number> {
-    const fetchedorganization = await this.dao.get(orgId);
-    if (!fetchedorganization) {
+    const organization = await this.dao.get(orgId);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
-    if (fetchedorganization.name !== payload.name) {
+    if (organization.name !== payload.name) {
       //update the Kc group name
-      await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
+      await this.keycloakUtils.updateGroup(organization.kcid, {
         name: `${orgPrifix}${payload.name}`,
       });
     }
 
-    const wrappedOrganization = this.wrapEntity(fetchedorganization, {
+    const wrappedOrganization = this.wrapEntity(organization, {
       ...payload,
     });
 
-    if (payload.direction) {
-      const direction = await this.userService.get(payload.direction);
-      if (!direction) {
+    if (payload.owner) {
+      const owner = await this.userService.get(payload.owner);
+      if (!owner) {
         throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
-          variables: { user: `${payload.direction}` },
+          variables: { user: `${payload.owner}` },
           friendly: false,
         });
       }
-      wrappedOrganization.direction = direction;
+      wrappedOrganization.owner = owner;
+    }
+
+    if (payload.phone) {
+      const phone = await this.phoneService.get(payload.phone.id);
+      const updatedPhone = this.phoneService.wrapEntity(phone, {
+        ...phone,
+        phoneLabel: payload.phone.phoneLabel,
+        phoneCode: payload.phone.phoneCode,
+        phoneNumber: payload.phone.phoneNumber,
+      });
+      await this.phoneService.update(updatedPhone);
     }
 
     if (payload.parent) {
@@ -236,10 +281,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const updateResult = await this.dao.update(wrappedOrganization);
     if (!updateResult) {
       //in case we update the name of the org
-      if (fetchedorganization.name !== payload.name) {
+      if (organization.name !== payload.name) {
         //rolback the keyclock updated group name
-        await this.keycloakUtils.updateGroup(fetchedorganization.kcid, {
-          name: `${orgPrifix}${fetchedorganization.name}`,
+        await this.keycloakUtils.updateGroup(organization.kcid, {
+          name: `${orgPrifix}${organization.name}`,
         });
       }
     }
@@ -301,14 +346,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(orgId: number): Promise<Member[]> {
+  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
     const existingOrg = await this.dao.get(orgId);
     if (!existingOrg) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
 
-    if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-    return existingOrg.members.toArray().map((el: any) => ({ ...el, joinDate: el.joinDate.toISOString() }));
+    if (!statusFilter) {
+      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
+      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    } else {
+      const status = statusFilter.split(',');
+      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
+      return members.toArray().map((member: any) => ({ ...member }));
+    }
   }
 
   /**
@@ -324,19 +375,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    const groups = await (await this.keycloak.getAdminClient()).groups.findOne({
-      id: fetchedorganization.kcid,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    const group = await this.keycloakUtils.getGroupById(fetchedorganization.kcid);
 
-    if (groups.subGroups.length !== 1) {
+    //check if the org have subgroups
+    if (group.subGroups.length !== 0) {
       throw new InternalServerError('KEYCLOAK.GROUP_DELETION_SUB_GROUP', { friendly: false });
     }
 
-    await (await this.keycloak.getAdminClient()).groups.del({
-      id: fetchedorganization.kcid,
-      realm: getConfig('keycloak.clientValidation.realmName'),
-    });
+    await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
     await this.dao.remove(fetchedorganization);
     return organizationId;
@@ -347,8 +393,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
    *
    */
   @log()
-  public async getOrganizationSettingsById(organizationId: number): Promise<any> {
-    const fetchedOrganization = await this.get(organizationId);
+  public async getOrganizationSettingsById(organizationId: number): Promise<OrganizationSettings> {
+    const fetchedOrganization = await this.get(organizationId, { populate: ['settings'] as any });
 
     if (!fetchedOrganization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
@@ -356,10 +402,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-
-    return {
-      settings: fetchedOrganization.settings,
-    };
+    return fetchedOrganization.settings;
   }
 
   /* Update the reservation, invoices or access settings of an organization ,

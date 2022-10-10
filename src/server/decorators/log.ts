@@ -41,9 +41,7 @@ export function log(
       if (getConfig('logger.logLevel')) {
         options.level = getConfig('logger.logLevel');
       }
-      const message = !options.message
-        ? `in ${propertyKey} of ${className} with args: ${JSON.stringify(args)}`
-        : options.message;
+      const message = !options.message ? `in ${propertyKey} of ${className} }` : options.message;
       const logger = Logger.getInstance();
       logger.logWithLevel(message, options.level);
       return originalFunction.apply(this, args);
