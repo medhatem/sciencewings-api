@@ -200,6 +200,9 @@ export class subInfraObjectDTO extends BaseBodyDTO {
       return prop;
     },
   })
+  @JsonProperty()
+  id: number;
+  @JsonProperty()
   name: string;
   @JsonProperty()
   createdAt: string;
