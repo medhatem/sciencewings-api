@@ -5,7 +5,7 @@ import { Response } from 'typescript-rest-swagger';
 import { User } from '@/modules/users/models/User';
 import { UserRequest } from '@/types/UserRequest';
 import { RegisterUserFromTokenDTO, ResetPasswordDTO } from '@/modules/users/dtos/RegisterUserFromTokenDTO';
-import { UserGetDTO } from '@/modules/users/dtos/UserDTO';
+import { changeUserLanguageDTO, UserGetDTO } from '@/modules/users/dtos/UserDTO';
 import { ResetPasswordRO, UserRO } from './RequstObjects';
 import { UpdateUserDTO } from '@/modules/users/dtos/UserUpdateDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
@@ -157,5 +157,26 @@ export class UserRoutes extends BaseRoutes<User> {
     const result = await this.userService.getUserByKeycloakId(request.keycloakUser.sub);
 
     return new UserGetDTO({ body: { data: [...([result] || [])], statusCode: 200 } });
+  }
+
+  /**
+   * update user  language
+   * Must be authentificated
+   * @param  language: User  language
+   */
+  @PUT
+  @Path('internationalization/:language')
+  @LoggerStorage()
+  @Security()
+  @Response<changeUserLanguageDTO>(204, 'User  language updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async changeUserLanguage(
+    @PathParam(' language') language: string,
+    @ContextRequest request: UserRequest,
+  ): Promise<changeUserLanguageDTO> {
+    const userId = request.userId;
+    const result = await this.userService.changeUserLanguage(language, userId);
+    return new changeUserLanguageDTO({ body: { id: result, statusCode: 204 } });
   }
 }
