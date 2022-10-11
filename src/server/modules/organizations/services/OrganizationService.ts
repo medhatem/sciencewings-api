@@ -141,7 +141,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.owner = user;
     const groupName = `${orgPrifix}${payload.name}`;
 
-    // create keycloak organization in has no parent
+    // create keycloak organization in case it has no parent
     if (!payload.parent) {
       keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
     }
