@@ -335,7 +335,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         resourcesNb: resourceNb,
       });
     });
-    console.log(subInfrasDetailsList);
     return subInfrasDetailsList;
   }
 }

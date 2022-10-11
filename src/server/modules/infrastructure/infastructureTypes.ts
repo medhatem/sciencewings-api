@@ -14,7 +14,3 @@ export type subInfrasListLine = {
   subInfrastructure: Infrastructure;
   resourcesNb: number;
 };
-
-// export type subInfrasList = {
-//   subInfrasListLine: Array<subInfrasListLine>;
-// };
