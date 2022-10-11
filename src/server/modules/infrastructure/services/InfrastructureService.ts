@@ -18,7 +18,7 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
+import { infrastructurelistline, subInfrasListLine } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
 import { IResourceService, Resource } from '@/modules/resources';
 
@@ -308,5 +308,34 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     await fetchedInfrastructure.resources.init();
     resources = fetchedInfrastructure.resources.toArray();
     return resources;
+  }
+
+  /**
+   * get all sub infrastructures of a given infrastructure
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async getAllSubInfasOfAGivenInfrastructure(infrastructureId: number): Promise<subInfrasListLine[]> {
+    const fetchedInfrastructure = await this.dao.get(infrastructureId);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    const subInfras = (await this.dao.getByCriteria(
+      { parent: fetchedInfrastructure },
+      FETCH_STRATEGY.ALL,
+    )) as Infrastructure[];
+
+    const subInfrasDetailsList: subInfrasListLine[] = [];
+    await applyToAll(subInfras, async (infrastructure) => {
+      await infrastructure.resources.init();
+      const resourceNb = await infrastructure.resources.loadCount(true);
+      subInfrasDetailsList.push({
+        subInfrastructure: infrastructure,
+        resourcesNb: resourceNb,
+      });
+    });
+    console.log(subInfrasDetailsList);
+    return subInfrasDetailsList;
   }
 }

@@ -188,3 +188,45 @@ export class InfrastructureResourcesRequestDTO extends BaseRequestDTO {
   @JsonProperty()
   body: InfrastructureResourcesDetailsList;
 }
+
+@JsonObject()
+@unique
+export class subInfraObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    beforeDeserialize: (prop: any) => {
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
+    },
+  })
+  name: string;
+  @JsonProperty()
+  createdAt: string;
+}
+
+@JsonObject()
+@unique
+export class subInfraListLineObjectDTO extends BaseBodyDTO {
+  @JsonProperty()
+  subInfrastructure: subInfraObjectDTO;
+  @JsonProperty()
+  resourcesNb: number;
+}
+
+@JsonObject()
+@unique
+export class subInfraListObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: subInfraListLineObjectDTO,
+    beforeDeserialize,
+  })
+  data: Array<subInfraListLineObjectDTO>;
+}
+
+@JsonObject()
+@unique
+export class subInfraListRequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: subInfraListObjectDTO;
+}
