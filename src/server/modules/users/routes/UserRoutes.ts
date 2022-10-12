@@ -172,7 +172,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async changeUserLanguage(
-    @PathParam(' language') language: string,
+    @PathParam('language') language: string,
     @ContextRequest request: UserRequest,
   ): Promise<changeUserLanguageDTO> {
     const userId = request.userId;
