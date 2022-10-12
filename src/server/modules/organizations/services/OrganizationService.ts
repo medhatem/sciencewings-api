@@ -346,20 +346,63 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(orgId: number, statusFilter?: string, skip?: number, limit?: number): Promise<Member[]> {
-    const existingOrg = await this.dao.get(orgId);
-    if (!existingOrg) {
+  public async getMembers(
+    orgId: number,
+    statusFilter?: string,
+    page: number = 0,
+    size: number = 10,
+  ): Promise<Member[]> {
+    const organization = await this.dao.get(orgId);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-
-    if (!statusFilter) {
-      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    let status;
+    let members;
+    if (statusFilter) {
+      status = statusFilter.split(',');
+      const initializedMembers = await organization.members.init({ where: { membership: status as any } as any });
+      members = initializedMembers.toArray().map((member: any) => ({ ...member }));
     } else {
-      const status = statusFilter.split(',');
-      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
-      return members.toArray().map((member: any) => ({ ...member }));
+      await organization.members.init();
+      members = organization.members.toArray().map((el: any) => ({ ...el }));
     }
+
+    // Paginate - Start
+    console.log('members ', members);
+    const membersLength = members.length;
+    // Calculate pagination details
+    const begin = page * size;
+    const end = Math.min(size * (page + 1), membersLength);
+    const lastPage = Math.max(Math.ceil(membersLength / size), 1);
+
+    // Prepare the pagination object
+    let pagination = {};
+
+    // If the requested page number is bigger than
+    // the last possible page number, return null for
+    // members but also send the last possible page so
+    // the app can navigate to there
+    if (page > lastPage) {
+      console.log('inside page > lastPage');
+      members = null;
+      pagination = {
+        lastPage,
+      };
+    } else {
+      // Paginate the results by size
+      members = members.slice(begin, end);
+      // Prepare the pagination mock-api
+      pagination = {
+        length: membersLength,
+        size: size,
+        page: page,
+        lastPage: lastPage,
+        startIndex: begin,
+        endIndex: end - 1,
+      };
+    }
+
+    return members; /* .toArray().map((member: any) => ({ ...member })); */
   }
 
   /**
