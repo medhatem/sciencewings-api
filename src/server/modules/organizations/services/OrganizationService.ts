@@ -40,6 +40,7 @@ import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organiza
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { MembersList, Pagination } from '@/types/types';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -351,7 +352,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     statusFilter?: string,
     page: number = 0,
     size: number = 10,
-  ): Promise<Member[]> {
+  ): Promise<MembersList> {
     const organization = await this.dao.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
@@ -368,7 +369,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
 
     // Paginate - Start
-    console.log('members ', members);
     const membersLength = members.length;
     // Calculate pagination details
     const begin = page * size;
@@ -376,14 +376,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
     const lastPage = Math.max(Math.ceil(membersLength / size), 1);
 
     // Prepare the pagination object
-    let pagination = {};
+    let pagination: Pagination = {};
 
     // If the requested page number is bigger than
     // the last possible page number, return null for
     // members but also send the last possible page so
     // the app can navigate to there
     if (page > lastPage) {
-      console.log('inside page > lastPage');
       members = null;
       pagination = {
         lastPage,
@@ -402,7 +401,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       };
     }
 
-    return members; /* .toArray().map((member: any) => ({ ...member })); */
+    return { members, pagination }; /* .toArray().map((member: any) => ({ ...member })); */
   }
 
   /**
