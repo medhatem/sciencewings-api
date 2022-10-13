@@ -1,6 +1,5 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
 import { unique } from '@/decorators/unique';
 import { beforeDeserialize } from '@/utils/utilities';
 import { MemberDTO } from '@/modules/hr';
@@ -148,4 +147,44 @@ export class InfrastructureListBodyDTO extends BaseBodyDTO {
 export class InfrastructureListRequestDTO extends BaseRequestDTO {
   @JsonProperty()
   body: InfrastructureListBodyDTO;
+}
+@JsonObject()
+@unique
+export class InfrastructureStatusObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    beforeDeserialize: (prop: any) => {
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
+    },
+  })
+  statusType: string;
+}
+
+@JsonObject()
+@unique
+export class InfrastructureResourceDetails extends BaseBodyDTO {
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  status: InfrastructureStatusObjectDTO;
+  @JsonProperty()
+  createdAt: string;
+}
+@JsonObject()
+@unique
+export class InfrastructureResourcesDetailsList extends BaseBodyDTO {
+  @JsonProperty({
+    type: InfrastructureResourceDetails,
+    beforeDeserialize,
+  })
+  data: Array<InfrastructureResourceDetails>;
+}
+
+@JsonObject()
+@unique
+export class InfrastructureResourcesRequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: InfrastructureResourcesDetailsList;
 }
