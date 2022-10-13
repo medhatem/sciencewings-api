@@ -40,7 +40,8 @@ import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organiza
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { MembersList, Pagination } from '@/types/types';
+import { MembersList } from '@/types/types';
+import { paginate } from '@/utils/utilities';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -367,41 +368,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       await organization.members.init();
       members = organization.members.toArray().map((el: any) => ({ ...el }));
     }
-
-    // Paginate - Start
-    const membersLength = members.length;
-    // Calculate pagination details
-    const begin = page * size;
-    const end = Math.min(size * (page + 1), membersLength);
-    const lastPage = Math.max(Math.ceil(membersLength / size), 1);
-
-    // Prepare the pagination object
-    let pagination: Pagination = {};
-
-    // If the requested page number is bigger than
-    // the last possible page number, return null for
-    // members but also send the last possible page so
-    // the app can navigate to there
-    if (page > lastPage) {
-      members = null;
-      pagination = {
-        lastPage,
-      };
-    } else {
-      // Paginate the results by size
-      members = members.slice(begin, end);
-      // Prepare the pagination mock-api
-      pagination = {
-        length: membersLength,
-        size: size,
-        page: page,
-        lastPage: lastPage,
-        startIndex: begin,
-        endIndex: end - 1,
-      };
-    }
-
-    return { members, pagination }; /* .toArray().map((member: any) => ({ ...member })); */
+    const paginatedMembersList = paginate(members, page, size);
+    return paginatedMembersList;
   }
 
   /**
