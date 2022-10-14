@@ -1,7 +1,6 @@
 import { Pagination } from '@/types/types';
 import { Collection } from '@mikro-orm/core';
 import { SinonStubbedInstance } from 'sinon';
-import { Member } from '..';
 
 const wait = async (time: number) => {
   return await new Promise((resolve) => {
@@ -87,32 +86,32 @@ export const mockMethodWithResult = (
   }
 };
 
-export const paginate = (members: Member[], page: number, size: number) => {
+export const paginate = (result: any[], page: number, size: number) => {
   // Paginate - Start
-  const membersLength = members.length;
+  const resultLength = result.length;
   // Calculate pagination details
   const begin = page * size;
-  const end = Math.min(size * (page + 1), membersLength);
-  const lastPage = Math.max(Math.ceil(membersLength / size), 1);
+  const end = Math.min(size * (page + 1), resultLength);
+  const lastPage = Math.max(Math.ceil(resultLength / size), 1);
 
   // Prepare the pagination object
   let pagination: Pagination = {};
 
   // If the requested page number is bigger than
   // the last possible page number, return null for
-  // members but also send the last possible page so
+  // result but also send the last possible page so
   // the app can navigate to there
   if (page > lastPage) {
-    members = null;
+    result = null;
     pagination = {
       lastPage,
     };
   } else {
     // Paginate the results by size
-    members = members.slice(begin, end);
+    result = result.slice(begin, end);
     // Prepare the pagination mock-api
     pagination = {
-      length: membersLength,
+      length: resultLength,
       size: size,
       page: page,
       lastPage: lastPage,
@@ -121,5 +120,5 @@ export const paginate = (members: Member[], page: number, size: number) => {
     };
   }
 
-  return { members, pagination };
+  return { result, pagination };
 };

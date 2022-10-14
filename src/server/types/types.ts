@@ -1,5 +1,6 @@
 import { Member } from '@/modules/hr/models/Member';
 import { Project } from '@/modules/projects/models/Project';
+import { Group } from '..';
 
 export type EmailMessage = {
   to: string;
@@ -40,6 +41,11 @@ export type Pagination = {
 };
 
 export type MembersList = {
-  members: Member[];
+  members?: Member[];
+  pagination: Pagination;
+};
+
+export type GroupsList = {
+  groups?: Group[];
   pagination: Pagination;
 };
