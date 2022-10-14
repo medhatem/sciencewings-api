@@ -40,6 +40,8 @@ import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organiza
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { MembersList } from '@/types/types';
+import { paginate } from '@/utils/utilities';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -352,20 +354,28 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
-    const existingOrg = await this.dao.get(orgId);
-    if (!existingOrg) {
+  public async getMembers(
+    orgId: number,
+    statusFilter?: string,
+    page: number = 0,
+    size: number = 10,
+  ): Promise<MembersList> {
+    const organization = await this.dao.get(orgId);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-
-    if (!statusFilter) {
-      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    let status;
+    let members;
+    if (statusFilter) {
+      status = statusFilter.split(',');
+      const initializedMembers = await organization.members.init({ where: { membership: status as any } as any });
+      members = initializedMembers.toArray().map((member: any) => ({ ...member }));
     } else {
-      const status = statusFilter.split(',');
-      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
-      return members.toArray().map((member: any) => ({ ...member }));
+      await organization.members.init();
+      members = organization.members.toArray().map((el: any) => ({ ...el }));
     }
+    const paginatedMembersList = paginate(members, page, size);
+    return paginatedMembersList;
   }
 
   /**

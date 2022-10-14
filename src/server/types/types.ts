@@ -1,3 +1,4 @@
+import { Member } from '@/modules/hr/models/Member';
 import { Project } from '@/modules/projects/models/Project';
 
 export type EmailMessage = {
@@ -27,4 +28,18 @@ export type ProjectList = {
   members: number;
   startDate: Date;
   projectDto: Project;
+};
+
+export type Pagination = {
+  length?: number;
+  size?: number;
+  page?: number;
+  lastPage?: number;
+  startIndex?: number;
+  endIndex?: number;
+};
+
+export type MembersList = {
+  members: Member[];
+  pagination: Pagination;
 };

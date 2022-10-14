@@ -171,10 +171,17 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async getUsers(
     @PathParam('id') payload: number,
     @QueryParam('status') status?: string,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
   ): Promise<OrganizationMembersDTO> {
-    const result = await this.OrganizationService.getMembers(payload, status || null);
+    const { members, pagination } = await this.OrganizationService.getMembers(
+      payload,
+      status || null,
+      page || null,
+      size || null,
+    );
 
-    return new OrganizationMembersDTO({ body: { data: result, statusCode: 200 } });
+    return new OrganizationMembersDTO({ body: { data: members, pagination, statusCode: 200 } });
   }
 
   /**
