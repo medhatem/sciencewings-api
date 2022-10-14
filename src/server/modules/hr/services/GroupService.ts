@@ -37,16 +37,11 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
   @log()
   public async getOrganizationGroup(organizationId: number): Promise<Group[]> {
-    const organization = await this.organizationService.get(organizationId);
-
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
-        variables: { org: `${organizationId}` },
-        isOperational: true,
-      });
-    }
-
-    return (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
+    const groups = (await this.dao.getByCriteria({ organization: organizationId }, FETCH_STRATEGY.ALL)) as Group[];
+    groups.forEach((group) => {
+      group.members.init();
+    });
+    return groups;
   }
 
   @log()
@@ -107,6 +102,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         if (fetchedMember !== null) {
           createdGroup.members.add(fetchedMember);
           await this.keycloakUtils.addMemberToGroup(wrappedGroup.kcid, fetchedMember.user.keycloakId);
+          await this.dao.update(createdGroup);
         }
         return fetchedMember;
       });
