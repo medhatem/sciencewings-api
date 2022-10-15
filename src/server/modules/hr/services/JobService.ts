@@ -10,9 +10,10 @@ import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
 import { NotFoundError } from '@/Exceptions';
-import { Contact } from 'swagger-jsdoc';
 import { applyToAll } from '@/utils/utilities';
 import { IContractService } from '../interfaces/IContractService';
+import { Collection } from '@mikro-orm/core';
+import { Contract } from '../models';
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {
   @lazyInject(IContractService) public contractService: IContractService;
@@ -54,20 +55,20 @@ export class JobService extends BaseService<Job> implements IJobService {
       state: payload.state,
     });
     wrappedJob.organization = organization;
-    let contracts: any[] = [];
-    let contract: Contact;
+    let contracts: Collection<Contract>;
     if (payload.contracts) {
       await applyToAll(payload.contracts, async (contractId) => {
-        contract = this.contractService.get(contractId);
+        const contract = await this.contractService.get(contractId);
         if (!contract) {
           throw new NotFoundError('CONTRACT.NON_EXISTANT {{contract}}', {
             variables: { contract: `${contractId}` },
             friendly: true,
           });
         }
-        contracts.push(contract);
+        contracts.add(contract);
       });
     }
+    wrappedJob.contracts = contracts;
     const job = await this.dao.create(wrappedJob);
     return job.id;
   }
