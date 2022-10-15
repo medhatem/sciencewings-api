@@ -2,7 +2,7 @@ import { Job } from '@/modules/hr/models/Job';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { JobRO } from '@/modules/hr/routes/RequestObject';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { provideSingleton, container, lazyInject } from '@/di/index';
+import { provideSingleton, container } from '@/di/index';
 import { validateParam } from '@/decorators/validateParam';
 import { validate } from '@/decorators/validate';
 import { log } from '@/decorators/log';
@@ -10,14 +10,8 @@ import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
 import { NotFoundError } from '@/Exceptions';
-import { applyToAll } from '@/utils/utilities';
-import { IContractService } from '../interfaces/IContractService';
-import { Collection } from '@mikro-orm/core';
-import { Contract } from '../models';
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {
-  @lazyInject(IContractService) public contractService: IContractService;
-
   constructor(public dao: JobDAO, public organizationService: IOrganizationService) {
     super(dao);
   }
@@ -55,20 +49,6 @@ export class JobService extends BaseService<Job> implements IJobService {
       state: payload.state,
     });
     wrappedJob.organization = organization;
-    let contracts: Collection<Contract>;
-    if (payload.contracts) {
-      await applyToAll(payload.contracts, async (contractId) => {
-        const contract = await this.contractService.get(contractId);
-        if (!contract) {
-          throw new NotFoundError('CONTRACT.NON_EXISTANT {{contract}}', {
-            variables: { contract: `${contractId}` },
-            friendly: true,
-          });
-        }
-        contracts.add(contract);
-      });
-    }
-    wrappedJob.contracts = contracts;
     const job = await this.dao.create(wrappedJob);
     return job.id;
   }

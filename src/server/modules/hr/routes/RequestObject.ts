@@ -101,9 +101,6 @@ export class JobRO {
   organization?: number;
 
   @JsonProperty()
-  contracts?: Array<number>;
-
-  @JsonProperty()
   state?: string;
 }
 
