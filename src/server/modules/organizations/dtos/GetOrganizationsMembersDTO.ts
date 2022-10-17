@@ -32,7 +32,7 @@ class OrganizationMembersBodyDTO extends BaseBodyDTO {
   data: Array<MemberDTO>;
 
   @JsonProperty()
-  pagination: PaginationBodyDTO;
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()

@@ -12,7 +12,6 @@ import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { Organization } from '@/modules/organizations/models/Organization';
-import { MembersList } from '@/types/types';
 
 export abstract class IOrganizationService extends IBaseService<any> {
   getOrganizationById: (organizationId: number) => Promise<Organization>;
@@ -21,7 +20,7 @@ export abstract class IOrganizationService extends IBaseService<any> {
   deleteOrganization: (orgId: number) => Promise<number>;
   addPhoneToOrganization: (payload: PhoneRO, orgId: number) => Promise<number>;
   addAddressToOrganization: (payload: AddressRO, orgId: number) => Promise<number>;
-  getMembers: (orgId: number, statusFilter: string, page?: number, size?: number) => Promise<MembersList>;
+  getMembers: (orgId: number, statusFilter: string, page?: number, size?: number) => Promise<any>;
   getOrganizationSettingsById: (organizationId: number) => Promise<OrganizationSettings>;
   updateOrganizationsSettingsProperties: (
     payload:
