@@ -37,13 +37,16 @@ export class GroupRoutes extends BaseRoutes<Group> {
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
   ): Promise<OrgGroupsrequestDTO> {
-    const { result, pagination } = await this.groupService.getOrganizationGroup(
-      organizationId,
-      page || null,
-      size || null,
-    );
+    const result = await this.groupService.getOrganizationGroup(organizationId, page || null, size || null);
 
-    return new OrgGroupsrequestDTO({ body: { data: [...(result || [])], pagination, statusCode: 201 } });
+    if (page && size)
+      return new OrgGroupsrequestDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new OrgGroupsrequestDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 
   /**

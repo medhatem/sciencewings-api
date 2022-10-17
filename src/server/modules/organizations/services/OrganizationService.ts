@@ -367,8 +367,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       await organization.members.init();
       members = organization.members.toArray().map((el: any) => ({ ...el }));
     }
-    console.log('page= ', page);
-    console.log('size= ', size);
     if (page && size) {
       members = paginate(members, page, size);
     }

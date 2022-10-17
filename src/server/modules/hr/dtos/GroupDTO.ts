@@ -50,7 +50,7 @@ export class OrgGroupsDTO extends BaseBodyDTO {
   @JsonProperty({ type: GroupBodyDTO, beforeDeserialize })
   data: Array<GroupBodyDTO>;
   @JsonProperty()
-  pagination: PaginationBodyDTO;
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()
