@@ -2,8 +2,7 @@ import { Member, MembershipStatus, MemberTypeEnum } from '@/modules/hr/models/Me
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { Email } from '@/utils/Email';
-import { EmailMessage, MemberKey } from '@/types/types';
+import { MemberKey } from '@/types/types';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
@@ -29,7 +28,6 @@ export class MemberService extends BaseService<Member> implements IMemberService
     public dao: MemberDao,
     public userService: IUserService,
     public organizationService: IOrganizationService,
-    public emailService: Email,
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
   ) {
@@ -54,7 +52,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     let user: User;
     if (existingUser.length > 0) {
       // fetch the existing user
-      user = (await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE)) as User;
+      user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
     } else {
       const createdKeyCloakUser = await this.keycloakUtils.createKcUser(payload.email);
       //save created keycloak user in the database
@@ -90,9 +88,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
     const createdMemberResult = await this.dao.create(wrappedMember);
 
     existingOrg.members.add(createdMemberResult);
-
     await this.dao.update(existingOrg);
-    console.log('CONSOOOOOOOOOOOOOOOOOOOOOOOOOOOLE', user.keycloakId);
+    // send rest password email
     await this.keycloakUtils.sendResetPasswordEmail(user.keycloakId);
     return createdMemberResult;
   }
@@ -117,15 +114,9 @@ export class MemberService extends BaseService<Member> implements IMemberService
     if (user.status !== userStatus.INVITATION_PENDING) {
       throw new BadRequest('USER.CANNOT_RESEND_INVITE_TO_ACTIVE_USER', { friendly: true });
     }
-    const url = process.env.KEYCKLOACK_RESET_PASSWORD;
-    const emailMessage: EmailMessage = {
-      from: this.emailService.from,
-      to: user.email,
-      text: 'Sciencewings - reset password',
-      html: `<html><body><a href=${url}>-reset password</a></body></html>`,
-      subject: 'reset password',
-    };
-    this.emailService.sendEmail(emailMessage);
+    // send rest password email
+    await this.keycloakUtils.sendResetPasswordEmail(user.keycloakId);
+
     return user.id;
   }
   /**

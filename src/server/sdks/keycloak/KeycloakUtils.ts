@@ -210,10 +210,9 @@ export class KeycloakUtil {
     });
   }
 
-  /* reset a keycloak user password
+  /* resend a reset password mail to the user
    *
-   * @param id of the user to fetch
-   * @param newPassword the new password
+   * @param kcUserId keycoakid of the user
    */
 
   async sendResetPasswordEmail(kcUserId: string): Promise<any> {
