@@ -40,7 +40,6 @@ import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organiza
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { MembersList } from '@/types/types';
 import { paginate } from '@/utils/utilities';
 
 @provideSingleton(IOrganizationService)
@@ -348,28 +347,37 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(
-    orgId: number,
-    statusFilter?: string,
-    page: number = 0,
-    size: number = 10,
-  ): Promise<MembersList> {
+  public async getMembers(orgId: number, statusFilter?: string, page?: number, size?: number): Promise<any> {
     const organization = await this.dao.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-    let status;
+    const length = await organization.members.loadCount(true);
     let members;
     if (statusFilter) {
-      status = statusFilter.split(',');
-      const initializedMembers = await organization.members.init({ where: { membership: status as any } as any });
-      members = initializedMembers.toArray().map((member: any) => ({ ...member }));
+      if (page | size) {
+        const skip = (page - 1) * size;
+        members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+        return paginate(members, page, size, skip, length);
+      }
+      members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL);
+      return members;
     } else {
-      await organization.members.init();
-      members = organization.members.toArray().map((el: any) => ({ ...el }));
+      if (page | size) {
+        const skip = (page - 1) * size;
+        members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+
+        return paginate(members, page, size, skip, length);
+      }
+      members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL);
+      return members;
     }
-    const paginatedMembersList = paginate(members, page, size);
-    return paginatedMembersList;
   }
 
   /**
