@@ -10,7 +10,6 @@ import { JobSchema } from '@/modules/hr/schemas/JobSchema';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
 import { JobDAO } from '@/modules/hr/daos/JobDAO';
 import { NotFoundError } from '@/Exceptions';
-
 @provideSingleton(IJobService)
 export class JobService extends BaseService<Job> implements IJobService {
   constructor(public dao: JobDAO, public organizationService: IOrganizationService) {
@@ -39,18 +38,19 @@ export class JobService extends BaseService<Job> implements IJobService {
    */
   @log()
   @validate
-  public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<void> {
+  public async createJob(@validateParam(JobSchema) payload: JobRO): Promise<number> {
     let organization;
     if (payload.organization) {
       organization = await this.getOrganization(payload.organization);
     }
-
-    await this.create(
-      this.wrapEntity(this.dao.model, {
-        ...payload,
-        organization,
-      }),
-    );
+    const wrappedJob = this.wrapEntity(new Job(), {
+      name: payload.name,
+      description: payload.description || null,
+      state: payload.state,
+    });
+    wrappedJob.organization = organization;
+    const job = await this.dao.create(wrappedJob);
+    return job.id;
   }
 
   /**

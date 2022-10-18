@@ -9,3 +9,8 @@ export type infrastructurelistline = {
   responsible: Member;
   subInfrastructure: Array<Infrastructure>;
 };
+
+export type subInfrasListLine = {
+  subInfrastructure: Infrastructure;
+  resourcesNb: number;
+};
