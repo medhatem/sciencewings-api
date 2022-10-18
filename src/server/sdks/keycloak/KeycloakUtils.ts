@@ -222,7 +222,6 @@ export class KeycloakUtil {
       id: kcUserId!,
       lifespan: 43200,
       actions: [RequiredActionAlias.UPDATE_PASSWORD],
-      //realm: getConfig('keycloak.clientValidation.realmName'),
     });
   }
 }
