@@ -49,7 +49,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existingUser = await this.keycloakUtils.getUsersByEmail(payload.email);
 
-    let user: User;
+    let user = null;
     if (existingUser.length > 0) {
       // fetch the existing user
       user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
