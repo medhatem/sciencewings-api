@@ -16,7 +16,6 @@ import { validateParam } from '@/decorators/validateParam';
 import { InviteMemberSchema, MemberSchema } from '@/modules/hr/schemas/MemberSchema';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { UserInviteToOrgRO } from '@/modules/organizations/routes/RequestObject';
-import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
@@ -52,10 +51,10 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existingUser = await this.keycloakUtils.getUsersByEmail(payload.email);
 
-    let user = null;
+    let user: User;
     if (existingUser.length > 0) {
       // fetch the existing user
-      user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
+      user = (await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE)) as User;
     } else {
       const createdKeyCloakUser = await this.keycloakUtils.createKcUser(payload.email);
       //save created keycloak user in the database
@@ -85,7 +84,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       joinDate: new Date(),
       memberType: MemberTypeEnum.REGULAR,
     });
-    wrappedMember.user = user.id;
+    wrappedMember.user = user;
     wrappedMember.organization = existingOrg.id;
 
     const createdMemberResult = await this.dao.create(wrappedMember);
@@ -93,15 +92,8 @@ export class MemberService extends BaseService<Member> implements IMemberService
     existingOrg.members.add(createdMemberResult);
 
     await this.dao.update(existingOrg);
-    const emailMessage: EmailMessage = {
-      from: this.emailService.from,
-      to: payload.email,
-      text: 'Sciencewings - reset password',
-      html: inviteNewMemberTemplate(existingOrg.name),
-      subject: ' reset password',
-    };
-
-    this.emailService.sendEmail(emailMessage);
+    console.log('CONSOOOOOOOOOOOOOOOOOOOOOOOOOOOLE', user.keycloakId);
+    await this.keycloakUtils.sendResetPasswordEmail(user.keycloakId);
     return createdMemberResult;
   }
 
