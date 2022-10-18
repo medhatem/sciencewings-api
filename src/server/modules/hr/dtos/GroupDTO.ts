@@ -27,6 +27,9 @@ export class GroupBodyDTO extends BaseBodyDTO {
   members?: Array<MemberDTO>;
 
   @JsonProperty()
+  parent?: GroupBodyDTO;
+
+  @JsonProperty()
   description: string;
 }
 

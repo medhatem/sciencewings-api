@@ -41,7 +41,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
     groups.map(async (group) => await group.members.init());
 
-    if (page && size) {
+    if (page | size) {
       const paginatedGroupsList = paginate(groups, page, size);
       return paginatedGroupsList;
     }

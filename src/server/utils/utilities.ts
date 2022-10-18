@@ -86,7 +86,7 @@ export const mockMethodWithResult = (
   }
 };
 
-export const paginate = (data: any[], page: number, size: number) => {
+export const paginate = (data: any[], page: number = 0, size: number = 10) => {
   // Paginate - Start
   const dataLength = data.length;
   // Calculate pagination details
