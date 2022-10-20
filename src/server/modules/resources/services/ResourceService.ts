@@ -130,13 +130,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
-    const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
-    const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
-    if (!manager) {
-      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
-        variables: { user: `${payload.managers}` },
-      });
-    }
+
     const resourceStatus = await this.resourceStatusService.create({
       statusType: StatusCases.OPERATIONAL,
       statusDescription: '',
@@ -152,8 +146,31 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     });
 
     const createdResource = await this.create(wrappedResource);
-    await createdResource.managers.init();
-    createdResource.managers.add(manager);
+    await wrappedResource.managers.init();
+    if (!payload.managers) {
+      const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
+      const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
+      if (!manager) {
+        throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+          variables: { user: `${payload.managers}` },
+        });
+      }
+      wrappedResource.managers.add(manager);
+    } else {
+      await applyToAll(payload.managers, async (managerId) => {
+        const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
+        const manager = (await this.memberService.getByCriteria(
+          { organization, user },
+          FETCH_STRATEGY.SINGLE,
+        )) as Member;
+        if (!manager) {
+          throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+            variables: { user: `${payload.managers}` },
+          });
+        }
+        wrappedResource.managers.add(manager);
+      });
+    }
     await wrappedResource.calendar.init();
     wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
