@@ -401,7 +401,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * @param managerId id of the added manager
    */
   @PUT
-  @Path('/:resourceId/managers/:managerId')
+  @Path(':resourceId/managers/:managerId')
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')

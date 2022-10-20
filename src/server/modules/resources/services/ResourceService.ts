@@ -520,9 +520,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     }
 
     const user = (await this.userService.get(managerId)) as User;
-    const organization = fetchedResource.organization;
     const fetchedManager = (await this.memberService.getByCriteria(
-      { organization, user },
+      { organization: fetchedResource.organization, user },
       FETCH_STRATEGY.SINGLE,
     )) as Member;
     if (!fetchedManager) {
@@ -530,12 +529,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         variables: { user: `${managerId}` },
       });
     }
-
-    await fetchedResource.managers.init();
+    if (!fetchedResource.managers.isInitialized) await fetchedResource.managers.init();
     fetchedResource.managers.add(fetchedManager);
 
-    const updatedResourceResult = await this.dao.update(fetchedResource);
+    this.dao.update(fetchedResource);
 
-    return updatedResourceResult.id;
+    return fetchedResource.id;
   }
 }
