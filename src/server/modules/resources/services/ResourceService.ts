@@ -146,7 +146,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     });
 
     const createdResource = await this.create(wrappedResource);
-    await wrappedResource.managers.init();
     if (!payload.managers) {
       const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
       const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
@@ -155,8 +154,10 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
           variables: { user: `${payload.managers}` },
         });
       }
+      await wrappedResource.managers.init();
       wrappedResource.managers.add(manager);
     } else {
+      await wrappedResource.managers.init();
       await applyToAll(payload.managers, async (managerId) => {
         const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
         const manager = (await this.memberService.getByCriteria(
