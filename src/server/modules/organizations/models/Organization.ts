@@ -80,7 +80,7 @@ export class Organization extends BaseModel<Organization> {
     lazy: true,
     eager: false,
   })
-  public address = new Collection<Address>(this);
+  public addresses = new Collection<Address>(this);
 
   @OneToMany({
     entity: () => OrganizationLabel,
