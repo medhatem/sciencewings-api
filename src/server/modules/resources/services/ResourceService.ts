@@ -52,6 +52,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
+import { User } from '@/modules/users';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -501,6 +502,35 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     });
 
     const updatedResourceResult = await this.dao.update(resource);
+
+    return updatedResourceResult.id;
+  }
+
+  @log()
+  public async addResourceManager(resourceId: number, managerId: number): Promise<number> {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    const user = (await this.userService.get(managerId)) as User;
+    const organization = fetchedResource.organization;
+    const fetchedManager = (await this.memberService.getByCriteria(
+      { organization, user },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+    if (!fetchedManager) {
+      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+        variables: { user: `${managerId}` },
+      });
+    }
+
+    fetchedResource.managers.init();
+    fetchedResource.managers.add(fetchedManager);
+
+    const updatedResourceResult = await this.dao.update(fetchedResource);
 
     return updatedResourceResult.id;
   }
