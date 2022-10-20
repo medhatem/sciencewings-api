@@ -57,4 +57,6 @@ export abstract class IResourceService extends IBaseService<any> {
   ) => Promise<number>;
 
   getResourceSettings: (resourceId: number) => Promise<any>;
+
+  deleteResourceManager: (resourceId: number, managerId: number) => Promise<number>;
 }
