@@ -505,7 +505,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     return updatedResourceResult.id;
   }
-
+  /**
+   * update a resource managers route
+   * @param resourceId id of the target resource
+   * @param managerId id of the added manager
+   */
   @log()
   public async addResourceManager(resourceId: number, managerId: number): Promise<number> {
     const fetchedResource = await this.dao.get(resourceId);
