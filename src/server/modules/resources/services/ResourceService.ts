@@ -531,7 +531,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
     }
 
-    fetchedResource.managers.init();
+    await fetchedResource.managers.init();
     fetchedResource.managers.add(fetchedManager);
 
     const updatedResourceResult = await this.dao.update(fetchedResource);

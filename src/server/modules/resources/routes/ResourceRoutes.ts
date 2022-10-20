@@ -396,7 +396,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     return { result };
   }
   /**
-   * update a resource managers route
+   * update a resource managers
    * @param resourceId id of the target resource
    * @param managerId id of the added manager
    */
