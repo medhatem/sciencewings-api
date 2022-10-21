@@ -367,7 +367,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       return members;
     } else {
       if (page | size) {
-        const skip = (page - 1) * size;
+        const skip = page * size;
         members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
           offset: skip,
           limit: size,

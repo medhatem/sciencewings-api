@@ -91,10 +91,14 @@ export const paginate = (data: any, page: number, size: number, skip: number, le
   const dataLength = length;
   // Calculate pagination details
   const begin = skip;
-  const end = Math.min(size * (page + 1), dataLength);
-  const lastPage = Math.max(Math.ceil(dataLength / size), 1);
-
-  // Prepare the pagination object
+  let end = Math.min(size * (page + 1), dataLength);
+  const lastPage = Math.max(Math.ceil(dataLength / size), 0);
+  /*   if (lastPage == page) {
+    end = data.length - 1;
+  } else {
+    end = size - 1;
+  }
+ */ // Prepare the pagination object
   let pagination: Pagination = {};
 
   // If the requested page number is bigger than
