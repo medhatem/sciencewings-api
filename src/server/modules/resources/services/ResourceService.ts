@@ -52,7 +52,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
-import { User } from '@/modules/users';
+import { User } from '@/modules/users/models/User';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -523,6 +523,38 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     return updatedResourceResult.id;
   }
+
+  /**
+   * delete a resource manager
+   * @param resourceId the target resource
+   * @param managerId id of the manager
+   */
+  @log()
+  public async deleteResourceManager(resourceId: number, managerId: number): Promise<number> {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+    const user = (await this.userService.get(managerId)) as User;
+    const fetchedManager = (await this.memberService.getByCriteria(
+      { organization: fetchedResource.organization, user },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+    if (!fetchedManager) {
+      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+        variables: { user: `${managerId}` },
+      });
+    }
+    if (!fetchedResource.managers.isInitialized) await fetchedResource.managers.init();
+    fetchedResource.managers.remove(fetchedManager);
+
+    this.dao.update(fetchedResource);
+
+    return fetchedResource.id;
+  }
+
   /**
    * update a resource managers route
    * @param resourceId id of the target resource
@@ -547,11 +579,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         variables: { user: `${managerId}` },
       });
     }
+
     if (!fetchedResource.managers.isInitialized) await fetchedResource.managers.init();
     fetchedResource.managers.add(fetchedManager);
+    const updatedResourceResult = await this.dao.update(fetchedResource);
 
-    this.dao.update(fetchedResource);
-
-    return fetchedResource.id;
+    return updatedResourceResult.id;
   }
 }
