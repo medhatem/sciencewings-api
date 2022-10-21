@@ -357,20 +357,32 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-    let status;
+    const length = await organization.members.loadCount(true);
     let members;
     if (statusFilter) {
-      status = statusFilter.split(',');
-      const initializedMembers = await organization.members.init({ where: { membership: status as any } as any });
-      members = initializedMembers.toArray().map((member: any) => ({ ...member }));
+      if (page | size) {
+        const skip = (page - 1) * size;
+        members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+        return paginate(members, page, size, skip, length);
+      }
+      members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL);
+      return members;
     } else {
-      await organization.members.init();
-      members = organization.members.toArray().map((el: any) => ({ ...el }));
+      if (page | size) {
+        const skip = page * size;
+        members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+
+        return paginate(members, page, size, skip, length);
+      }
+      members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL);
+      return members;
     }
-    if (page && size) {
-      members = paginate(members, page, size);
-    }
-    return members;
   }
 
   /**

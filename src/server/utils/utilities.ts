@@ -86,15 +86,19 @@ export const mockMethodWithResult = (
   }
 };
 
-export const paginate = (data: any[], page: number = 0, size: number = 10) => {
+export const paginate = (data: any, page: number, size: number, skip: number, length: number) => {
   // Paginate - Start
-  const dataLength = data.length;
+  const dataLength = length;
   // Calculate pagination details
-  const begin = page * size;
-  const end = Math.min(size * (page + 1), dataLength);
-  const lastPage = Math.max(Math.ceil(dataLength / size), 1);
-
-  // Prepare the pagination object
+  const begin = skip;
+  let end = Math.min(size * (page + 1), dataLength);
+  const lastPage = Math.max(Math.ceil(dataLength / size), 0);
+  /*   if (lastPage == page) {
+    end = data.length - 1;
+  } else {
+    end = size - 1;
+  }
+ */ // Prepare the pagination object
   let pagination: Pagination = {};
 
   // If the requested page number is bigger than
@@ -107,8 +111,6 @@ export const paginate = (data: any[], page: number = 0, size: number = 10) => {
       lastPage,
     };
   } else {
-    // Paginate the datas by size
-    data = data.slice(begin, end);
     // Prepare the pagination mock-api
     pagination = {
       length: dataLength,

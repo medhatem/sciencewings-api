@@ -159,8 +159,10 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
 
   /**
    * retrive users that belongs to an organization
-   *
    * @param id: organization id
+   * @param status: queryParam to fetch accepted or pending members
+   * @param page: queryParam to specify page the client want
+   * @param size: queryParam to specify the size of one page
    */
   @GET
   @Path('getMembers/:id')
@@ -175,7 +177,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @QueryParam('size') size?: number,
   ): Promise<OrganizationMembersDTO> {
     const result = await this.OrganizationService.getMembers(payload, status || null, page || null, size || null);
-    if (page && size)
+    if (result.pagination)
       return new OrganizationMembersDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
