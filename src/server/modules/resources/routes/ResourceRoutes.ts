@@ -408,11 +408,31 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async addResourceManager(
+  public async deleteResourceManager(
     @PathParam('resourceId') resourceId: number,
     @PathParam('managerId') managerId: number,
   ): Promise<UpdateResourceDTO> {
     const result = await this.ResourceService.deleteResourceManager(resourceId, managerId);
+
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
+  }
+  /**
+   * update a resource managers
+   * @param resourceId id of the target resource
+   * @param managerId id of the added manager
+   */
+  @PUT
+  @Path(':resourceId/managers/:managerId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async addResourceManager(
+    @PathParam('resourceId') resourceId: number,
+    @PathParam('managerId') managerId: number,
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.ResourceService.addResourceManager(resourceId, managerId);
 
     return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
