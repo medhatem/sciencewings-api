@@ -52,6 +52,7 @@ import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
+import { User } from '@/modules/users';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -521,5 +522,36 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     const updatedResourceResult = await this.dao.update(resource);
 
     return updatedResourceResult.id;
+  }
+  /**
+   * update a resource managers route
+   * @param resourceId id of the target resource
+   * @param managerId id of the added manager
+   */
+  @log()
+  public async addResourceManager(resourceId: number, managerId: number): Promise<number> {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    const user = (await this.userService.get(managerId)) as User;
+    const fetchedManager = (await this.memberService.getByCriteria(
+      { organization: fetchedResource.organization, user },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+    if (!fetchedManager) {
+      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+        variables: { user: `${managerId}` },
+      });
+    }
+    if (!fetchedResource.managers.isInitialized) await fetchedResource.managers.init();
+    fetchedResource.managers.add(fetchedManager);
+
+    this.dao.update(fetchedResource);
+
+    return fetchedResource.id;
   }
 }
