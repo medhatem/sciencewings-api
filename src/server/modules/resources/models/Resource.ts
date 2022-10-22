@@ -45,7 +45,7 @@ export class Resource extends BaseModel<Resource> {
   active?: boolean;
 
   @ManyToOne({ entity: () => Organization, onDelete: 'cascade', nullable: true })
-  organization?: Organization;
+  organization!: Organization;
 
   @Property()
   resourceType!: string;
