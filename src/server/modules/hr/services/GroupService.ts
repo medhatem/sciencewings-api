@@ -37,14 +37,35 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
   @log()
   public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<any> {
-    let groups = (await this.dao.getByCriteria({ organization: organizationId }, FETCH_STRATEGY.ALL)) as Group[];
+    const organization = await this.organizationService.get(organizationId);
 
-    groups.map(async (group) => await group.members.init());
+    const length = await this.dao.count({ organization });
+
+    let groups;
 
     if (page | size) {
-      const paginatedGroupsList = paginate(groups, page, size);
-      return paginatedGroupsList;
+      const skip = page * size;
+      groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Group[];
+
+      groups.map(async (group) => {
+        if (!group.members.isInitialized) {
+          await group.members.init();
+        }
+      });
+
+      return paginate(groups, page, size, skip, length);
     }
+
+    groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
+
+    groups.map(async (group) => {
+      if (!group.members.isInitialized) {
+        await group.members.init();
+      }
+    });
 
     return groups;
   }
