@@ -106,12 +106,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
       throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: payload.name }, friendly: true });
     }
     let parent: Organization;
+    let keycloakOrganization;
     if (payload.parent) {
       const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
       if (!org) {
         throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
       parent = org;
+      // create keycloak sub_organization if the parent existe
+      keycloakOrganization = await this.keycloakUtils.createGroup(`${grpPrifix}${payload.name}`, org.kcid);
     }
     const user = await this.userService.get(userId);
     if (!user) {
@@ -138,8 +141,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.parent = parent;
     wrappedOrganization.owner = user;
     const groupName = `${orgPrifix}${payload.name}`;
-    // create keycloak organization
-    const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
+
+    // create keycloak organization in case it has no parent
+    if (!payload.parent) {
+      keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
+    }
     /**
      * create keycloak admin group as well as members group
      * and add the owner attribute to the organization in keycloak
