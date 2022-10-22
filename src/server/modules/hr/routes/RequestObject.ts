@@ -98,37 +98,10 @@ export class JobRO {
   description?: string;
 
   @JsonProperty()
-  group?: number;
-
-  @JsonProperty()
   organization?: number;
 
   @JsonProperty()
-  member?: number;
-
-  @JsonProperty()
-  job?: number;
-
-  @JsonProperty()
-  dateEnd?: Date;
-
-  @JsonProperty()
-  trialDateEnd?: Date;
-
-  @JsonProperty()
-  resourceCalendar?: number;
-
-  @JsonProperty()
-  notes?: string;
-
-  @JsonProperty()
   state?: string;
-
-  @JsonProperty()
-  kanbanState?: string;
-
-  @JsonProperty()
-  hrResponsible?: number;
 }
 
 @JsonObject()
