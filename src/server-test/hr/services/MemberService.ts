@@ -3,7 +3,6 @@ import { afterEach, beforeEach } from 'intern/lib/interfaces/tdd';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Configuration } from '@/configuration/Configuration';
-import { Email } from '@/utils/Email';
 import { Keycloak } from '@/sdks/keycloak';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Logger } from '@/utils/Logger';
@@ -13,7 +12,6 @@ import { OrganizationService } from '@/modules/organizations/services/Organizati
 import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
 import intern from 'intern';
-import inviteNewMemberTemplate from '@/utils/emailTemplates/inviteNewMember';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { userStatus } from '@/modules/users/models/User';
 
@@ -24,7 +22,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let memberDao: SinonStubbedInstance<MemberDao>;
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
-  let emailService: SinonStubbedInstance<Email>;
   let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
 
@@ -45,23 +42,13 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     containerStub.withArgs(BaseService).returns(new BaseService({} as any));
     containerStub
       .withArgs(MemberService)
-      .returns(
-        new MemberService(
-          memberDao,
-          userService,
-          organizationService,
-          emailService,
-          Keycloak.getInstance(),
-          keycloakUtil,
-        ),
-      );
+      .returns(new MemberService(memberDao, userService, organizationService, Keycloak.getInstance(), keycloakUtil));
   }
 
   beforeEach(() => {
     memberDao = createStubInstance(MemberDao);
     organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
-    emailService = createStubInstance(Email);
     keycloakUtil = createStubInstance(KeycloakUtil);
 
     containerStub = stub(container, 'get');
@@ -78,16 +65,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     containerStub
       .withArgs(MemberService)
-      .returns(
-        new MemberService(
-          memberDao,
-          userService,
-          organizationService,
-          emailService,
-          Keycloak.getInstance(),
-          keycloakUtil,
-        ),
-      );
+      .returns(new MemberService(memberDao, userService, organizationService, Keycloak.getInstance(), keycloakUtil));
   });
 
   afterEach(() => {
@@ -149,21 +127,6 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(BaseService.prototype, 'getByCriteria')
         .withArgs({ user: 1, organization: orgId })
         .returns(Promise.resolve({ firstname: '', lastname: '' }));
-
-      mockMethodWithResult(
-        emailService,
-        'sendEmail',
-        [
-          {
-            from: memberService.emailService.from,
-            to: email,
-            text: 'Sciencewings - reset password',
-            html: inviteNewMemberTemplate('org'),
-            subject: ' reset password',
-          },
-        ],
-        Promise.resolve(''),
-      );
 
       const result = await memberService.inviteUserByEmail({ email, organizationId: orgId });
 

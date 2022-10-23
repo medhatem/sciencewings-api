@@ -18,9 +18,9 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
+import { infrastructurelistline, subInfrasListLine } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
-import { IResourceService } from '@/modules/resources';
+import { IResourceService, Resource } from '@/modules/resources';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -149,12 +149,6 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     if (!fetchedInfrastructure) {
       throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infraId}` } });
     }
-    const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
-      ...fetchedInfrastructure,
-      name: payload.name || fetchedInfrastructure.name,
-      description: payload.description || fetchedInfrastructure.description,
-      key: payload.key || fetchedInfrastructure.key,
-    });
     if (payload.key) {
       // check if the key is unique
       const keyExistingTest = await this.dao.getByCriteria({ key: payload.key });
@@ -162,8 +156,14 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       if (keyExistingTest) {
         throw new ConflictError('{{key}} ALREADY_EXISTS', { variables: { key: `${payload.key}` }, friendly: true });
       }
-      fetchedInfrastructure.key = payload.key;
     }
+
+    const wrappedInfustructure = this.wrapEntity(fetchedInfrastructure, {
+      ...fetchedInfrastructure,
+      name: payload.name || fetchedInfrastructure.name,
+      description: payload.description || fetchedInfrastructure.description,
+      key: payload.key || fetchedInfrastructure.key,
+    });
 
     if (payload.responsible) {
       const [user, organization] = await Promise.all([
@@ -305,5 +305,49 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     fetchedInfrastructure.resources.remove(fetchedResource);
     this.dao.update(fetchedInfrastructure);
     return infrastructureId;
+  }
+
+  /**
+   * get all resources of a given infrastructure
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async getAllResourcesOfAGivenInfrastructure(infrastructureId: number): Promise<Resource[]> {
+    const fetchedInfrastructure = await this.dao.get(infrastructureId);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+    let resources: any[] = [];
+    await fetchedInfrastructure.resources.init();
+    resources = fetchedInfrastructure.resources.toArray();
+    return resources;
+  }
+
+  /**
+   * get all sub infrastructures of a given infrastructure
+   * @param infrastructureId: infrastructure id
+   */
+  @log()
+  public async getAllSubInfasOfAGivenInfrastructure(infrastructureId: number): Promise<subInfrasListLine[]> {
+    const fetchedInfrastructure = await this.dao.get(infrastructureId);
+    if (!fetchedInfrastructure) {
+      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', { variables: { infra: `${infrastructureId}` } });
+    }
+
+    const subInfras = (await this.dao.getByCriteria(
+      { parent: fetchedInfrastructure },
+      FETCH_STRATEGY.ALL,
+    )) as Infrastructure[];
+
+    const subInfrasDetailsList: subInfrasListLine[] = [];
+    await applyToAll(subInfras, async (infrastructure) => {
+      await infrastructure.resources.init();
+      const resourceNb = await infrastructure.resources.loadCount(true);
+      subInfrasDetailsList.push({
+        subInfrastructure: infrastructure,
+        resourcesNb: resourceNb,
+      });
+    });
+    return subInfrasDetailsList;
   }
 }

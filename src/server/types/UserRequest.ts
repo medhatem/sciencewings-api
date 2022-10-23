@@ -8,6 +8,7 @@ export type KeycloakUserInfo = {
   preferred_username: string;
   given_name: string;
   family_name: string;
+  locale: string;
   email: string;
   //sub is the keycloakId
   sub: string;

@@ -1,3 +1,4 @@
+import { Pagination } from '@/types/types';
 import { Collection } from '@mikro-orm/core';
 import { SinonStubbedInstance } from 'sinon';
 
@@ -83,4 +84,43 @@ export const mockMethodWithResult = (
   } else {
     className[methodToStub].withArgs(...args).returns(returnValue);
   }
+};
+
+export const paginate = (data: any, page: number, size: number, skip: number, length: number) => {
+  // Paginate - Start
+  const dataLength = length;
+  // Calculate pagination details
+  const begin = skip;
+  let end = Math.min(size * (page + 1), dataLength);
+  const lastPage = Math.max(Math.ceil(dataLength / size), 0);
+  /*   if (lastPage == page) {
+    end = data.length - 1;
+  } else {
+    end = size - 1;
+  }
+ */ // Prepare the pagination object
+  let pagination: Pagination = {};
+
+  // If the requested page number is bigger than
+  // the last possible page number, return null for
+  // data but also send the last possible page so
+  // the app can navigate to there
+  if (page > lastPage) {
+    data = null;
+    pagination = {
+      lastPage,
+    };
+  } else {
+    // Prepare the pagination mock-api
+    pagination = {
+      length: dataLength,
+      size: size,
+      page: page,
+      lastPage: lastPage,
+      startIndex: begin,
+      endIndex: end - 1,
+    };
+  }
+
+  return { data, pagination };
 };

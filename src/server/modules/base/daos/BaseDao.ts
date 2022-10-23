@@ -83,4 +83,9 @@ export class BaseDao<T extends BaseModel<T>> {
   public async removeEntity(entity: T): Promise<void> {
     await this.repository.removeAndFlush(entity);
   }
+
+  @log()
+  public async count(criteria: { [key: string]: any }): Promise<number> {
+    return this.repository.count(criteria as any);
+  }
 }

@@ -1,7 +1,8 @@
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructure/routes/RequestObject';
-import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
+import { infrastructurelistline, subInfrasListLine } from '@/modules/infrastructure/infastructureTypes';
+import { Resource } from '@/modules/resources/models/Resource';
 export abstract class IInfrastructureService extends IBaseService<any> {
   getAllOgranizationInfrastructures: (orgId: number) => Promise<Infrastructure[]>;
   createinfrastructure: (payload: InfrastructureRO) => Promise<number>;
@@ -14,4 +15,6 @@ export abstract class IInfrastructureService extends IBaseService<any> {
   ) => Promise<infrastructurelistline[]>;
   deleteResourceFromGivenInfrastructure: (resourceId: number, infrastructureId: number) => Promise<number>;
   addResourceToInfrastructure: (resourceId: number, infrastructureId: number) => Promise<number>;
+  getAllResourcesOfAGivenInfrastructure: (infrastructureId: number) => Promise<Resource[]>;
+  getAllSubInfasOfAGivenInfrastructure: (infrastructureId: number) => Promise<subInfrasListLine[]>;
 }

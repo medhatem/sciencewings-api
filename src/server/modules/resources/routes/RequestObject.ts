@@ -163,7 +163,7 @@ export class ResourceCalendarRO {
 @unique
 export class ResourceRO {
   @JsonProperty()
-  name?: string;
+  name!: string;
 
   @JsonProperty()
   description?: string;
