@@ -39,6 +39,10 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<any> {
     const organization = await this.organizationService.get(organizationId);
 
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
+    }
+
     const length = await this.dao.count({ organization });
 
     let groups;
