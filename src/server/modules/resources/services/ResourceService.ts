@@ -50,7 +50,7 @@ import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
 import { User } from '@/modules/users/models/User';
 @provideSingleton(IResourceService)
@@ -85,30 +85,34 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
   public async getResourcesOfAGivenOrganizationById(
     organizationId: number,
     page?: number,
-    limit?: number,
-  ): Promise<Resource[]> {
+    size?: number,
+  ): Promise<any> {
     if (!organizationId) {
       throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
     }
 
-    {
-      const fetchedOrganization = await this.organizationService.get(organizationId);
-      if (!fetchedOrganization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
-      }
+    const organization = await this.organizationService.get(organizationId);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
     }
-    let skip;
-    if (page) {
-      skip = (page - 1) * limit;
+
+    const length = await this.dao.count({ organization });
+
+    let resources;
+
+    if (page | size) {
+      const skip = page * size;
+      resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Resource[];
+
+      return paginate(resources, page, size, skip, length);
     }
-    const resources = await this.dao.getByCriteria(
-      {
-        organization: organizationId,
-      },
-      FETCH_STRATEGY.ALL,
-      { refresh: true, offset: skip, limit: limit || 10 },
-    );
-    return resources as Resource[];
+
+    resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Resource[];
+
+    return resources;
   }
 
   @log()

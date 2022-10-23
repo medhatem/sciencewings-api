@@ -100,15 +100,22 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   public async getOgranizationResources(
     @PathParam('organizationId') organizationId: number,
     @QueryParam('page') page?: number,
-    @QueryParam('limit') limit?: number,
+    @QueryParam('size') size?: number,
   ): Promise<ResourceGetDTO> {
     const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(
       organizationId,
       page || null,
-      limit || null,
+      size || null,
     );
 
-    return new ResourceGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+    if (result.pagination)
+      return new ResourceGetDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new ResourceGetDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 
   /**
