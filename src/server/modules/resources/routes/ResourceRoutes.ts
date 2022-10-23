@@ -89,6 +89,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * retrieve all resources of a given organization by id
    *
    * @param organizationId organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
    */
   @GET
   @Path('getOgranizationResourcesById/:organizationId')
