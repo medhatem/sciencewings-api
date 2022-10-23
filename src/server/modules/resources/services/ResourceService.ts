@@ -81,7 +81,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
    * @return list of the resources that match the criteria
    */
   @log()
-  public async getResourcesOfAGivenOrganizationById(organizationId: number): Promise<Resource[]> {
+  public async getResourcesOfAGivenOrganizationById(
+    organizationId: number,
+    page?: number,
+    limit?: number,
+  ): Promise<Resource[]> {
     if (!organizationId) {
       throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
     }
@@ -92,13 +96,16 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
       }
     }
-
+    let skip;
+    if (page) {
+      skip = (page - 1) * limit;
+    }
     const resources = await this.dao.getByCriteria(
       {
         organization: organizationId,
       },
       FETCH_STRATEGY.ALL,
-      { refresh: true },
+      { refresh: true, offset: skip, limit: limit || 10 },
     );
     return resources as Resource[];
   }
