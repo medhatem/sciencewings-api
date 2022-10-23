@@ -124,7 +124,14 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
       size || null,
     );
 
-    return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });
+    if (result.pagination)
+      return new InfrastructureListRequestDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new InfrastructureListRequestDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 
   /**
