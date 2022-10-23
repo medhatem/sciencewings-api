@@ -168,6 +168,8 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    * this route is for the project list in frontend, it combine between Project and projectMember model
    * and send only the necessary data to print
    * @param id: org id
+   * @param page: queryParam to specify page the client want
+   * @param size: queryParam to specify the size of one page
    */
   @GET
   @Path('getProjectList/:id')
@@ -178,10 +180,17 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   public async getAllOrganizationProjectsList(
     @PathParam('id') id: number,
     @QueryParam('page') page?: number,
-    @QueryParam('limit') limit?: number,
+    @QueryParam('size') size?: number,
   ): Promise<ProjectListRequestDTO> {
-    const result = await this.projectService.getAllOrganizationProjectsList(id, page || null, limit || null);
+    const result = await this.projectService.getAllOrganizationProjectsList(id, page || null, size || null);
 
-    return new ProjectListRequestDTO({ body: { data: result, statusCode: 200 } });
+    if (result.pagination)
+      return new ProjectListRequestDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new ProjectListRequestDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 }

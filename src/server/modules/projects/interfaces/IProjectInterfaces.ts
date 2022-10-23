@@ -7,7 +7,6 @@ import {
   UpdateProjectRO,
 } from '@/modules/projects/routes/RequestObject';
 import { ProjectMember } from '@/modules/projects/models/ProjectMember';
-import { ProjectList } from '@/types/types';
 
 export abstract class IProjectService extends IBaseService<any> {
   createProject: (userId: number, payload: ProjectRO) => Promise<number>;
@@ -17,5 +16,5 @@ export abstract class IProjectService extends IBaseService<any> {
   addMembersToProject: (payload: ProjectMemberRo, id: number) => Promise<ProjectMember[]>;
   getALLProjectParticipants: (id: number, page?: number, limit?: number) => Promise<ProjectMember[]>;
   updateProjectParticipant: (projectId: number, payload: UpdateProjectParticipantRO) => Promise<ProjectMember>;
-  getAllOrganizationProjectsList: (id: number, page?: number, limit?: number) => Promise<ProjectList[]>;
+  getAllOrganizationProjectsList: (id: number, page?: number, size?: number) => Promise<any>;
 }

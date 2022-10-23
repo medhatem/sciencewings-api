@@ -21,7 +21,7 @@ import { NotFoundError, ValidationError } from '@/Exceptions';
 import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
 import { RolesList, ProjectMemberStatus, ProjectMember } from '@/modules/projects/models/ProjectMember';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { ProjectList } from '@/types/types';
@@ -316,29 +316,9 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     const updatedParticipant = await this.update(wrappedParticipant);
     return updatedParticipant;
   }
-  /**
-   * fetch project and project Member and return
-   * name, starting date, number of participants from project table
-   * Responsable of the project from the projectMember table
-   * @param id org id
-   * @returns
-   */
-  @log()
-  public async getAllOrganizationProjectsList(id: number, page?: number, limit?: number): Promise<ProjectList[]> {
-    const organization = await this.organizationService.get(id);
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
-    }
 
-    let skip;
-    if (page) {
-      skip = (page - 1) * limit;
-    }
-    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
-      refresh: true,
-      offset: skip,
-      limit: limit || 10,
-    })) as Project[];
+  @log()
+  public async prepareProjectsList(fetchedProjects: Project[]): Promise<ProjectList[]> {
     const projectList: any[] = [];
     let responsable;
     await applyToAll(fetchedProjects, async (project) => {
@@ -361,5 +341,42 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       });
     });
     return projectList;
+  }
+
+  /**
+   * fetch project and project Member and return
+   * name, starting date, number of participants from project table
+   * Responsable of the project from the projectMember table
+   * @param id org id
+   * @returns
+   */
+  @log()
+  public async getAllOrganizationProjectsList(id: number, page?: number, size?: number): Promise<any> {
+    const organization = await this.organizationService.get(id);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
+    }
+
+    const length = await this.dao.count({ organization });
+
+    let projects;
+
+    if (page | size) {
+      const skip = page * size;
+      projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Project[];
+
+      let paginatedprojects = paginate(projects, page, size, skip, length);
+
+      paginatedprojects.data = await this.prepareProjectsList(paginatedprojects.data);
+
+      return paginatedprojects;
+    }
+
+    projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
+
+    return this.prepareProjectsList(projects);
   }
 }
