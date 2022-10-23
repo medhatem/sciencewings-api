@@ -1,5 +1,5 @@
 import { container, provideSingleton } from '@/di/index';
-import { DELETE, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { DELETE, GET, Path, PathParam, POST, PUT, QueryParam, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
@@ -13,6 +13,8 @@ import {
   GetInfrastructureDTO,
   infrastructureGetDTO,
   InfrastructureListRequestDTO,
+  InfrastructureResourcesRequestDTO,
+  subInfraListRequestDTO,
   UpdateInfrastructureDTO,
 } from '@/modules/infrastructure/dtos/InfrastructureDTO';
 
@@ -68,6 +70,8 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   /**
    * retrieve Organization infrustructures by organization id
    * @param orgId organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
    */
   @GET
   @Path('getAll/:orgId')
@@ -76,15 +80,32 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllOrganizationInfrastructures(@PathParam('orgId') orgId: number): Promise<GetAllInfrastructuresDTO> {
-    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(orgId);
+  public async getAllOrganizationInfrastructures(
+    @PathParam('orgId') orgId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
+  ): Promise<GetAllInfrastructuresDTO> {
+    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(
+      orgId,
+      page || null,
+      size || null,
+    );
 
-    return new GetAllInfrastructuresDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+    if (result.pagination)
+      return new GetAllInfrastructuresDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new GetAllInfrastructuresDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 
   /**
    * get the list of infrastructure of a given organization
    * @param orgId: organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
@@ -94,8 +115,14 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getAllInfrastructuresOfAgivenOrganization(
     @PathParam('orgId') orgId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
   ): Promise<InfrastructureListRequestDTO> {
-    const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(orgId);
+    const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(
+      orgId,
+      page || null,
+      size || null,
+    );
 
     return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });
   }
@@ -155,5 +182,39 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     const result = await this.InfrastructureService.getInfrastructureById(id);
 
     return new GetInfrastructureDTO({ body: { ...result, statusCode: 200 } });
+  }
+
+  /**
+   * get all resources of a given infrastructure
+   * @param id: infrastructure id
+   */
+  @GET
+  @Path('/:id/resources')
+  @Security()
+  @LoggerStorage()
+  @Response<InfrastructureResourcesRequestDTO>(200, 'Return infrastructure resources ')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllRessourcesOfAgivenInfrastructure(
+    @PathParam('id') id: number,
+  ): Promise<InfrastructureResourcesRequestDTO> {
+    const result = await this.InfrastructureService.getAllResourcesOfAGivenInfrastructure(id);
+
+    return new InfrastructureResourcesRequestDTO({ body: { data: result, statusCode: 200 } });
+  }
+
+  /**
+   * get all sub infrastructures of a given infrastructure
+   * @param id: infrastructure id
+   */
+  @GET
+  @Path('/:id/subInfrastructures')
+  @Security()
+  @LoggerStorage()
+  @Response<subInfraListRequestDTO>(200, 'Return infrastructure sub infras ')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllSubInfasOfAGivenInfrastructure(@PathParam('id') id: number): Promise<subInfraListRequestDTO> {
+    const result = await this.InfrastructureService.getAllSubInfasOfAGivenInfrastructure(id);
+
+    return new subInfraListRequestDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
 }

@@ -12,7 +12,7 @@ import { validateParam } from '@/decorators/validateParam';
 import { CreateGroupSchema, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { grpPrifix } from '@/modules/prifixConstants';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
@@ -36,17 +36,42 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  public async getOrganizationGroup(organizationId: number): Promise<Group[]> {
+  public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<any> {
     const organization = await this.organizationService.get(organizationId);
 
     if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
-        variables: { org: `${organizationId}` },
-        isOperational: true,
-      });
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
     }
 
-    return (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
+    const length = await this.dao.count({ organization });
+
+    let groups;
+
+    if (page | size) {
+      const skip = page * size;
+      groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Group[];
+
+      groups.map(async (group) => {
+        if (!group.members.isInitialized) {
+          await group.members.init();
+        }
+      });
+
+      return paginate(groups, page, size, skip, length);
+    }
+
+    groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
+
+    groups.map(async (group) => {
+      if (!group.members.isInitialized) {
+        await group.members.init();
+      }
+    });
+
+    return groups;
   }
 
   @log()
@@ -107,6 +132,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         if (fetchedMember !== null) {
           createdGroup.members.add(fetchedMember);
           await this.keycloakUtils.addMemberToGroup(wrappedGroup.kcid, fetchedMember.user.keycloakId);
+          await this.dao.update(createdGroup);
         }
         return fetchedMember;
       });

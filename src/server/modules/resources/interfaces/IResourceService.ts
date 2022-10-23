@@ -11,12 +11,11 @@ import {
 } from '@/modules/resources/routes/RequestObject';
 
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
-import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceRO } from '@/modules/resources/routes/RequestObject';
 import { ResourceRate } from '@/modules/resources/models/ResourceRate';
 
 export abstract class IResourceService extends IBaseService<any> {
-  getResourcesOfAGivenOrganizationById: (organizationId: number) => Promise<Resource[]>;
+  getResourcesOfAGivenOrganizationById: (organizationId: number, page?: number, size?: number) => Promise<any>;
   createResource: (userId: number, payload: ResourceRO) => Promise<number>;
   updateResource: (payload: UpdateResourceRO, resourceId: number) => Promise<number>;
 
@@ -57,4 +56,8 @@ export abstract class IResourceService extends IBaseService<any> {
   ) => Promise<number>;
 
   getResourceSettings: (resourceId: number) => Promise<any>;
+
+  deleteResourceManager: (resourceId: number, managerId: number) => Promise<number>;
+
+  addResourceManager: (resourceId: number, managerId: number) => Promise<number>;
 }

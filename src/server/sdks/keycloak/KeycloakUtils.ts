@@ -4,7 +4,7 @@ import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupR
 import { Keycloak } from '../keycloak';
 import { getConfig } from '@/configuration/Configuration';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-
+import { RequiredActionAlias } from '@keycloak/keycloak-admin-client/lib/defs/requiredActionProviderRepresentation';
 /**
  * utilities class containing keycloak specific actions
  * This class will manage all keycloak calls and encapsulate them
@@ -207,6 +207,21 @@ export class KeycloakUtil {
         type: 'password',
         value: newPassword,
       },
+    });
+  }
+
+  /* resend a reset password mail to the user
+   *
+   * @param kcUserId keycoakid of the user
+   */
+
+  async sendResetPasswordEmail(kcUserId: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.executeActionsEmail({
+      id: kcUserId!,
+      lifespan: 43200,
+      actions: [RequiredActionAlias.UPDATE_PASSWORD],
     });
   }
 }

@@ -7,12 +7,32 @@ import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
+export class PaginationBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  length: number;
+  @JsonProperty()
+  size: number;
+  @JsonProperty()
+  page: number;
+  @JsonProperty()
+  lastPage: number;
+  @JsonProperty()
+  startIndex: number;
+  @JsonProperty()
+  endIndex: number;
+}
+
+@JsonObject()
+@unique
 class OrganizationMembersBodyDTO extends BaseBodyDTO {
   @JsonProperty({
     type: MemberDTO,
     beforeDeserialize,
   })
   data: Array<MemberDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()
