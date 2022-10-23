@@ -23,6 +23,8 @@ export class GroupRoutes extends BaseRoutes<Group> {
   /**
    * get organization groups
    * @param payload
+   * @param page: queryParam to specify page the client want
+   * @param size: queryParam to specify the size of one page
    * @returns the created group id
    */
   @GET

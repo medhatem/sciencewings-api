@@ -19,6 +19,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { JobState, Job } from '@/modules/hr/models/Job';
 import { ValidationError } from '@/Exceptions/ValidationError';
+import { paginate } from '@/utils/utilities';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -44,12 +45,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
    * @param userId of user id
    */
   @log()
-  public async getAllMemberContracts(
-    orgId: number,
-    userId: number,
-    page?: number,
-    limit?: number,
-  ): Promise<Contract[]> {
+  public async getAllMemberContracts(orgId: number, userId: number, page?: number, size?: number): Promise<any> {
     const organization = await this.origaniaztionService.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
@@ -67,18 +63,26 @@ export class ContractService extends BaseService<Contract> implements IContractS
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${userId}` } });
     }
-    let skip;
-    if (page) {
-      skip = (page - 1) * limit;
+
+    const length = await this.dao.count({ member });
+
+    let contracts;
+    if (page | size) {
+      const skip = page * size;
+      contracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
+        populate: ['job', 'supervisor'] as never,
+        offset: skip,
+        limit: size,
+      })) as Contract[];
+
+      return paginate(contracts, page, size, skip, length);
     }
 
-    const fetchedContracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
+    contracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
       populate: ['job', 'supervisor'] as never,
-      refresh: true,
-      offset: skip,
-      limit: limit || 10,
     })) as Contract[];
-    return fetchedContracts;
+
+    return contracts;
   }
 
   /**
