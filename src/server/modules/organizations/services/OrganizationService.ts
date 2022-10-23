@@ -35,11 +35,11 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
-
 import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { paginate } from '@/utils/utilities';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -105,12 +105,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
       throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: payload.name }, friendly: true });
     }
     let parent: Organization;
+    let keycloakOrganization;
     if (payload.parent) {
       const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
       if (!org) {
         throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
       }
       parent = org;
+      // create keycloak sub_organization if the parent existe
+      keycloakOrganization = await this.keycloakUtils.createGroup(`${grpPrifix}${payload.name}`, org.kcid);
     }
     const user = await this.userService.get(userId);
     if (!user) {
@@ -137,8 +140,11 @@ export class OrganizationService extends BaseService<Organization> implements IO
     wrappedOrganization.parent = parent;
     wrappedOrganization.owner = user;
     const groupName = `${orgPrifix}${payload.name}`;
-    // create keycloak organization
-    const keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
+
+    // create keycloak organization in case it has no parent
+    if (!payload.parent) {
+      keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
+    }
     /**
      * create keycloak admin group as well as members group
      * and add the owner attribute to the organization in keycloak
@@ -346,19 +352,36 @@ export class OrganizationService extends BaseService<Organization> implements IO
   }
 
   @log()
-  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
-    const existingOrg = await this.dao.get(orgId);
-    if (!existingOrg) {
+  public async getMembers(orgId: number, statusFilter?: string, page?: number, size?: number): Promise<any> {
+    const organization = await this.dao.get(orgId);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-
-    if (!statusFilter) {
-      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    const length = await organization.members.loadCount(true);
+    let members;
+    if (statusFilter) {
+      if (page | size) {
+        const skip = (page - 1) * size;
+        members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+        return paginate(members, page, size, skip, length);
+      }
+      members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL);
+      return members;
     } else {
-      const status = statusFilter.split(',');
-      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
-      return members.toArray().map((member: any) => ({ ...member }));
+      if (page | size) {
+        const skip = page * size;
+        members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+
+        return paginate(members, page, size, skip, length);
+      }
+      members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL);
+      return members;
     }
   }
 

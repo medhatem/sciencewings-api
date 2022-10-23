@@ -1,11 +1,11 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-
 import { unique } from '@/decorators/unique';
 import { beforeDeserialize } from '@/utils/utilities';
 import { MemberDTO } from '@/modules/hr';
 import { ResourceDTO } from '@/modules/resources';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 @JsonObject()
 @unique
@@ -60,6 +60,9 @@ export class GetInfrastructuresDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<InfrastructureDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 @JsonObject()
 @unique
@@ -141,6 +144,9 @@ export class InfrastructureListBodyDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<InfrustructureListLineDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()
@@ -148,4 +154,89 @@ export class InfrastructureListBodyDTO extends BaseBodyDTO {
 export class InfrastructureListRequestDTO extends BaseRequestDTO {
   @JsonProperty()
   body: InfrastructureListBodyDTO;
+}
+@JsonObject()
+@unique
+export class InfrastructureStatusObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    beforeDeserialize: (prop: any) => {
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
+    },
+  })
+  statusType: string;
+}
+
+@JsonObject()
+@unique
+export class InfrastructureResourceDetails extends BaseBodyDTO {
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  status: InfrastructureStatusObjectDTO;
+  @JsonProperty()
+  createdAt: string;
+}
+@JsonObject()
+@unique
+export class InfrastructureResourcesDetailsList extends BaseBodyDTO {
+  @JsonProperty({
+    type: InfrastructureResourceDetails,
+    beforeDeserialize,
+  })
+  data: Array<InfrastructureResourceDetails>;
+}
+
+@JsonObject()
+@unique
+export class InfrastructureResourcesRequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: InfrastructureResourcesDetailsList;
+}
+
+@JsonObject()
+@unique
+export class subInfraObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    beforeDeserialize: (prop: any) => {
+      if (typeof prop === 'object') {
+        return prop.id;
+      }
+      return prop;
+    },
+  })
+  @JsonProperty()
+  id: number;
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  createdAt: string;
+}
+
+@JsonObject()
+@unique
+export class subInfraListLineObjectDTO extends BaseBodyDTO {
+  @JsonProperty()
+  subInfrastructure: subInfraObjectDTO;
+  @JsonProperty()
+  resourcesNb: number;
+}
+
+@JsonObject()
+@unique
+export class subInfraListObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: subInfraListLineObjectDTO,
+    beforeDeserialize,
+  })
+  data: Array<subInfraListLineObjectDTO>;
+}
+
+@JsonObject()
+@unique
+export class subInfraListRequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: subInfraListObjectDTO;
 }

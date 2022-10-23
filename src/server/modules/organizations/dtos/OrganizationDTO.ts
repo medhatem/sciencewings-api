@@ -32,7 +32,7 @@ export class OrganizationInformationDTO extends BaseBodyDTO {
     type: AddressDTO,
     beforeDeserialize,
   })
-  address?: Array<AddressDTO>;
+  addresses?: Array<AddressDTO>;
 
   @JsonProperty()
   phone?: PhoneInformationDTO;

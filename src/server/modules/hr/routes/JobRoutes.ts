@@ -2,7 +2,7 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Job } from '@/modules/hr/models/Job';
 import { Path, PathParam, POST, PUT, Security } from 'typescript-rest';
-import { JobDTO, CreateJobDTO, UpdateJobDTO, JobBaseBodyGetDTO } from '@/modules/hr/dtos/JobDTO';
+import { JobDTO, CreateJobDTO, UpdateJobDTO } from '@/modules/hr/dtos/JobDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { JobRO } from './RequestObject';
 import { IJobService } from '@/modules/hr/interfaces/IJobService';
@@ -29,7 +29,7 @@ export class JobRoutes extends BaseRoutes<Job> {
   @Path('create')
   @Security()
   @LoggerStorage()
-  @Response<JobBaseBodyGetDTO>(201, 'Job created Successfully')
+  @Response<CreateJobDTO>(201, 'Job created Successfully')
   @Response<JobRO>(500, 'Internal Server Error')
   public async createJob(payload: JobRO): Promise<CreateJobDTO> {
     const result = await this.jobService.createJob(payload);

@@ -1,6 +1,6 @@
 import { container, lazyInject, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
-import { Path, POST, Security, GET, PathParam, PUT, ContextRequest, QueryParam } from 'typescript-rest';
+import { Path, POST, Security, GET, PathParam, PUT, ContextRequest, QueryParam, DELETE } from 'typescript-rest';
 import {
   ResourceSettingsGeneralVisibilityRO,
   ResourceSettingsGeneralPropertiesRO,
@@ -89,6 +89,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * retrieve all resources of a given organization by id
    *
    * @param organizationId organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
    */
   @GET
   @Path('getOgranizationResourcesById/:organizationId')
@@ -97,10 +99,25 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceGetDTO> {
-    const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(organizationId);
+  public async getOgranizationResources(
+    @PathParam('organizationId') organizationId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
+  ): Promise<ResourceGetDTO> {
+    const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(
+      organizationId,
+      page || null,
+      size || null,
+    );
 
-    return new ResourceGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+    if (result.pagination)
+      return new ResourceGetDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new ResourceGetDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 
   /**
@@ -394,5 +411,46 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.reservationResourceService.createReservation(resourceId, payload);
 
     return { result };
+  }
+
+  /**
+   * delete a resource manager
+   * @param resourceId the target resource
+   * @param managerId id of the manager
+   */
+  @DELETE
+  @Path('managers/:resourceId/:managerId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async deleteResourceManager(
+    @PathParam('resourceId') resourceId: number,
+    @PathParam('managerId') managerId: number,
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.ResourceService.deleteResourceManager(resourceId, managerId);
+
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
+  }
+  /**
+   * update a resource managers
+   * @param resourceId id of the target resource
+   * @param managerId id of the added manager
+   */
+  @PUT
+  @Path(':resourceId/managers/:managerId')
+  @Security()
+  @LoggerStorage()
+  @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async addResourceManager(
+    @PathParam('resourceId') resourceId: number,
+    @PathParam('managerId') managerId: number,
+  ): Promise<UpdateResourceDTO> {
+    const result = await this.ResourceService.addResourceManager(resourceId, managerId);
+
+    return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
   }
 }

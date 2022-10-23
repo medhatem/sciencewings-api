@@ -50,8 +50,9 @@ import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
+import { User } from '@/modules/users/models/User';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -81,26 +82,37 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
    * @return list of the resources that match the criteria
    */
   @log()
-  public async getResourcesOfAGivenOrganizationById(organizationId: number): Promise<Resource[]> {
+  public async getResourcesOfAGivenOrganizationById(
+    organizationId: number,
+    page?: number,
+    size?: number,
+  ): Promise<any> {
     if (!organizationId) {
       throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
     }
 
-    {
-      const fetchedOrganization = await this.organizationService.get(organizationId);
-      if (!fetchedOrganization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
-      }
+    const organization = await this.organizationService.get(organizationId);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
     }
 
-    const resources = await this.dao.getByCriteria(
-      {
-        organization: organizationId,
-      },
-      FETCH_STRATEGY.ALL,
-      { refresh: true },
-    );
-    return resources as Resource[];
+    const length = await this.dao.count({ organization });
+
+    let resources;
+
+    if (page | size) {
+      const skip = page * size;
+      resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Resource[];
+
+      return paginate(resources, page, size, skip, length);
+    }
+
+    resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Resource[];
+
+    return resources;
   }
 
   @log()
@@ -130,13 +142,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
-    const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
-    const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
-    if (!manager) {
-      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
-        variables: { user: `${payload.managers}` },
-      });
-    }
+
     const resourceStatus = await this.resourceStatusService.create({
       statusType: StatusCases.OPERATIONAL,
       statusDescription: '',
@@ -152,8 +158,32 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     });
 
     const createdResource = await this.create(wrappedResource);
-    await createdResource.managers.init();
-    createdResource.managers.add(manager);
+    if (!payload.managers) {
+      const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
+      const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
+      if (!manager) {
+        throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+          variables: { user: `${payload.managers}` },
+        });
+      }
+      await wrappedResource.managers.init();
+      wrappedResource.managers.add(manager);
+    } else {
+      await wrappedResource.managers.init();
+      await applyToAll(payload.managers, async (managerId) => {
+        const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
+        const manager = (await this.memberService.getByCriteria(
+          { organization, user },
+          FETCH_STRATEGY.SINGLE,
+        )) as Member;
+        if (!manager) {
+          throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+            variables: { user: `${payload.managers}` },
+          });
+        }
+        wrappedResource.managers.add(manager);
+      });
+    }
     await wrappedResource.calendar.init();
     wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
@@ -501,6 +531,69 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     });
 
     const updatedResourceResult = await this.dao.update(resource);
+
+    return updatedResourceResult.id;
+  }
+
+  /**
+   * delete a resource manager
+   * @param resourceId the target resource
+   * @param managerId id of the manager
+   */
+  @log()
+  public async deleteResourceManager(resourceId: number, managerId: number): Promise<number> {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+    const user = (await this.userService.get(managerId)) as User;
+    const fetchedManager = (await this.memberService.getByCriteria(
+      { organization: fetchedResource.organization, user },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+    if (!fetchedManager) {
+      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+        variables: { user: `${managerId}` },
+      });
+    }
+    if (!fetchedResource.managers.isInitialized) await fetchedResource.managers.init();
+    fetchedResource.managers.remove(fetchedManager);
+
+    this.dao.update(fetchedResource);
+
+    return fetchedResource.id;
+  }
+
+  /**
+   * update a resource managers route
+   * @param resourceId id of the target resource
+   * @param managerId id of the added manager
+   */
+  @log()
+  public async addResourceManager(resourceId: number, managerId: number): Promise<number> {
+    const fetchedResource = await this.dao.get(resourceId);
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    const user = (await this.userService.get(managerId)) as User;
+    const fetchedManager = (await this.memberService.getByCriteria(
+      { organization: fetchedResource.organization, user },
+      FETCH_STRATEGY.SINGLE,
+    )) as Member;
+    if (!fetchedManager) {
+      throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+        variables: { user: `${managerId}` },
+      });
+    }
+
+    if (!fetchedResource.managers.isInitialized) await fetchedResource.managers.init();
+    fetchedResource.managers.add(fetchedManager);
+    const updatedResourceResult = await this.dao.update(fetchedResource);
 
     return updatedResourceResult.id;
   }
