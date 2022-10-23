@@ -4,7 +4,7 @@ import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructu
 import { infrastructurelistline, subInfrasListLine } from '@/modules/infrastructure/infastructureTypes';
 import { Resource } from '@/modules/resources/models/Resource';
 export abstract class IInfrastructureService extends IBaseService<any> {
-  getAllOgranizationInfrastructures: (orgId: number) => Promise<Infrastructure[]>;
+  getAllOgranizationInfrastructures: (orgId: number, page?: number, size?: number) => Promise<any>;
   createinfrastructure: (payload: InfrastructureRO) => Promise<number>;
   getInfrastructureById: (infraId: number) => Promise<Infrastructure>;
   updateInfrastructure: (payload: UpdateinfrastructureRO, resourceId: number) => Promise<number>;

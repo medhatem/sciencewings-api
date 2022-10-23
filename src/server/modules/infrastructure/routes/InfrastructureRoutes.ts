@@ -70,6 +70,8 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   /**
    * retrieve Organization infrustructures by organization id
    * @param orgId organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
    */
   @GET
   @Path('getAll/:orgId')
@@ -78,10 +80,25 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllOrganizationInfrastructures(@PathParam('orgId') orgId: number): Promise<GetAllInfrastructuresDTO> {
-    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(orgId);
+  public async getAllOrganizationInfrastructures(
+    @PathParam('orgId') orgId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
+  ): Promise<GetAllInfrastructuresDTO> {
+    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(
+      orgId,
+      page || null,
+      size || null,
+    );
 
-    return new GetAllInfrastructuresDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+    if (result.pagination)
+      return new GetAllInfrastructuresDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new GetAllInfrastructuresDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 
   /**
