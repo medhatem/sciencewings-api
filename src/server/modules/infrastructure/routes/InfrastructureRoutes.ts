@@ -104,6 +104,8 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   /**
    * get the list of infrastructure of a given organization
    * @param orgId: organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
@@ -114,12 +116,12 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
   public async getAllInfrastructuresOfAgivenOrganization(
     @PathParam('orgId') orgId: number,
     @QueryParam('page') page?: number,
-    @QueryParam('limit') limit?: number,
+    @QueryParam('size') size?: number,
   ): Promise<InfrastructureListRequestDTO> {
     const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(
       orgId,
       page || null,
-      limit || null,
+      size || null,
     );
 
     return new InfrastructureListRequestDTO({ body: { data: result, statusCode: 200 } });

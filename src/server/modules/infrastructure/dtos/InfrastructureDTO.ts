@@ -144,6 +144,9 @@ export class InfrastructureListBodyDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<InfrustructureListLineDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()
