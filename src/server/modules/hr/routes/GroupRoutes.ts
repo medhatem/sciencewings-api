@@ -47,12 +47,11 @@ export class GroupRoutes extends BaseRoutes<Group> {
   @Path('create')
   @Security()
   @LoggerStorage()
-  @Response<GroupRO>(201, 'Group created Successfully')
+  @Response<CreateGroupDTO>(201, 'Group created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
-  public async createGroup(payload: GroupRO): Promise<GroupDTO> {
+  public async createGroup(payload: GroupRO): Promise<CreateGroupDTO> {
     const result = await this.groupService.createGroup(payload);
-
-    return new GroupDTO({ body: { id: result, statusCode: 201 } });
+    return new CreateGroupDTO({ body: { id: result, statusCode: 201 } });
   }
 
   /**

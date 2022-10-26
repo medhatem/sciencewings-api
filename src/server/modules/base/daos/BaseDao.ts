@@ -15,12 +15,14 @@ export enum FETCH_STRATEGY {
 
 @provideSingleton()
 export class BaseDao<T extends BaseModel<T>> {
+  public entitymanager: EntityManager;
   public repository: GetRepository<T, EntityRepository<T>>;
   public builder: QueryBuilder<T>;
   public logger: Logger;
   constructor(public model: T) {
     this.repository = (connection.em as any as EntityManager).getRepository<T>(model.constructor as new () => T);
     this.logger = Logger.getInstance();
+    this.entitymanager = connection.em as EntityManager;
   }
 
   static getInstance(): void {
@@ -69,8 +71,20 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   @log()
+  public async transactionalCreate(entry: T): Promise<T> {
+    const entity = (this.repository as any).create(entry);
+    this.repository.persist(entity);
+    return entity;
+  }
+
+  @log()
   public async update(entry: T): Promise<T> {
     await this.repository.persistAndFlush(entry);
+    return entry;
+  }
+  @log()
+  public async transactionalUpdate(entry: T): Promise<T> {
+    this.repository.persist(entry);
     return entry;
   }
 
@@ -82,5 +96,9 @@ export class BaseDao<T extends BaseModel<T>> {
   @log()
   public async removeEntity(entity: T): Promise<void> {
     await this.repository.removeAndFlush(entity);
+  }
+
+  @log() async fork(): Promise<EntityManager> {
+    return this.entitymanager.fork();
   }
 }
