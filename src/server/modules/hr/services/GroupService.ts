@@ -62,21 +62,17 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     let createdGroup: Group;
     try {
       const organization = await this.organizationService.get(payload.organization);
-      console.log('11111111111111111111111111111111111');
       if (!organization) {
         throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
           variables: { org: `${payload.organization}` },
           isOperational: true,
         });
       }
-      console.log('22222222222222222222222222222222');
       const wrappedGroup = this.wrapEntity(Group.getInstance(), {
         name: payload.name,
         active: payload.active,
         description: payload.description,
       });
-      console.log('3333333333333333333333333333333333333333333333333333');
-
       if (payload.parent) {
         const fetchedGroup = await this.dao.get(payload.parent);
         if (!fetchedGroup) {
@@ -84,22 +80,10 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         }
         wrappedGroup.parent = fetchedGroup;
       }
-      console.log('444444444444444444444444444444444444444444444444444444444');
-
       wrappedGroup.organization = organization;
-      console.log('555555555555555555555555555555555555');
-
       const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
-      console.log('6666666666666666666666666666666');
-
       wrappedGroup.kcid = id;
-      console.log('88888888888888888888888888888888', wrappedGroup.kcid);
-
       createdGroup = await this.dao.transactionalCreate(wrappedGroup);
-      console.log('wrapppppppppppppppppppppppppppppppppppppped', wrappedGroup.id);
-      console.log('createddddddddddddddddddddddddddddddddddd', createdGroup.id);
-
-      console.log('9999999999999999999999999999');
 
       if (payload.members) {
         //await createdGroup.members.init();
@@ -124,13 +108,11 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         });
       }
       forkedGroupEntityManager.commit();
-      console.log('createddddddddddddddddddddddddddddddddddd2', createdGroup.id);
     } catch (error) {
       forkedGroupEntityManager.rollback();
       throw error;
     }
     this.dao.entitymanager.flush();
-    console.log('group iDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD', createdGroup.id);
     return createdGroup.id;
   }
 
