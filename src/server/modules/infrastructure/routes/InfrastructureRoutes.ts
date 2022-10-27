@@ -91,7 +91,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
       size || null,
     );
 
-    if (result.pagination)
+    if (result?.pagination)
       return new GetAllInfrastructuresDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });

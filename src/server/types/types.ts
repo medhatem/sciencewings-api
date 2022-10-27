@@ -4,6 +4,7 @@ import { Project } from '@/modules/projects/models/Project';
 import { Group } from '@/modules/hr/models/Group';
 import { Resource } from '@/modules/resources/models/Resource';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
+import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 
 export type EmailMessage = {
   to: string;
@@ -69,6 +70,6 @@ export type ContractsList = {
 };
 
 export type InfrastructuresList = {
-  data: Infrastructure[];
+  data: Infrastructure[] | infrastructurelistline[];
   pagination?: Pagination;
 };

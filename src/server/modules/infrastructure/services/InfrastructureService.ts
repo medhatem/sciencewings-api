@@ -21,6 +21,7 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { infrastructurelistline, subInfrasListLine } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
 import { IResourceService, Resource } from '@/modules/resources';
+import { InfrastructuresList } from '@/types/types';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -251,7 +252,11 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    * @param orgId: organization id
    */
   @log()
-  public async getAllInfrastructuresOfAgivenOrganization(orgId: number, page?: number, size?: number): Promise<any> {
+  public async getAllInfrastructuresOfAgivenOrganization(
+    orgId: number,
+    page?: number,
+    size?: number,
+  ): Promise<InfrastructuresList> {
     const organization = await this.organizationService.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId} ` } });
@@ -268,16 +273,22 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         limit: size,
       })) as Infrastructure[];
 
-      let paginatedInfrastructures = paginate(infrastructures, page, size, skip, length);
+      let { data, pagination } = paginate(infrastructures, page, size, skip, length);
 
-      paginatedInfrastructures.data = await this.prepareInfrastrustructuresList(paginatedInfrastructures.data);
-
-      return paginatedInfrastructures;
+      data = await this.prepareInfrastrustructuresList(data);
+      const result: InfrastructuresList = {
+        data,
+        pagination,
+      };
+      return result;
     }
 
     infrastructures = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Infrastructure[];
-
-    return this.prepareInfrastrustructuresList(infrastructures);
+    infrastructures = await this.prepareInfrastrustructuresList(infrastructures);
+    const result: InfrastructuresList = {
+      data: infrastructures,
+    };
+    return result;
   }
 
   /**
