@@ -18,6 +18,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Member } from '../models/Member';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { GroupsList } from '@/types/types';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -36,7 +37,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<any> {
+  public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<GroupsList> {
     const organization = await this.organizationService.get(organizationId);
 
     if (!organization) {
@@ -60,7 +61,12 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         }
       });
 
-      return paginate(groups, page, size, skip, length);
+      const { data, pagination } = paginate(groups, page, size, skip, length);
+      const result: GroupsList = {
+        data,
+        pagination,
+      };
+      return result;
     }
 
     groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
@@ -70,8 +76,10 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         await group.members.init();
       }
     });
-
-    return groups;
+    const result: GroupsList = {
+      data: groups,
+    };
+    return result;
   }
 
   @log()

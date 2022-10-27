@@ -59,8 +59,8 @@ export type ResourcesList = {
 };
 
 export type GroupsList = {
-  groups?: Group[];
-  pagination: Pagination;
+  data: Group[];
+  pagination?: Pagination;
 };
 
 export type ContractsList = {
