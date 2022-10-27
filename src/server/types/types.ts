@@ -41,8 +41,8 @@ export type Pagination = {
 };
 
 export type MembersList = {
-  members?: Member[];
-  pagination: Pagination;
+  data: Member[];
+  pagination?: Pagination;
 };
 
 export type GroupsList = {
