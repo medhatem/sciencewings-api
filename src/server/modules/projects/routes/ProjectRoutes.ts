@@ -184,7 +184,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   ): Promise<ProjectListRequestDTO> {
     const result = await this.projectService.getAllOrganizationProjectsList(id, page || null, size || null);
 
-    if (result.pagination)
+    if (result?.pagination)
       return new ProjectListRequestDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });

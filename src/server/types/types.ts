@@ -49,8 +49,8 @@ export type MembersList = {
   pagination?: Pagination;
 };
 
-export type ProjectsList = {
-  data: Project[];
+export type ProjectsPaginatedList = {
+  data: any;
   pagination?: Pagination;
 };
 

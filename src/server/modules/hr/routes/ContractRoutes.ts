@@ -45,7 +45,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   ): Promise<AllContractsBaseDTO> {
     const result = await this.contractService.getAllMemberContracts(orgId, userId, page || null, size || null);
 
-    if (result.pagination)
+    if (result?.pagination)
       return new AllContractsBaseDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
