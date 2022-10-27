@@ -408,7 +408,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    console.log('fetchedOrganization.settings== ', fetchedOrganization.settings);
     return fetchedOrganization.settings;
   }
 
