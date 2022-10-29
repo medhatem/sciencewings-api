@@ -5,7 +5,6 @@ import { AddressDTO } from '@/modules/address';
 import { PhoneInformationDTO } from '@/modules/phones';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
-import { MemberTypeEnum } from '../models/Member';
 
 @JsonObject()
 @unique
