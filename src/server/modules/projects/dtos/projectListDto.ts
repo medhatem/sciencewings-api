@@ -5,6 +5,7 @@ import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 import { ProjectDTO } from '@/modules/projects/dtos/projectDTO';
 import { unique } from '@/decorators/unique';
+import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 @JsonObject()
 @unique
@@ -43,6 +44,9 @@ export class ProjectListBodyDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<ProjectListDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()
