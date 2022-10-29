@@ -12,12 +12,13 @@ import { validateParam } from '@/decorators/validateParam';
 import { CreateGroupSchema, UpdateGroupSchema } from '@/modules/hr/schemas/GroupSchema';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { grpPrifix } from '@/modules/prifixConstants';
 import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Member } from '../models/Member';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { GroupsList } from '@/types/types';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -36,12 +37,49 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  public async getOrganizationGroup(organizationId: number): Promise<Group[]> {
-    const groups = (await this.dao.getByCriteria({ organization: organizationId }, FETCH_STRATEGY.ALL)) as Group[];
-    groups.forEach((group) => {
-      group.members.init();
+  public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<GroupsList> {
+    const organization = await this.organizationService.get(organizationId);
+
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
+    }
+
+    const length = await this.dao.count({ organization });
+
+    let groups;
+
+    if (page | size) {
+      const skip = page * size;
+      groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Group[];
+
+      groups.map(async (group) => {
+        if (!group.members.isInitialized) {
+          await group.members.init();
+        }
+      });
+
+      const { data, pagination } = paginate(groups, page, size, skip, length);
+      const result: GroupsList = {
+        data,
+        pagination,
+      };
+      return result;
+    }
+
+    groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
+
+    groups.map(async (group) => {
+      if (!group.members.isInitialized) {
+        await group.members.init();
+      }
     });
-    return groups;
+    const result: GroupsList = {
+      data: groups,
+    };
+    return result;
   }
 
   @log()

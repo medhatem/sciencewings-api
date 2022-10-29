@@ -5,6 +5,7 @@ import { beforeDeserialize } from '@/utils/utilities';
 import { MemberDTO } from '@/modules/hr';
 import { ResourceDTO } from '@/modules/resources';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 @JsonObject()
 @unique
@@ -59,6 +60,9 @@ export class GetInfrastructuresDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<InfrastructureDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 @JsonObject()
 @unique
@@ -140,6 +144,9 @@ export class InfrastructureListBodyDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<InfrustructureListLineDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()

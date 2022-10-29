@@ -35,11 +35,12 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
-
 import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { paginate } from '@/utils/utilities';
+import { MembersList } from '@/types/types';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -351,20 +352,59 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return newAddress.id;
   }
 
+  /**
+   * add new address to organization
+   * @param orgId organization id
+   * @param statusFilter Filter used to fetch organization
+   * @param page
+   * @param size
+   */
   @log()
-  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
-    const existingOrg = await this.dao.get(orgId);
-    if (!existingOrg) {
+  public async getMembers(orgId: number, statusFilter?: string, page?: number, size?: number): Promise<MembersList> {
+    const organization = await this.dao.get(orgId);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-
-    if (!statusFilter) {
-      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    const length = await organization.members.loadCount(true);
+    let members;
+    if (statusFilter) {
+      if (page | size) {
+        const skip = (page - 1) * size;
+        members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+        const { data, pagination } = paginate(members, page, size, skip, length);
+        const result: MembersList = {
+          data,
+          pagination,
+        };
+        return result;
+      }
+      members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL);
+      const result: MembersList = {
+        data: members,
+      };
+      return result;
     } else {
-      const status = statusFilter.split(',');
-      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
-      return members.toArray().map((member: any) => ({ ...member }));
+      if (page | size) {
+        const skip = page * size;
+        members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        });
+        const { data, pagination } = paginate(members, page, size, skip, length);
+        const result: MembersList = {
+          data,
+          pagination,
+        };
+        return result;
+      }
+      members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL);
+      const result: MembersList = {
+        data: members,
+      };
+      return result;
     }
   }
 
