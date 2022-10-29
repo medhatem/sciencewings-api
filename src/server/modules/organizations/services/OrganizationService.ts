@@ -171,27 +171,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.settings = organizationSetting;
       organization = await this.create(wrappedOrganization);
 
-      // const groupEvent = new GroupEvent();
-      // create the admin and member groups in the db
-      // add the owner as a member to the organization
-      // await Promise.all([
-      //   groupEvent.createGroup(adminGroup, organization, `${grpPrifix}admin`),
-      //   groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
-      // ]);
-
       const DBAdminGroup = await this.groupService.create({
         organization,
         kcid: adminGroup,
         name: `${grpPrifix}admin`,
       });
-      console.log('admin Grouuuuuuuuuuuuuuuuuuup', DBAdminGroup);
 
-      const DBMemberGroup = await this.groupService.create({
+      await this.groupService.create({
         organization,
         kcid: membersGroup,
         name: `${grpPrifix}member`,
       });
-      console.log('member Grouuuuuuuuuuuuuuuuuuup', DBMemberGroup);
 
       await this.memberService.create({
         name: user.firstname + ' ' + user.lastname,
@@ -205,10 +195,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
         workEmail: user.email,
         group: DBAdminGroup.id,
       });
-
-      // const memberEvent = new MemberEvent();
-      // let member: Member;
-      // member = await memberEvent.createMember(user, organization);
     } catch (error) {
       await Promise.all<any>(
         [
