@@ -18,6 +18,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Member } from '../models/Member';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { GroupsList } from '@/types/types';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -36,8 +37,12 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<any> {
+  public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<GroupsList> {
     const organization = await this.organizationService.get(organizationId);
+
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
+    }
 
     const length = await this.dao.count({ organization });
 
@@ -56,7 +61,12 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         }
       });
 
-      return paginate(groups, page, size, skip, length);
+      const { data, pagination } = paginate(groups, page, size, skip, length);
+      const result: GroupsList = {
+        data,
+        pagination,
+      };
+      return result;
     }
 
     groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Group[];
@@ -66,18 +76,20 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         await group.members.init();
       }
     });
-
-    return groups;
+    const result: GroupsList = {
+      data: groups,
+    };
+    return result;
   }
 
   @log()
-  public async getGroupMembers(groupId: number): Promise<any> {
+  public async getGroupMembers(groupId: number): Promise<Member[]> {
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
     }
-    await fetchedGroup.members.init();
-    return fetchedGroup.members;
+    const members = (await this.memberService.getByCriteria({ group: fetchedGroup }, FETCH_STRATEGY.ALL)) as Member[];
+    return members;
   }
 
   @log()
