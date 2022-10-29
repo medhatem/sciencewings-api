@@ -1,4 +1,4 @@
-import { Member } from '@/modules/hr/models/Member';
+import { Member, MembershipStatus, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { container, provideSingleton, lazyInject } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
@@ -27,8 +27,6 @@ import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSch
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 import { Keycloak } from '@/sdks/keycloak';
-import { MemberEvent } from '@/modules/hr/events/MemberEvent';
-import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
 import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
@@ -40,11 +38,14 @@ import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organiza
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { userStatus } from '@/modules/users/models/User';
+import { IGroupService } from '@/modules/hr';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   @lazyInject(IInfrastructureService) public infraService: IInfrastructureService;
   @lazyInject(IMemberService) public memberService: IMemberService;
+  @lazyInject(IGroupService) public groupService: IGroupService;
 
   constructor(
     public dao: OrganizationDao,
@@ -170,16 +171,44 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.settings = organizationSetting;
       organization = await this.create(wrappedOrganization);
 
-      const memberEvent = new MemberEvent();
-      await memberEvent.createMember(user, organization);
-
-      const groupEvent = new GroupEvent();
+      // const groupEvent = new GroupEvent();
       // create the admin and member groups in the db
       // add the owner as a member to the organization
-      await Promise.all([
-        groupEvent.createGroup(adminGroup, organization, `${grpPrifix}admin`),
-        groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
-      ]);
+      // await Promise.all([
+      //   groupEvent.createGroup(adminGroup, organization, `${grpPrifix}admin`),
+      //   groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
+      // ]);
+
+      const DBAdminGroup = await this.groupService.create({
+        organization,
+        kcid: adminGroup,
+        name: `${grpPrifix}admin`,
+      });
+      console.log('admin Grouuuuuuuuuuuuuuuuuuup', DBAdminGroup);
+
+      const DBMemberGroup = await this.groupService.create({
+        organization,
+        kcid: membersGroup,
+        name: `${grpPrifix}member`,
+      });
+      console.log('member Grouuuuuuuuuuuuuuuuuuup', DBMemberGroup);
+
+      await this.memberService.create({
+        name: user.firstname + ' ' + user.lastname,
+        user,
+        active: true,
+        organization,
+        memberType: MemberTypeEnum.ADMIN,
+        membership: MembershipStatus.ACCEPTED,
+        status: userStatus.ACTIVE,
+        joinDate: new Date(),
+        workEmail: user.email,
+        group: DBAdminGroup.id,
+      });
+
+      // const memberEvent = new MemberEvent();
+      // let member: Member;
+      // member = await memberEvent.createMember(user, organization);
     } catch (error) {
       await Promise.all<any>(
         [
