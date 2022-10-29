@@ -273,14 +273,14 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
         limit: size,
       })) as Infrastructure[];
 
-      let { data, pagination } = paginate(infrastructures, page, size, skip, length);
+      const result = paginate(infrastructures, page, size, skip, length);
 
-      data = await this.prepareInfrastrustructuresList(data);
-      const result: InfrastructuresList = {
-        data,
-        pagination,
+      const paginatedDataList = await this.prepareInfrastrustructuresList(result.data);
+      const paginatedResult: InfrastructuresList = {
+        data: paginatedDataList,
+        pagination: result.pagination,
       };
-      return result;
+      return paginatedResult;
     }
 
     infrastructures = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Infrastructure[];

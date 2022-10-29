@@ -372,15 +372,15 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         limit: size,
       })) as Project[];
 
-      let { data, pagination } = paginate(projects, page, size, skip, length);
+      const result = paginate(projects, page, size, skip, length);
 
-      data = await this.prepareProjectsList(data);
+      const paginatedDataList = await this.prepareProjectsList(result.data);
 
-      const result: ProjectsPaginatedList = {
-        data,
-        pagination,
+      const paginatedResult: ProjectsPaginatedList = {
+        data: paginatedDataList,
+        pagination: result.pagination,
       };
-      return result;
+      return paginatedResult;
     }
 
     projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
