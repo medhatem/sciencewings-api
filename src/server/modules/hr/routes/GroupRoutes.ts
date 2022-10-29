@@ -29,6 +29,8 @@ export class GroupRoutes extends BaseRoutes<Group> {
   /**
    * get organization groups
    * @param payload
+   * @param page: queryParam to specify page the client want
+   * @param size: queryParam to specify the size of one page
    * @returns the created group id
    */
   @GET
@@ -45,7 +47,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   ): Promise<OrgGroupsrequestDTO> {
     const result = await this.groupService.getOrganizationGroup(organizationId, page || null, size || null);
 
-    if (result.pagination)
+    if (result?.pagination)
       return new OrgGroupsrequestDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });

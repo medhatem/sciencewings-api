@@ -40,6 +40,7 @@ import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { paginate } from '@/utils/utilities';
+import { MembersList } from '@/types/types';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -351,8 +352,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return newAddress.id;
   }
 
+  /**
+   * add new address to organization
+   * @param orgId organization id
+   * @param statusFilter Filter used to fetch organization
+   * @param page
+   * @param size
+   */
   @log()
-  public async getMembers(orgId: number, statusFilter?: string, page?: number, size?: number): Promise<any> {
+  public async getMembers(orgId: number, statusFilter?: string, page?: number, size?: number): Promise<MembersList> {
     const organization = await this.dao.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
@@ -366,10 +374,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
           offset: skip,
           limit: size,
         });
-        return paginate(members, page, size, skip, length);
+        const { data, pagination } = paginate(members, page, size, skip, length);
+        const result: MembersList = {
+          data,
+          pagination,
+        };
+        return result;
       }
       members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL);
-      return members;
+      const result: MembersList = {
+        data: members,
+      };
+      return result;
     } else {
       if (page | size) {
         const skip = page * size;
@@ -377,11 +393,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
           offset: skip,
           limit: size,
         });
-
-        return paginate(members, page, size, skip, length);
+        const { data, pagination } = paginate(members, page, size, skip, length);
+        const result: MembersList = {
+          data,
+          pagination,
+        };
+        return result;
       }
       members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL);
-      return members;
+      const result: MembersList = {
+        data: members,
+      };
+      return result;
     }
   }
 
