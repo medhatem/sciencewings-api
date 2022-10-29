@@ -39,10 +39,13 @@ export class MemberDTO extends BaseBodyDTO {
   active: boolean;
 
   @JsonProperty()
-  joinDate: Date;
+  joinDate: string;
 
   @JsonProperty()
   workEmail: string;
+
+  @JsonProperty()
+  memberType: string;
 }
 
 @JsonObject()

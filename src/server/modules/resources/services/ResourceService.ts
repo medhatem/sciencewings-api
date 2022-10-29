@@ -53,6 +53,7 @@ import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { applyToAll, paginate } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
 import { User } from '@/modules/users/models/User';
+import { ResourcesList } from '@/types/types';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -86,7 +87,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     organizationId: number,
     page?: number,
     size?: number,
-  ): Promise<any> {
+  ): Promise<ResourcesList> {
     if (!organizationId) {
       throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
     }
@@ -107,12 +108,19 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         limit: size,
       })) as Resource[];
 
-      return paginate(resources, page, size, skip, length);
+      const { data, pagination } = paginate(resources, page, size, skip, length);
+      const result: ResourcesList = {
+        data,
+        pagination,
+      };
+      return result;
     }
 
     resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Resource[];
-
-    return resources;
+    const result: ResourcesList = {
+      data: resources,
+    };
+    return result;
   }
 
   @log()
