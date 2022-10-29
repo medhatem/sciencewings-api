@@ -110,7 +110,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       size || null,
     );
 
-    if (result.pagination)
+    if (result?.pagination)
       return new ResourceGetDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });

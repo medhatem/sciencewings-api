@@ -24,7 +24,7 @@ import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { applyToAll, paginate } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { ProjectList } from '@/types/types';
+import { ProjectList, ProjectsPaginatedList } from '@/types/types';
 
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
@@ -351,7 +351,11 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    * @returns
    */
   @log()
-  public async getAllOrganizationProjectsList(id: number, page?: number, size?: number): Promise<any> {
+  public async getAllOrganizationProjectsList(
+    id: number,
+    page?: number,
+    size?: number,
+  ): Promise<ProjectsPaginatedList> {
     const organization = await this.organizationService.get(id);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
@@ -368,15 +372,23 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
         limit: size,
       })) as Project[];
 
-      let paginatedprojects = paginate(projects, page, size, skip, length);
+      const result = paginate(projects, page, size, skip, length);
 
-      paginatedprojects.data = await this.prepareProjectsList(paginatedprojects.data);
+      const paginatedDataList = await this.prepareProjectsList(result.data);
 
-      return paginatedprojects;
+      const paginatedResult: ProjectsPaginatedList = {
+        data: paginatedDataList,
+        pagination: result.pagination,
+      };
+      return paginatedResult;
     }
 
     projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
 
-    return this.prepareProjectsList(projects);
+    projects = this.prepareProjectsList(projects);
+    const result: ProjectsPaginatedList = {
+      data: projects,
+    };
+    return result;
   }
 }

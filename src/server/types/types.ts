@@ -1,6 +1,10 @@
 import { Member } from '@/modules/hr/models/Member';
+import { Contract } from '@/modules/hr/models/Contract';
 import { Project } from '@/modules/projects/models/Project';
-import { Group } from '..';
+import { Group } from '@/modules/hr/models/Group';
+import { Resource } from '@/modules/resources/models/Resource';
+import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
+import { infrastructurelistline } from '@/modules/infrastructure/infastructureTypes';
 
 export type EmailMessage = {
   to: string;
@@ -45,7 +49,27 @@ export type MembersList = {
   pagination?: Pagination;
 };
 
+export type ProjectsPaginatedList = {
+  data: any;
+  pagination?: Pagination;
+};
+
+export type ResourcesList = {
+  data: Resource[];
+  pagination?: Pagination;
+};
+
 export type GroupsList = {
-  groups?: Group[];
-  pagination: Pagination;
+  data: Group[];
+  pagination?: Pagination;
+};
+
+export type ContractsList = {
+  data: Contract[];
+  pagination?: Pagination;
+};
+
+export type InfrastructuresList = {
+  data: Infrastructure[] | infrastructurelistline[];
+  pagination?: Pagination;
 };
