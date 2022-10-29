@@ -4,6 +4,7 @@ import { unique } from '@/decorators/unique';
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { OrganizationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { beforeDeserialize } from '@/utils/utilities';
+import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 @JsonObject()
 export class GroupBodyDTO extends BaseBodyDTO {
@@ -19,8 +20,14 @@ export class GroupBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   organization: OrganizationDTO;
 
-  @JsonProperty()
+  @JsonProperty({
+    type: MemberDTO,
+    beforeDeserialize,
+  })
   members?: Array<MemberDTO>;
+
+  @JsonProperty()
+  parent?: GroupBodyDTO;
 
   @JsonProperty()
   description: string;
@@ -45,6 +52,22 @@ export class GroupDTO extends BaseRequestDTO {
 export class OrgGroupsDTO extends BaseBodyDTO {
   @JsonProperty({ type: GroupBodyDTO, beforeDeserialize })
   data: Array<GroupBodyDTO>;
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class groupMemberDTO extends BaseBodyDTO {
+  @JsonProperty({ type: MemberDTO, beforeDeserialize })
+  data: Array<MemberDTO>;
+}
+
+@JsonObject()
+@unique
+export class groupMembersrequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body?: groupMemberDTO;
 }
 
 @JsonObject()
