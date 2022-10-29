@@ -2,7 +2,13 @@ import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Group } from '@/modules/hr/models/Group';
 import { Path, PathParam, POST, PUT, Security, DELETE, GET, QueryParam } from 'typescript-rest';
-import { GroupDTO, CreateGroupDTO, UpdateGroupDTO, OrgGroupsrequestDTO } from '@/modules/hr/dtos/GroupDTO';
+import {
+  GroupDTO,
+  CreateGroupDTO,
+  UpdateGroupDTO,
+  OrgGroupsrequestDTO,
+  groupMembersrequestDTO,
+} from '@/modules/hr/dtos/GroupDTO';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { GroupRO } from '@/modules/hr/routes/RequestObject';
 import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
@@ -23,6 +29,8 @@ export class GroupRoutes extends BaseRoutes<Group> {
   /**
    * get organization groups
    * @param payload
+   * @param page: queryParam to specify page the client want
+   * @param size: queryParam to specify the size of one page
    * @returns the created group id
    */
   @GET
@@ -39,7 +47,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
   ): Promise<OrgGroupsrequestDTO> {
     const result = await this.groupService.getOrganizationGroup(organizationId, page || null, size || null);
 
-    if (result.pagination)
+    if (result?.pagination)
       return new OrgGroupsrequestDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
@@ -144,5 +152,22 @@ export class GroupRoutes extends BaseRoutes<Group> {
     const result = await this.groupService.deleteGroup(id);
 
     return new GroupDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /**
+   * get group members
+   * @param groupId
+   */
+  @GET
+  @Path(':groupId/members')
+  @Security()
+  @LoggerStorage()
+  @Response<GroupRO>(200, 'members fetched Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getGroupMembers(@PathParam('groupId') groupId: number): Promise<groupMembersrequestDTO> {
+    const result = await this.groupService.getGroupMembers(groupId);
+
+    return new groupMembersrequestDTO({ body: { data: [...(result || [])], statusCode: 201 } });
   }
 }

@@ -13,9 +13,14 @@ import {
 import { IBaseService } from '@/modules/base/interfaces/IBaseService';
 import { ResourceRO } from '@/modules/resources/routes/RequestObject';
 import { ResourceRate } from '@/modules/resources/models/ResourceRate';
+import { ResourcesList } from '@/types/types';
 
 export abstract class IResourceService extends IBaseService<any> {
-  getResourcesOfAGivenOrganizationById: (organizationId: number, page?: number, size?: number) => Promise<any>;
+  getResourcesOfAGivenOrganizationById: (
+    organizationId: number,
+    page?: number,
+    size?: number,
+  ) => Promise<ResourcesList>;
   createResource: (userId: number, payload: ResourceRO) => Promise<number>;
   updateResource: (payload: UpdateResourceRO, resourceId: number) => Promise<number>;
 

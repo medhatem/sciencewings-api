@@ -89,6 +89,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * retrieve all resources of a given organization by id
    *
    * @param organizationId organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
    */
   @GET
   @Path('getOgranizationResourcesById/:organizationId')
@@ -108,7 +110,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       size || null,
     );
 
-    if (result.pagination)
+    if (result?.pagination)
       return new ResourceGetDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });

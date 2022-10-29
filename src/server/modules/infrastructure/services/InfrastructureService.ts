@@ -12,7 +12,7 @@ import {
 } from '@/modules/infrastructure/schemas/ifrastructureSchemas';
 import { IOrganizationService } from '@/modules/organizations/interfaces/IOrganizationService';
 import { InfrastructureRO, UpdateinfrastructureRO } from '@/modules/infrastructure/routes/RequestObject';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
@@ -21,6 +21,7 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { infrastructurelistline, subInfrasListLine } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
 import { IResourceService, Resource } from '@/modules/resources';
+import { InfrastructuresList } from '@/types/types';
 
 @provideSingleton(IInfrastructureService)
 export class InfrastructureService extends BaseService<Infrastructure> implements IInfrastructureService {
@@ -43,16 +44,33 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    *
    */
   @log()
-  public async getAllOgranizationInfrastructures(orgId: number): Promise<Infrastructure[]> {
-    const fetchedOrganization = await this.organizationService.get(orgId);
+  public async getAllOgranizationInfrastructures(orgId: number, page?: number, size?: number): Promise<any> {
+    const organization = await this.organizationService.get(orgId);
 
-    if (!fetchedOrganization) {
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
         variables: { org: `${orgId}` },
         friendly: true,
       });
     }
-    return await fetchedOrganization.infrastructure.init();
+
+    const length = await this.dao.count({ organization });
+
+    let infrastructures;
+
+    if (page | size) {
+      const skip = page * size;
+      infrastructures = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Infrastructure[];
+
+      return paginate(infrastructures, page, size, skip, length);
+    }
+
+    infrastructures = await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL);
+
+    return infrastructures;
   }
 
   /**
@@ -205,20 +223,10 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     return createdInfustructure.id;
   }
 
-  /**
-   * get the list of infrustructure of a given organization
-   * @param orgId: organization id
-   */
   @log()
-  public async getAllInfrastructuresOfAgivenOrganization(orgId: number): Promise<infrastructurelistline[]> {
-    const organization = await this.organizationService.get(orgId);
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId} ` } });
-    }
-    const fetchedInfrastructure = (await this.dao.getByCriteria(
-      { organization },
-      FETCH_STRATEGY.ALL,
-    )) as Infrastructure[];
+  public async prepareInfrastrustructuresList(
+    fetchedInfrastructure: Infrastructure[],
+  ): Promise<infrastructurelistline[]> {
     const InfrastructureList: infrastructurelistline[] = [];
     let subInfras: any[] = [];
     let responsible: Member;
@@ -237,6 +245,50 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
       });
     });
     return InfrastructureList;
+  }
+
+  /**
+   * get the list of infrustructure of a given organization
+   * @param orgId: organization id
+   */
+  @log()
+  public async getAllInfrastructuresOfAgivenOrganization(
+    orgId: number,
+    page?: number,
+    size?: number,
+  ): Promise<InfrastructuresList> {
+    const organization = await this.organizationService.get(orgId);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId} ` } });
+    }
+
+    const length = await this.dao.count({ organization });
+
+    let infrastructures;
+
+    if (page | size) {
+      const skip = page * size;
+      infrastructures = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Infrastructure[];
+
+      const result = paginate(infrastructures, page, size, skip, length);
+
+      const paginatedDataList = await this.prepareInfrastrustructuresList(result.data);
+      const paginatedResult: InfrastructuresList = {
+        data: paginatedDataList,
+        pagination: result.pagination,
+      };
+      return paginatedResult;
+    }
+
+    infrastructures = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Infrastructure[];
+    infrastructures = await this.prepareInfrastrustructuresList(infrastructures);
+    const result: InfrastructuresList = {
+      data: infrastructures,
+    };
+    return result;
   }
 
   /**

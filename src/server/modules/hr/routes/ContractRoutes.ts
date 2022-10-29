@@ -2,7 +2,7 @@ import { IContractService } from '@/modules/hr/interfaces/IContractService';
 import { container, provideSingleton } from '@/di/index';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { Contract } from '@/modules/hr/models/Contract';
-import { GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { GET, Path, PathParam, POST, PUT, QueryParam, Security } from 'typescript-rest';
 import {
   AllContractsBaseDTO,
   ContracBaseBodyDTO,
@@ -27,6 +27,8 @@ export class ContractRoutes extends BaseRoutes<Contract> {
    * Retrieve all member contracts
    * @param orgId of organization id
    * @param userId of user id
+   * @param page: queryParam to specify page the client want
+   * @param size: queryParam to specify the size of one page
    */
   @GET
   @Path('/:orgId/:userId')
@@ -38,9 +40,19 @@ export class ContractRoutes extends BaseRoutes<Contract> {
   public async getAllMemberContracts(
     @PathParam('orgId') orgId: number,
     @PathParam('userId') userId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
   ): Promise<AllContractsBaseDTO> {
-    const result = await this.contractService.getAllMemberContracts(orgId, userId);
-    return new AllContractsBaseDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+    const result = await this.contractService.getAllMemberContracts(orgId, userId, page || null, size || null);
+
+    if (result?.pagination)
+      return new AllContractsBaseDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new AllContractsBaseDTO({
+        body: { data: result, statusCode: 200 },
+      });
   }
 
   /**

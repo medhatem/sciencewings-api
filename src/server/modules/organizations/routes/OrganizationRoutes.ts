@@ -177,8 +177,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @QueryParam('size') size?: number,
   ): Promise<OrganizationMembersDTO> {
     const result = await this.OrganizationService.getMembers(payload, status || null, page || null, size || null);
-
-    if (result.pagination)
+    if (result?.pagination)
       return new OrganizationMembersDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
