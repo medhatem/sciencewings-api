@@ -49,6 +49,20 @@ export class OrgGroupsDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
+export class groupMemberDTO extends BaseBodyDTO {
+  @JsonProperty({ type: MemberDTO, beforeDeserialize })
+  data: Array<MemberDTO>;
+}
+
+@JsonObject()
+@unique
+export class groupMembersrequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body?: groupMemberDTO;
+}
+
+@JsonObject()
+@unique
 export class OrgGroupsrequestDTO extends BaseRequestDTO {
   @JsonProperty()
   body?: OrgGroupsDTO;
