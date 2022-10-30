@@ -203,7 +203,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       const result = await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
 
       await container.get(ResourceService).getResourcesOfAGivenOrganizationById(organizationId);
-      expect(result).to.eql([1]);
+      expect(result).to.eql({ data: [1] });
     });
   });
   suite('update resource', () => {
