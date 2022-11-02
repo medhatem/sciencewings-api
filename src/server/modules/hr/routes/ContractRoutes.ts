@@ -51,7 +51,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
       });
     else
       return new AllContractsBaseDTO({
-        body: { data: result, statusCode: 200 },
+        body: { data: result.data, statusCode: 200 },
       });
   }
 
