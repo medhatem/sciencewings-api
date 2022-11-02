@@ -224,4 +224,52 @@ export class KeycloakUtil {
       actions: [RequiredActionAlias.UPDATE_PASSWORD],
     });
   }
+
+  /**
+   *
+   * create a Kc realm role
+   *
+   * @param roleName  keycloak role name
+   */
+  async createRealmRole(roleName: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.create({
+      name: roleName,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+  }
+
+  /**
+   *
+   * delete a Kc realm role
+   *
+   * @param roleName  keycloak role name
+   */
+  async deleteRealmRole(roleName: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.delByName({
+      name: roleName,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+  }
+
+  /**
+   *
+   * update a Kc realm role
+   *
+   * @param roleName  keycloak role name
+   * @param newRoleName  the new keycloak role
+   */
+  async updateRealmRole(roleName: string, newRoleName: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.updateByName(
+      { name: roleName, realm: getConfig('keycloak.clientValidation.realmName') },
+      {
+        name: newRoleName,
+      },
+    );
+  }
 }
