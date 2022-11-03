@@ -23,5 +23,8 @@ export class Permission extends BaseModel<Permission> {
   module!: string;
 
   @Property()
-  operation!: string;
+  operationDB!: string;
+
+  //   @Property()
+  //   operationKC!: string;
 }
