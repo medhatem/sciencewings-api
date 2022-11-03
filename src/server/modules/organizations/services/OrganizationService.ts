@@ -41,7 +41,7 @@ import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInf
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
-import { IPermissionsService } from '@/modules/permissions/interfaces/IPermissionService';
+import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 import { Permission } from '@/modules/permissions/models/permission';
 
 @provideSingleton(IOrganizationService)
@@ -59,7 +59,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public emailService: Email,
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
-    public permissionService: IPermissionsService,
+    public permissionService: IPermissionService,
   ) {
     super(dao);
     //this.infraService = infraService;
