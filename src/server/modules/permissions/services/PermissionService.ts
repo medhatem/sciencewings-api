@@ -1,10 +1,10 @@
 import { container, provideSingleton } from '@/di';
 import { BaseService } from '@/modules/base/services/BaseService';
-import { PermissionDao } from '../daos/permissionsDAO';
-import { IPermissionService } from '../interfaces/IPermissionService';
-import { Permission } from '../models/permission';
+import { PermissionDao } from '@/modules/permissions/daos/permissionsDAO';
+import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { Permission } from '@/modules/permissions/models/permission';
 import { log } from '@/decorators/log';
-import { createPermissionRO, updatePermissionRO } from '../routes/RequestObject';
+import { createPermissionRO, updatePermissionRO } from '@/modules/permissions/routes/RequestObject';
 
 @provideSingleton(IPermissionService)
 export class PermissionService extends BaseService<Permission> implements IPermissionService {
