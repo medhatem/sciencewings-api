@@ -231,7 +231,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     let KcPERmissions: string[];
     const BDPermmissions = (await this.permissionService.getByCriteria(
-      { module: organization },
+      { module: 'organization', operationDB: 'create' },
       FETCH_STRATEGY.ALL,
     )) as Permission[];
     for (const permission of BDPermmissions) {
@@ -450,7 +450,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.dao.remove(fetchedorganization);
     let KcPERmissions: string[];
     const BDPermmissions = (await this.permissionService.getByCriteria(
-      { module: 'organization' },
+      { module: 'organization', operationDB: 'create' },
       FETCH_STRATEGY.ALL,
     )) as Permission[];
     for (const permission of BDPermmissions) {
