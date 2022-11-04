@@ -28,7 +28,6 @@ export class PermissionRoutes extends BaseRoutes<Permission> {
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async createPermission(payload: createPermissionRO): Promise<CreatePermissionDTO> {
-    console.log('enter in rouuuuuuuuuuuute');
     const result = await this.PermissionService.createPermission(payload);
 
     return new CreatePermissionDTO({ body: { id: result, statusCode: 201 } });
