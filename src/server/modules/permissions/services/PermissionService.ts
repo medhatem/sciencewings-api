@@ -21,7 +21,7 @@ export class PermissionService extends BaseService<Permission> implements IPermi
     const wrappedPermission = this.wrapEntity(Permission.getInstance(), {
       name: payload.name,
       module: payload.module,
-      operation: payload.operationDB,
+      operationDB: payload.operationDB,
     });
     const createdProject = await this.create(wrappedPermission);
     return createdProject.id;

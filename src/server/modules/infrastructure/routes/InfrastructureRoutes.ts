@@ -35,7 +35,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @POST
   @Path('create')
-  @Security()
+  @Security(['{orgId}-create-infrastructure'])
   @LoggerStorage()
   @Response<infrastructureGetDTO>(204, 'infrastructure created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')

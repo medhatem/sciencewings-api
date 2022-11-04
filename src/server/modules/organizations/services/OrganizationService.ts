@@ -48,6 +48,7 @@ import { Permission } from '@/modules/permissions/models/permission';
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   @lazyInject(IInfrastructureService) public infraService: IInfrastructureService;
   @lazyInject(IMemberService) public memberService: IMemberService;
+  // @lazyInject(IPermissionService) public permissionService: IPermissionService;
 
   constructor(
     public dao: OrganizationDao,
@@ -229,17 +230,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
     defaultInfrastructure.organization = organization;
     await this.infraService.create(defaultInfrastructure);
 
-    let KcPERmissions: string[];
+    let KcPERmissions: any[] = [];
     const BDPermmissions = (await this.permissionService.getByCriteria(
       { module: 'organization', operationDB: 'create' },
       FETCH_STRATEGY.ALL,
     )) as Permission[];
-    for (const permission of BDPermmissions) {
-      KcPERmissions.push(permission.name);
-    }
+    console.log('bring BD Permissionnnnns', BDPermmissions);
+    if (BDPermmissions) {
+      for (const permission of BDPermmissions) {
+        KcPERmissions.push(permission.name);
+      }
 
-    for (const KcPermission of KcPERmissions) {
-      this.keycloakUtils.createRealmRole(`${organization.kcid}-${KcPermission}`);
+      for (const KcPermission of KcPERmissions) {
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${KcPermission}`);
+      }
     }
     return organization.id;
   }

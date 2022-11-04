@@ -20,10 +20,6 @@ export class PermissionRoutes extends BaseRoutes<Permission> {
     return container.get(PermissionRoutes);
   }
 
-  /**
-   * @override create an infrustructure in the database
-   * @param payload Should contain infrustructure data
-   */
   @POST
   @Path('create')
   @Security()
