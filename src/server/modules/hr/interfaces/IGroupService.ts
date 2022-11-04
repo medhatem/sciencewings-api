@@ -5,7 +5,7 @@ import { GroupsList } from '@/types/types';
 export abstract class IGroupService extends IBaseService<any> {
   createGroup: (payload: GroupRO) => Promise<number>;
   updateGroup: (payload: GroupRO, groupId: number) => Promise<number>;
-  getOrganizationGroup: (organizationId: number, page?: number, size?: number) => Promise<GroupsList>;
+  getOrganizationGroup: (organizationId: number, page?: number, size?: number, query?: string) => Promise<GroupsList>;
   deleteGroup: (groupId: number) => Promise<number>;
   addGroupMember: (userId: number, groupId: number) => Promise<number>;
   deleteGroupMember: (userId: number, groupId: number) => Promise<number>;
