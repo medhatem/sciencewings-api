@@ -175,8 +175,15 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @QueryParam('status') status?: string,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
   ): Promise<OrganizationMembersDTO> {
-    const result = await this.OrganizationService.getMembers(payload, status || null, page || null, size || null);
+    const result = await this.OrganizationService.getMembers(
+      payload,
+      status || null,
+      page || null,
+      size || null,
+      query || null,
+    );
     if (result?.pagination)
       return new OrganizationMembersDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },

@@ -86,6 +86,7 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
     fetchStrategy = FETCH_STRATEGY.SINGLE,
     options?: Y extends FETCH_STRATEGY.SINGLE ? FindOneOptions<T, never> : FindOptions<T, never>,
   ): Promise<T | T[]> {
+    console.log('citeria == ', criteria);
     return await this.dao.getByCriteria(criteria, fetchStrategy, options);
   }
 
