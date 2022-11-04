@@ -1,7 +1,6 @@
 import {
   Collection,
   Entity,
-  Index,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -26,7 +25,6 @@ import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
 import { WorkLocation } from './WorkLocation';
-import { FullTextType } from '@mikro-orm/postgresql';
 
 export enum MemberTypeEnum {
   ADMIN = 'admin',
@@ -107,8 +105,7 @@ export class Member extends BaseModel<Member> {
   @OneToOne({ entity: () => Phone, nullable: true })
   workPhone?: Phone;
 
-  @Index({ type: 'fulltext' })
-  @Property({ type: FullTextType, nullable: true })
+  @Property({ nullable: true })
   workEmail?: string;
 
   @ManyToOne({ entity: () => WorkLocation, onDelete: 'set null', nullable: true })

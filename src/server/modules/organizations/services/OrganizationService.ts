@@ -378,7 +378,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         const skip = (page - 1) * size;
         if (query) {
           members = await this.memberService.getByCriteria(
-            { organization, workEmail: { $fulltext: 'query' }, status: statusFilter },
+            { organization, name: { $like: '%' + query + '%' }, status: statusFilter },
             FETCH_STRATEGY.ALL,
             {
               offset: skip,
@@ -408,7 +408,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         const skip = page * size;
         if (query) {
           members = await this.memberService.getByCriteria(
-            { organization, workEmail: { $fulltext: query } },
+            { organization, name: { $like: '%' + query + '%' } },
             FETCH_STRATEGY.ALL,
             {
               offset: skip,
