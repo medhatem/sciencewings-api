@@ -243,6 +243,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
       for (const KcPermission of KcPERmissions) {
         this.keycloakUtils.createRealmRole(`${organization.kcid}-${KcPermission}`);
+        const currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${KcPermission}`);
+        this.keycloakUtils.groupRoleMap(adminGroup, currentRole);
       }
     }
     return organization.id;

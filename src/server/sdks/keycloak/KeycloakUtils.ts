@@ -5,6 +5,7 @@ import { Keycloak } from '../keycloak';
 import { getConfig } from '@/configuration/Configuration';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { RequiredActionAlias } from '@keycloak/keycloak-admin-client/lib/defs/requiredActionProviderRepresentation';
+import RoleRepresentation from '@keycloak/keycloak-admin-client/lib/defs/roleRepresentation';
 /**
  * utilities class containing keycloak specific actions
  * This class will manage all keycloak calls and encapsulate them
@@ -271,5 +272,29 @@ export class KeycloakUtil {
         name: newRoleName,
       },
     );
+  }
+
+  async findRoleByName(roleName: string): Promise<RoleRepresentation> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.findOneByName({
+      name: roleName,
+    });
+  }
+
+  async groupRoleMap(currentGroupId: string, currentRole: RoleRepresentation): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).groups.addRealmRoleMappings({
+      id: currentGroupId!,
+
+      // at least id and name should appear
+      roles: [
+        {
+          id: currentRole.id!,
+          name: currentRole.name!,
+        },
+      ],
+    });
   }
 }
