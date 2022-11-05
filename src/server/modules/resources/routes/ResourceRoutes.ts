@@ -103,11 +103,13 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     @PathParam('organizationId') organizationId: number,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
   ): Promise<ResourceGetDTO> {
     const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(
       organizationId,
       page || null,
       size || null,
+      query || null,
     );
 
     if (result?.pagination)
