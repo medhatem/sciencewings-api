@@ -273,7 +273,12 @@ export class KeycloakUtil {
       },
     );
   }
-
+  /**
+   *
+   * find a Kc realm role by name
+   *
+   * @param roleName  keycloak role name
+   */
   async findRoleByName(roleName: string): Promise<RoleRepresentation> {
     return await (
       await this.keycloak.getAdminClient()
@@ -281,7 +286,12 @@ export class KeycloakUtil {
       name: roleName,
     });
   }
-
+  /**
+   *
+   * map a Kc realm role to a KC group
+   * @param currentGroupId  keycloak Group
+   *  @param currentRole  keycloak role
+   */
   async groupRoleMap(currentGroupId: string, currentRole: RoleRepresentation): Promise<any> {
     return await (
       await this.keycloak.getAdminClient()

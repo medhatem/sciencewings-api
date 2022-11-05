@@ -16,6 +16,10 @@ export class PermissionService extends BaseService<Permission> implements IPermi
     return container.get(IPermissionService);
   }
 
+  /**
+   *  create an permission in the database
+   * @param payload Should contain the permission data
+   */
   @log()
   public async createPermission(payload: createPermissionRO): Promise<number> {
     const wrappedPermission = this.wrapEntity(Permission.getInstance(), {
@@ -27,6 +31,10 @@ export class PermissionService extends BaseService<Permission> implements IPermi
     return createdProject.id;
   }
 
+  /**
+   * delete a permission in the database
+   * @param id of the permission data
+   */
   @log()
   public async updatePermission(payload: updatePermissionRO, permissionId: number): Promise<number> {
     const permission = await this.dao.get(permissionId);

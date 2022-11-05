@@ -20,6 +20,10 @@ export class PermissionRoutes extends BaseRoutes<Permission> {
     return container.get(PermissionRoutes);
   }
 
+  /**
+   * @override create an permission in the database
+   * @param payload Should contain the permission data
+   */
   @POST
   @Path('create')
   @Security()
@@ -33,11 +37,16 @@ export class PermissionRoutes extends BaseRoutes<Permission> {
     return new CreatePermissionDTO({ body: { id: result, statusCode: 201 } });
   }
 
+  /**
+   * update a permission in the database
+   * @param payload Should contain the permission data
+   * @param id of the permission data
+   */
   @PUT
   @Path('update/:id')
   @Security()
   @LoggerStorage()
-  @Response<permissionGetDTO>(204, 'Permisssion created Successfully')
+  @Response<permissionGetDTO>(204, 'Permisssion updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async updatePermission(
@@ -48,7 +57,10 @@ export class PermissionRoutes extends BaseRoutes<Permission> {
 
     return new UpdatePermissionDTO({ body: { id: result, statusCode: 201 } });
   }
-
+  /**
+   * @override delete a permission in the database
+   * @param id of the permission data
+   */
   @DELETE
   @Path('delete/:id')
   @Security()
