@@ -44,7 +44,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Response<InviteUserBodyDTO>(201, 'User Registred Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  @Security()
+  @Security(['admin', '{orgId}-invite-to-organization'])
   @LoggerStorage()
   public async inviteUserToOrganization(payload: UserInviteToOrgRO): Promise<InviteUserDTO> {
     const result = await this.MemberService.inviteUserByEmail(payload);
@@ -65,7 +65,7 @@ export class MemberRoutes extends BaseRoutes<Member> {
   @Response<UserIdDTO>(200, 'invite resent successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  @Security()
+  @Security(['admin', '{orgId}-invite-to-organization'])
   @LoggerStorage()
   public async resendInvite(payload: UserResendPassword): Promise<InviteUserDTO> {
     const result = await this.MemberService.resendInvite(payload.userId, payload.orgId);

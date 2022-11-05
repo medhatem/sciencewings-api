@@ -195,6 +195,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     await wrappedResource.calendar.init();
     wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
+    //should create the ck permissions related to the created resource
     return createdResource.id;
   }
 
