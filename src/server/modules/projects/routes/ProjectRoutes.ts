@@ -170,6 +170,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    * @param id: org id
    * @param page: queryParam to specify page the client want
    * @param size: queryParam to specify the size of one page
+   * @param query of type string used to do the search
    */
   @GET
   @Path('getProjectList/:id')
