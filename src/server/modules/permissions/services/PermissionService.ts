@@ -17,7 +17,7 @@ export class PermissionService extends BaseService<Permission> implements IPermi
   }
 
   /**
-   *  create an permission in the database
+   *  create a permission in the database
    * @param payload Should contain the permission data
    */
   @log()
@@ -32,8 +32,9 @@ export class PermissionService extends BaseService<Permission> implements IPermi
   }
 
   /**
-   * delete a permission in the database
+   * update a permission in the database
    * @param id of the permission data
+   * @param payload Should contain the permission data
    */
   @log()
   public async updatePermission(payload: updatePermissionRO, permissionId: number): Promise<number> {
@@ -48,6 +49,10 @@ export class PermissionService extends BaseService<Permission> implements IPermi
     return updatedPermissionResult.id;
   }
 
+  /**
+   * delete a permission in the database
+   * @param id of the permission data
+   */
   @log()
   public async deletePermission(permissionId: number): Promise<number> {
     const permission = await this.dao.get(permissionId);
