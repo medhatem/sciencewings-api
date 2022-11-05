@@ -307,4 +307,25 @@ export class KeycloakUtil {
       ],
     });
   }
+  /**
+   *
+   * map a Kc realm role to a KC user
+   * @param userId  keycloak User id
+   * @param currentRole  keycloak role
+   */
+  async uu(userId: string, currentRole: RoleRepresentation): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.addRealmRoleMappings({
+      id: userId!,
+
+      // at least id and name should appear
+      roles: [
+        {
+          id: currentRole.id!,
+          name: currentRole.name!,
+        },
+      ],
+    });
+  }
 }
