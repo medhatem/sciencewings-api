@@ -181,8 +181,14 @@ export class ProjectRoutes extends BaseRoutes<Project> {
     @PathParam('id') id: number,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
   ): Promise<ProjectListRequestDTO> {
-    const result = await this.projectService.getAllOrganizationProjectsList(id, page || null, size || null);
+    const result = await this.projectService.getAllOrganizationProjectsList(
+      id,
+      page || null,
+      size || null,
+      query || null,
+    );
 
     if (result?.pagination)
       return new ProjectListRequestDTO({
