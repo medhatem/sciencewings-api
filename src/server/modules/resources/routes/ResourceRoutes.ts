@@ -116,7 +116,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       });
     else
       return new ResourceGetDTO({
-        body: { data: result, statusCode: 200 },
+        body: { data: result.data, statusCode: 200 },
       });
   }
 

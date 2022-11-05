@@ -53,7 +53,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
       });
     else
       return new OrgGroupsrequestDTO({
-        body: { data: result, statusCode: 200 },
+        body: { data: result.data, statusCode: 200 },
       });
   }
 
