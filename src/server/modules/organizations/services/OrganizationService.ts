@@ -230,19 +230,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.infraService.create(defaultInfrastructure);
 
     // create the necessary CK Permissions
-    let KcPERmissions: any[] = [];
-    const BDPermmissions = (await this.permissionService.getByCriteria(
+    const BDPermissions = (await this.permissionService.getByCriteria(
       { module: 'organization', operationDB: 'create' },
       FETCH_STRATEGY.ALL,
     )) as Permission[];
-    if (BDPermmissions) {
-      for (const permission of BDPermmissions) {
-        KcPERmissions.push(permission.name);
-      }
-
-      for (const KcPermission of KcPERmissions) {
-        this.keycloakUtils.createRealmRole(`${organization.kcid}-${KcPermission}`);
-        const currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${KcPermission}`);
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
+        const currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${permission.name}`);
         this.keycloakUtils.groupRoleMap(adminGroup, currentRole);
       }
     }
@@ -456,17 +451,14 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.dao.remove(fetchedorganization);
 
     //clean the org permision
-    let KcPERmissions: string[];
-    const BDPermmissions = (await this.permissionService.getByCriteria(
+    const BDPermissions = (await this.permissionService.getByCriteria(
       { module: 'organization', operationDB: 'create' },
       FETCH_STRATEGY.ALL,
     )) as Permission[];
-    for (const permission of BDPermmissions) {
-      KcPERmissions.push(permission.name);
-    }
-
-    for (const KcPermission of KcPERmissions) {
-      this.keycloakUtils.deleteRealmRole(`${fetchedorganization.kcid}-${KcPermission}`);
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.deleteRealmRole(`${fetchedorganization.kcid}-${permission.name}`);
+      }
     }
 
     return organizationId;

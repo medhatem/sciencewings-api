@@ -129,10 +129,9 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
     else {
-      const test = new InfrastructureListRequestDTO({
+      return new InfrastructureListRequestDTO({
         body: { data: result.data, statusCode: 200 },
       });
-      return test;
     }
   }
 
