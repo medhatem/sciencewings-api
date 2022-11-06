@@ -37,7 +37,12 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   }
 
   @log()
-  public async getOrganizationGroup(organizationId: number, page?: number, size?: number): Promise<GroupsList> {
+  public async getOrganizationGroup(
+    organizationId: number,
+    page?: number,
+    size?: number,
+    query?: string,
+  ): Promise<GroupsList> {
     const organization = await this.organizationService.get(organizationId);
 
     if (!organization) {
@@ -50,11 +55,21 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
     if (page | size) {
       const skip = page * size;
-      groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
-        offset: skip,
-        limit: size,
-      })) as Group[];
-
+      if (query) {
+        groups = (await this.dao.getByCriteria(
+          { organization, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.ALL,
+          {
+            offset: skip,
+            limit: size,
+          },
+        )) as Group[];
+      } else {
+        groups = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        })) as Group[];
+      }
       groups.map(async (group) => {
         if (!group.members.isInitialized) {
           await group.members.init();

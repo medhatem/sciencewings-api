@@ -163,6 +163,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * @param status: queryParam to fetch accepted or pending members
    * @param page: queryParam to specify page the client want
    * @param size: queryParam to specify the size of one page
+   * @param query of type string used to do the search
    */
   @GET
   @Path('getMembers/:id')
@@ -175,8 +176,15 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @QueryParam('status') status?: string,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
   ): Promise<OrganizationMembersDTO> {
-    const result = await this.OrganizationService.getMembers(payload, status || null, page || null, size || null);
+    const result = await this.OrganizationService.getMembers(
+      payload,
+      status || null,
+      page || null,
+      size || null,
+      query || null,
+    );
     if (result?.pagination)
       return new OrganizationMembersDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },

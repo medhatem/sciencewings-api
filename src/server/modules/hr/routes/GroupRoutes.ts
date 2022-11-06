@@ -32,6 +32,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    * @param page: queryParam to specify page the client want
    * @param size: queryParam to specify the size of one page
    * @returns the created group id
+   * @param query of type string used to do the search
    */
   @GET
   @Path('getOrganizationGroup/:organizationId')
@@ -44,8 +45,14 @@ export class GroupRoutes extends BaseRoutes<Group> {
     @PathParam('organizationId') organizationId: number,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
   ): Promise<OrgGroupsrequestDTO> {
-    const result = await this.groupService.getOrganizationGroup(organizationId, page || null, size || null);
+    const result = await this.groupService.getOrganizationGroup(
+      organizationId,
+      page || null,
+      size || null,
+      query || null,
+    );
 
     if (result?.pagination)
       return new OrgGroupsrequestDTO({

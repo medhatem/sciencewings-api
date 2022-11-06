@@ -362,7 +362,13 @@ export class OrganizationService extends BaseService<Organization> implements IO
    * @param size
    */
   @log()
-  public async getMembers(orgId: number, statusFilter?: string, page?: number, size?: number): Promise<MembersList> {
+  public async getMembers(
+    orgId: number,
+    statusFilter?: string,
+    page?: number,
+    size?: number,
+    query?: string,
+  ): Promise<MembersList> {
     const organization = await this.dao.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
@@ -372,10 +378,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (statusFilter) {
       if (page | size) {
         const skip = (page - 1) * size;
-        members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL, {
-          offset: skip,
-          limit: size,
-        });
+        if (query) {
+          members = await this.memberService.getByCriteria(
+            { organization, name: { $like: '%' + query + '%' }, status: statusFilter },
+            FETCH_STRATEGY.ALL,
+            {
+              offset: skip,
+              limit: size,
+            },
+          );
+        } else {
+          members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL, {
+            offset: skip,
+            limit: size,
+          });
+        }
         const { data, pagination } = paginate(members, page, size, skip, length);
         const result: MembersList = {
           data,
@@ -391,10 +408,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
     } else {
       if (page | size) {
         const skip = page * size;
-        members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
-          offset: skip,
-          limit: size,
-        });
+        if (query) {
+          members = await this.memberService.getByCriteria(
+            { organization, name: { $like: '%' + query + '%' } },
+            FETCH_STRATEGY.ALL,
+            {
+              offset: skip,
+              limit: size,
+            },
+          );
+        } else {
+          members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+            offset: skip,
+            limit: size,
+          });
+        }
         const { data, pagination } = paginate(members, page, size, skip, length);
         const result: MembersList = {
           data,
