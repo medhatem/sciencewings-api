@@ -20,6 +20,7 @@ export abstract class IResourceService extends IBaseService<any> {
     organizationId: number,
     page?: number,
     size?: number,
+    query?: string,
   ) => Promise<ResourcesList>;
   createResource: (userId: number, payload: ResourceRO) => Promise<number>;
   updateResource: (payload: UpdateResourceRO, resourceId: number) => Promise<number>;
