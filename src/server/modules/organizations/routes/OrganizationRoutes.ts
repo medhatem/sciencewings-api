@@ -163,7 +163,6 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    * @param status: queryParam to fetch accepted or pending members
    * @param page: queryParam to specify page the client want
    * @param size: queryParam to specify the size of one page
-   * @param query of type string used to do the search
    */
   @GET
   @Path('getMembers/:id')
