@@ -183,7 +183,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
       });
     else
       return new OrganizationMembersDTO({
-        body: { data: result, statusCode: 200 },
+        body: { data: result.data, statusCode: 200 },
       });
   }
 

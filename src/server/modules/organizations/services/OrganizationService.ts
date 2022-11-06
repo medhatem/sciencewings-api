@@ -225,6 +225,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     defaultInfrastructure.responsible = responsable;
     defaultInfrastructure.organization = organization;
     await this.infraService.create(defaultInfrastructure);
+
     return organization.id;
   }
 
@@ -295,6 +296,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         });
       }
     }
+
     return orgId;
   }
 
@@ -431,6 +433,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
     await this.dao.remove(fetchedorganization);
+
     return organizationId;
   }
   /* Get all the settings of an organization ,

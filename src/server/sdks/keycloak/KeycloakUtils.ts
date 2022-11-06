@@ -5,6 +5,7 @@ import { Keycloak } from '../keycloak';
 import { getConfig } from '@/configuration/Configuration';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { RequiredActionAlias } from '@keycloak/keycloak-admin-client/lib/defs/requiredActionProviderRepresentation';
+import RoleRepresentation from '@keycloak/keycloak-admin-client/lib/defs/roleRepresentation';
 /**
  * utilities class containing keycloak specific actions
  * This class will manage all keycloak calls and encapsulate them
@@ -222,6 +223,109 @@ export class KeycloakUtil {
       id: kcUserId!,
       lifespan: 43200,
       actions: [RequiredActionAlias.UPDATE_PASSWORD],
+    });
+  }
+
+  /**
+   *
+   * create a Kc realm role
+   *
+   * @param roleName  keycloak role name
+   */
+  async createRealmRole(roleName: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.create({
+      name: roleName,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+  }
+
+  /**
+   *
+   * delete a Kc realm role
+   *
+   * @param roleName  keycloak role name
+   */
+  async deleteRealmRole(roleName: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.delByName({
+      name: roleName,
+      realm: getConfig('keycloak.clientValidation.realmName'),
+    });
+  }
+
+  /**
+   *
+   * update a Kc realm role
+   *
+   * @param roleName  keycloak role name
+   * @param newRoleName  the new keycloak role
+   */
+  async updateRealmRole(roleName: string, newRoleName: string): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.updateByName(
+      { name: roleName, realm: getConfig('keycloak.clientValidation.realmName') },
+      {
+        name: newRoleName,
+      },
+    );
+  }
+  /**
+   *
+   * find a Kc realm role by name
+   *
+   * @param roleName  keycloak role name
+   */
+  async findRoleByName(roleName: string): Promise<RoleRepresentation> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).roles.findOneByName({
+      name: roleName,
+    });
+  }
+  /**
+   *
+   * map a Kc realm role to a KC group
+   * @param groupId  keycloak Group
+   *  @param role  keycloak role
+   */
+  async groupRoleMap(groupId: string, role: RoleRepresentation): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).groups.addRealmRoleMappings({
+      id: groupId!,
+
+      // at least id and name should appear
+      roles: [
+        {
+          id: role.id!,
+          name: role.name!,
+        },
+      ],
+    });
+  }
+  /**
+   *
+   * map a Kc realm role to a KC user
+   * @param userId  keycloak User id
+   * @param role  keycloak role
+   */
+  async userRoleMap(userId: string, role: RoleRepresentation): Promise<any> {
+    return await (
+      await this.keycloak.getAdminClient()
+    ).users.addRealmRoleMappings({
+      id: userId!,
+
+      // at least id and name should appear
+      roles: [
+        {
+          id: role.id!,
+          name: role.name!,
+        },
+      ],
     });
   }
 }
