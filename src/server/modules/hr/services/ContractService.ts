@@ -81,17 +81,14 @@ export class ContractService extends BaseService<Contract> implements IContractS
           { organization, name: { $like: '%' + query + '%' } },
           FETCH_STRATEGY.ALL,
         )) as Job[];
-        console.log('jobs== ', jobs);
         await applyToAll(jobs, async (job) => {
           const contract = (await this.dao.getByCriteria({ member, job }, FETCH_STRATEGY.SINGLE, {
             populate: ['job', 'supervisor'] as never,
             offset: skip,
             limit: size,
           })) as Contract;
-          console.log('contrat== ', contract);
           contracts.push(contract);
         });
-        console.log('contracts === ', contracts);
       } else {
         contracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
           populate: ['job', 'supervisor'] as never,
