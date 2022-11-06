@@ -170,7 +170,6 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    * @param id: org id
    * @param page: queryParam to specify page the client want
    * @param size: queryParam to specify the size of one page
-   * @param query of type string used to do the search
    */
   @GET
   @Path('getProjectList/:id')
@@ -182,14 +181,8 @@ export class ProjectRoutes extends BaseRoutes<Project> {
     @PathParam('id') id: number,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
-    @QueryParam('query') query?: string,
   ): Promise<ProjectListRequestDTO> {
-    const result = await this.projectService.getAllOrganizationProjectsList(
-      id,
-      page || null,
-      size || null,
-      query || null,
-    );
+    const result = await this.projectService.getAllOrganizationProjectsList(id, page || null, size || null);
 
     if (result?.pagination)
       return new ProjectListRequestDTO({

@@ -355,7 +355,6 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     id: number,
     page?: number,
     size?: number,
-    query?: string,
   ): Promise<ProjectsPaginatedList> {
     const organization = await this.organizationService.get(id);
     if (!organization) {
@@ -368,21 +367,10 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
 
     if (page | size) {
       const skip = page * size;
-      if (query) {
-        projects = (await this.dao.getByCriteria(
-          { organization, title: { $like: '%' + query + '%' } },
-          FETCH_STRATEGY.ALL,
-          {
-            offset: skip,
-            limit: size,
-          },
-        )) as Project[];
-      } else {
-        projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
-          offset: skip,
-          limit: size,
-        })) as Project[];
-      }
+      projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+        offset: skip,
+        limit: size,
+      })) as Project[];
 
       const result = paginate(projects, page, size, skip, length);
 

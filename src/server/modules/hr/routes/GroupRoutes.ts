@@ -32,7 +32,6 @@ export class GroupRoutes extends BaseRoutes<Group> {
    * @param page: queryParam to specify page the client want
    * @param size: queryParam to specify the size of one page
    * @returns the created group id
-   * @param query of type string used to do the search
    */
   @GET
   @Path('getOrganizationGroup/:organizationId')
