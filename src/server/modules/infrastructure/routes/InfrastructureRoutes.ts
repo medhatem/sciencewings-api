@@ -107,6 +107,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    * @param page displayed page
    * @param size number of item to display in one page
    * @param query of type string used to do the search
+   * @param query of type string used to do the search
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')

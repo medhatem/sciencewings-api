@@ -31,7 +31,7 @@ export class Project extends BaseModel<Project> {
   id: number;
 
   @Property()
-  title: string;
+  title!: string;
 
   @Unique()
   @Property()
