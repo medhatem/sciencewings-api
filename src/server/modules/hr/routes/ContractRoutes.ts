@@ -29,6 +29,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
    * @param userId of user id
    * @param page: queryParam to specify page the client want
    * @param size: queryParam to specify the size of one page
+   * @param query of type string used to do the search
    */
   @GET
   @Path('/:orgId/:userId')
@@ -42,8 +43,15 @@ export class ContractRoutes extends BaseRoutes<Contract> {
     @PathParam('userId') userId: number,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
   ): Promise<AllContractsBaseDTO> {
-    const result = await this.contractService.getAllMemberContracts(orgId, userId, page || null, size || null);
+    const result = await this.contractService.getAllMemberContracts(
+      orgId,
+      userId,
+      page || null,
+      size || null,
+      query || null,
+    );
 
     if (result?.pagination)
       return new AllContractsBaseDTO({

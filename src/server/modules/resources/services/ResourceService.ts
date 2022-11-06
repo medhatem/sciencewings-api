@@ -87,6 +87,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     organizationId: number,
     page?: number,
     size?: number,
+    query?: string,
   ): Promise<ResourcesList> {
     if (!organizationId) {
       throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
@@ -103,10 +104,21 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     if (page | size) {
       const skip = page * size;
-      resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
-        offset: skip,
-        limit: size,
-      })) as Resource[];
+      if (query) {
+        resources = (await this.dao.getByCriteria(
+          { organization, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.ALL,
+          {
+            offset: skip,
+            limit: size,
+          },
+        )) as Resource[];
+      } else {
+        resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        })) as Resource[];
+      }
 
       const { data, pagination } = paginate(resources, page, size, skip, length);
       const result: ResourcesList = {
