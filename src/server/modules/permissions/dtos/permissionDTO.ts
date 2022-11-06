@@ -10,13 +10,13 @@ export class permissionDTO extends BaseBodyDTO {
   id?: number;
 
   @JsonProperty()
-  name?: string;
+  name!: string;
 
   @JsonProperty()
-  module?: string;
+  module!: string;
 
   @JsonProperty()
-  operation?: string;
+  operation!: string;
 }
 @JsonObject()
 @unique

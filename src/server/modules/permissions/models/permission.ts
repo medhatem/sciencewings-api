@@ -16,7 +16,7 @@ export class Permission extends BaseModel<Permission> {
   @PrimaryKey()
   id?: number;
 
-  @Property()
+  @Property({ unique: true })
   name!: string;
 
   @Property()
@@ -24,7 +24,4 @@ export class Permission extends BaseModel<Permission> {
 
   @Property()
   operationDB!: string;
-
-  //   @Property()
-  //   operationKC!: string;
 }

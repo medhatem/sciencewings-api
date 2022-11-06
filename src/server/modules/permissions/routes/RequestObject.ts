@@ -19,11 +19,11 @@ export class createPermissionRO {
 @unique
 export class updatePermissionRO {
   @JsonProperty()
-  name?: string;
+  name!: string;
 
   @JsonProperty()
-  module?: string;
+  module!: string;
 
   @JsonProperty()
-  operationDB?: string;
+  operationDB!: string;
 }
