@@ -289,20 +289,20 @@ export class KeycloakUtil {
   /**
    *
    * map a Kc realm role to a KC group
-   * @param currentGroupId  keycloak Group
-   *  @param currentRole  keycloak role
+   * @param groupId  keycloak Group
+   *  @param role  keycloak role
    */
-  async groupRoleMap(currentGroupId: string, currentRole: RoleRepresentation): Promise<any> {
+  async groupRoleMap(groupId: string, role: RoleRepresentation): Promise<any> {
     return await (
       await this.keycloak.getAdminClient()
     ).groups.addRealmRoleMappings({
-      id: currentGroupId!,
+      id: groupId!,
 
       // at least id and name should appear
       roles: [
         {
-          id: currentRole.id!,
-          name: currentRole.name!,
+          id: role.id!,
+          name: role.name!,
         },
       ],
     });
@@ -311,9 +311,9 @@ export class KeycloakUtil {
    *
    * map a Kc realm role to a KC user
    * @param userId  keycloak User id
-   * @param currentRole  keycloak role
+   * @param role  keycloak role
    */
-  async uu(userId: string, currentRole: RoleRepresentation): Promise<any> {
+  async userRoleMap(userId: string, role: RoleRepresentation): Promise<any> {
     return await (
       await this.keycloak.getAdminClient()
     ).users.addRealmRoleMappings({
@@ -322,8 +322,8 @@ export class KeycloakUtil {
       // at least id and name should appear
       roles: [
         {
-          id: currentRole.id!,
-          name: currentRole.name!,
+          id: role.id!,
+          name: role.name!,
         },
       ],
     });
