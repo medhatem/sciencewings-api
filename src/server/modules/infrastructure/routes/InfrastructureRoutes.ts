@@ -106,6 +106,8 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    * @param orgId: organization id
    * @param page displayed page
    * @param size number of item to display in one page
+   * @param query of type string used to do the search
+   * @param query of type string used to do the search
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
@@ -117,11 +119,13 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     @PathParam('orgId') orgId: number,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
   ): Promise<InfrastructureListRequestDTO> {
     const result = await this.InfrastructureService.getAllInfrastructuresOfAgivenOrganization(
       orgId,
       page || null,
       size || null,
+      query || null,
     );
 
     if (result.pagination)

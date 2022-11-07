@@ -19,7 +19,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { JobState, Job } from '@/modules/hr/models/Job';
 import { ValidationError } from '@/Exceptions/ValidationError';
-import { paginate } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { ContractsList } from '@/types/types';
 
 @provideSingleton(IContractService)
@@ -51,6 +51,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     userId: number,
     page?: number,
     size?: number,
+    query?: string,
   ): Promise<ContractsList> {
     const organization = await this.origaniaztionService.get(orgId);
     if (!organization) {
@@ -72,14 +73,29 @@ export class ContractService extends BaseService<Contract> implements IContractS
 
     const length = await this.dao.count({ member });
 
-    let contracts;
+    let contracts: Contract[] = [];
     if (page | size) {
       const skip = page * size;
-      contracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
-        populate: ['job', 'supervisor'] as never,
-        offset: skip,
-        limit: size,
-      })) as Contract[];
+      if (query) {
+        const jobs = (await this.jobService.getByCriteria(
+          { organization, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.ALL,
+        )) as Job[];
+        await applyToAll(jobs, async (job) => {
+          const contract = (await this.dao.getByCriteria({ member, job }, FETCH_STRATEGY.SINGLE, {
+            populate: ['job', 'supervisor'] as never,
+            offset: skip,
+            limit: size,
+          })) as Contract;
+          contracts.push(contract);
+        });
+      } else {
+        contracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
+          populate: ['job', 'supervisor'] as never,
+          offset: skip,
+          limit: size,
+        })) as Contract[];
+      }
 
       const { data, pagination } = paginate(contracts, page, size, skip, length);
       const result: ContractsList = {
