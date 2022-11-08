@@ -16,28 +16,28 @@ export class UserInviteToOrgRO {
 @unique
 export class UserRO {
   @JsonProperty()
-  email: string;
+  email?: string;
 
   @JsonProperty()
-  firstname: string;
+  firstname?: string;
 
   @JsonProperty()
-  lastname: string;
+  lastname?: string;
 
   @JsonProperty()
-  addresses: Array<AddressRO>;
+  addresses?: Array<AddressRO>;
 
   @JsonProperty()
-  phones: Array<PhoneRO>;
+  phones?: Array<PhoneRO>;
 
   @JsonProperty()
-  dateofbirth: Date;
+  dateofbirth?: Date;
 
   @JsonProperty()
   signature?: string;
 
   @JsonProperty()
-  keycloakId: string;
+  keycloakId?: string;
 
   @JsonProperty()
   actionId?: number;

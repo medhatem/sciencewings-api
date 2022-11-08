@@ -126,14 +126,14 @@ export class UserRoutes extends BaseRoutes<User> {
    * @param payload: User object
    */
   @PUT
-  @Path('updateUserDetail')
+  @Path('updateUserDetail/:userId')
   @Security()
   @LoggerStorage()
   @Response<CreatedUserDTO>(204, 'User updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async updateUserDetails(payload: UserRO, @ContextRequest request: UserRequest): Promise<CreatedUserDTO> {
-    const result = await this.userService.updateUserDetails(payload, request.userId);
+  public async updateUserDetails(payload: UserRO, @PathParam('userId') userId: number): Promise<CreatedUserDTO> {
+    const result = await this.userService.updateUserDetails(payload, userId);
 
     return new CreatedUserDTO({
       body: {

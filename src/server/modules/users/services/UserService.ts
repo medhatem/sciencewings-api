@@ -19,6 +19,7 @@ import { validate } from '@/decorators/validate';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { ConflictError } from '@/Exceptions/ConflictError';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
@@ -39,28 +40,33 @@ export class UserService extends BaseService<User> implements IUserService {
 
   @log()
   async updateUserDetails(payload: UserRO, userId: number): Promise<number> {
-    const userDetail = this.wrapEntity(this.dao.model, {
-      email: payload.email,
-      firstname: payload.firstname,
-      lastname: payload.lastname,
-      addresses: payload.addresses,
-      phones: payload.phones,
-      dateofbirth: payload.dateofbirth,
-      signature: payload.signature,
-      actionId: payload.actionId,
-      share: payload.share,
-    });
     const authedUser = await this.dao.get(userId);
     if (!authedUser) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` }, friendly: false });
     }
 
-    const user: User = {
-      ...authedUser,
-      ...userDetail,
+    const userDetail = this.wrapEntity(authedUser, {
+      email: payload.email || authedUser.email,
+      firstname: payload.firstname || authedUser.firstname,
+      lastname: payload.lastname || authedUser.lastname,
+      addresses: payload.addresses || authedUser.address,
+      phones: payload.phones || authedUser.phones,
+      dateofbirth: payload.dateofbirth || authedUser.dateofbirth,
+      signature: payload.signature || authedUser.signature,
+      actionId: payload.actionId || authedUser.actionId,
+      share: payload.share || authedUser.share,
+    });
+
+    const keycloakUserDetail: UserRepresentation = {
+      firstName: payload.firstname || authedUser.firstname,
+      lastName: payload.lastname || authedUser.lastname,
+      email: payload.email || authedUser.email,
+      emailVerified: true,
     };
 
-    await this.dao.update(user);
+    await this.keycloakUtils.updateKcUser(authedUser.keycloakId, keycloakUserDetail);
+
+    await this.dao.update(userDetail);
 
     return userId;
   }
