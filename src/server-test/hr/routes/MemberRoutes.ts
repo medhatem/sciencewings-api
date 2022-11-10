@@ -73,6 +73,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: UserInviteToOrgRO = {
       organizationId: 1,
       email: 'test',
+      role: 'regular',
     };
     test('Should fail on throw error', async () => {
       mockMethodWithResult(
