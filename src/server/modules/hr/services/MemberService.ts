@@ -1,4 +1,4 @@
-import { Member, MembershipStatus, MemberTypeEnum } from '@/modules/hr/models/Member';
+import { Member, MembershipStatus } from '@/modules/hr/models/Member';
 import { User, userStatus } from '@/modules/users/models/User';
 import { container, provideSingleton } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
@@ -80,7 +80,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       status: userStatus.INVITATION_PENDING,
       membership: MembershipStatus.PENDING,
       joinDate: new Date(),
-      memberType: MemberTypeEnum.REGULAR,
+      role: payload.role,
     });
     wrappedMember.user = user;
     wrappedMember.organization = existingOrg.id;

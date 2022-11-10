@@ -14,7 +14,7 @@ export const MemberSchema = Joi.object({
   user: Joi.number(),
   parent: Joi.number(),
   coach: Joi.number(),
-  memberType: Joi.string(),
+  role: Joi.string(),
   identificationId: Joi.string(),
   studyField: Joi.string(),
   emergencyContact: Joi.string(),
@@ -36,5 +36,6 @@ export const UpdateMemberSchema = MemberSchema.keys({
 
 export const InviteMemberSchema = MemberSchema.keys({
   email: Joi.string().email().required(),
+  role: Joi.string().required(),
   organizationId: Joi.number().required(),
 });

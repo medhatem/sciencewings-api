@@ -96,6 +96,9 @@ export class UserInviteToOrgRO {
   organizationId: number;
 
   @JsonProperty()
+  role: string;
+
+  @JsonProperty()
   email: string;
 }
 @JsonObject()

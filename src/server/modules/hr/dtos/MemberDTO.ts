@@ -45,7 +45,7 @@ export class MemberDTO extends BaseBodyDTO {
   workEmail: string;
 
   @JsonProperty()
-  memberType: string;
+  role: string;
 }
 
 @JsonObject()

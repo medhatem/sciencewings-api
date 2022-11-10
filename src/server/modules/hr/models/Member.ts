@@ -118,7 +118,7 @@ export class Member extends BaseModel<Member> {
   coach?: Member;
 
   @Property()
-  memberType!: MemberTypeEnum;
+  role!: MemberTypeEnum;
 
   @Property({ columnType: 'date', nullable: true })
   birthday?: Date;
