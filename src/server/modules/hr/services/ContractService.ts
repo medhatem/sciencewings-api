@@ -186,7 +186,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     job.contracts.add(createdContract);
     await this.jobService.update(job);
 
-    //should create ck permissions that are related to the created organization
+    //TODO should create ck permissions that are related to the created organization
     return createdContract.id;
   }
 
