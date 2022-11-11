@@ -16,7 +16,7 @@ export class UserInviteToOrgRO {
 @unique
 export class UserRO {
   @JsonProperty()
-  email?: string;
+  email: string;
 
   @JsonProperty()
   firstname?: string;
@@ -37,7 +37,7 @@ export class UserRO {
   signature?: string;
 
   @JsonProperty()
-  keycloakId?: string;
+  keycloakId: string;
 
   @JsonProperty()
   actionId?: number;
