@@ -84,7 +84,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stubKeyclockInstanceWithBaseService([]);
       mockMethodWithResult(organizationService, 'get', [orgId], Promise.resolve(null));
       try {
-        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId, role: 'regular' });
+        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId, role: ['regular'] });
         expect.fail('Unexpected success');
       } catch (error) {
         expect(error.message).to.equal('ORG.NON_EXISTANT_DATA {{org}}');
@@ -99,7 +99,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'create', [], Promise.reject(new Error('Failed')));
 
       try {
-        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId, role: 'regular' });
+        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId, role: ['regular'] });
         expect.fail('Unexpected success');
       } catch (error) {
         expect(error.message).to.equal('Failed');
@@ -128,7 +128,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         .withArgs({ user: 1, organization: orgId })
         .returns(Promise.resolve({ firstname: '', lastname: '' }));
 
-      const result = await memberService.inviteUserByEmail({ email, organizationId: orgId, role: 'regular' });
+      const result = await memberService.inviteUserByEmail({ email, organizationId: orgId, role: ['regular'] });
 
       expect(result.user).to.equal(1);
       expect(result.organization).to.equal(orgId);
