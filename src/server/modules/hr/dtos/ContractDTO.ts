@@ -5,6 +5,7 @@ import { JobLevel, ContractTypes } from '@/modules/hr/models/Contract';
 import { beforeDeserialize } from '@/utils/utilities';
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { JobBaseBodyGetDTO } from '@/modules/hr/dtos//JobDTO';
+import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 @JsonObject()
 @unique
@@ -64,6 +65,9 @@ export class ContractGetBodyDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<ContracBaseBodyDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 @JsonObject()
 @unique

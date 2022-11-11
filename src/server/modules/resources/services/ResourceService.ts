@@ -50,9 +50,10 @@ import { NotFoundError, ValidationError } from '@/Exceptions';
 import { StatusCases } from '@/modules/resources/models/ResourceStatus';
 import { Member } from '@/modules/hr/models/Member';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
 import { User } from '@/modules/users/models/User';
+import { ResourcesList } from '@/types/types';
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -82,26 +83,56 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
    * @return list of the resources that match the criteria
    */
   @log()
-  public async getResourcesOfAGivenOrganizationById(organizationId: number): Promise<Resource[]> {
+  public async getResourcesOfAGivenOrganizationById(
+    organizationId: number,
+    page?: number,
+    size?: number,
+    query?: string,
+  ): Promise<ResourcesList> {
     if (!organizationId) {
       throw new ValidationError('required {{field}}', { variables: { field: 'id' }, friendly: true });
     }
 
-    {
-      const fetchedOrganization = await this.organizationService.get(organizationId);
-      if (!fetchedOrganization) {
-        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
-      }
+    const organization = await this.organizationService.get(organizationId);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${organizationId}` } });
     }
 
-    const resources = await this.dao.getByCriteria(
-      {
-        organization: organizationId,
-      },
-      FETCH_STRATEGY.ALL,
-      { refresh: true },
-    );
-    return resources as Resource[];
+    const length = await this.dao.count({ organization });
+
+    let resources;
+
+    if (page | size) {
+      const skip = page * size;
+      if (query) {
+        resources = (await this.dao.getByCriteria(
+          { organization, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.ALL,
+          {
+            offset: skip,
+            limit: size,
+          },
+        )) as Resource[];
+      } else {
+        resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        })) as Resource[];
+      }
+
+      const { data, pagination } = paginate(resources, page, size, skip, length);
+      const result: ResourcesList = {
+        data,
+        pagination,
+      };
+      return result;
+    }
+
+    resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Resource[];
+    const result: ResourcesList = {
+      data: resources,
+    };
+    return result;
   }
 
   @log()
@@ -176,6 +207,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     await wrappedResource.calendar.init();
     wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
+    //TODO should create the ck permissions related to the created resource
     return createdResource.id;
   }
 
@@ -362,9 +394,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     }
     const resourceValue = fetchedResource;
 
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+
     const resource = this.wrapEntity(resourceValue, {
       ...resourceValue,
-      settings: { ...resourceValue.settings, ...payload },
+      settings: { ...fetchedResourceSettings, ...payload },
     });
 
     const updatedResourceResult = await this.dao.update(resource);
@@ -385,9 +419,12 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
     }
 
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+
+    console.log('fetchedResource.settings=== ', fetchedResource.settings);
     const resource = this.wrapEntity(fetchedResource, {
       ...fetchedResource,
-      settings: { ...fetchedResource.settings, ...payload },
+      settings: { ...fetchedResourceSettings, ...payload },
     });
 
     const updatedResourceResult = await this.dao.update(resource);

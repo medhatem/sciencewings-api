@@ -1,4 +1,4 @@
-import { NotFoundError, Unauthorized } from '@/Exceptions';
+import { NotFoundError } from '@/Exceptions';
 import { container, provideSingleton } from '@/di/index';
 
 import { BadRequest } from '@/Exceptions/BadRequestError';
@@ -46,26 +46,18 @@ export class Security {
       return true; // the user is an admin which means he does have access to the given resource
     }
 
-    if (!groupMemberships.includes(`/${groupById.name}/${GROUP_PREFIX}-members`)) {
-      //substring to remove the prefix-  aka org- from the group's name
-      throw new Unauthorized('KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}', {
-        variables: { user: `${tokenInformation.name}`, org: `${groupById.name.substring(3)}` },
-      });
-    }
-    // only keep groups and get rid of the organizations
-    const subGroups = groupById.subGroups.filter((sub) => sub.name.startsWith(GROUP_PREFIX));
     let doesUserHaveAccess = false;
-
-    for (const sub of subGroups) {
-      for (const role of sub.realmRoles) {
-        if (permissions.includes(role)) {
-          // break of the loop as soon as we find one matching role
-          // this would mean that the user does have access to the route/resource
-          doesUserHaveAccess = true;
-          break;
-        }
+    const userPermissions = tokenInformation.roles;
+    for (let permission of permissions) {
+      permission = permission.replace('{orgId}', currentOrganizationId);
+      if (userPermissions.includes(permission)) {
+        // break of the loop as soon as we find one matching role
+        // this would mean that the user does have access to the route/resource
+        doesUserHaveAccess = true;
+        break;
       }
     }
+
     return doesUserHaveAccess;
   }
 }

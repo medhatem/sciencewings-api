@@ -33,13 +33,16 @@ import { IOrganizationSettingsService } from '@/modules/organizations/interfaces
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { InternalServerError, NotFoundError } from '@/Exceptions';
-
 import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { userStatus } from '@/modules/users/models/User';
 import { IGroupService } from '@/modules/hr';
+import { paginate } from '@/utils/utilities';
+import { MembersList } from '@/types/types';
+import { Permission } from '@/modules/permissions/models/permission';
+import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -57,6 +60,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public emailService: Email,
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
+    public permissionService: IPermissionService,
   ) {
     super(dao);
     //this.infraService = infraService;
@@ -70,7 +74,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
    **/
   @log()
   public async getOrganizationById(id: number): Promise<Organization> {
-    const organization = await this.dao.get(id, { populate: ['labels', 'phone', 'address'] as never });
+    const organization = await this.dao.get(id, { populate: ['labels', 'phone', 'addresses'] as never });
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` }, friendly: true });
     }
@@ -239,6 +243,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
     defaultInfrastructure.responsible = responsable;
     defaultInfrastructure.organization = organization;
     await this.infraService.create(defaultInfrastructure);
+
+    // create the necessary CK Permissions
+    const BDPermissions = (await this.permissionService.getByCriteria(
+      { module: 'organization', operationDB: 'create' },
+      FETCH_STRATEGY.ALL,
+    )) as Permission[];
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
+        const currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${permission.name}`);
+        this.keycloakUtils.groupRoleMap(adminGroup, currentRole);
+      }
+    }
+
     return organization.id;
   }
 
@@ -309,6 +327,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         });
       }
     }
+
     return orgId;
   }
 
@@ -366,20 +385,87 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return newAddress.id;
   }
 
+  /**
+   * add new address to organization
+   * @param orgId organization id
+   * @param statusFilter Filter used to fetch organization
+   * @param page
+   * @param size
+   */
   @log()
-  public async getMembers(orgId: number, statusFilter?: string): Promise<Member[]> {
-    const existingOrg = await this.dao.get(orgId);
-    if (!existingOrg) {
+  public async getMembers(
+    orgId: number,
+    statusFilter?: string,
+    page?: number,
+    size?: number,
+    query?: string,
+  ): Promise<MembersList> {
+    const organization = await this.dao.get(orgId);
+    if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
     }
-
-    if (!statusFilter) {
-      if (!existingOrg.members.isInitialized()) await existingOrg.members.init();
-      return existingOrg.members.toArray().map((el: any) => ({ ...el }));
+    const length = await organization.members.loadCount(true);
+    let members;
+    if (statusFilter) {
+      if (page | size) {
+        const skip = (page - 1) * size;
+        if (query) {
+          members = await this.memberService.getByCriteria(
+            { organization, name: { $like: '%' + query + '%' }, status: statusFilter },
+            FETCH_STRATEGY.ALL,
+            {
+              offset: skip,
+              limit: size,
+            },
+          );
+        } else {
+          members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL, {
+            offset: skip,
+            limit: size,
+          });
+        }
+        const { data, pagination } = paginate(members, page, size, skip, length);
+        const result: MembersList = {
+          data,
+          pagination,
+        };
+        return result;
+      }
+      members = await this.memberService.getByCriteria({ organization, status: statusFilter }, FETCH_STRATEGY.ALL);
+      const result: MembersList = {
+        data: members,
+      };
+      return result;
     } else {
-      const status = statusFilter.split(',');
-      const members = await existingOrg.members.init({ where: { membership: status as any } as any });
-      return members.toArray().map((member: any) => ({ ...member }));
+      if (page | size) {
+        const skip = page * size;
+        if (query) {
+          members = await this.memberService.getByCriteria(
+            { organization, name: { $like: '%' + query + '%' } },
+            FETCH_STRATEGY.ALL,
+            {
+              offset: skip,
+              limit: size,
+            },
+          );
+        } else {
+          members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+            offset: skip,
+            limit: size,
+          });
+        }
+        const { data, pagination } = paginate(members, page, size, skip, length);
+        const result: MembersList = {
+          data,
+          pagination,
+        };
+        return result;
+      }
+      members = await this.memberService.getByCriteria({ organization }, FETCH_STRATEGY.ALL);
+      const result: MembersList = {
+        data: members,
+      };
+      return result;
     }
   }
 
@@ -406,6 +492,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
     await this.dao.remove(fetchedorganization);
+
+    //clean the org permision
+    const BDPermissions = (await this.permissionService.getByCriteria(
+      { module: 'organization', operationDB: 'create' },
+      FETCH_STRATEGY.ALL,
+    )) as Permission[];
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.deleteRealmRole(`${fetchedorganization.kcid}-${permission.name}`);
+      }
+    }
+
     return organizationId;
   }
   /* Get all the settings of an organization ,

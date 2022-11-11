@@ -7,15 +7,20 @@ import {
   UpdateProjectRO,
 } from '@/modules/projects/routes/RequestObject';
 import { ProjectMember } from '@/modules/projects/models/ProjectMember';
-import { ProjectList } from '@/types/types';
+import { ProjectsPaginatedList } from '@/types/types';
 
 export abstract class IProjectService extends IBaseService<any> {
   createProject: (userId: number, payload: ProjectRO) => Promise<number>;
   updateProject: (payload: UpdateProjectRO, projetcId: number) => Promise<number>;
-  getOrganizationProjects: (id: number) => Promise<Project[]>;
+  getOrganizationProjects: (id: number, page?: number, limit?: number) => Promise<Project[]>;
   getOrganizationProjectById: (id: number) => Promise<Project>;
   addMembersToProject: (payload: ProjectMemberRo, id: number) => Promise<ProjectMember[]>;
-  getALLProjectParticipants: (id: number) => Promise<ProjectMember[]>;
+  getALLProjectParticipants: (id: number, page?: number, limit?: number) => Promise<ProjectMember[]>;
   updateProjectParticipant: (projectId: number, payload: UpdateProjectParticipantRO) => Promise<ProjectMember>;
-  getAllOrganizationProjectsList: (id: number) => Promise<ProjectList[]>;
+  getAllOrganizationProjectsList: (
+    id: number,
+    page?: number,
+    size?: number,
+    query?: string,
+  ) => Promise<ProjectsPaginatedList>;
 }

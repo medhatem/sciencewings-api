@@ -21,10 +21,10 @@ import { NotFoundError, ValidationError } from '@/Exceptions';
 import { IProjectMemberService } from '@/modules/projects/interfaces/IProjectMemberInterfaces';
 import { RolesList, ProjectMemberStatus, ProjectMember } from '@/modules/projects/models/ProjectMember';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { applyToAll } from '@/utils/utilities';
+import { applyToAll, paginate } from '@/utils/utilities';
 import { Member } from '@/modules/hr/models/Member';
 import { ConflictError } from '@/Exceptions/ConflictError';
-import { ProjectList } from '@/types/types';
+import { ProjectList, ProjectsPaginatedList } from '@/types/types';
 
 @provideSingleton(IProjectService)
 export class ProjectService extends BaseService<Project> implements IProjectService {
@@ -49,13 +49,21 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    * @param id of organization
    */
   @log()
-  public async getOrganizationProjects(id: number): Promise<Project[]> {
+  public async getOrganizationProjects(id: number, page?: number, limit?: number): Promise<Project[]> {
     const organization = await this.organizationService.getByCriteria({ id }, FETCH_STRATEGY.SINGLE);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
     }
+    let skip;
+    if (page) {
+      skip = (page - 1) * limit;
+    }
+
     const fetchedProjects = (await this.dao.getByCriteria<FETCH_STRATEGY.ALL>({ organization }, FETCH_STRATEGY.ALL, {
       populate: ['members'] as never,
+      refresh: true,
+      offset: skip,
+      limit: limit || 10,
     })) as Project[];
     fetchedProjects.map(async (project) => {
       await project.members.init();
@@ -245,13 +253,20 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    * @returns
    */
   @log()
-  public async getALLProjectParticipants(id: number): Promise<ProjectMember[]> {
+  public async getALLProjectParticipants(id: number, page?: number, limit?: number): Promise<ProjectMember[]> {
     const project = await this.dao.get(id);
     if (!project) {
       throw new NotFoundError('PROJECT.NON_EXISTANT {{project}}', { variables: { project: `${id}` } });
     }
+
+    let skip;
+    if (page) {
+      skip = (page - 1) * limit;
+    }
     const projectParticipants = await this.projectMemberService.getByCriteria({ project }, FETCH_STRATEGY.ALL, {
       refresh: true,
+      offset: skip,
+      limit: limit || 10,
     });
     return projectParticipants;
   }
@@ -301,20 +316,9 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
     const updatedParticipant = await this.update(wrappedParticipant);
     return updatedParticipant;
   }
-  /**
-   * fetch project and project Member and return
-   * name, starting date, number of participants from project table
-   * Responsable of the project from the projectMember table
-   * @param id org id
-   * @returns
-   */
+
   @log()
-  public async getAllOrganizationProjectsList(id: number): Promise<ProjectList[]> {
-    const organization = await this.organizationService.get(id);
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
-    }
-    const fetchedProjects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
+  public async prepareProjectsList(fetchedProjects: Project[]): Promise<ProjectList[]> {
     const projectList: any[] = [];
     let responsable;
     await applyToAll(fetchedProjects, async (project) => {
@@ -337,5 +341,66 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
       });
     });
     return projectList;
+  }
+
+  /**
+   * fetch project and project Member and return
+   * name, starting date, number of participants from project table
+   * Responsable of the project from the projectMember table
+   * @param id org id
+   * @returns
+   */
+  @log()
+  public async getAllOrganizationProjectsList(
+    id: number,
+    page?: number,
+    size?: number,
+    query?: string,
+  ): Promise<ProjectsPaginatedList> {
+    const organization = await this.organizationService.get(id);
+    if (!organization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` } });
+    }
+
+    const length = await this.dao.count({ organization });
+
+    let projects;
+
+    if (page | size) {
+      const skip = page * size;
+      if (query) {
+        projects = (await this.dao.getByCriteria(
+          { organization, title: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.ALL,
+          {
+            offset: skip,
+            limit: size,
+          },
+        )) as Project[];
+      } else {
+        projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+          offset: skip,
+          limit: size,
+        })) as Project[];
+      }
+
+      const result = paginate(projects, page, size, skip, length);
+
+      const paginatedDataList = await this.prepareProjectsList(result.data);
+
+      const paginatedResult: ProjectsPaginatedList = {
+        data: paginatedDataList,
+        pagination: result.pagination,
+      };
+      return paginatedResult;
+    }
+
+    projects = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Project[];
+
+    projects = this.prepareProjectsList(projects);
+    const result: ProjectsPaginatedList = {
+      data: projects,
+    };
+    return result;
   }
 }
