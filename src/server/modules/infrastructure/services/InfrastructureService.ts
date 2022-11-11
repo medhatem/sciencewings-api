@@ -141,6 +141,8 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
     wrappedInfustructure.parent = fetchedParent;
 
     const createdInfustructure = await this.create(wrappedInfustructure);
+
+    //TODO should create the ck permission's related to the created infrastructure .
     return createdInfustructure.id;
   }
 

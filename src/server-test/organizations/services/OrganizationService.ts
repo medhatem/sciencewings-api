@@ -26,6 +26,7 @@ import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
+import { PermissionService } from '@/modules/permissions/services/PermissionService';
 
 import Sinon = require('sinon');
 const { suite, test } = intern.getPlugin('interface.tdd');
@@ -42,6 +43,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
   let infraService: SinonStubbedInstance<InfrastructureService>;
+  let permissionService: SinonStubbedInstance<PermissionService>;
+
   // let memberService: SinonStubbedInstance<IMemberService>;
 
   function stubKeyclockInstanceWithBaseService(users: any) {
@@ -87,6 +90,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     labelService = createStubInstance(OrganizationLabelService);
     keycloakUtil = createStubInstance(KeycloakUtil);
     infraService = createStubInstance(InfrastructureService);
+    permissionService = createStubInstance(PermissionService);
     infraService.wrapEntity = (() => {
       return {};
     }) as any;
@@ -114,6 +118,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           emailService,
           Keycloak.getInstance(),
           keycloakUtil,
+          permissionService,
         ),
       );
   });

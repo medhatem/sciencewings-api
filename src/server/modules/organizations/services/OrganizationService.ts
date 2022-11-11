@@ -41,6 +41,8 @@ import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInf
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
+import { Permission } from '@/modules/permissions/models/permission';
+import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -57,6 +59,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public emailService: Email,
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
+    public permissionService: IPermissionService,
   ) {
     super(dao);
     //this.infraService = infraService;
@@ -225,6 +228,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
     defaultInfrastructure.responsible = responsable;
     defaultInfrastructure.organization = organization;
     await this.infraService.create(defaultInfrastructure);
+
+    // create the necessary CK Permissions
+    const BDPermissions = (await this.permissionService.getByCriteria(
+      { module: 'organization', operationDB: 'create' },
+      FETCH_STRATEGY.ALL,
+    )) as Permission[];
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
+        const currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${permission.name}`);
+        this.keycloakUtils.groupRoleMap(adminGroup, currentRole);
+      }
+    }
 
     return organization.id;
   }
@@ -461,6 +477,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
     await this.dao.remove(fetchedorganization);
+
+    //clean the org permision
+    const BDPermissions = (await this.permissionService.getByCriteria(
+      { module: 'organization', operationDB: 'create' },
+      FETCH_STRATEGY.ALL,
+    )) as Permission[];
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.deleteRealmRole(`${fetchedorganization.kcid}-${permission.name}`);
+      }
+    }
 
     return organizationId;
   }
