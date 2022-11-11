@@ -14,7 +14,7 @@ export class MemberEvent {
       user,
       active: true,
       organization,
-      role: [MemberTypeEnum.ADMIN],
+      role: MemberTypeEnum.ADMIN,
       membership: MembershipStatus.ACCEPTED,
       status: userStatus.ACTIVE,
       joinDate: new Date(),
