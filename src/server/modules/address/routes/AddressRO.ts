@@ -5,6 +5,9 @@ import { AddressType } from '@/modules/address/models/Address';
 @JsonObject()
 export class AddressRO {
   @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
   country: string;
 
   @JsonProperty()

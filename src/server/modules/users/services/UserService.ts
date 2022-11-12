@@ -49,12 +49,30 @@ export class UserService extends BaseService<User> implements IUserService {
       email: payload.email || authedUser.email,
       firstname: payload.firstname || authedUser.firstname,
       lastname: payload.lastname || authedUser.lastname,
-      addresses: payload.addresses || authedUser.address,
-      phones: payload.phones || authedUser.phones,
       dateofbirth: payload.dateofbirth || authedUser.dateofbirth,
       signature: payload.signature || authedUser.signature,
       actionId: payload.actionId || authedUser.actionId,
       share: payload.share || authedUser.share,
+    });
+
+    await payload.addresses.map(async (address) => {
+      const updatedAddress = await this.addressService.get(address.id);
+      await this.addressService.update(
+        this.wrapEntity(updatedAddress, {
+          ...updatedAddress,
+          ...address,
+        }),
+      );
+    });
+
+    await payload.phones.map(async (phone) => {
+      const updatedPhone = await this.phoneService.get(phone.id);
+      await this.phoneService.update(
+        this.wrapEntity(updatedPhone, {
+          ...updatedPhone,
+          ...phone,
+        }),
+      );
     });
 
     const keycloakUserDetail: UserRepresentation = {
