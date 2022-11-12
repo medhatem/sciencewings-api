@@ -23,7 +23,6 @@ export class UserDTO extends BaseBodyDTO {
 
   @JsonProperty({
     type: PhoneRO,
-    name: 'phone',
     beforeDeserialize,
   })
   phones: Array<PhoneRO>;
@@ -34,6 +33,9 @@ export class UserDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   addresses: Array<AddressDTO>;
+
+  @JsonProperty()
+  dateofbirth: string;
 
   @JsonProperty()
   keycloakId: string;

@@ -197,6 +197,9 @@ export class UserService extends BaseService<User> implements IUserService {
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload}` } });
     }
+    user.address.init();
+    user.phones.init();
+
     return user;
   }
 

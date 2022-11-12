@@ -155,7 +155,7 @@ export class UserRoutes extends BaseRoutes<User> {
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getUserByKeycloakId(@ContextRequest request: UserRequest): Promise<UserGetDTO> {
     const result = await this.userService.getUserByKeycloakId(request.keycloakUser.sub);
-
+    console.log('result== ', result);
     return new UserGetDTO({ body: { data: [...([result] || [])], statusCode: 200 } });
   }
 
