@@ -1,4 +1,4 @@
-import { Member } from '@/modules/hr/models/Member';
+import { Member, MembershipStatus, MemberTypeEnum } from '@/modules/hr/models/Member';
 import { container, provideSingleton, lazyInject } from '@/di/index';
 import { BaseService } from '@/modules/base/services/BaseService';
 import {
@@ -27,8 +27,6 @@ import { CreateOrganizationPhoneSchema } from '@/modules/phones/schemas/PhoneSch
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 import { Keycloak } from '@/sdks/keycloak';
-import { MemberEvent } from '@/modules/hr/events/MemberEvent';
-import { GroupEvent } from '@/modules/hr/events/GroupEvent';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
 import { AddressType } from '@/modules/address/models/Address';
 import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
@@ -39,13 +37,18 @@ import { AccountNumberVisibilty, OrganizationSettings } from '@/modules/organiza
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { userStatus } from '@/modules/users/models/User';
+import { IGroupService } from '@/modules/hr';
 import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
+import { Permission } from '@/modules/permissions/models/permission';
+import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
   @lazyInject(IInfrastructureService) public infraService: IInfrastructureService;
   @lazyInject(IMemberService) public memberService: IMemberService;
+  @lazyInject(IGroupService) public groupService: IGroupService;
 
   constructor(
     public dao: OrganizationDao,
@@ -57,6 +60,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     public emailService: Email,
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
+    public permissionService: IPermissionService,
   ) {
     super(dao);
     //this.infraService = infraService;
@@ -171,16 +175,30 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.settings = organizationSetting;
       organization = await this.create(wrappedOrganization);
 
-      const memberEvent = new MemberEvent();
-      await memberEvent.createMember(user, organization);
+      const DBAdminGroup = await this.groupService.create({
+        organization,
+        kcid: adminGroup,
+        name: `${grpPrifix}admin`,
+      });
 
-      const groupEvent = new GroupEvent();
-      // create the admin and member groups in the db
-      // add the owner as a member to the organization
-      await Promise.all([
-        groupEvent.createGroup(adminGroup, organization, `${grpPrifix}admin`),
-        groupEvent.createGroup(membersGroup, organization, `${grpPrifix}member`),
-      ]);
+      await this.groupService.create({
+        organization,
+        kcid: membersGroup,
+        name: `${grpPrifix}member`,
+      });
+
+      await this.memberService.create({
+        name: user.firstname + ' ' + user.lastname,
+        user,
+        active: true,
+        organization,
+        memberType: MemberTypeEnum.ADMIN,
+        membership: MembershipStatus.ACCEPTED,
+        status: userStatus.ACTIVE,
+        joinDate: new Date(),
+        workEmail: user.email,
+        group: DBAdminGroup.id,
+      });
     } catch (error) {
       await Promise.all<any>(
         [
@@ -225,6 +243,19 @@ export class OrganizationService extends BaseService<Organization> implements IO
     defaultInfrastructure.responsible = responsable;
     defaultInfrastructure.organization = organization;
     await this.infraService.create(defaultInfrastructure);
+
+    // create the necessary CK Permissions
+    const BDPermissions = (await this.permissionService.getByCriteria(
+      { module: 'organization', operationDB: 'create' },
+      FETCH_STRATEGY.ALL,
+    )) as Permission[];
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
+        const currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${permission.name}`);
+        this.keycloakUtils.groupRoleMap(adminGroup, currentRole);
+      }
+    }
 
     return organization.id;
   }
@@ -461,6 +492,17 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.keycloakUtils.deleteGroup(fetchedorganization.kcid);
 
     await this.dao.remove(fetchedorganization);
+
+    //clean the org permision
+    const BDPermissions = (await this.permissionService.getByCriteria(
+      { module: 'organization', operationDB: 'create' },
+      FETCH_STRATEGY.ALL,
+    )) as Permission[];
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.deleteRealmRole(`${fetchedorganization.kcid}-${permission.name}`);
+      }
+    }
 
     return organizationId;
   }
