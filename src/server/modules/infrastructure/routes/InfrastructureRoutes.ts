@@ -35,7 +35,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @POST
   @Path('create')
-  @Security()
+  @Security(['admin', '{orgId}-create-infrastructure'])
   @LoggerStorage()
   @Response<infrastructureGetDTO>(204, 'infrastructure created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -75,7 +75,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('getAll/:orgId')
-  @Security()
+  @Security(['admin', '{orgId}-view-organization-infras'])
   @LoggerStorage()
   @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -111,7 +111,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
-  @Security()
+  @Security(['admin', '{orgId}-view-organization-infras'])
   @LoggerStorage()
   @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -133,10 +133,9 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
     else {
-      const test = new InfrastructureListRequestDTO({
+      return new InfrastructureListRequestDTO({
         body: { data: result.data, statusCode: 200 },
       });
-      return test;
     }
   }
 

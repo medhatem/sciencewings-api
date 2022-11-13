@@ -207,6 +207,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     await wrappedResource.calendar.init();
     wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
+    //TODO should create the ck permissions related to the created resource
     return createdResource.id;
   }
 
@@ -393,9 +394,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     }
     const resourceValue = fetchedResource;
 
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+
     const resource = this.wrapEntity(resourceValue, {
       ...resourceValue,
-      settings: { ...resourceValue.settings, ...payload },
+      settings: { ...fetchedResourceSettings, ...payload },
     });
 
     const updatedResourceResult = await this.dao.update(resource);
@@ -416,9 +419,12 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
     }
 
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+
+    console.log('fetchedResource.settings=== ', fetchedResource.settings);
     const resource = this.wrapEntity(fetchedResource, {
       ...fetchedResource,
-      settings: { ...fetchedResource.settings, ...payload },
+      settings: { ...fetchedResourceSettings, ...payload },
     });
 
     const updatedResourceResult = await this.dao.update(resource);
