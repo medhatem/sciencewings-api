@@ -249,11 +249,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       { module: 'organization', operationDB: 'create' },
       FETCH_STRATEGY.ALL,
     )) as Permission[];
-    let i = 0;
     let currentRole;
     if (BDPermissions) {
       for (const permission of BDPermissions) {
-        i = i + 1;
         await this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
         currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${permission.name}`);
         this.keycloakUtils.groupRoleMap(adminGroup, currentRole);
