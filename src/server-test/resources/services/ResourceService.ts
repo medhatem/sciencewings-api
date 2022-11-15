@@ -30,6 +30,8 @@ import { UserService } from '@/modules/users/services/UserService';
 import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
+import { PermissionService } from '@/modules/permissions/services/PermissionService';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -46,6 +48,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let resourceStatusHistoryService: SinonStubbedInstance<ResourceStatusHistoryService>;
   let resourceStatusService: SinonStubbedInstance<ResourceStatusService>;
   let infrastructureService: SinonStubbedInstance<InfrastructureService>;
+  let permissionService: SinonStubbedInstance<PermissionService>;
+  let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
 
   beforeEach(() => {
     createStubInstance(Configuration);
@@ -60,6 +64,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     resourceStatusHistoryService = createStubInstance(ResourceStatusHistoryService);
     resourceStatusService = createStubInstance(ResourceStatusService);
     infrastructureService = createStubInstance(InfrastructureService);
+    permissionService = createStubInstance(PermissionService);
+    keycloakUtil = createStubInstance(KeycloakUtil);
 
     const mockedContainer = stub(container, 'get');
     mockedContainer.withArgs(Configuration).returns({
@@ -87,6 +93,8 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           resourceStatusHistoryService,
           resourceStatusService,
           infrastructureService,
+          keycloakUtil,
+          permissionService,
         ),
       );
   });
