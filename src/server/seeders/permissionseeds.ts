@@ -1,4 +1,5 @@
 export const permissionSeeds = [
+  //organization permissions
   { name: 'create-contract', module: 'organization', operationDB: 'create' },
   { name: 'invite-to-organization', module: 'organization', operationDB: 'create' },
   { name: 'create-infrastructure', module: 'organization', operationDB: 'create' },
@@ -8,5 +9,20 @@ export const permissionSeeds = [
   { name: 'delete-organization', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-members', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-settings', module: 'organization', operationDB: 'create' },
+  { name: 'admin', module: 'organization', operationDB: 'create' },
   { name: 'create-resource', module: 'organization', operationDB: 'create' },
+  { name: 'view-organization-resources', module: 'organization', operationDB: 'create' },
+  // resource permissions
+  { name: 'update-resource', module: 'resource', operationDB: 'create' },
+  { name: 'update-resource-settings', module: 'resource', operationDB: 'create' },
+  { name: 'view-resource-settings', module: 'resource', operationDB: 'create' },
+  { name: 'create-resource-reservation-rate', module: 'resource', operationDB: 'create' },
+  { name: 'update-resource-reservation', module: 'resource', operationDB: 'create' },
+  { name: 'update-resource-reservation', module: 'resource', operationDB: 'create' },
+  { name: 'update-resource-properties', module: 'resource', operationDB: 'create' },
+  { name: 'view-resource-settings', module: 'resource', operationDB: 'create' },
+  { name: 'view-resource-managers', module: 'resource', operationDB: 'create' },
+  { name: 'create-resource-reservation', module: 'resource', operationDB: 'create' },
+  { name: 'delete-resource-manager', module: 'resource', operationDB: 'create' },
+  { name: 'update-resource-managers', module: 'resource', operationDB: 'create' },
 ];

@@ -54,6 +54,10 @@ import { applyToAll, paginate } from '@/utils/utilities';
 import { IInfrastructureService, Infrastructure } from '@/modules/infrastructure';
 import { User } from '@/modules/users/models/User';
 import { ResourcesList } from '@/types/types';
+import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { Permission } from '@/modules/permissions/models/permission';
+
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
@@ -68,6 +72,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public resourceStatusHistoryService: IResourceStatusHistoryService,
     public resourceStatusService: IResourceStatusService,
     public infrastructureService: IInfrastructureService,
+    public keycloakUtils: KeycloakUtil,
+    public permissionService: IPermissionService,
   ) {
     super(dao);
   }
@@ -207,7 +213,20 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     await wrappedResource.calendar.init();
     wrappedResource.calendar.add(calendar);
     await this.update(createdResource);
-    //TODO should create the ck permissions related to the created resource
+    // create the ck permissions related to the created resource
+    const BDPermissions = (await this.permissionService.getByCriteria(
+      { module: 'resource', operationDB: 'create' },
+      FETCH_STRATEGY.ALL,
+    )) as Permission[];
+    if (BDPermissions) {
+      for (const permission of BDPermissions) {
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}-${createdResource.id}`);
+        const currentRole = await this.keycloakUtils.findRoleByName(
+          `${organization.kcid}-${permission.name}-${createdResource.id}`,
+        );
+        this.keycloakUtils.groupRoleMap(organization.adminGroupkcid, currentRole);
+      }
+    }
     return createdResource.id;
   }
 
