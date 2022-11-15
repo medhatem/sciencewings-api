@@ -25,4 +25,5 @@ export const permissionSeeds = [
   { name: 'create-resource-reservation', module: 'resource', operationDB: 'create' },
   { name: 'delete-resource-manager', module: 'resource', operationDB: 'create' },
   { name: 'update-resource-managers', module: 'resource', operationDB: 'create' },
+  { name: 'view-resource-EventsByRange', module: 'resource', operationDB: 'create' },
 ];

@@ -382,7 +382,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @GET
   @Path('getEventsByRange/:resourceId')
-  @Security(['admin', '{orgId}-view-resource-managers-{resId}'])
+  @Security(['admin', '{orgId}-view-resource-EventsByRange-{resId}'])
   @LoggerStorage()
   @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
