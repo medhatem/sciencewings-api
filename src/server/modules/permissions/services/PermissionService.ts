@@ -21,7 +21,6 @@ export class PermissionService extends BaseService<Permission> implements IPermi
    */
   @log()
   public async getAllPermissions(): Promise<Permission[]> {
-    console.log('inside service');
     const permissions = await this.dao.getAll();
     return permissions;
   }
