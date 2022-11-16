@@ -17,6 +17,15 @@ export class PermissionService extends BaseService<Permission> implements IPermi
   }
 
   /**
+   * get all permission from the database
+   */
+  @log()
+  public async getAllPermissions(): Promise<Permission[]> {
+    const permissions = await this.dao.getAll();
+    return permissions;
+  }
+
+  /**
    *  create a permission in the database
    * @param payload Should contain the permission data
    */
