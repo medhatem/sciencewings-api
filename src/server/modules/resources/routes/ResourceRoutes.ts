@@ -55,7 +55,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @POST
   @Path('create')
-  @Security(['admin', '{orgId}-create-resource'])
+  @Security(['{orgId}-create-resource'])
   @LoggerStorage()
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -75,7 +75,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('update/:id')
-  @Security(['admin', '{orgId}-update-resource-{resId}'])
+  @Security(['{orgId}-update-resource-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -95,7 +95,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @GET
   @Path('getOgranizationResourcesById/:organizationId')
-  @Security(['admin', '{orgId}-view-organization-resources'])
+  @Security(['{orgId}-view-organization-resources'])
   @LoggerStorage()
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -133,7 +133,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/reservation/general/:resourceId')
-  @Security(['admin', '{orgId}-update-resource-settings-{resId}'])
+  @Security(['{orgId}-update-resource-settings-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -157,7 +157,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/general/status/:resourceId')
-  @Security(['admin', '{orgId}-update-resource-settings-{resId}'])
+  @Security(['{orgId}-update-resource-settings-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -181,7 +181,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/reservation/unit/:resourceId')
-  @Security(['admin', '{orgId}-update-resource-settings-{resId}'])
+  @Security(['{orgId}-update-resource-settings-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation unit settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -204,7 +204,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/general/visibility/:resourceId')
-  @Security(['admin', '{orgId}-update-resource-settings-{resId}'])
+  @Security(['{orgId}-update-resource-settings-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -226,7 +226,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @GET
   @Path('settings/reservation/rate/:resourceId')
-  @Security(['admin', '{orgId}-view-resource-settings-{resId}'])
+  @Security(['{orgId}-view-resource-settings-{resId}'])
   @Response<ResourceRateBodyDTO>(201, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -247,7 +247,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @POST
   @Path('settings/reservation/rate/:resourceId')
-  @Security(['admin', '{orgId}-create-resource-reservation-rate-{resId}'])
+  @Security(['{orgId}-create-resource-reservation-rate-{resId}'])
   @Response<CreateResourceDTO>(201, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -271,7 +271,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/reservation/rate/:resourceRateId')
-  @Security(['admin', '{orgId}-update-resource-reservation-{resId}'])
+  @Security(['{orgId}-update-resource-reservation-{resId}'])
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -295,7 +295,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/reservation/time_restriction/:resourceId')
-  @Security(['admin', '{orgId}-update-resource-reservation-{resId}'])
+  @Security(['{orgId}-update-resource-reservation-{resId}'])
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -319,7 +319,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/reservation/visibility/:resourceId')
-  @Security(['admin', '{orgId}-update-resource-reservation-{resId}'])
+  @Security(['{orgId}-update-resource-reservation-{resId}'])
   @Response<UpdateResourceBodyDTO>(204, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -342,7 +342,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path('settings/general/properties/:resourceId')
-  @Security(['admin', '{orgId}-update-resource-properties-{resId}'])
+  @Security(['{orgId}-update-resource-properties-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -364,7 +364,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @GET
   @Path('settings/:resourceId')
-  @Security(['admin', '{orgId}-view-resource-settings-{resId}'])
+  @Security(['{orgId}-view-resource-settings-{resId}'])
   @LoggerStorage()
   @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -382,7 +382,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @GET
   @Path('getEventsByRange/:resourceId')
-  @Security(['admin', '{orgId}-view-resource-EventsByRange-{resId}'])
+  @Security(['{orgId}-view-resource-EventsByRange-{resId}'])
   @LoggerStorage()
   @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -405,7 +405,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @POST
   @Path('createReservation/:resourceId')
-  @Security(['admin', '{orgId}-create-resource-reservation-{resId}'])
+  @Security(['{orgId}-create-resource-reservation-{resId}'])
   @LoggerStorage()
   @Response<GetResourceSettingsBodyDTO>(204, 'Resource reservation general settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -423,7 +423,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @DELETE
   @Path('managers/:resourceId/:managerId')
-  @Security(['admin', '{orgId}-delete-resource-manager-{resId}'])
+  @Security(['{orgId}-delete-resource-manager-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -443,7 +443,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @PUT
   @Path(':resourceId/managers/:managerId')
-  @Security(['admin', '{orgId}-update-resource-managers-{resId}'])
+  @Security(['{orgId}-update-resource-managers-{resId}'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')

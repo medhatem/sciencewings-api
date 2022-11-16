@@ -9,7 +9,6 @@ export const permissionSeeds = [
   { name: 'delete-organization', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-members', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-settings', module: 'organization', operationDB: 'create' },
-  { name: 'admin', module: 'organization', operationDB: 'create' },
   { name: 'create-resource', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-resources', module: 'organization', operationDB: 'create' },
   // resource permissions
