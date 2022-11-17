@@ -88,7 +88,7 @@ export class Member extends BaseModel<Member> {
   public Infrastructures? = new Collection<Infrastructure>(this);
 
   @Property({ nullable: true })
-  name?: string;
+  name!: string;
 
   @Property({ nullable: true })
   active?: boolean;

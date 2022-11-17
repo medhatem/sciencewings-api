@@ -19,6 +19,8 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 import { JobState, Job } from '@/modules/hr/models/Job';
 import { ValidationError } from '@/Exceptions/ValidationError';
+import { applyToAll, paginate } from '@/utils/utilities';
+import { ContractsList } from '@/types/types';
 
 @provideSingleton(IContractService)
 export class ContractService extends BaseService<Contract> implements IContractService {
@@ -44,7 +46,13 @@ export class ContractService extends BaseService<Contract> implements IContractS
    * @param userId of user id
    */
   @log()
-  public async getAllMemberContracts(orgId: number, userId: number): Promise<Contract[]> {
+  public async getAllMemberContracts(
+    orgId: number,
+    userId: number,
+    page?: number,
+    size?: number,
+    query?: string,
+  ): Promise<ContractsList> {
     const organization = await this.origaniaztionService.get(orgId);
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
@@ -62,10 +70,49 @@ export class ContractService extends BaseService<Contract> implements IContractS
     if (!member) {
       throw new NotFoundError('MEMBER.NON_EXISTANT {{member}}', { variables: { member: `${userId}` } });
     }
-    const fetchedContracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
+
+    const length = await this.dao.count({ member });
+
+    let contracts: Contract[] = [];
+    if (page | size) {
+      const skip = page * size;
+      if (query) {
+        const jobs = (await this.jobService.getByCriteria(
+          { organization, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.ALL,
+        )) as Job[];
+        await applyToAll(jobs, async (job) => {
+          const contract = (await this.dao.getByCriteria({ member, job }, FETCH_STRATEGY.SINGLE, {
+            populate: ['job', 'supervisor'] as never,
+            offset: skip,
+            limit: size,
+          })) as Contract;
+          contracts.push(contract);
+        });
+      } else {
+        contracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
+          populate: ['job', 'supervisor'] as never,
+          offset: skip,
+          limit: size,
+        })) as Contract[];
+      }
+
+      const { data, pagination } = paginate(contracts, page, size, skip, length);
+      const result: ContractsList = {
+        data,
+        pagination,
+      };
+      return result;
+    }
+
+    contracts = (await this.dao.getByCriteria({ member }, FETCH_STRATEGY.ALL, {
       populate: ['job', 'supervisor'] as never,
     })) as Contract[];
-    return fetchedContracts;
+
+    const result: ContractsList = {
+      data: contracts,
+    };
+    return result;
   }
 
   /**
@@ -155,6 +202,7 @@ export class ContractService extends BaseService<Contract> implements IContractS
     job.contracts.add(createdContract);
     await this.jobService.update(job);
 
+    //TODO should create ck permissions that are related to the created organization
     return createdContract.id;
   }
 

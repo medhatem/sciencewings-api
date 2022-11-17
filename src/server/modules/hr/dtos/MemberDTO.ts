@@ -20,7 +20,7 @@ export class MemberDTO extends BaseBodyDTO {
       return prop;
     },
   })
-  user?: number;
+  user: number;
 
   @JsonProperty({
     beforeDeserialize: (prop: any) => {
@@ -30,7 +30,7 @@ export class MemberDTO extends BaseBodyDTO {
       return prop;
     },
   })
-  organization?: number;
+  organization: number;
 
   @JsonProperty()
   status: string;
@@ -39,10 +39,13 @@ export class MemberDTO extends BaseBodyDTO {
   active: boolean;
 
   @JsonProperty()
-  joinDate: Date;
+  joinDate: string;
 
   @JsonProperty()
   workEmail: string;
+
+  @JsonProperty()
+  memberType: string;
 }
 
 @JsonObject()

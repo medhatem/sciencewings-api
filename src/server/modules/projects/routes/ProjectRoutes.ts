@@ -2,7 +2,7 @@ import { Project } from '@/modules/projects/models/Project';
 import { container, provideSingleton } from '@/di/index';
 import { Response } from 'typescript-rest-swagger';
 import { LoggerStorage } from '@/decorators/loggerStorage';
-import { ContextRequest, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { ContextRequest, GET, Path, PathParam, POST, PUT, QueryParam, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { CreateProjectDTO, GETProjectDTO, ProjectGetDTO, UpdateProjectDTO } from '@/modules/projects/dtos/projectDTO';
 import {
@@ -42,8 +42,12 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @Response<ProjectGetDTO>(200, 'Projects extract Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOrganizationProjects(@PathParam('id') id: number): Promise<ProjectGetDTO> {
-    const result = await this.projectService.getOrganizationProjects(id);
+  public async getOrganizationProjects(
+    @PathParam('id') id: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('limit') limit?: number,
+  ): Promise<ProjectGetDTO> {
+    const result = await this.projectService.getOrganizationProjects(id, page || null, limit || null);
 
     return new ProjectGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
@@ -131,8 +135,12 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @LoggerStorage()
   @Response<ProjectMemberRequestDTO>(200, 'Return project participants Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getALLProjectParticipants(@PathParam('id') id: number): Promise<ProjectMemberRequestDTO> {
-    const result = await this.projectService.getALLProjectParticipants(id);
+  public async getALLProjectParticipants(
+    @PathParam('id') id: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('limit') limit?: number,
+  ): Promise<ProjectMemberRequestDTO> {
+    const result = await this.projectService.getALLProjectParticipants(id, page || null, limit || null);
 
     return new ProjectMemberRequestDTO({ body: { data: result, statusCode: 200 } });
   }
@@ -160,6 +168,9 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    * this route is for the project list in frontend, it combine between Project and projectMember model
    * and send only the necessary data to print
    * @param id: org id
+   * @param page: queryParam to specify page the client want
+   * @param size: queryParam to specify the size of one page
+   * @param query of type string used to do the search
    */
   @GET
   @Path('getProjectList/:id')
@@ -167,9 +178,26 @@ export class ProjectRoutes extends BaseRoutes<Project> {
   @LoggerStorage()
   @Response<ProjectListRequestDTO>(200, 'Return project list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllOrganizationProjectsList(@PathParam('id') id: number): Promise<ProjectListRequestDTO> {
-    const result = await this.projectService.getAllOrganizationProjectsList(id);
+  public async getAllOrganizationProjectsList(
+    @PathParam('id') id: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
+  ): Promise<ProjectListRequestDTO> {
+    const result = await this.projectService.getAllOrganizationProjectsList(
+      id,
+      page || null,
+      size || null,
+      query || null,
+    );
 
-    return new ProjectListRequestDTO({ body: { data: result, statusCode: 200 } });
+    if (result?.pagination)
+      return new ProjectListRequestDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new ProjectListRequestDTO({
+        body: { data: result.data, statusCode: 200 },
+      });
   }
 }

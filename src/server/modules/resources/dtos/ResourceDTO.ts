@@ -4,6 +4,7 @@ import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
+import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 @JsonObject()
 @unique
@@ -105,6 +106,9 @@ export class GetResourceBodyDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<ResourceDTO>;
+
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()

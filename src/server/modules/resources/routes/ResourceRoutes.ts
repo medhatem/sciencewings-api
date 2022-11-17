@@ -55,7 +55,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    */
   @POST
   @Path('create')
-  @Security()
+  @Security(['admin', '{orgId}-create-resource'])
   @LoggerStorage()
   @Response<CreatedResourceBodyDTO>(201, 'Resource created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -89,6 +89,9 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * retrieve all resources of a given organization by id
    *
    * @param organizationId organization id
+   * @param page displayed page
+   * @param size number of item to display in one page
+   * @param query of type string used to do the search
    */
   @GET
   @Path('getOgranizationResourcesById/:organizationId')
@@ -97,10 +100,27 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOgranizationResources(@PathParam('organizationId') organizationId: number): Promise<ResourceGetDTO> {
-    const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(organizationId);
+  public async getOgranizationResources(
+    @PathParam('organizationId') organizationId: number,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
+    @QueryParam('query') query?: string,
+  ): Promise<ResourceGetDTO> {
+    const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(
+      organizationId,
+      page || null,
+      size || null,
+      query || null,
+    );
 
-    return new ResourceGetDTO({ body: { data: [...(result || [])], statusCode: 200 } });
+    if (result?.pagination)
+      return new ResourceGetDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new ResourceGetDTO({
+        body: { data: result.data, statusCode: 200 },
+      });
   }
 
   /**

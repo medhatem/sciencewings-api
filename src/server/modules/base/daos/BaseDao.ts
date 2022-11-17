@@ -101,4 +101,9 @@ export class BaseDao<T extends BaseModel<T>> {
   @log() async fork(): Promise<EntityManager> {
     return this.entitymanager.fork();
   }
+
+  @log()
+  public async count(criteria: { [key: string]: any }): Promise<number> {
+    return this.repository.count(criteria as any);
+  }
 }
