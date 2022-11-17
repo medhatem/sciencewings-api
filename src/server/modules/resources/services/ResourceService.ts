@@ -220,10 +220,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     )) as Permission[];
     if (BDPermissions) {
       for (const permission of BDPermissions) {
-        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}-${createdResource.id}`);
-        const currentRole = await this.keycloakUtils.findRoleByName(
-          `${organization.kcid}-${permission.name}-${createdResource.id}`,
-        );
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
+        const currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${permission.name}`);
         this.keycloakUtils.groupRoleMap(organization.adminGroupkcid, currentRole);
       }
     }
