@@ -9,4 +9,12 @@ export const permissionSeeds = [
   { name: 'view-organization-members', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-settings', module: 'organization', operationDB: 'create' },
   { name: 'create-resource', module: 'organization', operationDB: 'create' },
+  { name: 'view-organization-infras-list', module: 'organization', operationDB: 'create' },
+  //infras permissions
+  { name: 'update-infrastructure', module: 'organization', operationDB: 'create' },
+  { name: 'delete-infra-resource', module: 'organization', operationDB: 'create' },
+  { name: 'update-infrastructure-resources', module: 'organization', operationDB: 'create' },
+  { name: 'view-infrastructure', module: 'organization', operationDB: 'create' },
+  { name: 'view-infrastructure-resources', module: 'organization', operationDB: 'create' },
+  { name: 'view-infrastructure-subInfras', module: 'organization', operationDB: 'create' },
 ];
