@@ -113,7 +113,6 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     } catch (error) {
       forkedGroupEntityManager.rollback();
       this.keycloakUtils.deleteGroup(createdGroup.kcid);
-      console.log('createdGroup.kcid iiiiiiiiiiiiiiiiiiiiiiid', createdGroup.kcid);
       throw error;
     }
     this.dao.entitymanager.flush();
