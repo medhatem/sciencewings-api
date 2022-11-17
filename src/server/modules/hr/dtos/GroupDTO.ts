@@ -27,7 +27,6 @@ export class GroupBodyDTO extends BaseBodyDTO {
 }
 
 @JsonObject()
-@JsonObject()
 @unique
 class GroupBaseBodyGetDTO extends BaseBodyDTO {
   @JsonProperty()

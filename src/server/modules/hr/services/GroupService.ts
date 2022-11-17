@@ -18,6 +18,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Member } from '../models/Member';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { Organization } from '@/modules/organizations';
 
 @provideSingleton(IGroupService)
 export class GroupService extends BaseService<Group> implements IGroupService {
@@ -60,8 +61,9 @@ export class GroupService extends BaseService<Group> implements IGroupService {
     const forkedGroupEntityManager = await this.dao.fork();
     forkedGroupEntityManager.begin();
     let createdGroup: Group;
+    let organization: Organization;
     try {
-      const organization = await this.organizationService.get(payload.organization);
+      organization = (await this.organizationService.get(payload.organization)) as Organization;
       if (!organization) {
         throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
           variables: { org: `${payload.organization}` },
@@ -110,6 +112,8 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       forkedGroupEntityManager.commit();
     } catch (error) {
       forkedGroupEntityManager.rollback();
+      this.keycloakUtils.deleteGroup(createdGroup.kcid);
+      console.log('createdGroup.kcid iiiiiiiiiiiiiiiiiiiiiiid', createdGroup.kcid);
       throw error;
     }
     this.dao.entitymanager.flush();
