@@ -10,5 +10,5 @@ export const permissionSeeds = [
   { name: 'view-organization-settings', module: 'organization', operationDB: 'create' },
   { name: 'create-resource', module: 'organization', operationDB: 'create' },
   { name: 'getALL-resource-reservations', module: 'organization', operationDB: 'create' },
-  { name: 'create-resource-reservation', module: 'resource', operationDB: 'create' },
+  { name: 'create-resource-reservation', module: 'organization', operationDB: 'create' },
 ];
