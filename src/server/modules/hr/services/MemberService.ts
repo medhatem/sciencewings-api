@@ -80,7 +80,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
       status: userStatus.INVITATION_PENDING,
       membership: MembershipStatus.PENDING,
       joinDate: new Date(),
-      role: payload.role,
+      roles: payload.roles,
     });
     wrappedMember.user = user;
     wrappedMember.organization = existingOrg.id;

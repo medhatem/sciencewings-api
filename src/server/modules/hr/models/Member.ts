@@ -118,7 +118,7 @@ export class Member extends BaseModel<Member> {
   coach?: Member;
 
   @Property()
-  role!: Collection<String>;
+  roles!: Collection<String>;
 
   @Property({ columnType: 'date', nullable: true })
   birthday?: Date;

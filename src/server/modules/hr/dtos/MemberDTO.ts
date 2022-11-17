@@ -8,6 +8,22 @@ import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique
+export class RoleBaseBodyGetDTO extends BaseBodyDTO {
+  @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
+  name?: string;
+
+  @JsonProperty()
+  module?: string;
+
+  @JsonProperty()
+  operationDB?: string;
+}
+
+@JsonObject()
+@unique
 export class MemberDTO extends BaseBodyDTO {
   @JsonProperty()
   name: string;
@@ -44,8 +60,11 @@ export class MemberDTO extends BaseBodyDTO {
   @JsonProperty()
   workEmail: string;
 
-  @JsonProperty()
-  role: string;
+  @JsonProperty({
+    type: RoleBaseBodyGetDTO,
+    beforeDeserialize,
+  })
+  roles: Array<RoleBaseBodyGetDTO>;
 }
 
 @JsonObject()
