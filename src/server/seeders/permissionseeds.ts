@@ -9,6 +9,6 @@ export const permissionSeeds = [
   { name: 'view-organization-members', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-settings', module: 'organization', operationDB: 'create' },
   { name: 'create-resource', module: 'organization', operationDB: 'create' },
-  { name: 'getALL-resource-reservations', module: 'organization', operationDB: 'create' },
+  { name: 'get-all-resource-reservations', module: 'organization', operationDB: 'create' },
   { name: 'create-resource-reservation', module: 'organization', operationDB: 'create' },
 ];
