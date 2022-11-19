@@ -422,7 +422,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * @param managerId id of the manager
    */
   @DELETE
-  @Path('managers/:resourceId/:managerId')
+  @Path(':resourceId/managers/:managerId')
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
