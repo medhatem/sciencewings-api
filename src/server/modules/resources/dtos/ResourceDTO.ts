@@ -5,7 +5,7 @@ import { unique } from '@/decorators/unique';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
-import { MemberDTO } from '@/modules/hr';
+import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 
 @JsonObject()
 @unique
