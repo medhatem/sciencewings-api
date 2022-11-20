@@ -637,7 +637,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     let managers: any[] = [];
     await fetchedResource.managers.init();
     managers = fetchedResource.managers.toArray();
-    console.log('maaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaanagers', managers);
 
     return managers;
   }
