@@ -9,4 +9,5 @@ export const permissionSeeds = [
   { name: 'view-organization-members', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-settings', module: 'organization', operationDB: 'create' },
   { name: 'create-resource', module: 'organization', operationDB: 'create' },
+  { name: 'view-organization-localisation-settings', module: 'organization', operationDB: 'create' },
 ];
