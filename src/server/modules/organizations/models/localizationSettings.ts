@@ -20,18 +20,18 @@ export class localisationSettings extends BaseModel<localisationSettings> {
   @Property({ nullable: true })
   apartement: string;
 
-  @Property({ nullable: true })
+  @Property()
   street: string;
 
-  @Property({ nullable: true })
+  @Property()
   city: string;
 
-  @Property({ nullable: true })
+  @Property()
   country: string;
 
-  @Property({ nullable: true })
+  @Property()
   region: string;
 
-  @Property({ nullable: true })
+  @Property()
   zipCode: string;
 }
