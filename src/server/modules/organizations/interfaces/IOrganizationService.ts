@@ -13,6 +13,7 @@ import { OrganizationSettings } from '@/modules/organizations/models/Organizatio
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { MembersList } from '@/types/types';
+import { localisationSettings } from '../models/localizationSettings';
 
 export abstract class IOrganizationService extends IBaseService<any> {
   getOrganizationById: (organizationId: number) => Promise<Organization>;
@@ -37,4 +38,6 @@ export abstract class IOrganizationService extends IBaseService<any> {
       | OrganizationAccessSettingsRO,
     OrganizationId: number,
   ) => Promise<number>;
+
+  getOrganizationLocalisationSettingsById: (organizationId: number) => Promise<localisationSettings>;
 }

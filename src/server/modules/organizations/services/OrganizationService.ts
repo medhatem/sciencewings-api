@@ -43,6 +43,7 @@ import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { localisationSettings } from '../models/localizationSettings';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -555,5 +556,23 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.organizationSettingsService.update(newSettings);
 
     return organizationId;
+  }
+
+  /* Get localization settings of an organization ,
+   *
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  public async getOrganizationLocalisationSettingsById(organizationId: number): Promise<localisationSettings> {
+    const fetchedOrganization = await this.get(organizationId, { populate: ['localization'] as any });
+
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
+    }
+    return fetchedOrganization.localization;
   }
 }

@@ -30,6 +30,10 @@ import {
   UpdateOrganizationSettingsBodyDTO,
   UpdateOrganizationSettingsDTO,
 } from '@/modules/organizations/dtos/OrganizationSettingsDTO';
+import {
+  GetOrganizationLocalizationSettingsBodyDTO,
+  GetOrganizationLoclisationSettingsDTO,
+} from '../dtos/localisationSettingsDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -301,5 +305,25 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /**
+   * retrieve Organization localisation settings by organization id
+   *
+   * @param organizationId organization id
+   */
+  @GET
+  @Path('localizationSettings/:organizationId')
+  @Security(['admin', '{orgId}-view-organization-localisation-settings'])
+  @LoggerStorage()
+  @Response<GetOrganizationLocalizationSettingsBodyDTO>(200, 'Organization localisation Settings Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getOrganizationLocalisationSettingsById(
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<GetOrganizationLoclisationSettingsDTO> {
+    const result = await this.OrganizationService.getOrganizationLocalisationSettingsById(organizationId);
+
+    return new GetOrganizationLoclisationSettingsDTO({ body: { data: result, statusCode: 200 } });
   }
 }
