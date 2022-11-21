@@ -23,6 +23,7 @@ import { Keycloak } from '@/sdks/keycloak';
 import { BadRequest } from '@/Exceptions/BadRequestError';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 import { applyToAll } from '@/utils/utilities';
+import { Permission } from '@/modules/permissions';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -52,7 +53,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
 
     const existingUser = await this.keycloakUtils.getUsersByEmail(payload.email);
 
-    let user = null;
+    let user: User = null;
     if (existingUser.length > 0) {
       // fetch the existing user
       user = await this.userService.getByCriteria({ email: payload.email }, FETCH_STRATEGY.SINGLE);
@@ -85,12 +86,17 @@ export class MemberService extends BaseService<Member> implements IMemberService
       joinDate: new Date(),
     });
 
-    let permissions;
-    await applyToAll(payload.roles, async (role) => {
-      permissions = await this.permissionService.get(role);
+    const permissions: any = await applyToAll(payload.roles, async (role) => {
+      return (await this.permissionService.get(role)) as Permission;
     });
+    if (permissions) {
+      applyToAll(permissions, async (permission: Permission) => {
+        const currentRole = await this.keycloakUtils.findRoleByName(`${existingOrg.kcid}-${permission.name}`);
+        this.keycloakUtils.userRoleMap(user.keycloakId, currentRole);
+      });
+    }
 
-    wrappedMember.roles = permissions;
+    wrappedMember.roles = permissions.map((p: Permission) => p.name);
     wrappedMember.user = user;
     wrappedMember.organization = existingOrg.id;
 
