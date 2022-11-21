@@ -21,6 +21,8 @@ import { ConflictError } from '@/Exceptions/ConflictError';
 import { Keycloak } from '@/sdks/keycloak';
 
 import { BadRequest } from '@/Exceptions/BadRequestError';
+import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { applyToAll } from '@/utils/utilities';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {
@@ -28,6 +30,7 @@ export class MemberService extends BaseService<Member> implements IMemberService
     public dao: MemberDao,
     public userService: IUserService,
     public organizationService: IOrganizationService,
+    public permissionService: IPermissionService,
     public keycloak: Keycloak,
     public keycloakUtils: KeycloakUtil,
   ) {
@@ -80,8 +83,14 @@ export class MemberService extends BaseService<Member> implements IMemberService
       status: userStatus.INVITATION_PENDING,
       membership: MembershipStatus.PENDING,
       joinDate: new Date(),
-      roles: payload.roles,
     });
+
+    let permissions;
+    await applyToAll(payload.roles, async (role) => {
+      permissions = await this.permissionService.get(role);
+    });
+
+    wrappedMember.roles = permissions;
     wrappedMember.user = user;
     wrappedMember.organization = existingOrg.id;
 
