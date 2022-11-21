@@ -6,6 +6,7 @@ import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
+  OrganizationlocalisationSettingsRO,
   OrganizationMemberSettingsRO,
   OrganizationReservationSettingsRO,
   UpdateOrganizationRO,
@@ -307,6 +308,28 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
   }
 
+  /* Update a organization settings, section localization
+   *
+   * @param payload
+   * @param organizationId is the is of requested resource
+   *
+   */
+  @PUT
+  @Path('settings/localisation/:organizationId')
+  @Security(['admin', '{orgId}-update-organization'])
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization localisation  settings updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateOrganizationsLocalisationSettingsProperties(
+    payload: OrganizationlocalisationSettingsRO,
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
+  }
+
   /**
    * retrieve Organization localisation settings by organization id
    *
@@ -322,7 +345,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async getOrganizationLocalisationSettingsById(
     @PathParam('organizationId') organizationId: number,
   ): Promise<GetOrganizationLoclisationSettingsDTO> {
-    const result = await this.OrganizationService.getOrganizationLocalisationSettingsById(organizationId);
+    const result = await this.OrganizationService.getOrganizationSettingsById(organizationId);
 
     return new GetOrganizationLoclisationSettingsDTO({ body: { data: result, statusCode: 200 } });
   }

@@ -58,6 +58,20 @@ export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
   listResourceToNonMembers: boolean;
   @JsonProperty()
   messageSentToNewMembers: string;
+
+  //localisation settings
+  @JsonProperty()
+  apartement: string;
+  @JsonProperty()
+  street: string;
+  @JsonProperty()
+  city: string;
+  @JsonProperty()
+  country: string;
+  @JsonProperty()
+  region: string;
+  @JsonProperty()
+  zipCode: string;
 }
 
 @JsonObject()

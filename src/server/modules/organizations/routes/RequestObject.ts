@@ -172,3 +172,18 @@ export class OrganizationAccessSettingsRO {
   @JsonProperty()
   messageSentToNewMembers?: string;
 }
+
+export class OrganizationlocalisationSettingsRO {
+  @JsonProperty()
+  apartement?: string;
+  @JsonProperty()
+  street?: string;
+  @JsonProperty()
+  city?: string;
+  @JsonProperty()
+  country?: string;
+  @JsonProperty()
+  region?: string;
+  @JsonProperty()
+  zipCode?: string;
+}

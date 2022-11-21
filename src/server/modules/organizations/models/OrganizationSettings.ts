@@ -74,4 +74,18 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   listResourceToNonMembers = true;
   @Property({ nullable: true, type: StringType })
   messageSentToNewMembers = '';
+
+  //localization Settings
+  @Property({ nullable: true, default: '' })
+  apartement: string;
+  @Property({ default: '' })
+  street: string;
+  @Property({ default: '' })
+  city: string;
+  @Property({ default: '' })
+  country: string;
+  @Property({ default: '' })
+  region: string;
+  @Property({ default: '' })
+  zipCode: string;
 }
