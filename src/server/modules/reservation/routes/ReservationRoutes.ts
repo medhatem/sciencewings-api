@@ -29,7 +29,7 @@ export class ReservationRoutes extends BaseRoutes<Reservation> {
    */
   @GET
   @Path('getEventsByRange/:resourceId')
-  @Security(['{orgId}-get-all-resource-reservations'])
+  @Security(['{orgId}-view-all-resource-reservations'])
   @LoggerStorage()
   @Response<ReservationsDTO>(200, 'reservations fetched successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
