@@ -460,18 +460,18 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
 
   /**
    * get all managers of a given resource
-   * @param id: resource id
+   * @param resourceId: resource id
    */
   @GET
-  @Path('/:id/managers')
+  @Path('/:resourceId/managers')
   @Security()
   @LoggerStorage()
   @Response<resourceManagersRequestDTO>(200, 'Return infrastructure resources ')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getAllRessourcesOfAgivenInfrastructure(
-    @PathParam('id') id: number,
+    @PathParam('resourceId') resourceId: number,
   ): Promise<resourceManagersRequestDTO> {
-    const result = await this.ResourceService.getAllResourceManagers(id);
+    const result = await this.ResourceService.getAllResourceManagers(resourceId);
 
     return new resourceManagersRequestDTO({ body: { data: result, statusCode: 200 } });
   }
