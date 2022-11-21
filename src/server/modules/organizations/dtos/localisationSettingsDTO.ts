@@ -3,6 +3,8 @@ import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { beforeDeserialize } from '@/utils/utilities';
 
+@JsonObject()
+@unique
 export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id?: number;
