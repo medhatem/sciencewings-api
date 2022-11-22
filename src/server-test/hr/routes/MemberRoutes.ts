@@ -76,14 +76,10 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       roles: [1],
     };
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        memberService,
-        'inviteUserByEmail',
-        [{ email: payload.email, organizationId: payload.organizationId }],
-        Promise.reject(new Error('Failed')),
-      );
+      mockMethodWithResult(memberService, 'inviteUserByEmail', [payload], Promise.reject(new Error('Failed')));
       try {
         await memberRoutes.inviteUserToOrganization(payload);
+        expect.fail('unexpected sucess ');
       } catch (error) {
         expect(error.message).to.equal('Failed');
       }
