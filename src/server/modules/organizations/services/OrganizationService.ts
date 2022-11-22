@@ -214,20 +214,16 @@ export class OrganizationService extends BaseService<Organization> implements IO
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
 
-    await Promise.all(
-      payload.addresses.map((address) =>
-        this.addressService.create({
-          city: address.city,
-          apartment: address.apartment,
-          country: address.country,
-          code: address.code,
-          province: address.province,
-          street: address.street,
-          type: AddressType.ORGANIZATION,
-          organization,
-        }),
-      ),
-    );
+    this.addressService.create({
+      city: payload.address.city,
+      apartment: payload.address.apartment,
+      country: payload.address.country,
+      code: payload.address.code,
+      province: payload.address.province,
+      street: payload.address.street,
+      type: AddressType.ORGANIZATION,
+      organization,
+    });
 
     //create a default infastructure
 

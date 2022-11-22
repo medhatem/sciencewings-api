@@ -23,7 +23,7 @@ export class CreateOrganizationRO {
   @JsonProperty({
     type: AddressRO,
   })
-  addresses?: Array<AddressRO>;
+  address?: AddressRO;
 
   @JsonProperty()
   labels: Array<string>;
