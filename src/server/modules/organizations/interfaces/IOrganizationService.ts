@@ -41,7 +41,6 @@ export abstract class IOrganizationService extends IBaseService<any> {
   updateOrganizationLocalisationSettings: (
     payload: OrganizationlocalisationSettingsRO,
     OrganizationId: number,
-    addressId?: number,
   ) => Promise<number>;
   getOrganizationLocalisation: (OrganizationId: number) => Promise<any>;
 }

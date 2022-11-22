@@ -3,7 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
-import { AccountNumberVisibilty } from '@/modules/organizations/models/OrganizationSettings';
+import { AccountNumberVisibilty, timeDisplayMode, weekDay } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
@@ -187,4 +187,8 @@ export class OrganizationlocalisationSettingsRO {
   province?: string;
   @JsonProperty()
   code?: string;
+  @JsonProperty()
+  weekDay?: weekDay;
+  @JsonProperty()
+  timeDisplayMode?: timeDisplayMode;
 }

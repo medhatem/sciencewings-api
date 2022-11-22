@@ -568,7 +568,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
   public async updateOrganizationLocalisationSettings(
     payload: OrganizationlocalisationSettingsRO,
     organizationId: number,
-    addressId?: number,
   ): Promise<number> {
     const fetchedOrganization = await this.dao.get(organizationId);
     if (!fetchedOrganization) {
@@ -577,18 +576,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    console.log('organization adreses  11111111111', fetchedOrganization.address);
-
-    const fetchedAddress = await this.addressService.get(addressId);
-    if (!fetchedAddress) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}');
-    }
-    const newAddress = this.addressService.wrapEntity(fetchedAddress, {
-      fetchedAddress,
+    const organizationAddress = fetchedOrganization.address;
+    const newAddress = this.addressService.wrapEntity(organizationAddress, {
+      organizationAddress,
       ...payload,
     });
 
     await this.addressService.update(newAddress);
+
+    const oldSetting = fetchedOrganization.settings;
+    const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
+      ...oldSetting,
+      ...payload,
+    });
+    await this.organizationSettingsService.update(newSettings);
     return organizationId;
   }
 
