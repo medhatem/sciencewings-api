@@ -1,8 +1,7 @@
-import { Entity, ManyToMany, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Organization } from '@/modules/organizations/models/Organization';
 import { User } from '@/modules/users/models/User';
 
 export enum AddressType {
@@ -43,12 +42,6 @@ export class Address extends BaseModel<Address> {
 
   @Property({ nullable: true })
   apartment?: string;
-
-  @ManyToOne({
-    entity: () => Organization,
-    nullable: true,
-  })
-  organization?: Organization;
 
   @ManyToMany({ entity: () => User, nullable: true })
   user?: User;

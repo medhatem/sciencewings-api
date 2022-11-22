@@ -577,36 +577,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    console.log('organization adreses  11111111111', fetchedOrganization.addresses);
-
-    // if (!addressId) {
-    //   console.log('enteeeeeeeeeeeeeeeeeeeer');
-    //   const fetchedAddress = this.addressService.get(addressId);
-    //   const newAddress = this.addressService.wrapEntity(fetchedAddress, {
-    //     ...fetchedAddress,
-    //     ...payload,
-    //   });
-    //   await this.addressService.update(newAddress);
-    // }
-    // console.log('33333333333333333333');
-    // if (fetchedOrganization.addresses.isInitialized) {
-    //   console.log('444444444444444444444');
-    //   await fetchedOrganization.addresses.init();
-    // }
-    // console.log('5555555555555555');
-    // let fetchedAddresses: any[];
-    // fetchedAddresses = fetchedOrganization.addresses.toArray();
-    // console.log('fetcheeeeeeeeeeeeed adresses', fetchedAddresses);
-    // console.log('666666666666666666');
-    // let oldAdress: Address;
-    // oldAdress = fetchedAddresses[0];
-    // console.log('addddddddddddddress', oldAdress);
-    // const newAddress = this.addressService.wrapEntity(oldAdress, {
-    //   ...oldAdress,
-    //   ...payload,
-    // });
-    // console.log('777777777777777777');
-    // await this.addressService.update(newAddress);
+    console.log('organization adreses  11111111111', fetchedOrganization.address);
 
     const fetchedAddress = await this.addressService.get(addressId);
     if (!fetchedAddress) {
@@ -637,8 +608,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
     }
 
-    await fetchedOrganization.addresses.init();
-
-    return fetchedOrganization.addresses;
+    return fetchedOrganization.address;
   }
 }

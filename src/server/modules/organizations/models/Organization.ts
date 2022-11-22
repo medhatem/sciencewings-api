@@ -63,13 +63,8 @@ export class Organization extends BaseModel<Organization> {
   @Property()
   type!: OrganizationType;
 
-  @OneToMany({
-    entity: () => Address,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
-  })
-  public addresses = new Collection<Address>(this);
+  @OneToOne({ entity: () => Address, nullable: true })
+  address?: Address;
 
   @OneToMany({
     entity: () => OrganizationLabel,
