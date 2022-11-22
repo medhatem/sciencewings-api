@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, ManyToMany, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { BaseModel } from '@/modules/base/models/BaseModel';
@@ -13,6 +13,9 @@ export enum AddressType {
 @provide()
 @Entity()
 export class Address extends BaseModel<Address> {
+  constructor() {
+    super();
+  }
   static getInstance(): Address {
     return container.get(Address);
   }
@@ -21,31 +24,31 @@ export class Address extends BaseModel<Address> {
   id?: number;
 
   @Property()
-  country: string;
+  country?: string;
 
   @Property()
-  province: string;
+  province?: string;
 
   @Property()
-  code: string;
+  code?: string;
 
   @Property()
-  type: AddressType;
+  type?: AddressType;
 
   @Property()
-  city: string;
+  city?: string;
 
   @Property()
-  street: string;
+  street?: string;
 
   @Property({ nullable: true })
   apartment?: string;
 
-  @ManyToMany({
+  @ManyToOne({
     entity: () => Organization,
     nullable: true,
   })
-  organization? = new Collection<Organization>(this);
+  organization?: Organization;
 
   @ManyToMany({ entity: () => User, nullable: true })
   user?: User;

@@ -29,7 +29,7 @@ import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { CreateOrganizationAddressSchema } from '@/modules/address/schemas/AddressSchema';
 import { Keycloak } from '@/sdks/keycloak';
 import { grpPrifix, orgPrifix } from '@/modules/prifixConstants';
-import { Address, AddressType } from '@/modules/address/models/Address';
+import { AddressType } from '@/modules/address/models/Address';
 import { IOrganizationSettingsService } from '@/modules/organizations/interfaces/IOrganizationSettingsService';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { ConflictError } from '@/Exceptions/ConflictError';
@@ -44,6 +44,8 @@ import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { Address } from '@faker-js/faker/address';
+//import { AddressService } from '@/modules/address/services/AddressService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -571,42 +573,62 @@ export class OrganizationService extends BaseService<Organization> implements IO
     addressId?: number,
   ): Promise<number> {
     console.log('11111111111111111111111111111111111111111111111111');
-    const fetchedOrganization = (await this.get(organizationId)) as Organization;
+    const fetchedOrganization = await this.dao.get(organizationId);
     if (!fetchedOrganization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
         variables: { org: `${organizationId}` },
         friendly: false,
       });
     }
+    console.log('organization adreses  11111111111', fetchedOrganization.addresses);
+
     console.log('222222222222222222222222');
-    if (!addressId) {
-      console.log('enteeeeeeeeeeeeeeeeeeeer');
-      const fetchedAddress = this.addressService.get(addressId);
-      const newAddress = this.addressService.wrapEntity(fetchedAddress, {
-        ...fetchedAddress,
-        ...payload,
-      });
-      await this.addressService.update(newAddress);
+    // if (!addressId) {
+    //   console.log('enteeeeeeeeeeeeeeeeeeeer');
+    //   const fetchedAddress = this.addressService.get(addressId);
+    //   const newAddress = this.addressService.wrapEntity(fetchedAddress, {
+    //     ...fetchedAddress,
+    //     ...payload,
+    //   });
+    //   await this.addressService.update(newAddress);
+    // }
+    // console.log('33333333333333333333');
+    // if (fetchedOrganization.addresses.isInitialized) {
+    //   console.log('444444444444444444444');
+    //   await fetchedOrganization.addresses.init();
+    // }
+    // console.log('5555555555555555');
+    // let fetchedAddresses: any[];
+    // fetchedAddresses = fetchedOrganization.addresses.toArray();
+    // console.log('fetcheeeeeeeeeeeeed adresses', fetchedAddresses);
+    // console.log('666666666666666666');
+    // let oldAdress: Address;
+    // oldAdress = fetchedAddresses[0];
+    // console.log('addddddddddddddress', oldAdress);
+    // const newAddress = this.addressService.wrapEntity(oldAdress, {
+    //   ...oldAdress,
+    //   ...payload,
+    // });
+    // console.log('777777777777777777');
+    // await this.addressService.update(newAddress);
+
+    const fetchedAddress = await this.addressService.get(addressId);
+    if (!fetchedAddress) {
+      console.log('not fouuuuuuuuuuuuund');
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}');
     }
-    console.log('33333333333333333333');
-    if (fetchedOrganization.addresses.isInitialized) {
-      console.log('444444444444444444444');
-      await fetchedOrganization.addresses.init();
-    }
-    console.log('5555555555555555');
-    let fetchedAddresses: any[];
-    fetchedAddresses = fetchedOrganization.addresses.toArray();
-    console.log('fetcheeeeeeeeeeeeed adresses', fetchedAddresses);
-    console.log('666666666666666666');
-    let oldAdress: Address;
-    oldAdress = fetchedAddresses[0];
-    console.log('addddddddddddddress', oldAdress);
-    const newAddress = this.addressService.wrapEntity(oldAdress, {
-      ...oldAdress,
+    console.log('fetched adreeeeeeeeeeeeeeeess', fetchedAddress);
+    let newAddress: Address;
+    newAddress = this.addressService.wrapEntity(fetchedAddress, {
+      fetchedAddress,
       ...payload,
     });
-    console.log('777777777777777777');
+    console.log('newwwwwwwwwwwwwwwwww', newAddress);
+
     await this.addressService.update(newAddress);
+    console.log('organization adreses 222222', fetchedOrganization.addresses);
+    // fetchedOrganization.addresses = newAddress;
+    // await this.dao.update(fetchedOrganization);
 
     return organizationId;
   }
@@ -626,9 +648,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    if (!fetchedOrganization.addresses.isInitialized) {
-      await fetchedOrganization.addresses.init();
-    }
+
+    await fetchedOrganization.addresses.init();
+
+    console.log('ggggggggggggggggggggg', fetchedOrganization.addresses);
     return fetchedOrganization.addresses;
   }
 }

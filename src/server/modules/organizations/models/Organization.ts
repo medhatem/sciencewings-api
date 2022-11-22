@@ -1,14 +1,4 @@
-import {
-  Collection,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryKey,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address/models/Address';
@@ -73,7 +63,7 @@ export class Organization extends BaseModel<Organization> {
   @Property()
   type!: OrganizationType;
 
-  @ManyToMany({
+  @OneToMany({
     entity: () => Address,
     mappedBy: (entity) => entity.organization,
     lazy: true,

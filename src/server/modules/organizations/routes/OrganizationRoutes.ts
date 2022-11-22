@@ -312,7 +312,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    *
    */
   @PUT
-  @Path('settings/localisation/:organizationId/:addressId?')
+  @Path('settings/localisation/:organizationId/:addressId')
   @Security(['admin', '{orgId}-update-organization'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization localisation  settings updated Successfully')
@@ -321,7 +321,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async updateOrganizationsLocalisationSettingsProperties(
     payload: OrganizationlocalisationSettingsRO,
     @PathParam('organizationId') organizationId: number,
-    @PathParam('organizationId') addressId?: number,
+    @PathParam('addressId') addressId: number,
   ): Promise<UpdateOrganizationSettingsDTO> {
     const result = await this.OrganizationService.updateOrganizationLocalisationSettings(
       payload,
