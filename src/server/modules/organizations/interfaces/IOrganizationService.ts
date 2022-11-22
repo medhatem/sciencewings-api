@@ -35,8 +35,12 @@ export abstract class IOrganizationService extends IBaseService<any> {
       | OrganizationMemberSettingsRO
       | OrganizationReservationSettingsRO
       | OrganizationInvoicesSettingsRO
-      | OrganizationAccessSettingsRO
-      | OrganizationlocalisationSettingsRO,
+      | OrganizationAccessSettingsRO,
     OrganizationId: number,
+  ) => Promise<number>;
+  updateOrganizationLocalisationSettings: (
+    payload: OrganizationlocalisationSettingsRO,
+    OrganizationId: number,
+    addressId?: number,
   ) => Promise<number>;
 }

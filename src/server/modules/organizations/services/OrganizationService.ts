@@ -525,7 +525,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     return fetchedOrganization.settings;
   }
 
-  /* Update the reservation, invoices, access or localization settings of an organization ,
+  /* Update the reservation, invoices or access settings of an organization ,
    *
    * @param payload
    * @param id of the requested organization
@@ -537,8 +537,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       | OrganizationMemberSettingsRO
       | OrganizationReservationSettingsRO
       | OrganizationInvoicesSettingsRO
-      | OrganizationAccessSettingsRO
-      | OrganizationlocalisationSettingsRO,
+      | OrganizationAccessSettingsRO,
     organizationId: number,
   ): Promise<number> {
     const fetchedOrganization = await this.get(organizationId);
@@ -555,6 +554,49 @@ export class OrganizationService extends BaseService<Organization> implements IO
     });
 
     await this.organizationSettingsService.update(newSettings);
+
+    return organizationId;
+  }
+
+  /* Update localization settings of an organization ,
+   *
+   * @param payload
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  public async updateOrganizationLocalisationSettings(
+    payload: OrganizationlocalisationSettingsRO,
+    organizationId: number,
+    addressId?: number,
+  ): Promise<number> {
+    const fetchedOrganization = (await this.get(organizationId)) as Organization;
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
+    }
+    if (addressId) {
+      const fetchedAddress = this.addressService.get(addressId);
+      const newAddress = this.organizationSettingsService.wrapEntity(fetchedAddress, {
+        ...fetchedAddress,
+        ...payload,
+      });
+      await this.addressService.update(newAddress);
+    }
+    if (!fetchedOrganization.addresses.isInitialized) {
+      await fetchedOrganization.addresses.init();
+    }
+    const fetchedAddresses = fetchedOrganization.addresses.toArray();
+    const oldAdress = fetchedAddresses[1];
+    console.log('addddddddddddddress', oldAdress);
+    const newAddress = this.organizationSettingsService.wrapEntity(oldAdress, {
+      ...oldAdress,
+      ...payload,
+    });
+
+    await this.addressService.update(newAddress);
 
     return organizationId;
   }

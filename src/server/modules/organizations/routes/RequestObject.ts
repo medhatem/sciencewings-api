@@ -175,7 +175,7 @@ export class OrganizationAccessSettingsRO {
 
 export class OrganizationlocalisationSettingsRO {
   @JsonProperty()
-  apartement?: string;
+  apartment?: string;
   @JsonProperty()
   street?: string;
   @JsonProperty()
@@ -183,7 +183,7 @@ export class OrganizationlocalisationSettingsRO {
   @JsonProperty()
   country?: string;
   @JsonProperty()
-  region?: string;
+  province?: string;
   @JsonProperty()
-  zipCode?: string;
+  code?: string;
 }
