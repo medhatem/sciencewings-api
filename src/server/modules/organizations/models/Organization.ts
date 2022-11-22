@@ -64,7 +64,7 @@ export class Organization extends BaseModel<Organization> {
   type!: OrganizationType;
 
   @OneToOne({ entity: () => Address, nullable: true })
-  address?: Address;
+  address: Address;
 
   @OneToMany({
     entity: () => OrganizationLabel,
