@@ -146,17 +146,15 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
       labels: ['x', 'y', 'z'],
       members: [] as any,
-      addresses: [
-        {
-          country: 'Canada',
-          province: 'Ontario',
-          code: '5L8 G9S',
-          type: AddressType.ORGANIZATION,
-          street: '487 Yardley Cres',
-          apartment: '12',
-          city: 'Ontario',
-        },
-      ],
+      address: {
+        country: 'Canada',
+        province: 'Ontario',
+        code: '5L8 G9S',
+        type: AddressType.ORGANIZATION,
+        street: '487 Yardley Cres',
+        apartment: '12',
+        city: 'Ontario',
+      },
     };
 
     test('Should fail on organization already exist', async () => {
