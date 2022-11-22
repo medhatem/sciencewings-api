@@ -19,6 +19,7 @@ import {
   GetResourceSettingsDTO,
   CreatedResourceBodyDTO,
   GetResourceBodyDTO,
+  resourceManagersRequestDTO,
 } from '@/modules/resources/dtos/ResourceDTO';
 import { Resource } from '@/modules/resources/models/Resource';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
@@ -422,7 +423,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * @param managerId id of the manager
    */
   @DELETE
-  @Path('managers/:resourceId/:managerId')
+  @Path(':resourceId/managers/:managerId')
   @Security()
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'resource updated Successfully')
@@ -455,5 +456,23 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     const result = await this.ResourceService.addResourceManager(resourceId, managerId);
 
     return new UpdateResourceDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /**
+   * get all managers of a given resource
+   * @param resourceId: resource id
+   */
+  @GET
+  @Path('/:resourceId/managers')
+  @Security()
+  @LoggerStorage()
+  @Response<resourceManagersRequestDTO>(200, 'Return infrastructure resources ')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllRessourcesOfAgivenInfrastructure(
+    @PathParam('resourceId') resourceId: number,
+  ): Promise<resourceManagersRequestDTO> {
+    const result = await this.ResourceService.getAllResourceManagers(resourceId);
+
+    return new resourceManagersRequestDTO({ body: { data: result, statusCode: 200 } });
   }
 }

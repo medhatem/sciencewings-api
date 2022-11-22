@@ -623,4 +623,21 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     return updatedResourceResult.id;
   }
+
+  @log()
+  public async getAllResourceManagers(resourceId: number): Promise<Member[]> {
+    const fetchedResource = await this.dao.get(resourceId);
+
+    if (!fetchedResource) {
+      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+        variables: { resource: `${resourceId}` },
+      });
+    }
+
+    let managers: any[] = [];
+    await fetchedResource.managers.init();
+    managers = fetchedResource.managers.toArray();
+
+    return managers;
+  }
 }
