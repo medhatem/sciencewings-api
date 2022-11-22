@@ -92,7 +92,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(
         memberService,
         'inviteUserByEmail',
-        [{ email: payload.email, organizationId: payload.organizationId, role: ['regular'] }],
+        [{ email: payload.email, organizationId: payload.organizationId, roles: [1] }],
         1,
       );
       const result = await memberRoutes.inviteUserToOrganization(payload);

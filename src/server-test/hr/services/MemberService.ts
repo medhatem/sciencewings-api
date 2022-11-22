@@ -60,6 +60,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     memberDao = createStubInstance(MemberDao);
     organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
+    permissionService = createStubInstance(PermissionService);
     keycloakUtil = createStubInstance(KeycloakUtil);
 
     containerStub = stub(container, 'get');
@@ -147,6 +148,12 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(BaseService.prototype, 'getByCriteria')
         .withArgs({ user: 1, organization: orgId })
         .returns(Promise.resolve({ firstname: '', lastname: '' }));
+      mockMethodWithResult(
+        permissionService,
+        'get',
+        [1],
+        Promise.resolve({ id: 1, name: 'create-contract', module: 'organization', operationDB: 'create' }),
+      );
 
       const result = await memberService.inviteUserByEmail({ email, organizationId: orgId, roles: [1] });
 
