@@ -130,7 +130,7 @@ export class MemberRO {
   @JsonProperty()
   workLocation?: AddressRO;
   @JsonProperty()
-  role?: MemberTypeEnum;
+  roles?: MemberTypeEnum;
   @JsonProperty()
   addressHome?: AddressRO;
   @JsonProperty()
@@ -207,7 +207,7 @@ export class UpdateMemberRO {
   @JsonProperty()
   workLocation?: AddressRO;
   @JsonProperty()
-  role?: string;
+  roles?: string;
   @JsonProperty()
   identificationId?: string;
   @JsonProperty()

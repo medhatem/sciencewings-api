@@ -14,7 +14,7 @@ export const MemberSchema = Joi.object({
   user: Joi.number(),
   parent: Joi.number(),
   coach: Joi.number(),
-  role: Joi.string(),
+  roles: Joi.string(),
   identificationId: Joi.string(),
   studyField: Joi.string(),
   emergencyContact: Joi.string(),
