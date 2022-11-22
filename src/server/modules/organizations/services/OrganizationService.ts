@@ -45,7 +45,6 @@ import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 import { Address } from '@faker-js/faker/address';
-//import { AddressService } from '@/modules/address/services/AddressService';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -572,7 +571,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     organizationId: number,
     addressId?: number,
   ): Promise<number> {
-    console.log('11111111111111111111111111111111111111111111111111');
     const fetchedOrganization = await this.dao.get(organizationId);
     if (!fetchedOrganization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
@@ -582,7 +580,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     }
     console.log('organization adreses  11111111111', fetchedOrganization.addresses);
 
-    console.log('222222222222222222222222');
     // if (!addressId) {
     //   console.log('enteeeeeeeeeeeeeeeeeeeer');
     //   const fetchedAddress = this.addressService.get(addressId);
@@ -614,22 +611,15 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     const fetchedAddress = await this.addressService.get(addressId);
     if (!fetchedAddress) {
-      console.log('not fouuuuuuuuuuuuund');
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}');
     }
-    console.log('fetched adreeeeeeeeeeeeeeeess', fetchedAddress);
     let newAddress: Address;
     newAddress = this.addressService.wrapEntity(fetchedAddress, {
       fetchedAddress,
       ...payload,
     });
-    console.log('newwwwwwwwwwwwwwwwww', newAddress);
 
     await this.addressService.update(newAddress);
-    console.log('organization adreses 222222', fetchedOrganization.addresses);
-    // fetchedOrganization.addresses = newAddress;
-    // await this.dao.update(fetchedOrganization);
-
     return organizationId;
   }
 
@@ -651,7 +641,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
     await fetchedOrganization.addresses.init();
 
-    console.log('ggggggggggggggggggggg', fetchedOrganization.addresses);
     return fetchedOrganization.addresses;
   }
 }
