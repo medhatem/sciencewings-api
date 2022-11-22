@@ -53,7 +53,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @PUT
   @Path('update/:id')
-  @Security()
+  @Security(['${orgId}-update-infrastructure'])
   @LoggerStorage()
   @Response<UpdateInfrastructureDTO>(204, 'infrastructure updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -75,7 +75,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('getAll/:orgId')
-  @Security(['{orgId}-view-organization-infras'])
+  @Security(['{orgId}-view-organization-infrastructure'])
   @LoggerStorage()
   @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -111,7 +111,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
-  @Security(['{orgId}-view-organization-infras'])
+  @Security(['{orgId}-view-organization-infrastructure-list'])
   @LoggerStorage()
   @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -147,7 +147,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @DELETE
   @Path('/infraResources/:infrastructureId/:resourceId')
-  @Security()
+  @Security(['{orgId}-delete-infrastructure-resource'])
   @LoggerStorage()
   @Response<GetInfrastructureDTO>(204, 'infrastructure updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -168,7 +168,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @POST
   @Path('/infraResources/:infrastructureId/:resourceId')
-  @Security()
+  @Security(['{orgId}-update-infrastructure-resources'])
   @LoggerStorage()
   @Response<GetInfrastructureDTO>(204, 'infrastructure updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -186,7 +186,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('/:id')
-  @Security()
+  @Security(['{orgId}-view-infrastructure'])
   @LoggerStorage()
   @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure ')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -202,7 +202,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('/:id/resources')
-  @Security()
+  @Security(['{orgId}-view-infrastructure-resources'])
   @LoggerStorage()
   @Response<InfrastructureResourcesRequestDTO>(200, 'Return infrastructure resources ')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -220,7 +220,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('/:id/subInfrastructures')
-  @Security()
+  @Security(['{orgId}-view-infrastructure-subInfras'])
   @LoggerStorage()
   @Response<subInfraListRequestDTO>(200, 'Return infrastructure sub infras ')
   @Response<NotFoundError>(404, 'Not Found Error')
