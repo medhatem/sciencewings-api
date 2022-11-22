@@ -44,7 +44,6 @@ import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
-import { Address } from '@faker-js/faker/address';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -613,8 +612,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (!fetchedAddress) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}');
     }
-    let newAddress: Address;
-    newAddress = this.addressService.wrapEntity(fetchedAddress, {
+    const newAddress = this.addressService.wrapEntity(fetchedAddress, {
       fetchedAddress,
       ...payload,
     });

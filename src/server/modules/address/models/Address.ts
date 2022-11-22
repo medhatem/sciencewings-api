@@ -24,22 +24,22 @@ export class Address extends BaseModel<Address> {
   id?: number;
 
   @Property()
-  country?: string;
+  country: string;
 
   @Property()
-  province?: string;
+  province: string;
 
   @Property()
-  code?: string;
+  code: string;
 
   @Property()
-  type?: AddressType;
+  type: AddressType;
 
   @Property()
-  city?: string;
+  city: string;
 
   @Property()
-  street?: string;
+  street: string;
 
   @Property({ nullable: true })
   apartment?: string;

@@ -6,6 +6,20 @@ export enum AccountNumberVisibilty {
   EVERYONE = 'EVERYONE',
   MEMBER = 'MEMBER',
 }
+export enum weekDay {
+  MONDAY = 'Monday',
+  TUESDAY = 'Tuesday',
+  WEDNESDAY = 'Wednesday',
+  THURSDAY = 'Thursday',
+  FRIDAY = 'Friday',
+  SATURDAY = 'Saturday',
+  SUNDAY = 'Sunday',
+}
+export enum timeDisplayMode {
+  DEFAULT = 'EVERYONE',
+  FIRSTMODE = '12 hour (AM/PM)',
+  SECONDMODE = '12 hour (AM/PM)',
+}
 
 @provide()
 @Entity()
@@ -75,17 +89,9 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   @Property({ nullable: true, type: StringType })
   messageSentToNewMembers = '';
 
-  // //localization Settings
-  // @Property({ nullable: true, default: '' })
-  // apartement: string;
-  // @Property({ default: '' })
-  // street: string;
-  // @Property({ default: '' })
-  // city: string;
-  // @Property({ default: '' })
-  // country: string;
-  // @Property({ default: '' })
-  // region: string;
-  // @Property({ default: '' })
-  // zipCode: string;
+  //localization Settings
+  @Property({ nullable: true, default: weekDay.MONDAY })
+  weekDay: weekDay;
+  @Property({ default: timeDisplayMode.DEFAULT })
+  timeDisplayMode: timeDisplayMode;
 }
