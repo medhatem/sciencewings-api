@@ -43,4 +43,5 @@ export abstract class IOrganizationService extends IBaseService<any> {
     OrganizationId: number,
     addressId?: number,
   ) => Promise<number>;
+  getOrganizationLocalisation: (OrganizationId: number) => Promise<any>;
 }

@@ -172,7 +172,8 @@ export class OrganizationAccessSettingsRO {
   @JsonProperty()
   messageSentToNewMembers?: string;
 }
-
+@JsonObject()
+@unique
 export class OrganizationlocalisationSettingsRO {
   @JsonProperty()
   apartment?: string;

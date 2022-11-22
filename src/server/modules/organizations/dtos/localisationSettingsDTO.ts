@@ -7,10 +7,10 @@ import { beforeDeserialize } from '@/utils/utilities';
 @unique
 export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
-  id?: number;
+  id: number;
 
   @JsonProperty()
-  apartement: string;
+  apartment: string;
 
   @JsonProperty()
   street: string;
@@ -22,17 +22,17 @@ export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
   country: string;
 
   @JsonProperty()
-  region: string;
+  province: string;
 
   @JsonProperty()
-  zipCode: string;
+  code: string;
 }
 
 @JsonObject()
 @unique
 export class GetOrganizationLocalizationSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty({ type: OrganizationLocalisationSettingsBodyDTO, beforeDeserialize })
-  data: OrganizationLocalisationSettingsBodyDTO;
+  data: Array<OrganizationLocalisationSettingsBodyDTO>;
 }
 
 @JsonObject()

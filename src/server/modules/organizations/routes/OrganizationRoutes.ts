@@ -347,7 +347,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   public async getOrganizationLocalisationSettingsById(
     @PathParam('organizationId') organizationId: number,
   ): Promise<GetOrganizationLoclisationSettingsDTO> {
-    const result = await this.OrganizationService.getOrganizationSettingsById(organizationId);
+    const result = await this.OrganizationService.getOrganizationLocalisation(organizationId);
 
     return new GetOrganizationLoclisationSettingsDTO({ body: { data: result, statusCode: 200 } });
   }
