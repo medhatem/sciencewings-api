@@ -57,6 +57,7 @@ npm run watch
 npm run swagger-gen
 npm run start-local-containers
 npm run dev
+npm run permission-seed
 ```
 
 1. npm run init to initialize the project.
@@ -64,7 +65,7 @@ npm run dev
 3. npm run watch same as build but stays running and recompiles at each change.
 4. npm run swagger-gen to generate the swagger openapi documentation from the routes ,make sure that the generated file is not empty
 5. npm run start-local-containers to start postgres and keycloak locally
-6. If succesfull open a new terminal and run npm run devto start the server locally
+6. If succesfull open a new terminal and run npm run dev to start the server locally then run npm run permission-seed to fill the permission table
 
 - checkout server health: /health
 - checkout the swagger docs: api/docs/
