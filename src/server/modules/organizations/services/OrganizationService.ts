@@ -604,8 +604,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-    let data: localisationSettingsType;
-    data = {
+    const data: localisationSettingsType = {
       addressId: fetchedOrganization.address.id,
       apartment: fetchedOrganization.address.apartment,
       street: fetchedOrganization.address.street,
