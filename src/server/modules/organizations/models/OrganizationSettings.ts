@@ -16,7 +16,7 @@ export enum weekDay {
   SUNDAY = 'Sunday',
 }
 export enum timeDisplayMode {
-  DEFAULT = 'EVERYONE',
+  DEFAULT = 'use browser default',
   FIRSTMODE = '12 hour (AM/PM)',
   SECONDMODE = '12 hour (AM/PM)',
 }
@@ -92,6 +92,6 @@ export class OrganizationSettings extends BaseModel<OrganizationSettings> {
   //localization Settings
   @Property({ nullable: true, default: weekDay.MONDAY })
   weekDay: weekDay;
-  @Property({ default: timeDisplayMode.DEFAULT })
+  @Property({ nullable: true, default: timeDisplayMode.DEFAULT })
   timeDisplayMode: timeDisplayMode;
 }

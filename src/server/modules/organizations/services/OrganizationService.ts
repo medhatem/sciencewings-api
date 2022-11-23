@@ -44,6 +44,7 @@ import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { localisationSettingsType } from '../organizationtypes';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -173,6 +174,16 @@ export class OrganizationService extends BaseService<Organization> implements IO
       const organizationSetting = await this.organizationSettingsService.create({
         hideAccountNumberWhenMakingReservation: AccountNumberVisibilty.EVERYONE,
       });
+      const address = await this.addressService.create({
+        city: payload.address.city,
+        apartment: payload.address.apartment,
+        country: payload.address.country,
+        code: payload.address.code,
+        province: payload.address.province,
+        street: payload.address.street,
+        type: AddressType.ORGANIZATION,
+      });
+      wrappedOrganization.address = address;
       wrappedOrganization.settings = organizationSetting;
       organization = await this.create(wrappedOrganization);
 
@@ -213,17 +224,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
-
-    this.addressService.create({
-      city: payload.address.city,
-      apartment: payload.address.apartment,
-      country: payload.address.country,
-      code: payload.address.code,
-      province: payload.address.province,
-      street: payload.address.street,
-      type: AddressType.ORGANIZATION,
-      organization,
-    });
 
     //create a default infastructure
 
@@ -604,7 +604,18 @@ export class OrganizationService extends BaseService<Organization> implements IO
         friendly: false,
       });
     }
-
-    return fetchedOrganization.address;
+    let data: localisationSettingsType;
+    data = {
+      addressId: fetchedOrganization.address.id,
+      apartment: fetchedOrganization.address.apartment,
+      street: fetchedOrganization.address.street,
+      city: fetchedOrganization.address.city,
+      country: fetchedOrganization.address.country,
+      province: fetchedOrganization.address.province,
+      code: fetchedOrganization.address.code,
+      weekDay: fetchedOrganization.settings.weekDay,
+      timeDisplayMode: fetchedOrganization.settings.timeDisplayMode,
+    };
+    return data;
   }
 }

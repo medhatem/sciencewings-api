@@ -1,13 +1,13 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { beforeDeserialize } from '@/utils/utilities';
+import { timeDisplayMode, weekDay } from '../models/OrganizationSettings';
 
 @JsonObject()
 @unique
 export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
   @JsonProperty()
-  id: number;
+  addressId: number;
 
   @JsonProperty()
   apartment: string;
@@ -26,13 +26,19 @@ export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
 
   @JsonProperty()
   code: string;
+
+  @JsonProperty()
+  weekDay: weekDay;
+
+  @JsonProperty()
+  timeDisplayMode: timeDisplayMode;
 }
 
 @JsonObject()
 @unique
 export class GetOrganizationLocalizationSettingsBodyDTO extends BaseBodyDTO {
-  @JsonProperty({ type: OrganizationLocalisationSettingsBodyDTO, beforeDeserialize })
-  data: Array<OrganizationLocalisationSettingsBodyDTO>;
+  @JsonProperty()
+  data: OrganizationLocalisationSettingsBodyDTO;
 }
 
 @JsonObject()

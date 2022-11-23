@@ -20,10 +20,8 @@ export class CreateOrganizationRO {
   @JsonProperty()
   type: string;
 
-  @JsonProperty({
-    type: AddressRO,
-  })
-  address?: AddressRO;
+  @JsonProperty()
+  address!: AddressRO;
 
   @JsonProperty()
   labels: Array<string>;
