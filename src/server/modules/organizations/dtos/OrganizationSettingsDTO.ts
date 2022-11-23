@@ -2,7 +2,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { beforeDeserialize } from '@/utils/utilities';
-import { AccountNumberVisibilty } from '@/modules/organizations/models/OrganizationSettings';
+import { AccountNumberVisibilty, timeDisplayMode, weekDay } from '@/modules/organizations/models/OrganizationSettings';
 
 export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
   //Member Settings
@@ -61,17 +61,9 @@ export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
 
   //localisation settings
   @JsonProperty()
-  apartement: string;
+  weekDay: weekDay;
   @JsonProperty()
-  street: string;
-  @JsonProperty()
-  city: string;
-  @JsonProperty()
-  country: string;
-  @JsonProperty()
-  region: string;
-  @JsonProperty()
-  zipCode: string;
+  timeDisplayMode: timeDisplayMode;
 }
 
 @JsonObject()
