@@ -77,7 +77,6 @@ export class GroupRoutes extends BaseRoutes<Group> {
   @Response<InternalServerError>(500, 'Internal Server Error')
   public async createGroup(payload: GroupRO): Promise<GroupDTO> {
     const result = await this.groupService.createGroup(payload);
-
     return new GroupDTO({ body: { id: result, statusCode: 201 } });
   }
 

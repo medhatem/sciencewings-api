@@ -18,6 +18,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Member } from '../models/Member';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
+import { Organization } from '@/modules/organizations';
 import { GroupsList } from '@/types/types';
 
 @provideSingleton(IGroupService)
@@ -110,57 +111,64 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   @log()
   @validate
   public async createGroup(@validateParam(CreateGroupSchema) payload: GroupRO): Promise<number> {
-    const organization = await this.organizationService.get(payload.organization);
-
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
-        variables: { org: `${payload.organization}` },
-        isOperational: true,
-      });
-    }
-    const wrappedGroup = this.wrapEntity(Group.getInstance(), {
-      name: payload.name,
-      active: payload.active,
-      description: payload.description,
-    });
-
-    if (payload.parent) {
-      const fetchedGroup = await this.dao.get(payload.parent);
-      if (!fetchedGroup) {
-        throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${payload.parent}` } });
+    const forkedGroupEntityManager = await this.dao.fork();
+    forkedGroupEntityManager.begin();
+    let createdGroup: Group;
+    let organization: Organization;
+    try {
+      organization = (await this.organizationService.get(payload.organization)) as Organization;
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_{{org}}', {
+          variables: { org: `${payload.organization}` },
+          isOperational: true,
+        });
       }
-      wrappedGroup.parent = fetchedGroup;
-    }
-
-    wrappedGroup.organization = organization;
-
-    const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
-
-    wrappedGroup.kcid = id;
-    const createdGroup = await this.dao.create(wrappedGroup);
-    if (payload.members) {
-      await createdGroup.members.init();
-      await applyToAll(payload.members, async (userId) => {
-        // fetch the user with the memberUserId
-        const user = await this.userService.get(userId);
-        if (!user) {
-          throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
-            variables: { user: `${userId}` },
-            friendly: false,
-          });
-        }
-        // fetch the member with both of the user and org
-        const fetchedMember = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
-
-        if (fetchedMember !== null) {
-          createdGroup.members.add(fetchedMember);
-          await this.keycloakUtils.addMemberToGroup(wrappedGroup.kcid, fetchedMember.user.keycloakId);
-          await this.dao.update(createdGroup);
-        }
-        return fetchedMember;
+      const wrappedGroup = this.wrapEntity(Group.getInstance(), {
+        name: payload.name,
+        active: payload.active,
+        description: payload.description,
       });
-    }
+      if (payload.parent) {
+        const fetchedGroup = await this.dao.get(payload.parent);
+        if (!fetchedGroup) {
+          throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${payload.parent}` } });
+        }
+        wrappedGroup.parent = fetchedGroup;
+      }
+      wrappedGroup.organization = organization;
+      const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
+      wrappedGroup.kcid = id;
+      createdGroup = await this.dao.transactionalCreate(wrappedGroup);
 
+      if (payload.members) {
+        //await createdGroup.members.init();
+        await applyToAll(payload.members, async (userId) => {
+          // fetch the user with the memberUserId
+          const user = await this.userService.get(userId);
+          if (!user) {
+            throw new NotFoundError('USER.NON_EXISTANT_DATA {{user}}', {
+              variables: { user: `${userId}` },
+              friendly: false,
+            });
+          }
+          // fetch the member with both of the user and org
+          const fetchedMember = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+
+          if (fetchedMember !== null) {
+            createdGroup.members.add(fetchedMember);
+            await this.dao.transactionalUpdate(createdGroup);
+            await this.keycloakUtils.addMemberToGroup(wrappedGroup.kcid, fetchedMember.user.keycloakId);
+          }
+          //return fetchedMember;
+        });
+      }
+      forkedGroupEntityManager.commit();
+    } catch (error) {
+      forkedGroupEntityManager.rollback();
+      this.keycloakUtils.deleteGroup(createdGroup.kcid);
+      throw error;
+    }
+    this.dao.entitymanager.flush();
     return createdGroup.id;
   }
 

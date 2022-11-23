@@ -284,6 +284,7 @@ export class KeycloakUtil {
       await this.keycloak.getAdminClient()
     ).roles.findOneByName({
       name: roleName,
+      realm: getConfig('keycloak.clientValidation.realmName'),
     });
   }
   /**
@@ -297,6 +298,7 @@ export class KeycloakUtil {
       await this.keycloak.getAdminClient()
     ).groups.addRealmRoleMappings({
       id: groupId!,
+      realm: getConfig('keycloak.clientValidation.realmName'),
 
       // at least id and name should appear
       roles: [
@@ -318,6 +320,7 @@ export class KeycloakUtil {
       await this.keycloak.getAdminClient()
     ).users.addRealmRoleMappings({
       id: userId!,
+      realm: getConfig('keycloak.clientValidation.realmName'),
 
       // at least id and name should appear
       roles: [
