@@ -43,7 +43,7 @@ export class UserService extends BaseService<User> implements IUserService {
       email: payload.email,
       firstname: payload.firstname,
       lastname: payload.lastname,
-      addresses: payload.addresses,
+      address: payload.address,
       phones: payload.phones,
       dateofbirth: payload.dateofbirth,
       signature: payload.signature,
@@ -129,8 +129,17 @@ export class UserService extends BaseService<User> implements IUserService {
     if (userExistingCheck) {
       throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: 'user' }, friendly: true });
     }
-    const userAddress = user.addresses;
     const userPhones = user.phones;
+
+    const address = await this.addressService.create({
+      city: user.address.city,
+      apartment: user.address.apartment,
+      country: user.address.country,
+      code: user.address.code,
+      province: user.address.province,
+      street: user.address.street,
+      type: user.address.type,
+    });
 
     const createdUser = await this.dao.create({
       firstname: user.firstname,
@@ -138,23 +147,10 @@ export class UserService extends BaseService<User> implements IUserService {
       email: user.email,
       dateofbirth: user.dateofbirth,
       keycloakId: user.keycloakId,
+      address,
     });
 
-    createdUser.address = await createdUser.address.init();
     createdUser.phones = await createdUser.phones.init();
-
-    await applyToAll(userAddress, async (address) => {
-      await this.addressService.create({
-        city: address.city,
-        apartment: address.apartment,
-        country: address.country,
-        code: address.code,
-        province: address.province,
-        street: address.street,
-        type: address.type,
-        user: createdUser,
-      });
-    });
 
     await applyToAll(userPhones, async (phone) => {
       await this.phoneService.create({
