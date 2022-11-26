@@ -28,11 +28,9 @@ export class OrganizationInformationDTO extends BaseBodyDTO {
   description?: string;
   @JsonProperty()
   type?: string;
-  @JsonProperty({
-    type: AddressDTO,
-    beforeDeserialize,
-  })
-  addresses?: Array<AddressDTO>;
+
+  @JsonProperty()
+  address?: AddressDTO;
 
   @JsonProperty()
   phone?: PhoneInformationDTO;

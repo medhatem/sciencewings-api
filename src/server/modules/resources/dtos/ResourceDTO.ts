@@ -5,6 +5,7 @@ import { unique } from '@/decorators/unique';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
+import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 
 @JsonObject()
 @unique
@@ -228,4 +229,20 @@ export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
 export class GetResourceSettingsDTO extends BaseRequestDTO {
   @JsonProperty()
   body: GetResourceSettingsBodyDTO;
+}
+
+@JsonObject()
+@unique
+export class resourceManagersObjectDTO extends BaseBodyDTO {
+  @JsonProperty({
+    type: MemberDTO,
+    beforeDeserialize,
+  })
+  data: Array<MemberDTO>;
+}
+@JsonObject()
+@unique
+export class resourceManagersRequestDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: resourceManagersObjectDTO;
 }

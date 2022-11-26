@@ -6,6 +6,7 @@ import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
+  OrganizationlocalisationSettingsRO,
   OrganizationMemberSettingsRO,
   OrganizationReservationSettingsRO,
   UpdateOrganizationRO,
@@ -30,6 +31,7 @@ import {
   UpdateOrganizationSettingsBodyDTO,
   UpdateOrganizationSettingsDTO,
 } from '@/modules/organizations/dtos/OrganizationSettingsDTO';
+import { GetOrganizationLoclisationSettingsDTO } from '@/modules/organizations/dtos/localisationSettingsDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -48,7 +50,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('/:id')
-  @Security(['admin', '{orgId}-view-organization'])
+  @Security(['{orgId}-view-organization'])
   @LoggerStorage()
   @Response<GetOrganizationDTO>(200, 'Organization Settings Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -81,7 +83,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('updateOrganization/:id')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization'])
   @LoggerStorage()
   @Response<UpdateOrganizationDTO>(204, 'Organization updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -101,7 +103,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @DELETE
   @Path('delete/:id')
-  @Security(['admin', '{orgId}-delete-organization'])
+  @Security(['{orgId}-delete-organization'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Organization delted Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -125,7 +127,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @POST
   @Path('phone/:id')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization'])
   @LoggerStorage()
   @Response<PhoneBaseBodyDTO>(204, 'Organization phone created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -146,7 +148,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @POST
   @Path('address/:id')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization'])
   @LoggerStorage()
   @Response<AddressBodyDTO>(204, 'Organization address created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -167,7 +169,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('getMembers/:id')
-  @Security(['admin', '{orgId}-view-organization-members'])
+  @Security(['{orgId}-view-organization-members'])
   @LoggerStorage()
   @Response<OrganizationMembersDTO>(200, 'Return organization members Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -202,7 +204,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('settings/:organizationId')
-  @Security(['admin', '{orgId}-view-organization-settings'])
+  @Security(['{orgId}-view-organization-settings'])
   @LoggerStorage()
   @Response<GetOrganizationSettingsBodyDTO>(200, 'Organization Settings Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -223,7 +225,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/member/:organizationId')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -245,7 +247,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/reservation/:organizationId')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -267,7 +269,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/invoices/:organizationId')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization invoices settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -289,7 +291,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/access/:organizationId')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization access  settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -301,5 +303,47 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /* Update a organization settings, section localization
+   *
+   * @param payload
+   * @param organizationId is the is of requested resource
+   *
+   */
+  @PUT
+  @Path('settings/localisation/:organizationId')
+  @Security(['admin', '{orgId}-update-organization'])
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization localisation  settings updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateOrganizationsLocalisationSettingsProperties(
+    payload: OrganizationlocalisationSettingsRO,
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationLocalisationSettings(payload, organizationId);
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /**
+   * retrieve Organization localisation settings by organization id
+   *
+   * @param organizationId organization id
+   */
+  @GET
+  @Path('localizationSettings/:organizationId')
+  @Security(['admin', '{orgId}-view-organization-localisation-settings'])
+  @LoggerStorage()
+  @Response<GetOrganizationLoclisationSettingsDTO>(200, 'Organization localisation Settings Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getOrganizationLocalisationSettingsById(
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<GetOrganizationLoclisationSettingsDTO> {
+    const result = await this.OrganizationService.getOrganizationLocalisation(organizationId);
+
+    return new GetOrganizationLoclisationSettingsDTO({ body: { data: result, statusCode: 200 } });
   }
 }

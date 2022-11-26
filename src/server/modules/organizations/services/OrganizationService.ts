@@ -5,6 +5,7 @@ import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
+  OrganizationlocalisationSettingsRO,
   OrganizationMemberSettingsRO,
   OrganizationReservationSettingsRO,
   UpdateOrganizationRO,
@@ -43,6 +44,7 @@ import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { localisationSettingsType } from '../organizationtypes';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -74,7 +76,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
    **/
   @log()
   public async getOrganizationById(id: number): Promise<Organization> {
-    const organization = await this.dao.get(id, { populate: ['labels', 'phone', 'addresses'] as never });
+    const organization = await this.dao.get(id, { populate: ['labels', 'phone', 'address'] as never });
     if (!organization) {
       throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${id}` }, friendly: true });
     }
@@ -172,6 +174,16 @@ export class OrganizationService extends BaseService<Organization> implements IO
       const organizationSetting = await this.organizationSettingsService.create({
         hideAccountNumberWhenMakingReservation: AccountNumberVisibilty.EVERYONE,
       });
+      const address = await this.addressService.create({
+        city: payload.address.city,
+        apartment: payload.address.apartment,
+        country: payload.address.country,
+        code: payload.address.code,
+        province: payload.address.province,
+        street: payload.address.street,
+        type: AddressType.ORGANIZATION,
+      });
+      wrappedOrganization.address = address;
       wrappedOrganization.settings = organizationSetting;
       organization = await this.create(wrappedOrganization);
 
@@ -212,21 +224,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
     if (payload.labels?.length) {
       await this.labelService.createBulkLabel(payload.labels, organization);
     }
-
-    await Promise.all(
-      payload.addresses.map((address) =>
-        this.addressService.create({
-          city: address.city,
-          apartment: address.apartment,
-          country: address.country,
-          code: address.code,
-          province: address.province,
-          street: address.street,
-          type: AddressType.ORGANIZATION,
-          organization,
-        }),
-      ),
-    );
 
     //create a default infastructure
 
@@ -555,5 +552,69 @@ export class OrganizationService extends BaseService<Organization> implements IO
     await this.organizationSettingsService.update(newSettings);
 
     return organizationId;
+  }
+
+  /* Update localization settings of an organization ,
+   *
+   * @param payload
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  public async updateOrganizationLocalisationSettings(
+    payload: OrganizationlocalisationSettingsRO,
+    organizationId: number,
+  ): Promise<number> {
+    const fetchedOrganization = await this.dao.get(organizationId);
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
+    }
+    const organizationAddress = fetchedOrganization.address;
+    const newAddress = this.addressService.wrapEntity(organizationAddress, {
+      organizationAddress,
+      ...payload,
+    });
+
+    await this.addressService.update(newAddress);
+
+    const oldSetting = fetchedOrganization.settings;
+    const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
+      ...oldSetting,
+      ...payload,
+    });
+    await this.organizationSettingsService.update(newSettings);
+    return organizationId;
+  }
+
+  /* retrieve localization settings of an organization ,
+   *
+   * @param payload
+   * @param id of the requested organization
+   *
+   */
+  @log()
+  public async getOrganizationLocalisation(organizationId: number): Promise<any> {
+    const fetchedOrganization = (await this.get(organizationId)) as Organization;
+    if (!fetchedOrganization) {
+      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+        variables: { org: `${organizationId}` },
+        friendly: false,
+      });
+    }
+    const data: localisationSettingsType = {
+      addressId: fetchedOrganization.address.id,
+      apartment: fetchedOrganization.address.apartment,
+      street: fetchedOrganization.address.street,
+      city: fetchedOrganization.address.city,
+      country: fetchedOrganization.address.country,
+      province: fetchedOrganization.address.province,
+      code: fetchedOrganization.address.code,
+      weekDay: fetchedOrganization.settings.weekDay,
+      timeDisplayMode: fetchedOrganization.settings.timeDisplayMode,
+    };
+    return data;
   }
 }

@@ -3,7 +3,7 @@ import Joi = require('joi');
 const organizationSchema = Joi.object({
   members: Joi.array(),
   social: Joi.array(),
-  addresses: Joi.array(),
+  address: Joi.array(),
   socialFacebook: Joi.string().allow(''),
   socialInstagram: Joi.string().allow(''),
   socialYoutube: Joi.string().allow(''),
@@ -19,7 +19,7 @@ export const CreateOrganizationSchema = organizationSchema.keys({
   name: Joi.string().required().messages({ 'any.required': 'VALIDATION.NAME_REQUIRED' }),
   email: Joi.string().email().required().messages({ 'any.required': 'VALIDATION.EMAIL_REQUIRED' }),
   phone: Joi.required().messages({ 'any.required': 'VALIDATION.PHONE_REQUIRED' }),
-  addresses: Joi.array().required().messages({ 'any.required': 'VALIDATION.ADDRESS_REQUIRED' }),
+  address: Joi.object().required().messages({ 'any.required': 'VALIDATION.ADDRESS_REQUIRED' }),
   labels: Joi.array().required().messages({ 'any.required': 'VALIDATION.LABEL_REQUIRED' }),
   parent: Joi.number().allow(null),
   settings: Joi.object(),

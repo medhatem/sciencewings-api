@@ -53,7 +53,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       name: 'test',
       email: 'test',
       phone: {} as PhoneRO,
-      addresses: {} as AddressRO[],
+      address: {} as AddressRO,
       labels: ['0'],
       type: OrganizationType.SERVICE,
       members: [1],
