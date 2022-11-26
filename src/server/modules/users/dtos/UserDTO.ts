@@ -27,12 +27,8 @@ export class UserDTO extends BaseBodyDTO {
   })
   phones: Array<PhoneRO>;
 
-  @JsonProperty({
-    type: AddressDTO,
-    name: 'address',
-    beforeDeserialize,
-  })
-  addresses: Array<AddressDTO>;
+  @JsonProperty()
+  address: AddressDTO;
 
   @JsonProperty()
   dateofbirth: string;

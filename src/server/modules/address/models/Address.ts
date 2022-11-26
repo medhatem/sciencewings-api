@@ -1,9 +1,6 @@
-import { Collection, Entity, ManyToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
-
 import { BaseModel } from '@/modules/base/models/BaseModel';
-import { Organization } from '@/modules/organizations/models/Organization';
-import { User } from '@/modules/users/models/User';
 
 export enum AddressType {
   USER = 'USER',
@@ -13,6 +10,9 @@ export enum AddressType {
 @provide()
 @Entity()
 export class Address extends BaseModel<Address> {
+  constructor() {
+    super();
+  }
   static getInstance(): Address {
     return container.get(Address);
   }
@@ -40,13 +40,4 @@ export class Address extends BaseModel<Address> {
 
   @Property({ nullable: true })
   apartment?: string;
-
-  @ManyToMany({
-    entity: () => Organization,
-    nullable: true,
-  })
-  organization? = new Collection<Organization>(this);
-
-  @ManyToMany({ entity: () => User, nullable: true })
-  user?: User;
 }

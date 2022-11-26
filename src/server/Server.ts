@@ -108,7 +108,7 @@ export class Server {
         // important to allow default error handler to close connection if headers already sent
         return next(err);
       }
-      const language = req.keycloakUser.locale || 'en';
+      const language = req.keycloakUser?.locale || 'en';
       const result = this.errorHandler.handle(err, language);
       res.set('Content-Type', 'application/json');
       res.status(result.statusCode);
