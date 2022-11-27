@@ -2,7 +2,7 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { applyToAll } from '@/utils/utilities';
 import { ResetPasswordRO } from '@/modules/users/routes/RequstObjects';
-import { container, provideSingleton } from '@/di/index';
+import { container, lazyInject, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@/utils/Email';
@@ -20,9 +20,13 @@ import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { FETCH_STRATEGY } from '@/modules/base';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
+  @lazyInject(IMemberService) public memberService: IMemberService;
+
   constructor(
     public dao: UserDao,
     public addressService: IAddressService,
@@ -40,25 +44,47 @@ export class UserService extends BaseService<User> implements IUserService {
 
   @log()
   async updateUserDetails(payload: UserRO, userId: number): Promise<number> {
-    const authedUser = await this.dao.get(userId);
-    if (!authedUser) {
+    const user = await this.dao.get(userId);
+    if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` }, friendly: false });
     }
 
-    const userDetail = this.wrapEntity(authedUser, {
-      email: payload.email || authedUser.email,
-      firstname: payload.firstname || authedUser.firstname,
-      lastname: payload.lastname || authedUser.lastname,
-      dateofbirth: payload.dateofbirth || authedUser.dateofbirth,
-      signature: payload.signature || authedUser.signature,
-      actionId: payload.actionId || authedUser.actionId,
-      share: payload.share || authedUser.share,
+    if (payload.firstname !== user.firstname || payload.lastname !== user.lastname) {
+      const members = await this.memberService.getByCriteria({ user }, FETCH_STRATEGY.ALL);
+
+      applyToAll(members, async (member) => {
+        console.log('inside member == ', member);
+        await this.memberService.update(
+          this.memberService.wrapEntity(member, {
+            name: payload.firstname + ' ' + payload.lastname,
+          }),
+        );
+      });
+    }
+
+    const userDetail = this.wrapEntity(user, {
+      email: payload.email || user.email,
+      firstname: payload.firstname || user.firstname,
+      lastname: payload.lastname || user.lastname,
+      dateofbirth: payload.dateofbirth || user.dateofbirth,
+      signature: payload.signature || user.signature,
+      actionId: payload.actionId || user.actionId,
+      share: payload.share || user.share,
     });
+    console.log('payload.firstname= ', payload.firstname);
+    console.log('user.firstname= ', user.firstname);
+    console.log('payload.lastname= ', payload.lastname);
+    console.log('user.lastname= ', user.lastname);
+    console.log('payload.firstname !== user.firstname', payload.firstname !== user.firstname);
+    console.log('payload.lastname !== user.lastname', payload.lastname !== user.lastname);
+    console.log(
+      'payload.firstname !== user.firstname || payload.lastname !== user.lastname ',
+      payload.firstname !== user.firstname || payload.lastname !== user.lastname,
+    );
 
     const updatedAddress = await this.addressService.get(payload.address.id);
     await this.addressService.update(
       this.wrapEntity(updatedAddress, {
-        ...updatedAddress,
         ...payload.address,
       }),
     );
@@ -67,20 +93,19 @@ export class UserService extends BaseService<User> implements IUserService {
       const updatedPhone = await this.phoneService.get(phone.id);
       await this.phoneService.update(
         this.wrapEntity(updatedPhone, {
-          ...updatedPhone,
           ...phone,
         }),
       );
     });
 
     const keycloakUserDetail: UserRepresentation = {
-      firstName: payload.firstname || authedUser.firstname,
-      lastName: payload.lastname || authedUser.lastname,
-      email: payload.email || authedUser.email,
+      firstName: payload.firstname || user.firstname,
+      lastName: payload.lastname || user.lastname,
+      email: payload.email || user.email,
       emailVerified: true,
     };
 
-    await this.keycloakUtils.updateKcUser(authedUser.keycloakId, keycloakUserDetail);
+    await this.keycloakUtils.updateKcUser(user.keycloakId, keycloakUserDetail);
 
     await this.dao.update(userDetail);
 
