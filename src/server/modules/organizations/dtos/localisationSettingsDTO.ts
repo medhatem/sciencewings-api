@@ -1,7 +1,7 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { timeDisplayMode, weekDay } from '../models/OrganizationSettings';
+import { timeDisplayMode, weekDay } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique

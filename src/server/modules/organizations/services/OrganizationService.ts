@@ -44,7 +44,7 @@ import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
-import { localisationSettingsType } from '../organizationtypes';
+import { localisationSettingsType } from '@/modules/organizations/organizationtypes';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
