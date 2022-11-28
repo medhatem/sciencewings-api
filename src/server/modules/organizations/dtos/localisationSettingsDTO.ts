@@ -26,12 +26,6 @@ export class OrganizationLocalisationSettingsAddressBodyDTO extends BaseBodyDTO 
 
   @JsonProperty()
   code: string;
-
-  @JsonProperty()
-  firstDayOfWeek: weekDay;
-
-  @JsonProperty()
-  timeDisplayMode: timeDisplayMode;
 }
 
 @JsonObject()
