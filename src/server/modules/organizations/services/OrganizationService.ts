@@ -612,7 +612,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       country: fetchedOrganization.address.country,
       province: fetchedOrganization.address.province,
       code: fetchedOrganization.address.code,
-      weekDay: fetchedOrganization.settings.weekDay,
+      firstDayOfWeek: fetchedOrganization.settings.firstDayOfWeek,
       timeDisplayMode: fetchedOrganization.settings.timeDisplayMode,
     };
     return data;

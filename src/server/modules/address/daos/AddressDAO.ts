@@ -5,7 +5,7 @@ import { BaseDao } from '@/modules/base/daos/BaseDao';
 
 @provideSingleton()
 export class AddressDao extends BaseDao<Address> {
-  private constructor(public model: Address = Address.getInstance()) {
+  private constructor(public model: Address) {
     super(model);
   }
 

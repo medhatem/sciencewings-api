@@ -28,7 +28,7 @@ export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
   code: string;
 
   @JsonProperty()
-  weekDay: weekDay;
+  firstDayOfWeek: weekDay;
 
   @JsonProperty()
   timeDisplayMode: timeDisplayMode;

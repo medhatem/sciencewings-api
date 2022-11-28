@@ -8,6 +8,6 @@ export type localisationSettingsType = {
   country: string;
   province: string;
   code: string;
-  weekDay: weekDay;
+  firstDayOfWeek: weekDay;
   timeDisplayMode: timeDisplayMode;
 };
