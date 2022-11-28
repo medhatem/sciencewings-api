@@ -2,6 +2,7 @@ import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
+  OrganizationlocalisationSettingsRO,
   OrganizationMemberSettingsRO,
   OrganizationReservationSettingsRO,
   UpdateOrganizationRO,
@@ -37,4 +38,9 @@ export abstract class IOrganizationService extends IBaseService<any> {
       | OrganizationAccessSettingsRO,
     OrganizationId: number,
   ) => Promise<number>;
+  updateOrganizationLocalisationSettings: (
+    payload: OrganizationlocalisationSettingsRO,
+    OrganizationId: number,
+  ) => Promise<number>;
+  getOrganizationLocalisation: (OrganizationId: number) => Promise<any>;
 }

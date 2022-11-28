@@ -5,6 +5,7 @@ import {
   Index,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryKey,
   Property,
   Unique,
@@ -45,14 +46,8 @@ export class User extends BaseModel<User> {
   @Unique()
   email: string;
 
-  @ManyToMany({
-    entity: () => Address,
-    mappedBy: (entity: Address) => entity.user,
-    nullable: true,
-    lazy: true,
-    eager: false,
-  })
-  address? = new Collection<Address>(this);
+  @OneToOne({ entity: () => Address, nullable: true })
+  address: Address;
 
   @ManyToMany({
     entity: () => Phone,

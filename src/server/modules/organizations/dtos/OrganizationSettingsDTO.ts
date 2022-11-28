@@ -2,7 +2,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { beforeDeserialize } from '@/utils/utilities';
-import { AccountNumberVisibilty } from '@/modules/organizations/models/OrganizationSettings';
+import { AccountNumberVisibilty, timeDisplayMode, weekDay } from '@/modules/organizations/models/OrganizationSettings';
 
 export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
   //Member Settings
@@ -58,6 +58,12 @@ export class OrganizationSettingsBodyDTO extends BaseBodyDTO {
   listResourceToNonMembers: boolean;
   @JsonProperty()
   messageSentToNewMembers: string;
+
+  //localisation settings
+  @JsonProperty()
+  firstDayOfWeek: weekDay;
+  @JsonProperty()
+  timeDisplayMode: timeDisplayMode;
 }
 
 @JsonObject()

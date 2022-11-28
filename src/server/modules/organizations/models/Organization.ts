@@ -1,14 +1,4 @@
-import {
-  Collection,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryKey,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
+import { Collection, Entity, ManyToOne, OneToMany, OneToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address/models/Address';
@@ -24,7 +14,6 @@ import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
 import { Calendar } from '@/modules/reservation';
-
 export enum OrganizationType {
   PUBLIC = 'Public',
   SERVICE = 'Service',
@@ -74,13 +63,8 @@ export class Organization extends BaseModel<Organization> {
   @Property()
   type!: OrganizationType;
 
-  @ManyToMany({
-    entity: () => Address,
-    mappedBy: (entity) => entity.organization,
-    lazy: true,
-    eager: false,
-  })
-  public addresses = new Collection<Address>(this);
+  @OneToOne({ entity: () => Address, nullable: true })
+  address: Address;
 
   @OneToMany({
     entity: () => OrganizationLabel,

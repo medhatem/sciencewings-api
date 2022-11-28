@@ -36,12 +36,8 @@ export class UserIdDTO extends BaseBodyDTO {
   @JsonProperty({ type: PhoneDTO, beforeDeserialize })
   phone: Array<PhoneDTO>;
 
-  @JsonProperty({
-    type: AddressDTO,
-    beforeDeserialize,
-    name: 'address',
-  })
-  addresses: Array<AddressDTO>;
+  @JsonProperty()
+  address: AddressDTO;
 }
 
 @JsonObject()

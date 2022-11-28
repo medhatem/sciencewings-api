@@ -3,7 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { AddressRO } from '@/modules/address/routes/AddressRO';
 import { PhoneRO } from '@/modules/phones/routes/PhoneRO';
 import { unique } from '@/decorators/unique';
-import { AccountNumberVisibilty } from '@/modules/organizations/models/OrganizationSettings';
+import { AccountNumberVisibilty, timeDisplayMode, weekDay } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
@@ -20,10 +20,8 @@ export class CreateOrganizationRO {
   @JsonProperty()
   type: string;
 
-  @JsonProperty({
-    type: AddressRO,
-  })
-  addresses?: Array<AddressRO>;
+  @JsonProperty()
+  address!: AddressRO;
 
   @JsonProperty()
   labels: Array<string>;
@@ -171,4 +169,24 @@ export class OrganizationAccessSettingsRO {
   listResourceToNonMembers?: boolean;
   @JsonProperty()
   messageSentToNewMembers?: string;
+}
+@JsonObject()
+@unique
+export class OrganizationlocalisationSettingsRO {
+  @JsonProperty()
+  apartment?: string;
+  @JsonProperty()
+  street?: string;
+  @JsonProperty()
+  city?: string;
+  @JsonProperty()
+  country?: string;
+  @JsonProperty()
+  province?: string;
+  @JsonProperty()
+  code?: string;
+  @JsonProperty()
+  firstDayOfWeek?: weekDay;
+  @JsonProperty()
+  timeDisplayMode?: timeDisplayMode;
 }

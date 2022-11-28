@@ -6,6 +6,7 @@ import {
   CreateOrganizationRO,
   OrganizationAccessSettingsRO,
   OrganizationInvoicesSettingsRO,
+  OrganizationlocalisationSettingsRO,
   OrganizationMemberSettingsRO,
   OrganizationReservationSettingsRO,
   UpdateOrganizationRO,
@@ -30,6 +31,7 @@ import {
   UpdateOrganizationSettingsBodyDTO,
   UpdateOrganizationSettingsDTO,
 } from '@/modules/organizations/dtos/OrganizationSettingsDTO';
+import { GetOrganizationLoclisationSettingsDTO } from '@/modules/organizations/dtos/localisationSettingsDTO';
 
 @provideSingleton()
 @Path('organization')
@@ -301,5 +303,47 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     const result = await this.OrganizationService.updateOrganizationsSettingsProperties(payload, organizationId);
 
     return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /* Update a organization settings, section localization
+   *
+   * @param payload
+   * @param organizationId is the is of requested resource
+   *
+   */
+  @PUT
+  @Path('settings/localisation/:organizationId')
+  @Security(['admin', '{orgId}-update-organization'])
+  @LoggerStorage()
+  @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization localisation  settings updated Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async updateOrganizationsLocalisationSettingsProperties(
+    payload: OrganizationlocalisationSettingsRO,
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<UpdateOrganizationSettingsDTO> {
+    const result = await this.OrganizationService.updateOrganizationLocalisationSettings(payload, organizationId);
+
+    return new UpdateOrganizationSettingsDTO({ body: { id: result, statusCode: 204 } });
+  }
+
+  /**
+   * retrieve Organization localisation settings by organization id
+   *
+   * @param organizationId organization id
+   */
+  @GET
+  @Path('localizationSettings/:organizationId')
+  @Security(['admin', '{orgId}-view-organization-localisation-settings'])
+  @LoggerStorage()
+  @Response<GetOrganizationLoclisationSettingsDTO>(200, 'Organization localisation Settings Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getOrganizationLocalisationSettingsById(
+    @PathParam('organizationId') organizationId: number,
+  ): Promise<GetOrganizationLoclisationSettingsDTO> {
+    const result = await this.OrganizationService.getOrganizationLocalisation(organizationId);
+
+    return new GetOrganizationLoclisationSettingsDTO({ body: { data: result, statusCode: 200 } });
   }
 }
