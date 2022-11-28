@@ -3,7 +3,7 @@ import Joi = require('joi');
 const organizationSchema = Joi.object({
   members: Joi.array(),
   social: Joi.array(),
-  addresses: Joi.array(),
+  address: Joi.array(),
   socialFacebook: Joi.string().allow(''),
   socialInstagram: Joi.string().allow(''),
   socialYoutube: Joi.string().allow(''),

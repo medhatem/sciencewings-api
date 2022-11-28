@@ -25,7 +25,7 @@ export class UserRO {
   lastname: string;
 
   @JsonProperty()
-  addresses: Array<AddressRO>;
+  address: AddressRO;
 
   @JsonProperty()
   phones: Array<PhoneRO>;

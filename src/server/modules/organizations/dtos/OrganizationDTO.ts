@@ -30,7 +30,7 @@ export class OrganizationInformationDTO extends BaseBodyDTO {
   type?: string;
 
   @JsonProperty()
-  addresses?: AddressDTO;
+  address?: AddressDTO;
 
   @JsonProperty()
   phone?: PhoneInformationDTO;
