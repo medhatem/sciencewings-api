@@ -565,27 +565,36 @@ export class OrganizationService extends BaseService<Organization> implements IO
     payload: OrganizationlocalisationSettingsRO,
     organizationId: number,
   ): Promise<number> {
-    const fetchedOrganization = await this.dao.get(organizationId);
-    if (!fetchedOrganization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
-        variables: { org: `${organizationId}` },
-        friendly: false,
+    const forkedEntityManager = await this.dao.fork();
+    forkedEntityManager.begin();
+    try {
+      const fetchedOrganization = await this.dao.get(organizationId);
+      if (!fetchedOrganization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+          variables: { org: `${organizationId}` },
+          friendly: false,
+        });
+      }
+      const organizationAddress = fetchedOrganization.address;
+      const newAddress = this.addressService.wrapEntity(organizationAddress, {
+        organizationAddress,
+        ...payload,
       });
+
+      await this.addressService.transactionalUpdate(newAddress);
+
+      const oldSetting = fetchedOrganization.settings;
+      const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
+        ...oldSetting,
+        ...payload,
+      });
+      await this.organizationSettingsService.transactionalUpdate(newSettings);
+      forkedEntityManager.commit();
+    } catch (error) {
+      forkedEntityManager.rollback();
+      throw error;
     }
-    const organizationAddress = fetchedOrganization.address;
-    const newAddress = this.addressService.wrapEntity(organizationAddress, {
-      organizationAddress,
-      ...payload,
-    });
-
-    await this.addressService.update(newAddress);
-
-    const oldSetting = fetchedOrganization.settings;
-    const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
-      ...oldSetting,
-      ...payload,
-    });
-    await this.organizationSettingsService.update(newSettings);
+    this.dao.entitymanager.flush();
     return organizationId;
   }
 
