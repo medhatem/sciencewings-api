@@ -438,7 +438,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
 
-    console.log('fetchedResource.settings=== ', fetchedResource.settings);
     const resource = this.wrapEntity(fetchedResource, {
       ...fetchedResource,
       settings: { ...fetchedResourceSettings, ...payload },

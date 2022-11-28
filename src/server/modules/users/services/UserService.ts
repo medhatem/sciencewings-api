@@ -53,7 +53,6 @@ export class UserService extends BaseService<User> implements IUserService {
       const members = await this.memberService.getByCriteria({ user }, FETCH_STRATEGY.ALL);
 
       applyToAll(members, async (member) => {
-        console.log('inside member == ', member);
         await this.memberService.update(
           this.memberService.wrapEntity(member, {
             name: payload.firstname + ' ' + payload.lastname,
@@ -71,16 +70,6 @@ export class UserService extends BaseService<User> implements IUserService {
       actionId: payload.actionId || user.actionId,
       share: payload.share || user.share,
     });
-    console.log('payload.firstname= ', payload.firstname);
-    console.log('user.firstname= ', user.firstname);
-    console.log('payload.lastname= ', payload.lastname);
-    console.log('user.lastname= ', user.lastname);
-    console.log('payload.firstname !== user.firstname', payload.firstname !== user.firstname);
-    console.log('payload.lastname !== user.lastname', payload.lastname !== user.lastname);
-    console.log(
-      'payload.firstname !== user.firstname || payload.lastname !== user.lastname ',
-      payload.firstname !== user.firstname || payload.lastname !== user.lastname,
-    );
 
     const updatedAddress = await this.addressService.get(payload.address.id);
     await this.addressService.update(
