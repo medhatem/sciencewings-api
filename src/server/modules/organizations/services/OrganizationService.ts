@@ -605,15 +605,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
     }
     const data: localisationSettingsType = {
-      addressId: fetchedOrganization.address.id,
-      apartment: fetchedOrganization.address.apartment,
-      street: fetchedOrganization.address.street,
-      city: fetchedOrganization.address.city,
-      country: fetchedOrganization.address.country,
-      province: fetchedOrganization.address.province,
-      code: fetchedOrganization.address.code,
-      firstDayOfWeek: fetchedOrganization.settings.firstDayOfWeek,
-      timeDisplayMode: fetchedOrganization.settings.timeDisplayMode,
+      localisationDataFromOrgAdress: fetchedOrganization.address,
+      localisationDataFromOrgSettings: fetchedOrganization.settings,
     };
     return data;
   }

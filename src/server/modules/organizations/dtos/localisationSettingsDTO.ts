@@ -5,7 +5,7 @@ import { timeDisplayMode, weekDay } from '../models/OrganizationSettings';
 
 @JsonObject()
 @unique
-export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
+export class OrganizationLocalisationSettingsAddressBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   addressId: number;
 
@@ -32,6 +32,26 @@ export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
 
   @JsonProperty()
   timeDisplayMode: timeDisplayMode;
+}
+
+@JsonObject()
+@unique
+export class OrganizationLocalisationSettingsOrgSettingBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  firstDayOfWeek: weekDay;
+
+  @JsonProperty()
+  timeDisplayMode: timeDisplayMode;
+}
+
+@JsonObject()
+@unique
+export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  localisationDataFromOrgAdress: OrganizationLocalisationSettingsAddressBodyDTO;
+
+  @JsonProperty()
+  localisationDataFromOrgSettings: OrganizationLocalisationSettingsOrgSettingBodyDTO;
 }
 
 @JsonObject()
