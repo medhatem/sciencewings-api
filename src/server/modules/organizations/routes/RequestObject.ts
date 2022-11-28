@@ -186,7 +186,7 @@ export class OrganizationlocalisationSettingsRO {
   @JsonProperty()
   code?: string;
   @JsonProperty()
-  weekDay?: weekDay;
+  firstDayOfWeek?: weekDay;
   @JsonProperty()
   timeDisplayMode?: timeDisplayMode;
 }

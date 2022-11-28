@@ -43,6 +43,11 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   }
 
   @log()
+  public async transactionalUpdate(entry: T): Promise<any> {
+    return this.dao.transactionalUpdate(entry);
+  }
+
+  @log()
   public async updateRoute(id: number, payload: any): Promise<any> {
     const currentEntity = await this.dao.get(id);
     if (!currentEntity) {

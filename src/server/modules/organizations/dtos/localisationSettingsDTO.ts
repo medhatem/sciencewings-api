@@ -1,11 +1,11 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { unique } from '@/decorators/unique';
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
-import { timeDisplayMode, weekDay } from '../models/OrganizationSettings';
+import { timeDisplayMode, weekDay } from '@/modules/organizations/models/OrganizationSettings';
 
 @JsonObject()
 @unique
-export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
+export class OrganizationLocalisationSettingsAddressBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   addressId: number;
 
@@ -26,12 +26,26 @@ export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
 
   @JsonProperty()
   code: string;
+}
 
+@JsonObject()
+@unique
+export class OrganizationLocalisationSettingsOrgSettingBodyDTO extends BaseBodyDTO {
   @JsonProperty()
-  weekDay: weekDay;
+  firstDayOfWeek: weekDay;
 
   @JsonProperty()
   timeDisplayMode: timeDisplayMode;
+}
+
+@JsonObject()
+@unique
+export class OrganizationLocalisationSettingsBodyDTO extends BaseBodyDTO {
+  @JsonProperty()
+  localisationDataFromOrgAdress: OrganizationLocalisationSettingsAddressBodyDTO;
+
+  @JsonProperty()
+  localisationDataFromOrgSettings: OrganizationLocalisationSettingsOrgSettingBodyDTO;
 }
 
 @JsonObject()

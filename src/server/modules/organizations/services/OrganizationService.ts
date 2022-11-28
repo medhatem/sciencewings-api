@@ -44,7 +44,7 @@ import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
-import { localisationSettingsType } from '../organizationtypes';
+import { localisationSettingsType } from '@/modules/organizations/organizationtypes';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -565,27 +565,36 @@ export class OrganizationService extends BaseService<Organization> implements IO
     payload: OrganizationlocalisationSettingsRO,
     organizationId: number,
   ): Promise<number> {
-    const fetchedOrganization = await this.dao.get(organizationId);
-    if (!fetchedOrganization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
-        variables: { org: `${organizationId}` },
-        friendly: false,
+    const forkedEntityManager = await this.dao.fork();
+    forkedEntityManager.begin();
+    try {
+      const fetchedOrganization = await this.dao.get(organizationId);
+      if (!fetchedOrganization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', {
+          variables: { org: `${organizationId}` },
+          friendly: false,
+        });
+      }
+      const organizationAddress = fetchedOrganization.address;
+      const newAddress = this.addressService.wrapEntity(organizationAddress, {
+        organizationAddress,
+        ...payload,
       });
+
+      await this.addressService.transactionalUpdate(newAddress);
+
+      const oldSetting = fetchedOrganization.settings;
+      const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
+        ...oldSetting,
+        ...payload,
+      });
+      await this.organizationSettingsService.transactionalUpdate(newSettings);
+      forkedEntityManager.commit();
+    } catch (error) {
+      forkedEntityManager.rollback();
+      throw error;
     }
-    const organizationAddress = fetchedOrganization.address;
-    const newAddress = this.addressService.wrapEntity(organizationAddress, {
-      organizationAddress,
-      ...payload,
-    });
-
-    await this.addressService.update(newAddress);
-
-    const oldSetting = fetchedOrganization.settings;
-    const newSettings = this.organizationSettingsService.wrapEntity(oldSetting, {
-      ...oldSetting,
-      ...payload,
-    });
-    await this.organizationSettingsService.update(newSettings);
+    this.dao.entitymanager.flush();
     return organizationId;
   }
 
@@ -605,15 +614,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
     }
     const data: localisationSettingsType = {
-      addressId: fetchedOrganization.address.id,
-      apartment: fetchedOrganization.address.apartment,
-      street: fetchedOrganization.address.street,
-      city: fetchedOrganization.address.city,
-      country: fetchedOrganization.address.country,
-      province: fetchedOrganization.address.province,
-      code: fetchedOrganization.address.code,
-      weekDay: fetchedOrganization.settings.weekDay,
-      timeDisplayMode: fetchedOrganization.settings.timeDisplayMode,
+      localisationDataFromOrgAdress: fetchedOrganization.address,
+      localisationDataFromOrgSettings: fetchedOrganization.settings,
     };
     return data;
   }

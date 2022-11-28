@@ -1,13 +1,7 @@
-import { timeDisplayMode, weekDay } from './models/OrganizationSettings';
+import { Address } from '@/modules/address/models/Address';
+import { OrganizationSettings } from '@/modules/organizations/models/OrganizationSettings';
 
 export type localisationSettingsType = {
-  addressId: number;
-  apartment: string;
-  street: string;
-  city: string;
-  country: string;
-  province: string;
-  code: string;
-  weekDay: weekDay;
-  timeDisplayMode: timeDisplayMode;
+  localisationDataFromOrgAdress: Address;
+  localisationDataFromOrgSettings: OrganizationSettings;
 };

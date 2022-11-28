@@ -10,9 +10,6 @@ export enum AddressType {
 @provide()
 @Entity()
 export class Address extends BaseModel<Address> {
-  constructor() {
-    super();
-  }
   static getInstance(): Address {
     return container.get(Address);
   }
