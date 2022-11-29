@@ -19,19 +19,19 @@ export class UserRO {
   email: string;
 
   @JsonProperty()
-  firstname?: string;
+  firstname: string;
 
   @JsonProperty()
-  lastname?: string;
+  lastname: string;
 
   @JsonProperty()
   address: AddressRO;
 
   @JsonProperty()
-  phones?: Array<PhoneRO>;
+  phones: Array<PhoneRO>;
 
   @JsonProperty()
-  dateofbirth?: Date;
+  dateofbirth: Date;
 
   @JsonProperty()
   signature?: string;
