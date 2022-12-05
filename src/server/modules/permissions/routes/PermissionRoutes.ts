@@ -1,10 +1,15 @@
 import { container, provideSingleton } from '@/di/index';
-import { DELETE, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
+import { DELETE, GET, Path, PathParam, POST, PUT, Security } from 'typescript-rest';
 import { BaseRoutes } from '@/modules/base/routes/BaseRoutes';
 import { InternalServerError, NotFoundError } from 'typescript-rest/dist/server/model/errors';
 import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
-import { CreatePermissionDTO, permissionGetDTO, UpdatePermissionDTO } from '@/modules/permissions/dtos/permissionDTO';
+import {
+  CreatePermissionDTO,
+  PermissionGetAllDTO,
+  permissionGetDTO,
+  UpdatePermissionDTO,
+} from '@/modules/permissions/dtos/permissionDTO';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 import { Permission } from '@/modules/permissions/models/permission';
 import { createPermissionRO, updatePermissionRO } from '@/modules/permissions/routes/RequestObject';
@@ -18,6 +23,22 @@ export class PermissionRoutes extends BaseRoutes<Permission> {
 
   static getInstance(): PermissionRoutes {
     return container.get(PermissionRoutes);
+  }
+
+  /**
+   * @override get all permission from the database
+   */
+  @GET
+  @Path('getAllPermissions')
+  @Security()
+  @LoggerStorage()
+  @Response<PermissionGetAllDTO>(200, 'Permisssion created Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllPermissions(): Promise<PermissionGetAllDTO> {
+    const result = await this.PermissionService.getAllPermissions();
+
+    return new PermissionGetAllDTO({ body: { data: [...(result || [])], statusCode: 200 } });
   }
 
   /**

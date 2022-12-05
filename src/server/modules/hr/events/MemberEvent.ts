@@ -1,4 +1,4 @@
-import { MemberTypeEnum, MembershipStatus } from '@/modules/hr/models/Member';
+import { MembershipStatus } from '@/modules/hr/models/Member';
 import { User, userStatus } from '@/modules/users/models/User';
 
 import { MemberService } from '@/modules/hr/services/MemberService';
@@ -14,7 +14,7 @@ export class MemberEvent {
       user,
       active: true,
       organization,
-      memberType: MemberTypeEnum.ADMIN,
+      roles: ['admin'],
       membership: MembershipStatus.ACCEPTED,
       status: userStatus.ACTIVE,
       joinDate: new Date(),

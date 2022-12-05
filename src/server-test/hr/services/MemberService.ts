@@ -14,6 +14,7 @@ import { container } from '@/di';
 import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { userStatus } from '@/modules/users/models/User';
+import { PermissionService } from '@/modules/permissions/services/PermissionService';
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -22,6 +23,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let memberDao: SinonStubbedInstance<MemberDao>;
   let organizationService: SinonStubbedInstance<OrganizationService>;
   let userService: SinonStubbedInstance<UserService>;
+  let permissionService: SinonStubbedInstance<PermissionService>;
   let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
   let containerStub: any = null;
 
@@ -42,13 +44,23 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     containerStub.withArgs(BaseService).returns(new BaseService({} as any));
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, Keycloak.getInstance(), keycloakUtil));
+      .returns(
+        new MemberService(
+          memberDao,
+          userService,
+          organizationService,
+          permissionService,
+          Keycloak.getInstance(),
+          keycloakUtil,
+        ),
+      );
   }
 
   beforeEach(() => {
     memberDao = createStubInstance(MemberDao);
     organizationService = createStubInstance(OrganizationService);
     userService = createStubInstance(UserService);
+    permissionService = createStubInstance(PermissionService);
     keycloakUtil = createStubInstance(KeycloakUtil);
 
     containerStub = stub(container, 'get');
@@ -65,7 +77,16 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
 
     containerStub
       .withArgs(MemberService)
-      .returns(new MemberService(memberDao, userService, organizationService, Keycloak.getInstance(), keycloakUtil));
+      .returns(
+        new MemberService(
+          memberDao,
+          userService,
+          organizationService,
+          permissionService,
+          Keycloak.getInstance(),
+          keycloakUtil,
+        ),
+      );
   });
 
   afterEach(() => {
@@ -84,7 +105,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stubKeyclockInstanceWithBaseService([]);
       mockMethodWithResult(organizationService, 'get', [orgId], Promise.resolve(null));
       try {
-        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId });
+        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId, roles: [1] });
         expect.fail('Unexpected success');
       } catch (error) {
         expect(error.message).to.equal('ORG.NON_EXISTANT_DATA {{org}}');
@@ -99,7 +120,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(userService, 'create', [], Promise.reject(new Error('Failed')));
 
       try {
-        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId });
+        await container.get(MemberService).inviteUserByEmail({ email, organizationId: orgId, roles: [1] });
         expect.fail('Unexpected success');
       } catch (error) {
         expect(error.message).to.equal('Failed');
@@ -127,8 +148,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       stub(BaseService.prototype, 'getByCriteria')
         .withArgs({ user: 1, organization: orgId })
         .returns(Promise.resolve({ firstname: '', lastname: '' }));
+      mockMethodWithResult(
+        permissionService,
+        'get',
+        [1],
+        Promise.resolve({ id: 1, name: 'create-contract', module: 'organization', operationDB: 'create' }),
+      );
 
-      const result = await memberService.inviteUserByEmail({ email, organizationId: orgId });
+      const result = await memberService.inviteUserByEmail({ email, organizationId: orgId, roles: [1] });
 
       expect(result.user).to.equal(1);
       expect(result.organization).to.equal(orgId);

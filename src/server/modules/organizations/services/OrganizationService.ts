@@ -204,7 +204,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         user,
         active: true,
         organization,
-        memberType: MemberTypeEnum.ADMIN,
+        roles: [MemberTypeEnum.ADMIN],
         membership: MembershipStatus.ACCEPTED,
         status: userStatus.ACTIVE,
         joinDate: new Date(),

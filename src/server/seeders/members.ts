@@ -51,7 +51,7 @@ export class SeedMembers {
           jobTitle: faker.name.jobTitle(),
           addresses: address,
           workPhone: phone,
-          memberType: 'regular',
+          roles: [1],
         };
 
         const createdMember: any = repository.create(member);

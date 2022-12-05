@@ -73,16 +73,13 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     const payload: UserInviteToOrgRO = {
       organizationId: 1,
       email: 'test',
+      roles: [1],
     };
     test('Should fail on throw error', async () => {
-      mockMethodWithResult(
-        memberService,
-        'inviteUserByEmail',
-        [{ email: payload.email, organizationId: payload.organizationId }],
-        Promise.reject(new Error('Failed')),
-      );
+      mockMethodWithResult(memberService, 'inviteUserByEmail', [payload], Promise.reject(new Error('Failed')));
       try {
         await memberRoutes.inviteUserToOrganization(payload);
+        expect.fail('unexpected sucess ');
       } catch (error) {
         expect(error.message).to.equal('Failed');
       }
@@ -91,7 +88,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       mockMethodWithResult(
         memberService,
         'inviteUserByEmail',
-        [{ email: payload.email, organizationId: payload.organizationId }],
+        [{ email: payload.email, organizationId: payload.organizationId, roles: [1] }],
         1,
       );
       const result = await memberRoutes.inviteUserToOrganization(payload);
