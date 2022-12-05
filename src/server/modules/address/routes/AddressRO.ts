@@ -7,6 +7,9 @@ import { unique } from '@/decorators/unique';
 @unique
 export class AddressRO {
   @JsonProperty()
+  id?: number;
+
+  @JsonProperty()
   country: string;
 
   @JsonProperty()

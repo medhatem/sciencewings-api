@@ -2,7 +2,7 @@ import { IAddressService } from '@/modules/address/interfaces/IAddressService';
 import { IPhoneService } from '@/modules/phones/interfaces/IPhoneService';
 import { applyToAll } from '@/utils/utilities';
 import { ResetPasswordRO } from '@/modules/users/routes/RequstObjects';
-import { container, provideSingleton } from '@/di/index';
+import { container, lazyInject, provideSingleton } from '@/di/index';
 
 import { BaseService } from '@/modules/base/services/BaseService';
 import { Email } from '@/utils/Email';
@@ -19,9 +19,14 @@ import { validate } from '@/decorators/validate';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { NotFoundError, ValidationError } from '@/Exceptions';
 import { ConflictError } from '@/Exceptions/ConflictError';
+import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
+import { FETCH_STRATEGY } from '@/modules/base';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {
+  @lazyInject(IMemberService) public memberService: IMemberService;
+
   constructor(
     public dao: UserDao,
     public addressService: IAddressService,
@@ -39,28 +44,59 @@ export class UserService extends BaseService<User> implements IUserService {
 
   @log()
   async updateUserDetails(payload: UserRO, userId: number): Promise<number> {
-    const userDetail = this.wrapEntity(this.dao.model, {
-      email: payload.email,
-      firstname: payload.firstname,
-      lastname: payload.lastname,
-      address: payload.address,
-      phones: payload.phones,
-      dateofbirth: payload.dateofbirth,
-      signature: payload.signature,
-      actionId: payload.actionId,
-      share: payload.share,
-    });
-    const authedUser = await this.dao.get(userId);
-    if (!authedUser) {
+    const user = await this.dao.get(userId);
+    if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` }, friendly: false });
     }
 
-    const user: User = {
-      ...authedUser,
-      ...userDetail,
+    if (payload.firstname !== user.firstname || payload.lastname !== user.lastname) {
+      const members = await this.memberService.getByCriteria({ user }, FETCH_STRATEGY.ALL);
+
+      applyToAll(members, async (member) => {
+        await this.memberService.update(
+          this.memberService.wrapEntity(member, {
+            name: payload.firstname + ' ' + payload.lastname,
+          }),
+        );
+      });
+    }
+
+    const userDetail = this.wrapEntity(user, {
+      email: payload.email || user.email,
+      firstname: payload.firstname || user.firstname,
+      lastname: payload.lastname || user.lastname,
+      dateofbirth: payload.dateofbirth || user.dateofbirth,
+      signature: payload.signature || user.signature,
+      actionId: payload.actionId || user.actionId,
+      share: payload.share || user.share,
+    });
+
+    const updatedAddress = await this.addressService.get(payload.address.id);
+    await this.addressService.update(
+      this.wrapEntity(updatedAddress, {
+        ...payload.address,
+      }),
+    );
+
+    await payload.phones.map(async (phone) => {
+      const updatedPhone = await this.phoneService.get(phone.id);
+      await this.phoneService.update(
+        this.wrapEntity(updatedPhone, {
+          ...phone,
+        }),
+      );
+    });
+
+    const keycloakUserDetail: UserRepresentation = {
+      firstName: payload.firstname || user.firstname,
+      lastName: payload.lastname || user.lastname,
+      email: payload.email || user.email,
+      emailVerified: true,
     };
 
-    await this.dao.update(user);
+    await this.keycloakUtils.updateKcUser(user.keycloakId, keycloakUserDetail);
+
+    await this.dao.update(userDetail);
 
     return userId;
   }
@@ -187,6 +223,8 @@ export class UserService extends BaseService<User> implements IUserService {
     if (!user) {
       throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${payload}` } });
     }
+    user.phones.init();
+
     return user;
   }
 
