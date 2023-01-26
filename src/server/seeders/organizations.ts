@@ -27,7 +27,7 @@ export class SeedOrganizations {
     private logger: Logger,
   ) {}
 
-  async createOgranizations(users: any) {
+  async createOrganizations(users: any) {
     try {
       const repository = connection.em.getRepository(Organization as any);
       await applyToAll(users, async (user: any) => {

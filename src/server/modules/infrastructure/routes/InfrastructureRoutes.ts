@@ -85,7 +85,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
   ): Promise<GetAllInfrastructuresDTO> {
-    const result = await this.InfrastructureService.getAllOgranizationInfrastructures(
+    const result = await this.InfrastructureService.getAllOrganizationInfrastructures(
       orgId,
       page || null,
       size || null,

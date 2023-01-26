@@ -95,13 +95,13 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
    * @param query of type string used to do the search
    */
   @GET
-  @Path('getOgranizationResourcesById/:organizationId')
+  @Path('getOrganizationResourcesById/:organizationId')
   @Security(['{orgId}-view-organization-resources'])
   @LoggerStorage()
   @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOgranizationResources(
+  public async getOrganizationResources(
     @PathParam('organizationId') organizationId: number,
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,

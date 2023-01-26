@@ -89,7 +89,7 @@ export class BaseDao<T extends BaseModel<T>> {
   }
 
   @log()
-  public async remove(entry: T): Promise<T> {
+  public async remove(entry: any): Promise<any> {
     await this.repository.nativeDelete(entry);
     return entry;
   }

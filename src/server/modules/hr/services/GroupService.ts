@@ -128,17 +128,25 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         active: payload.active,
         description: payload.description,
       });
+      wrappedGroup.organization = organization;
+
       if (payload.parent) {
         const fetchedGroup = await this.dao.get(payload.parent);
         if (!fetchedGroup) {
           throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${payload.parent}` } });
         }
         wrappedGroup.parent = fetchedGroup;
+
+        // add the new group as a subgroup of the parent grp
+        const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, fetchedGroup.kcid);
+        wrappedGroup.kcid = id;
+      }else{
+        // add org group as parent
+        const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
+        wrappedGroup.kcid = id;
       }
-      wrappedGroup.organization = organization;
-      const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
-      wrappedGroup.kcid = id;
       createdGroup = await this.dao.transactionalCreate(wrappedGroup);
+
 
       if (payload.members) {
         //await createdGroup.members.init();
