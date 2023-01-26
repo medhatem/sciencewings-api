@@ -32,7 +32,7 @@ export class Seeders {
     // register keycloak users
     const users = await this.seedUsers.createUsers(KDUsers);
     // creating organizations
-    let organizations = await this.seedOrganizations.createOgranizations(users);
+    let organizations = await this.seedOrganizations.createOrganizations(users);
     // assiging labels to each organization
     organizations = await this.seedOrganizations.createLabels(organizations);
     // creating resources

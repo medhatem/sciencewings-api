@@ -224,7 +224,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
       expect(result.body.statusCode).to.equal(204);
     });
   });
-  suite('GET getOgranizationResourcesById/:organizationId', () => {
+  suite('GET getOrganizationResourcesById/:organizationId', () => {
     test('Should fail on throw error', async () => {
       mockMethodWithResult(
         resourceService,
@@ -233,14 +233,14 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
         Promise.resolve({ isFailure: true, error: 'throwing error' }),
       );
       try {
-        await resourceRoute.getOgranizationResources(1);
+        await resourceRoute.getOrganizationResources(1);
       } catch (error) {
         expect(error).to.equal('throwing error');
       }
     });
     test('Should success at eturning the right value', async () => {
       mockMethodWithResult(resourceService, 'getResourcesOfAGivenOrganizationById', [], Result.ok([] as Resource[]));
-      const result = await resourceRoute.getOgranizationResources(1);
+      const result = await resourceRoute.getOrganizationResources(1);
       expect(result.body.statusCode).to.equal(200);
     });
   });

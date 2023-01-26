@@ -57,7 +57,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @GET
   @Path('getOrganizationProjectById/:id')
-  @Security(['{orgId}-view-organization-project'])
+  @Security(['{orgId}-view-organization-projects'])
   @LoggerStorage()
   @Response<GETProjectDTO>(200, 'Project extract Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')

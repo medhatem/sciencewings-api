@@ -44,7 +44,7 @@ export class InfrastructureService extends BaseService<Infrastructure> implement
    *
    */
   @log()
-  public async getAllOgranizationInfrastructures(orgId: number, page?: number, size?: number): Promise<any> {
+  public async getAllOrganizationInfrastructures(orgId: number, page?: number, size?: number): Promise<any> {
     const organization = await this.organizationService.get(orgId);
 
     if (!organization) {

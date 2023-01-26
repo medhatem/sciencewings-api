@@ -20,7 +20,7 @@ import { Job } from '@/modules/hr/models/Job';
 import { Organization } from '@/modules/organizations/models/Organization';
 import { Phone } from '@/modules/phones/models/Phone';
 import { Project } from '@/modules/projects/models/Project';
-import { ProjectMember } from '@/modules/projects/models/ProjectMember';
+// import { ProjectMember } from '@/modules/projects/models/ProjectMember';
 import { ProjectTask } from '@/modules/projects/models/ProjectTask';
 import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceStatusHistory } from '@/modules/resources/models/ResourceStatusHistory';
@@ -159,7 +159,9 @@ export class Member extends BaseModel<Member> {
   })
   public contract? = new Collection<Contract>(this);
 
-  @ManyToMany({ entity: () => Project, owner: true, pivotEntity: () => ProjectMember })
+  // @ManyToMany({ entity: () => Project, owner: true, pivotEntity: () => ProjectMember })
+  
+  @ManyToMany({ entity: () => Project, mappedBy: o => o.members })
   projects? = new Collection<Project>(this);
 
   @Property({ nullable: true })

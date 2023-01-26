@@ -209,7 +209,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
   @Response<GetOrganizationSettingsBodyDTO>(200, 'Organization Settings Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getOgranizationSettings(
+  public async getOrganizationSettings(
     @PathParam('organizationId') organizationId: number,
   ): Promise<GetOrganizationSettingsDTO> {
     const result = await this.OrganizationService.getOrganizationSettingsById(organizationId);
