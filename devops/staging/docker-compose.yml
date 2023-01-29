@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  api:
+    container_name: staging_api
+    build:
+      context: ../../
+      dockerfile: devops/staging/Dockerfile
+    environment:
+      PORT: 3000
+      ENV: staging
+      TOKEN_SECRET: jwt_secret_2121
+    ports:
+      - '80:3000'

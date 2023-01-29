@@ -1,0 +1,81 @@
+{
+  "SOMETHING_WENT_WRONG": "Une erreur est survenue",
+  "HTTP_401_UNAUTHORIZED": "HTTP 401 Non Authorise",
+  "UNKNOWN_USER": "utilisateur inconnu",
+  "{{name}} ALREADY_EXISTS": "{{name}} Existe Deja.",
+
+  "ENTITY.NON_EXISTANT": "entity not found",
+
+  "ORG.NON_EXISTANT_DATA {{org}}": "L'organisation {{org}} est introuvable.",
+  "ORG.NON_EXISTANT_PARENT_ORG": "Le parent de l'organisation n'existe pas",
+
+  "INFRA.NON_EXISTANT_DATA {{infra}}": "L'infrastructure {{infra}} est introuvable.",
+  "INFRA.NON_EXISTANT_PARENT_INFRA": "Le parent de l'infrastructure n'existe pas",
+
+
+  "USER.NON_EXISTANT_USER {{user}}": "L'utilisateur {{user}} n'existe pas",
+  "USER.ALREADY_MEMBER {{user}}": "L'utilisateur {{user}} est deja membre de l'organisation.",
+  "USER.NOT_MEMBER_OF_ORG": "L'utilisateur n'est pas membre de l'organisation",
+  "USER.CANNOT_RESEND_INVITE_TO_ACTIVE_USER": "Peut pas re-evnoyer une invitation a un utilisateur actif",
+  "USER.INVITATION_ALREADY_ANSWERED": "L'invitation a deja ete repondu",
+
+  "KEYCLOAK.GROUP_DELETION_SUB_GROUP": "L'organisation a des sous groups qui doivent etre supprimer en premier!",
+  "KEYCLOAK.NO_PERMISSIONS_PROVIDED": "Aucune permission a valider",
+  "KEYCLOAK.NO_CURRENT_ORG_PROVIDED": "Pas d'organisation currente trouve",
+  "KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}": "Aucun group trouve pour l'id: {{id}}",
+  "KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}": "L'utilisateur {{user}} n'est pas membre de {{org}}",
+
+  "MEMBER.NON_EXISTANT": "membre introuvable",
+  "MEMBER.NON_EXISTANT {{member}}": "membre: {{member}} est introuvable",
+
+  "RESOURCE.NON_EXISTANT {{resource}}": "Resource: {{resource}} n'existe pas",
+
+  "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Le taux: {{rate}} de resource n'existe pas",
+
+  "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} n'existe pas",
+
+  "RESOURCE_TAG.NON_EXISTANT {{tag}}": "Resource tag: {{tag}} n'existe pas",
+
+  "PROJECT.NON_EXISTANT {{project}}": "Projet: {{project}} est introuvable. ",
+  "PROJECT.NOT_FOR_THIS_ORG {{project,org}}": "Le projet: {{project}} N'appartient pas à cette organisation: {{org}}.",
+  "PROJECT.KEY_IS_NOT_UNIQUE {{key}}": "Le clé de projet: {{key}} est déja utilisé.",
+  "PROJECT.MEMBER_IS_ALREADY_PARTICIPATE_IN_PROJECT {{member}}": "Le membre: {{member}} travaille déjà sur ce projet.",
+
+  "GROUP.NON_EXISTANT {{group}}": "groupe: {{group}} est introuvable",
+
+  "JOB.NON_EXISTANT {{job}}": "Job: {{job}} est introuvable",
+
+  "CONTRACT.NON_EXISTANT {{contract}}": "Contract: {{contract}} is not found",
+
+  "VALIDATION.NON_MATCHING_PASSWORD": "Les mots de passe ne matche pas.",
+  "VALIDATION.FIRSTNAME_REQUIRED": "prenom est requis",
+  "VALIDATION.LASTNAME_REQUIRED": "Le nom est requis",
+  "VALIDATION.EMAIL_REQUIRED": "L'email est requis",
+  "VALIDATION.PHONE_REQUIRED": "Telephone est requis",
+  "VALIDATION.ADDRESS_REQUIRED": "L'adresse est requis",
+  "VALIDATION.COUNTRY_REQUIRED": "le pays est requis",
+  "VALIDATION.PROVINCE_REQUIRED": "la province est requis",
+  "VALIDATION.CODE_REQUIRED": " le code est requis",
+  "VALIDATION.TYPE_REQUIRED": "le type est requis",
+  "VALIDATION.CITY_REQUIRED": "la ville est requis",
+  "VALIDATION.STREET_REQUIRED": "la rue est requis",
+  "VALIDATION.NAME_REQUIRED": "Le nom est requis",
+  "VALIDATION.LABEL_REQUIRED": "Le label est requis",
+  "VALIDATION.DATEOFBIRTH_REQUIRED": "La date de naissance est requis",
+  "VALIDATION.DESCRIPTION_REQUIRED": "La description est requise",
+  "VALIDATION.RATE_REQUIRED": "Le taux est requis",
+  "VALIDATION.CATEGORY_REQUIRED": "La categorie est requise",
+  "VALIDATION.DURATION_REQUIRED": "La durée est requise",
+  "VALIDATION.TITLE_REQUIRED": "Le titre est requis",
+  "VALIDATION.DATESTART_REQUIRED": "La date du debut est requise",
+  "VALIDATION.KEY_REQUIRED": "La clé est requise",
+  "VALIDATION.ORGANIZATION_REQUIRED": "L'organisation est requise",
+  "VALIDATION.JOBLEVEL_REQUIRED": "le niveau de travaille est requise",
+  "VALIDATION.USER_REQUIRED": "L'utilisateur' est requise",
+  "VALIDATION.WAGE_REQUIRED": "La salaire est requise",
+  "VALIDATION.DATEEND_REQUIRED": "la date de fin est requise pou le contrat contrat de base",
+  "VALIDATION.DATEEND.PROVIDED_WITHOUT_CONTRACT_BASE_REQUIRED": "Ne pouvez pas ajouter une date sand contrat contrat de base",
+  "VALIDATION.DATEEND_JUST_IN_CONTRACT_BASE": "Vous pouvez ajouter une date de fin justque en contrat contrat de base",
+
+  "required {{field}}": "{{field}} est requi"
+}

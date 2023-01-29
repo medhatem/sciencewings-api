@@ -1,0 +1,41 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "outDir": "../dist",
+    "baseUrl": ".",
+    "target": "es6",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "pretty": true,
+    "paths": {
+      "@/*": ["server/*"],
+      "@/modules/*": ["server/modules/*"],
+      "@/di/*": ["server/di/*"],
+      "@/db/*": ["server/db/*"],
+      "@/configuration/*": ["server/configuration/*"],
+      "@types/*": ["server/types/*"],
+      "@/Exceptions/*": ["server/Exceptions/*"],
+      "@/interface/*": ["server/interface/*"],
+      "@/models/*": ["server/models/*"],
+      "@/routes/*": ["server/routes/*"],
+      "@/service/*": ["server/service/*"],
+      "@/dao/*": ["server/dao/*"],
+      "@/sdks/*": ["server/sdks/*"],
+      "@/utils/*": ["server/utils/*"]
+    }
+  },
+  "plugins": [
+    {
+      "name": "typescript-styled-plugin"
+    }
+  ]
+}

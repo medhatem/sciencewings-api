@@ -1,0 +1,77 @@
+{
+  "SOMETHING_WENT_WRONG": "Something Went Wrong",
+  "HTTP_401_UNAUTHORIZED": "HTTP 401 Non Authorized",
+  "UNKNOWN_USER": "Unknown user",
+  "{{name}} ALREADY_EXISTS": "{{name}} Already Exists.",
+
+  "ENTITY.NON_EXISTANT": "entity not found",
+
+  "ORG.NON_EXISTANT_DATA {{org}}": "Organization {{org}} is not found.",
+  "ORG.NON_EXISTANT_PARENT_ORG": "Parent organization does not exist.",
+  "INFRA.NON_EXISTANT_PARENT_INFRA":  "Parent infrastructure does not exist.",
+  "INFRA.NON_EXISTANT_DATA {{infra}}": "Infrastructure {{infra}} is not found.",
+
+  "USER.NON_EXISTANT_USER {{user}}": "User {{user}} does not exist",
+  "USER.ALREADY_MEMBER {{user}}": "User {{user}} is already a member of the organization.",
+  "USER.NOT_MEMBER_OF_ORG": "user is not a member of this organization",
+  "USER.CANNOT_RESEND_INVITE_TO_ACTIVE_USER": "Cannot send invite to active user",
+  "USER.INVITATION_ALREADY_ANSWERED": "The invitation had already been responded to",
+
+  "KEYCLOAK.GROUP_DELETION_SUB_GROUP": "Organization has sub groups that need to be deleted first!",
+  "KEYCLOAK.NO_PERMISSIONS_PROVIDED": "NO permissions provided to validate",
+  "KEYCLOAK.NO_CURRENT_ORG_PROVIDED": "NO current organization provided",
+  "KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}": "NO keycloak group found with id: {{id}}",
+  "KEYCLOAK.USER_NOT_MEMBER_OF_ORG {{user}}{{org}}": "User {{user}} is not a member of {{org}}",
+
+  "MEMBER.NON_EXISTANT": "member not found",
+  "MEMBER.NON_EXISTANT {{member}}": "member: {{member}} not found",
+
+  "RESOURCE.NON_EXISTANT {{resource}}": "Resource: {{resource}} does not exist",
+  "RESOURCE_RATE.NON_EXISTANT {{rate}}": "Resource rate: {{rate}} not found",
+
+  "RESOURCE_CALENDAR.NON_EXISTANT {{calendar}}": "resource Calendar: {{calendar}} is not found",
+
+  "RESOURCE_TAG.NON_EXISTANT {{tag}}": "Resource tag: {{tag}} does not exist",
+
+  "PROJECT.NON_EXISTANT {{project}}": "Project: {{project}} not found",
+  "PROJECT.NOT_FOR_THIS_ORG {{project,org}}": "Project: {{project}} not belong to this organization: {{org}}.",
+  "PROJECT.KEY_IS_NOT_UNIQUE {{key}}": "Project key: {{key}} already in use.",
+  "PROJECT.MEMBER_IS_ALREADY_PARTICIPATE_IN_PROJECT {{member}}": "Member: {{member}} is already working on this project.",
+
+  "GROUP.NON_EXISTANT {{group}}": "group: {{group}} is not found",
+
+  "JOB.NON_EXISTANT {{job}}": "Job: {{job}} is not found",
+
+  "CONTRACT.NON_EXISTANT {{contract}}": "Contract: {{contract}} is not found",
+
+  "VALIDATION.NON_MATCHING_PASSWORD": "Passwords do not match.",
+  "VALIDATION.FIRSTNAME_REQUIRED": "firstname is required",
+  "VALIDATION.LASTNAME_REQUIRED": "lastname is required",
+  "VALIDATION.EMAIL_REQUIRED": "email is required",
+  "VALIDATION.PHONE_REQUIRED": "phone is required",
+  "VALIDATION.ADDRESS_REQUIRED": "address is required",
+  "VALIDATION.COUNTRY_REQUIRED": "country is required",
+  "VALIDATION.PROVINCE_REQUIRED": "province is required",
+  "VALIDATION.CODE_REQUIRED": "code is required",
+  "VALIDATION.TYPE_REQUIRED": "type is required",
+  "VALIDATION.CITY_REQUIRED": "city is required",
+  "VALIDATION.STREET_REQUIRED": "street is required",
+  "VALIDATION.KEY_REQUIRED": "key is required",
+  "VALIDATION.ORGANIZATION_REQUIRED": "organization is required",
+
+  "VALIDATION.NAME_REQUIRED": "Name is required",
+  "VALIDATION.LABEL_REQUIRED": "Label is required",
+  "VALIDATION.DESCRIPTION_REQUIRED": "description is required",
+  "VALIDATION.RATE_REQUIRED": "rate is required",
+  "VALIDATION.CATEGORY_REQUIRED": "category is required",
+  "VALIDATION.DURATION_REQUIRED": "duration is required",
+  "VALIDATION.TITLE_REQUIRED": "Title is required",
+  "VALIDATION.DATESTART_REQUIRED": "Date start is required",
+  "VALIDATION.JOBLEVEL_REQUIRED": "Job Level is required",
+  "VALIDATION.USER_REQUIRED": "User is required",
+  "VALIDATION.WAGE_REQUIRED": "Wage is required",
+  "VALIDATION.DATEEND_JUST_IN_CONTRACT_BASE": "You can add an End date just in CONTRACT BASE",
+  "VALIDATION.DATEEND_REQUIRED": "Date end is required for CONTRACT BASE contract",
+  "VALIDATION.DATEEND.PROVIDED_WITHOUT_CONTRACT_BASE_REQUIRED": "Can not set end date without CONTRACT BASE contract",
+  "required {{field}}": "{{field}} is required"
+}
