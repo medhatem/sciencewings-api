@@ -36,7 +36,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    */
   @GET
   @Path('getOrganizationGroup/:organizationId')
-  @Security()
+  @Security(['{orgId}-view-organization-groups'])
   @LoggerStorage()
   @Response<GroupRO>(200, 'Group fetched Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -71,7 +71,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    */
   @POST
   @Path('create')
-  @Security()
+  @Security(['{orgId}-create-group'])
   @LoggerStorage()
   @Response<GroupRO>(201, 'Group created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -88,7 +88,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    */
   @PUT
   @Path('/update/:id')
-  @Security()
+  @Security(['{orgId}-update-group'])
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -106,7 +106,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    */
   @POST
   @Path('/groupMember/:groupId/:userId')
-  @Security()
+  @Security(['{orgId}-update-group-members'])
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -127,7 +127,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    */
   @DELETE
   @Path('/groupMember/:groupId/:userId')
-  @Security()
+  @Security(['{orgId}-delete-group-members'])
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -149,7 +149,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    */
   @DELETE
   @Path('/delete/:id')
-  @Security()
+  @Security(['{orgId}-delete-group'])
   @LoggerStorage()
   @Response<GroupDTO>(204, 'Group deleted Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -166,7 +166,7 @@ export class GroupRoutes extends BaseRoutes<Group> {
    */
   @GET
   @Path(':groupId/members')
-  @Security()
+  @Security(['{orgId}-view-group-members'])
   @LoggerStorage()
   @Response<GroupRO>(200, 'members fetched Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
