@@ -100,6 +100,9 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
   @log()
   public async getGroupMembers(groupId: number): Promise<Member[]> {
+    if (!groupId) {
+      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
+    }
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
@@ -140,13 +143,12 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         // add the new group as a subgroup of the parent grp
         const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, fetchedGroup.kcid);
         wrappedGroup.kcid = id;
-      }else{
+      } else {
         // add org group as parent
         const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
         wrappedGroup.kcid = id;
       }
       createdGroup = await this.dao.transactionalCreate(wrappedGroup);
-
 
       if (payload.members) {
         //await createdGroup.members.init();
