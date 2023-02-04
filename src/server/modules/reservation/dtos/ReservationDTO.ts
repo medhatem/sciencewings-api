@@ -3,6 +3,7 @@ import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
+import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 
 @JsonObject()
 @unique
@@ -59,6 +60,8 @@ export class ReservationsDataDTO extends BaseBodyDTO {
     beforeDeserialize,
   })
   data: Array<ReservationDTO>;
+  @JsonProperty()
+  pagination?: PaginationBodyDTO;
 }
 
 @JsonObject()

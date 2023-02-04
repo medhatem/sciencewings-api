@@ -15,6 +15,8 @@ import { log } from '@/decorators/log';
 import { validate } from '@/decorators/validate';
 import { validateParam } from '@/decorators/validateParam';
 import { CreateReservationSchema } from '../schemas/ReservationCreationSchema';
+import { paginate } from '@/utils/utilities';
+import { ReservationsList } from '@/types/types';
 
 @provideSingleton(IReservationService)
 export class ReservationService extends BaseService<Reservation> implements IReservationService {
@@ -34,24 +36,62 @@ export class ReservationService extends BaseService<Reservation> implements IRes
    *
    */
   @log()
-  async getEventsByRange(resourceId: number, start: Date, end: Date): Promise<any> {
+  async getEventsByRange(
+    resourceId: number,
+    start: Date,
+    end: Date,
+    page?: number,
+    size?: number,
+  ): Promise<ReservationsList> {
     const resource = await this.resourceService.get(resourceId);
     if (!resource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
     }
-    // get the calendars of the reource
     await resource.calendar.init();
     const calendar = resource.calendar[0];
-    const reservations = await this.getByCriteria<FETCH_STRATEGY.ALL>(
+    let skip;
+    if (page) {
+      const length = await this.dao.count({
+        resourceCalendar: calendar.id,
+        dateFrom: { $lte: end },
+        dateTo: { $gte: start },
+      });
+      skip = (page - 1) * size;
+      const reservations = await this.getByCriteria<FETCH_STRATEGY.ALL>(
+        {
+          resourceCalendar: calendar.id,
+          dateFrom: { $lte: end },
+          dateTo: { $gte: start },
+        },
+        FETCH_STRATEGY.ALL,
+        {
+          offset: skip,
+          limit: size || 10,
+        },
+      );
+      const { data, pagination } = paginate(reservations, page, size, skip, length);
+      const result: ReservationsList = {
+        data,
+        pagination,
+      };
+      return result;
+    }
+    //
+    // get the calendars of the reource
+
+    const reservations = (await this.getByCriteria<FETCH_STRATEGY.ALL>(
       {
         resourceCalendar: calendar.id,
         dateFrom: { $lte: end },
         dateTo: { $gte: start },
       },
       FETCH_STRATEGY.ALL,
-    );
+    )) as Reservation[];
 
-    return reservations;
+    const result: ReservationsList = {
+      data: reservations,
+    };
+    return result;
   }
 
   @log()

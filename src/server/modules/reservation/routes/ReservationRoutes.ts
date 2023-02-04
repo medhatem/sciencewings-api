@@ -38,9 +38,24 @@ export class ReservationRoutes extends BaseRoutes<Reservation> {
     @PathParam('resourceId') resourceId: number,
     @QueryParam('start') start: string,
     @QueryParam('end') end: string,
+    @QueryParam('page') page?: number,
+    @QueryParam('size') size?: number,
   ): Promise<ReservationsDTO> {
-    const result = await this.reservationService.getEventsByRange(resourceId, new Date(start), new Date(end));
-    return new ReservationsDTO({ body: { data: [...(result || [])] }, statusCode: 201 });
+    const result = await this.reservationService.getEventsByRange(
+      resourceId,
+      new Date(start),
+      new Date(end),
+      page || null,
+      size || null,
+    );
+    if (result?.pagination)
+      return new ReservationsDTO({
+        body: { data: result.data, pagination: result.pagination, statusCode: 200 },
+      });
+    else
+      return new ReservationsDTO({
+        body: { data: result.data, statusCode: 200 },
+      });
   }
 
   /**
