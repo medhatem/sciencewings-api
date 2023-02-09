@@ -133,11 +133,24 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       return result;
     }
 
-    resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL)) as Resource[];
+    resources = (await this.dao.getByCriteria({ organization }, FETCH_STRATEGY.ALL, {
+      populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+    })) as Resource[];
     const result: ResourcesList = {
       data: resources,
     };
     return result;
+  }
+
+  /**
+   * Fetch resource and initialize all the collections
+   */
+  @log()
+  async getResourceById(resourceId: number): Promise<Resource> {
+    const resource = (await this.dao.get(resourceId, {
+      populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+    })) as Resource;
+    return resource;
   }
 
   @log()

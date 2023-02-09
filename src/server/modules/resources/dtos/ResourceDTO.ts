@@ -5,6 +5,8 @@ import { unique } from '@/decorators/unique';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
+import { GetResourceSettingsBodyDTO } from '@/modules/resources/dtos/ResourceSettingsDTO';
+import { ResourceStatusDTO } from '@/modules/resources/dtos/ResourceStatusDTO';
 import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 
 @JsonObject()
@@ -48,7 +50,7 @@ export class ResourceTagDTO extends BaseDTO {
 
 @JsonObject()
 @unique
-export class ResourceDTO {
+export class ResourceDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 
@@ -73,6 +75,12 @@ export class ResourceDTO {
   @JsonProperty()
   timezone: string;
 
+  @JsonProperty()
+  settings: GetResourceSettingsBodyDTO;
+
+  @JsonProperty()
+  status: ResourceStatusDTO;
+
   @JsonProperty({
     type: ResourceCalendarDTO,
     beforeDeserialize,
@@ -86,10 +94,10 @@ export class ResourceDTO {
   tags: Array<ResourceTagDTO>;
 
   @JsonProperty({
-    type: ResourceManagerDTO,
+    type: MemberDTO,
     beforeDeserialize,
   })
-  managers: Array<ResourceManagerDTO>;
+  managers: Array<MemberDTO>;
 }
 
 @JsonObject()
@@ -101,7 +109,7 @@ export class CreatedResourceBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
-export class GetResourceBodyDTO extends BaseBodyDTO {
+export class GetResourcesBodyDTO extends BaseBodyDTO {
   @JsonProperty({
     type: ResourceDTO,
     beforeDeserialize,
@@ -114,9 +122,16 @@ export class GetResourceBodyDTO extends BaseBodyDTO {
 
 @JsonObject()
 @unique
+export class ResourcesGetDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: GetResourcesBodyDTO;
+}
+
+@JsonObject()
+@unique
 export class ResourceGetDTO extends BaseRequestDTO {
   @JsonProperty()
-  body: GetResourceBodyDTO;
+  body: ResourceDTO;
 }
 
 @JsonObject()
@@ -152,97 +167,4 @@ export class GetResourceReservationVisibilityDTO extends BaseRequestDTO {
 export class UpdateResourceDTO extends BaseRequestDTO {
   @JsonProperty()
   body: UpdateResourceBodyDTO;
-}
-
-//Resource settings
-@JsonObject()
-@unique
-export class GetResourceSettingsBodyDTO extends BaseBodyDTO {
-  @JsonProperty()
-  statusType: string;
-  @JsonProperty()
-  statusDescription: string;
-
-  @JsonProperty()
-  visibility: boolean;
-  @JsonProperty()
-  isUnlistedOnOrganizationPage: boolean;
-  @JsonProperty()
-  isUnlistedToUsersWhoCannotReserve: boolean;
-  @JsonProperty()
-  isFullyHiddentoUsersWhoCannotReserve: boolean;
-  @JsonProperty()
-  isPromotedOnSitePageAsALargeButtonAboveOtherResources: boolean;
-  @JsonProperty()
-  isHideAvailabilityonSitePage: boolean;
-
-  @JsonProperty()
-  accessToResource: string;
-
-  @JsonProperty()
-  isEnabled: boolean;
-  @JsonProperty()
-  isLoanable: boolean;
-  @JsonProperty()
-  isReturnTheirOwnLoans: boolean;
-  @JsonProperty()
-  isReservingLoansAtFutureDates: boolean;
-  @JsonProperty()
-  fixedLoanDuration: string;
-  @JsonProperty()
-  overdueNoticeDelay: string;
-  @JsonProperty()
-  recurringReservations: string;
-
-  @JsonProperty()
-  unitName: string;
-  @JsonProperty()
-  unitLimit: number;
-  @JsonProperty()
-  unites: number;
-
-  @JsonProperty()
-  isEditingWindowForUsers: boolean;
-  @JsonProperty()
-  isRestrictCreatingNewReservationBeforeTime: boolean;
-  @JsonProperty()
-  isRestrictCreatingNewReservationAfterTime: boolean;
-  @JsonProperty()
-  reservationTimeGranularity: string;
-  @JsonProperty()
-  isAllowUsersToEndReservationEarly: boolean;
-  @JsonProperty()
-  defaultReservationDuration: string;
-  @JsonProperty()
-  reservationDurationMinimum: string;
-  @JsonProperty()
-  reservationDurationMaximum: string;
-  @JsonProperty()
-  bufferTimeBeforeReservation: string;
-
-  @JsonProperty()
-  isReservationDetailsVisibilityToNonModerators: boolean;
-}
-
-@JsonObject()
-@unique
-export class GetResourceSettingsDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: GetResourceSettingsBodyDTO;
-}
-
-@JsonObject()
-@unique
-export class resourceManagersObjectDTO extends BaseBodyDTO {
-  @JsonProperty({
-    type: MemberDTO,
-    beforeDeserialize,
-  })
-  data: Array<MemberDTO>;
-}
-@JsonObject()
-@unique
-export class resourceManagersRequestDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: resourceManagersObjectDTO;
 }

@@ -31,7 +31,7 @@ export class Resource extends BaseModel<Resource> {
   description?: string;
 
   @ManyToMany({ entity: () => Member, mappedBy: (entity) => entity.resources })
-  managers = new Collection<Member>(this);
+  managers? = new Collection<Member>(this);
 
   @ManyToMany({
     entity: () => ResourceTag,
