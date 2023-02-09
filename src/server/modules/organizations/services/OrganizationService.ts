@@ -39,7 +39,7 @@ import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { IInfrastructureService } from '@/modules/infrastructure/interfaces/IInfrastructureService';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
 import { userStatus } from '@/modules/users/models/User';
-import { IGroupService } from '@/modules/hr';
+import { IGroupService } from '@/modules/hr/interfaces/IGroupService';
 import { paginate } from '@/utils/utilities';
 import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';

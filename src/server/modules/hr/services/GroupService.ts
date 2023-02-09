@@ -18,7 +18,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Member } from '../models/Member';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { Organization } from '@/modules/organizations';
+import { Organization } from '@/modules/organizations/models/Organization';
 import { GroupsList } from '@/types/types';
 
 @provideSingleton(IGroupService)

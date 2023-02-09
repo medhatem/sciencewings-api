@@ -23,7 +23,7 @@ import { Keycloak } from '@/sdks/keycloak';
 import { BadRequest } from '@/Exceptions/BadRequestError';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 import { applyToAll } from '@/utils/utilities';
-import { Permission } from '@/modules/permissions';
+import { Permission } from '@/modules/permissions/models/permission';
 
 @provideSingleton(IMemberService)
 export class MemberService extends BaseService<Member> implements IMemberService {

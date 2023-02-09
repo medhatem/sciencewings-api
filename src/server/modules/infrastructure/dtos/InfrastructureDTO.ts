@@ -1,11 +1,12 @@
 import { BaseBodyDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDTO';
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-import { unique } from '@/decorators/unique';
-import { beforeDeserialize } from '@/utils/utilities';
-import { MemberDTO } from '@/modules/hr';
-import { ResourceDTO } from '@/modules/resources';
+
+import { MemberDTO } from '@/modules/hr/dtos/MemberDTO';
 import { OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
+import { ResourceDTO } from '@/modules/resources/dtos/ResourceDTO';
+import { beforeDeserialize } from '@/utils/utilities';
+import { unique } from '@/decorators/unique';
 
 @JsonObject()
 @unique

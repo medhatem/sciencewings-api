@@ -21,7 +21,7 @@ import { NotFoundError, ValidationError } from '@/Exceptions';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { IMemberService } from '@/modules/hr/interfaces/IMemberService';
-import { FETCH_STRATEGY } from '@/modules/base';
+import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 
 @provideSingleton(IUserService)
 export class UserService extends BaseService<User> implements IUserService {

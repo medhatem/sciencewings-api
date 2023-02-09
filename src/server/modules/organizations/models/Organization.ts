@@ -3,6 +3,7 @@ import { container, provide } from '@/di/index';
 
 import { Address } from '@/modules/address/models/Address';
 import { BaseModel } from '@/modules/base/models/BaseModel';
+import { Calendar } from '@/modules/reservation/models/Calendar';
 import { Infrastructure } from '@/modules/infrastructure/models/Infrastructure';
 import { Job } from '@/modules/hr/models/Job';
 import { Member } from '@/modules/hr/models/Member';
@@ -13,7 +14,7 @@ import { Resource } from '@/modules/resources/models/Resource';
 import { ResourceTag } from '@/modules/resources/models/ResourceTag';
 import { User } from '@/modules/users/models/User';
 import { WorkLocation } from '@/modules/hr/models/WorkLocation';
-import { Calendar } from '@/modules/reservation';
+
 export enum OrganizationType {
   PUBLIC = 'Public',
   SERVICE = 'Service',
