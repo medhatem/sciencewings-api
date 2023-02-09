@@ -20,7 +20,8 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ConflictError } from '@/Exceptions/ConflictError';
 import { infrastructurelistline, subInfrasListLine } from '@/modules/infrastructure/infastructureTypes';
 import { Member } from '@/modules/hr/models/Member';
-import { IResourceService, Resource } from '@/modules/resources';
+import { Resource } from '@/modules/resources/models/Resource';
+import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import { InfrastructuresList } from '@/types/types';
 
 @provideSingleton(IInfrastructureService)

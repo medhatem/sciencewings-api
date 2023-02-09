@@ -18,7 +18,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { Member } from '../models/Member';
 import { IUserService } from '@/modules/users/interfaces/IUserService';
-import { Organization } from '@/modules/organizations';
+import { Organization } from '@/modules/organizations/models/Organization';
 import { GroupsList } from '@/types/types';
 
 @provideSingleton(IGroupService)
@@ -140,13 +140,12 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         // add the new group as a subgroup of the parent grp
         const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, fetchedGroup.kcid);
         wrappedGroup.kcid = id;
-      }else{
+      } else {
         // add org group as parent
         const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
         wrappedGroup.kcid = id;
       }
       createdGroup = await this.dao.transactionalCreate(wrappedGroup);
-
 
       if (payload.members) {
         //await createdGroup.members.init();
