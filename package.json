@@ -25,7 +25,9 @@
     "lint-and-fix": "eslint . --ext .ts --fix",
     "resolve-imports": "ef-tspm -r src/ -c  src/tsconfig.json",
     "seeding": "npm run build ; npm run resolve-imports ; node dist/server/seeders/main.js",
-    "permission-seed": "TS_NODE_PROJECT=src/tsconfig.json  ts-node -r tsconfig-paths/register src/server/seeders/mainPermissionsSeed.ts"
+    "permission-seed": "TS_NODE_PROJECT=src/tsconfig.json  ts-node -r tsconfig-paths/register src/server/seeders/mainPermissionsSeed.ts",
+    "resource-view": "TS_NODE_PROJECT=src/tsconfig.json  ts-node -r tsconfig-paths/register src/server/modules/resources/daos/lonabbleResourceDao.ts"
+
   },
   "_moduleAliases": {
     "@/di": "dist/server/di",
