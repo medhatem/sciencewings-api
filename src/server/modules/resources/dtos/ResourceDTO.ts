@@ -61,6 +61,9 @@ export class ResourceDTO extends BaseBodyDTO {
   description: string;
 
   @JsonProperty()
+  organization: OrganizationInformationDTO;
+
+  @JsonProperty()
   active: boolean;
 
   @JsonProperty()
