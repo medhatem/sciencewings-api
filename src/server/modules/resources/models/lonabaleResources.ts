@@ -1,4 +1,6 @@
+import { container } from '@/di/index';
 import { Entity, Property } from '@mikro-orm/core';
+import { provide } from '@/di/index';
 
 // @Entity({
 //   expression: (em: EntityManager) => {
@@ -6,6 +8,7 @@ import { Entity, Property } from '@mikro-orm/core';
 //   },
 // })
 
+@provide()
 @Entity({
   expression:
     'SELECT name, description, ' +
@@ -15,6 +18,11 @@ import { Entity, Property } from '@mikro-orm/core';
     ' ORDER BY R.id',
 })
 export class lonabbleResource {
+  constructor() {}
+
+  static getInstance(): lonabbleResource {
+    return container.get(lonabbleResource);
+  }
   @Property()
   name: string;
   @Property()
