@@ -56,6 +56,7 @@ import { User } from '@/modules/users/models/User';
 import { ResourcesList } from '@/types/types';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { ResourceSettings } from '@/modules/resources/models/ResourceSettings';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
@@ -151,6 +152,25 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
     });
     return resource;
+  }
+
+  /**
+   * Fetch all loanable resources and initialize all the collections
+   */
+  @log()
+  async getAllLoanableResources(): Promise<Resource[]> {
+    const resourcesSettings: ResourceSettings[] = (await this.resourceSettingsService.getByCriteria(
+      { isLoanable: true },
+      FETCH_STRATEGY.ALL,
+    )) as ResourceSettings[];
+    let resources: Resource[] = [];
+    resourcesSettings.map(async (settings) => {
+      let resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.ALL, {
+        populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+      })) as Resource;
+      resources.push(resource);
+    });
+    return resources;
   }
 
   @log()

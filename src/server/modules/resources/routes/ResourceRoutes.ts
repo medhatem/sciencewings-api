@@ -142,6 +142,22 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
         body: { data: result.data, statusCode: 200 },
       });
   }
+  /**
+   * get loanable resources by id
+   */
+  @GET
+  @Path('/getAllLoanableResources')
+  @Security()
+  @LoggerStorage()
+  @Response<ResourceGetDTO>(200, 'Loanable resource Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getAllLoanableResources(): Promise<ResourceGetDTO> {
+    console.log('heyyyyyyyyyyyyyyyyyyyyyy');
+    const result = await this.ResourceService.getAllLoanableResources();
+
+    return new ResourceGetDTO({ body: result, statusCode: 200 });
+  }
 
   /**
    * Update a resource settings, section reservation general

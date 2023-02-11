@@ -15,11 +15,11 @@ export async function startDB(config: ServerDBConfig) {
     user: config.dbUsername,
     password: config.dbPassword,
     forceUtcTimezone: true,
-    entities: ['dist/server/modules/**/models/*'],
+    entities: ['dist/server/modules/**/models/*', 'dist/server/modules/**/views/*'],
   });
   await connection.connect();
-  await connection.getSchemaGenerator().dropSchema();
-  await connection.getSchemaGenerator().updateSchema();
+  // await connection.getSchemaGenerator().dropSchema();
+  // await connection.getSchemaGenerator().updateSchema();
   /*   await connection.close(true);
    */ return connection;
 }
