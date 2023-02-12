@@ -1,6 +1,7 @@
 import { container } from '@/di/index';
 import { Entity, Property } from '@mikro-orm/core';
 import { provide } from '@/di/index';
+import { BaseModel } from '@/modules/base';
 
 // @Entity({
 //   expression: (em: EntityManager) => {
@@ -11,14 +12,15 @@ import { provide } from '@/di/index';
 @provide()
 @Entity({
   expression:
-    'SELECT name, description, ' +
-    ' FROM resource R , resource_settings RS' +
+    'SELECT name, description FROM resource R , resource_settings RS' +
     ' WHERE R.settings_id = RS.id AND  RS.is_loanable = true ' +
     ' GROUP BY  R.id' +
     ' ORDER BY R.id',
 })
-export class lonabbleResource {
-  constructor() {}
+export class lonabbleResource extends BaseModel<lonabbleResource> {
+  constructor() {
+    super();
+  }
 
   static getInstance(): lonabbleResource {
     return container.get(lonabbleResource);

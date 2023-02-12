@@ -70,4 +70,5 @@ export abstract class IResourceService extends IBaseService<any> {
   addResourceManager: (resourceId: number, managerId: number) => Promise<number>;
 
   getAllResourceManagers: (resourceId: number) => Promise<any>;
+  getLonabaleResources: () => Promise<any>;
 }
