@@ -3,12 +3,12 @@ import { BaseDao } from '@/modules/base/daos/BaseDao';
 import { loanableResource } from '@/modules/resources/models/LoanableResource';
 
 @provideSingleton()
-export class loanableResourceDao extends BaseDao<loanableResource> {
+export class LoanableResourceDao extends BaseDao<loanableResource> {
   private constructor(public model: loanableResource) {
     super(model);
   }
 
-  static getInstance(): loanableResourceDao {
-    return container.get(loanableResourceDao);
+  static getInstance(): LoanableResourceDao {
+    return container.get(LoanableResourceDao);
   }
 }

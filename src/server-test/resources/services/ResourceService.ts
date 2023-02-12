@@ -32,6 +32,7 @@ import intern from 'intern';
 import { mockMethodWithResult } from '@/utils/utilities';
 import { PermissionService } from '@/modules/permissions/services/PermissionService';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
+import { LoanableResourceDao } from '@/modules/resources/daos/LoanableResourceDao';
 
 const { suite, test } = intern.getPlugin('interface.tdd');
 const { expect } = intern.getPlugin('chai');
@@ -50,6 +51,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
   let infrastructureService: SinonStubbedInstance<InfrastructureService>;
   let permissionService: SinonStubbedInstance<PermissionService>;
   let keycloakUtil: SinonStubbedInstance<KeycloakUtil>;
+  let loanableResourceDao: SinonStubbedInstance<LoanableResourceDao>;
 
   beforeEach(() => {
     createStubInstance(Configuration);
@@ -66,6 +68,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
     infrastructureService = createStubInstance(InfrastructureService);
     permissionService = createStubInstance(PermissionService);
     keycloakUtil = createStubInstance(KeycloakUtil);
+    loanableResourceDao = createStubInstance(LoanableResourceDao);
 
     const mockedContainer = stub(container, 'get');
     mockedContainer.withArgs(Configuration).returns({
@@ -95,6 +98,7 @@ suite(__filename.substring(__filename.indexOf('/server-test') + '/server-test/'.
           infrastructureService,
           keycloakUtil,
           permissionService,
+          loanableResourceDao,
         ),
       );
   });
