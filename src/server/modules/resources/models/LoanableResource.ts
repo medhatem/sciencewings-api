@@ -12,10 +12,16 @@ import { BaseModel } from '@/modules/base';
 @provide()
 @Entity({
   expression:
-    'SELECT name, description FROM resource R , resource_settings RS' +
-    ' WHERE R.settings_id = RS.id AND  RS.is_loanable = true ' +
-    ' GROUP BY  R.id' +
-    ' ORDER BY R.id',
+    'SELECT R.name, R.description, ' +
+    '(SELECT kcid FROM organization WHERE organization.id = R.organization_id) as kcid ' +
+    'FROM resource R ' +
+    'JOIN resource_settings RS ' +
+    ' ON R.settings_id = RS.id ' +
+    'JOIN organization ' +
+    ' ON R.organization_id = organization.id ' +
+    'WHERE RS.is_loanable = true ' +
+    'GROUP BY R.id ' +
+    'ORDER BY R.id',
 })
 export class loanableResource extends BaseModel<loanableResource> {
   constructor() {
@@ -27,6 +33,10 @@ export class loanableResource extends BaseModel<loanableResource> {
   }
   @Property()
   name: string;
+
   @Property()
   description: string;
+
+  @Property()
+  kcid: string;
 }
