@@ -57,6 +57,7 @@ import { ResourcesList } from '@/types/types';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 import { ResourceSettings } from '@/modules/resources/models/ResourceSettings';
+import { loanableResourceDao } from '@/modules/resources/daos/LoanableResourceDao';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
@@ -74,6 +75,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public infrastructureService: IInfrastructureService,
     public keycloakUtils: KeycloakUtil,
     public permissionService: IPermissionService,
+    public loanableResourceDao: loanableResourceDao,
   ) {
     super(dao);
   }
@@ -691,5 +693,11 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     managers = fetchedResource.managers.toArray();
 
     return managers;
+  }
+
+  @log()
+  public async getLonabaleResources(): Promise<any> {
+    console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmm', this.loanableResourceDao.getAll());
+    return this.loanableResourceDao.getAll();
   }
 }

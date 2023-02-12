@@ -7,3 +7,4 @@ export * from './ResourceCalendarLeaves';
 export * from './ResourceSettings';
 export * from './ResourceStatus';
 export * from './ResourceStatusHistory';
+export * from './LoanableResource';
