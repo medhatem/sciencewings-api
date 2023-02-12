@@ -100,6 +100,9 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
   @log()
   public async getGroupMembers(groupId: number): Promise<Member[]> {
+    if (!groupId) {
+      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
+    }
     const fetchedGroup = await this.dao.get(groupId);
     if (!fetchedGroup) {
       throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });

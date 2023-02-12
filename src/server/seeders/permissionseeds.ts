@@ -14,7 +14,8 @@ export const permissionSeeds = [
   { name: 'view-organization-projects', module: 'organization', operationDB: 'create' },
   { name: 'create-project', module: 'organization', operationDB: 'create' },
   { name: 'view-organization-project-list', module: 'organization', operationDB: 'create' },
-
+  { name: 'create-group', module: 'organization', operationDB: 'create' },
+  { name: 'view-organization-groups', module: 'organization', operationDB: 'create' },
   // project permissions
   { name: 'update-project', module: 'organization', operationDB: 'create' },
   { name: 'create-project-members', module: 'organization', operationDB: 'create' },
@@ -42,4 +43,10 @@ export const permissionSeeds = [
   { name: 'update-resource-managers', module: 'organization', operationDB: 'create' },
   { name: 'view-resource-EventsByRange', module: 'organization', operationDB: 'create' },
   { name: 'view-all-resource-reservations', module: 'organization', operationDB: 'create' },
+  // group permissions
+  { name: 'update-group', module: 'organization', operationDB: 'create' },
+  { name: 'delete-group', module: 'organization', operationDB: 'create' },
+  { name: 'view-group-members', module: 'organization', operationDB: 'create' },
+  { name: 'update-group-members', module: 'organization', operationDB: 'create' },
+  { name: 'delete-group-members', module: 'organization', operationDB: 'create' },
 ];
