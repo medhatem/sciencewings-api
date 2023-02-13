@@ -1,39 +1,150 @@
+# # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+# name: Node.js CI
+
+# on:
+#   push:
+#     branches: [ "dev", "master" ]
+#   pull_request:
+#     branches: [ "dev", "master" ]
+
+# jobs:
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [16.x]
+#         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+#     steps:
+#     - uses: actions/checkout@v3
+#     - build: Use Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
+#     - run: npm install
+#     - run: npm run build
+#     # - run: npm run test
+#     - linter: linter
+#       needs: [build]
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#     - run: npm run lint-and-fix
+
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+# name: Node.js CI
+
+# on:
+#   push:
+#     branches: [ "dev", "master" ]
+#   pull_request:
+#     branches: [ "dev", "master" ]
+
+# jobs:
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [16.x]
+#         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+#     steps:
+#     - uses: actions/checkout@v3
+#     - build: Use Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
+#     - run: npm install
+#     - run: npm run build
+#     # - run: npm run test
+#     - linter: linter
+#       needs: [build]
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#     - run: npm run lint-and-fix
+
+
 
 name: Node.js CI
 
 on:
   push:
-    branches: [ "dev", "master" ]
-  pull_request:
-    branches: [ "dev", "master" ]
+    branches:
+      - dev
+      - master
+      - feature/*
+      - release/*
+      - hotfix/*
+      - bugfix/*
+
+env:
+  NODE_ENV: production
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v3
-    - build: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm install
-    - run: npm run build
-    # - run: npm run test
-    - linter: linter
-      needs: [build]
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm run lint-and-fix
+    - name: Checkout code
+      uses: actions/checkout@v2
 
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
 
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Lint
+      run: npm run lint-and-fix
+
+    - name: Generate Swagger
+      run: npm run swagger-gen
+
+    - name: Unit test
+      run: npm run test
+
+    - name: Install dependencies for deployment
+      run: |
+        apt-get update && apt-get install -y --no-install-recommends git  curl libmcrypt-dev openssl mysql-client libmagickwand-dev
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+        docker-compose --version
+
+    - name: Build for deployment
+      run: docker-compose build
+
+    - name: Deploy to dev (manual)
+      if: github.event_name == 'push' && contains(toJson(github.event.ref), 'dev')
+      run: |
+        curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+        docker-compose -f devops/staging/docker-compose.yml build
+        heroku container:login
+        docker tag staging_api registry.heroku.com/sciencewings-api-staging/web
+        docker push registry.heroku.com/sciencewings-api-staging/web
+        heroku container:release web -a sciencewings-api-staging
+
+    - name: Deploy to master (manual)
+      if: github.event_name == 'push' && contains(toJson(github.event.ref), 'master')
+      run: |
+        curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+        docker-compose -f devops/staging/docker-compose.yml build
+        heroku container:login
+        docker tag staging_api registry.heroku.com/sciencewings-api-staging/web
+        docker push registry.heroku.com/sciencewings-api-staging/web
+        heroku container:release web -a sciencewings-api-staging
