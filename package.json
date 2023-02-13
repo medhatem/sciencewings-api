@@ -26,7 +26,6 @@
     "resolve-imports": "ef-tspm -r src/ -c  src/tsconfig.json",
     "seeding": "npm run build ; npm run resolve-imports ; node dist/server/seeders/main.js",
     "permission-seed": "TS_NODE_PROJECT=src/tsconfig.json  ts-node -r tsconfig-paths/register src/server/seeders/mainPermissionsSeed.ts"
-
   },
   "_moduleAliases": {
     "@/di": "dist/server/di",
