@@ -56,13 +56,11 @@ import { User } from '@/modules/users/models/User';
 import { ResourcesList } from '@/types/types';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
-import { lonabaleResourceDao } from '../daos/lonabaleResourceDAO';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
   constructor(
     public dao: ResourceDao,
-    public lonabledao: lonabaleResourceDao,
     public organizationService: IOrganizationService,
     public memberService: IMemberService,
     public userService: IUserService,
@@ -673,10 +671,5 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     managers = fetchedResource.managers.toArray();
 
     return managers;
-  }
-  @log()
-  public async getLonabaleResources(): Promise<any> {
-    console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmm', this.lonabledao.getAll());
-    return this.lonabledao.getAll();
   }
 }
