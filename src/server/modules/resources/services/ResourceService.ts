@@ -160,18 +160,31 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
    * Fetch all loanable resources and initialize all the collections
    */
   @log()
-  async getAllLoanableResources(): Promise<Resource[]> {
+  async getAllLoanableResources(query?: string): Promise<Resource[]> {
     const resourcesSettings: ResourceSettings[] = (await this.resourceSettingsService.getByCriteria(
       { isLoanable: true },
       FETCH_STRATEGY.ALL,
     )) as ResourceSettings[];
     let resources: Resource[] = [];
-    resourcesSettings.map(async (settings) => {
-      let resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.ALL, {
-        populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
-      })) as Resource;
-      resources.push(resource);
-    });
+    if (query) {
+      resourcesSettings.map(async (settings) => {
+        let resource = (await this.dao.getByCriteria(
+          { settings, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.ALL,
+          {
+            populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+          },
+        )) as Resource;
+        resources.push(resource);
+      });
+    } else {
+      resourcesSettings.map(async (settings) => {
+        let resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.ALL, {
+          populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+        })) as Resource;
+        resources.push(resource);
+      });
+    }
     return resources;
   }
 
@@ -697,7 +710,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
   @log()
   public async getLonabaleResources(): Promise<any> {
-    console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmm', this.loanableResourceDao.getAll());
     return this.loanableResourceDao.getAll();
   }
 }
