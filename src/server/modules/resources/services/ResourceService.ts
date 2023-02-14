@@ -166,8 +166,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       FETCH_STRATEGY.ALL,
     )) as ResourceSettings[];
     let resources: Resource[] = [];
-    resourcesSettings.map(async (settings) => {
-      let resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.ALL, {
+    await applyToAll(resourcesSettings, async (settings) => {
+      let resource: Resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.SINGLE, {
         populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
       })) as Resource;
       resources.push(resource);
@@ -387,14 +387,15 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
     }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      settings: { ...fetchedResource.settings, ...payload },
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+    const settings = this.resourceSettingsService.wrapEntity(fetchedResourceSettings, {
+      ...fetchedResourceSettings,
+      ...payload,
     });
 
-    const updatedResourceResult = await this.dao.update(resource);
+    await this.resourceSettingsService.update(settings);
 
-    return updatedResourceResult.id;
+    return fetchedResource.id;
   }
 
   @log()
@@ -697,7 +698,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
   @log()
   public async getLonabaleResources(): Promise<any> {
-    console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmm', this.loanableResourceDao.getAll());
     return this.loanableResourceDao.getAll();
   }
 }

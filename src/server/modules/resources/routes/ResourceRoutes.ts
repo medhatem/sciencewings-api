@@ -149,14 +149,14 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('/getAllLoanableResources')
   @Security()
   @LoggerStorage()
-  @Response<ResourceGetDTO>(200, 'Loanable resource Retrived Successfully')
+  @Response<ResourcesGetDTO>(200, 'Loanable resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllLoanableResources(): Promise<ResourceGetDTO> {
-    console.log('heyyyyyyyyyyyyyyyyyyyyyy');
+  public async getAllLoanableResources(): Promise<ResourcesGetDTO> {
     const result = await this.ResourceService.getAllLoanableResources();
-
-    return new ResourceGetDTO({ body: result, statusCode: 200 });
+    return new ResourcesGetDTO({
+      body: { data: result, statusCode: 200 },
+    });
   }
 
   /**
