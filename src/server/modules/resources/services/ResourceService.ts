@@ -400,14 +400,15 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
     }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      settings: { ...fetchedResource.settings, ...payload },
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+    const settings = this.resourceSettingsService.wrapEntity(fetchedResourceSettings, {
+      ...fetchedResourceSettings,
+      ...payload,
     });
 
-    const updatedResourceResult = await this.dao.update(resource);
+    await this.resourceSettingsService.update(settings);
 
-    return updatedResourceResult.id;
+    return fetchedResource.id;
   }
 
   @log()
