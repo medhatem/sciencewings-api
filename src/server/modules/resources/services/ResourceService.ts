@@ -695,9 +695,4 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     return managers;
   }
-
-  @log()
-  public async getLonabaleResources(): Promise<any> {
-    return this.loanableResourceDao.getAll();
-  }
 }
