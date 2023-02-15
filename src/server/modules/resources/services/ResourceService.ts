@@ -167,25 +167,26 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     )) as ResourceSettings[];
     let resources: Resource[] = [];
     if (query) {
-      resourcesSettings.map(async (settings) => {
+      await applyToAll(resourcesSettings, async (settings) => {
         let resource = (await this.dao.getByCriteria(
           { settings, name: { $like: '%' + query + '%' } },
-          FETCH_STRATEGY.ALL,
+          FETCH_STRATEGY.SINGLE,
           {
             populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
           },
         )) as Resource;
-        resources.push(resource);
+        if (resource !== null) resources.push(resource);
       });
+      return resources;
     } else {
-      resourcesSettings.map(async (settings) => {
-        let resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.ALL, {
+      await applyToAll(resourcesSettings, async (settings) => {
+        let resource: Resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.SINGLE, {
           populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
         })) as Resource;
         resources.push(resource);
       });
+      return resources;
     }
-    return resources;
   }
 
   @log()
@@ -213,7 +214,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       resourceClass: payload.resourceClass,
       active: true,
     });
-
     wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
 
