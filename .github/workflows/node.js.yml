@@ -106,33 +106,18 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      with:
-        node-version: 16
-        cache: 'npm'
       run: npm install
 
     - name: Build
-      with:
-        node-version: 16
-        cache: 'npm'
       run: npm run build
 
     - name: Lint
-      with:
-        node-version: 16
-        cache: 'npm'
       run: npm run lint-and-fix
 
     - name: Generate Swagger
-      with:
-        node-version: 16
-        cache: 'npm'
       run: npm run swagger-gen
 
     - name: Unit test
-      with:
-        node-version: 16
-        cache: 'npm'
       run: npm run test
 
     - name: Install dependencies for deployment
