@@ -12,15 +12,18 @@ import { LoggerStorage } from '@/decorators/loggerStorage';
 import { Response } from 'typescript-rest-swagger';
 import {
   CreateResourceDTO,
-  ResourceGetDTO,
+  ResourcesGetDTO,
   UpdateResourceBodyDTO,
   UpdateResourceDTO,
+  CreatedResourceBodyDTO,
+  GetResourcesBodyDTO,
+  ResourceGetDTO,
+} from '@/modules/resources/dtos/ResourceDTO';
+import {
   GetResourceSettingsBodyDTO,
   GetResourceSettingsDTO,
-  CreatedResourceBodyDTO,
-  GetResourceBodyDTO,
   resourceManagersRequestDTO,
-} from '@/modules/resources/dtos/ResourceDTO';
+} from '@/modules/resources/dtos/ResourceSettingsDTO';
 import { Resource } from '@/modules/resources/models/Resource';
 import { IResourceService } from '@/modules/resources/interfaces/IResourceService';
 import {
@@ -41,7 +44,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @lazyInject(IReservationService) private reservationResourceService: IReservationService;
 
   constructor(private ResourceService: IResourceService) {
-    super(ResourceService as any, new ResourceGetDTO(), new UpdateResourceDTO());
+    super(ResourceService as any, new ResourcesGetDTO(), new UpdateResourceDTO());
   }
 
   static getInstance(): ResourceRoutes {
@@ -87,6 +90,23 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   }
 
   /**
+   * get one resource by id
+   * @param resourceId resource id
+   */
+  @GET
+  @Path('/getResourceById/:resourceId')
+  @Security()
+  @LoggerStorage()
+  @Response<ResourceGetDTO>(200, 'Resource Retrived Successfully')
+  @Response<InternalServerError>(500, 'Internal Server Error')
+  @Response<NotFoundError>(404, 'Not Found Error')
+  public async getResourceById(@PathParam('resourceId') resourceId: number): Promise<ResourceGetDTO> {
+    const result = await this.ResourceService.getResourceById(resourceId);
+
+    return new ResourceGetDTO({ body: result, statusCode: 200 });
+  }
+
+  /**
    * retrieve all resources of a given organization by id
    *
    * @param organizationId organization id
@@ -98,7 +118,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Path('getOrganizationResourcesById/:organizationId')
   @Security(['{orgId}-view-organization-resources'])
   @LoggerStorage()
-  @Response<GetResourceBodyDTO>(200, 'Resource Retrived Successfully')
+  @Response<GetResourcesBodyDTO>(200, 'Resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
   public async getOrganizationResources(
@@ -106,20 +126,19 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     @QueryParam('page') page?: number,
     @QueryParam('size') size?: number,
     @QueryParam('query') query?: string,
-  ): Promise<ResourceGetDTO> {
+  ): Promise<ResourcesGetDTO> {
     const result = await this.ResourceService.getResourcesOfAGivenOrganizationById(
       organizationId,
       page || null,
       size || null,
       query || null,
     );
-
     if (result?.pagination)
-      return new ResourceGetDTO({
+      return new ResourcesGetDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
     else
-      return new ResourceGetDTO({
+      return new ResourcesGetDTO({
         body: { data: result.data, statusCode: 200 },
       });
   }
