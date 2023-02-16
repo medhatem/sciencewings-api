@@ -147,9 +147,9 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
    */
   @log()
   async getResourceById(resourceId: number): Promise<Resource> {
-    const resource = (await this.dao.get(resourceId, {
+    const resource = await this.dao.get(resourceId, {
       populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
-    })) as Resource;
+    });
     return resource;
   }
 
@@ -173,6 +173,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
     const wrappedResource = this.wrapEntity(Resource.getInstance(), {
       name: payload.name,
+      description: payload.name || null,
       resourceType: payload.resourceType,
       resourceClass: payload.resourceClass,
       active: true,
@@ -257,7 +258,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     }
 
     const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
       name: payload.name || fetchedResource.name,
       description: payload.description || fetchedResource.description,
       active: payload.active || fetchedResource.active,
@@ -442,7 +442,9 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     @validateParam(ResourceGeneralVisibilitySchema) payload: ResourceSettingsGeneralVisibilityRO,
     resourceId: number,
   ): Promise<number> {
-    const fetchedResource = await this.dao.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId, {
+      populate: ['settings'] as never,
+    });
     if (!fetchedResource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
         variables: { resource: `${resourceId}` },
@@ -450,15 +452,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     }
 
     const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
-
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      settings: { ...fetchedResourceSettings, ...payload },
+    const settings = this.resourceSettingsService.wrapEntity(fetchedResourceSettings, {
+      ...fetchedResourceSettings,
+      ...payload,
     });
 
-    const updatedResourceResult = await this.dao.update(resource);
+    await this.resourceSettingsService.update(settings);
 
-    return updatedResourceResult.id;
+    return fetchedResource.id;
   }
 
   @log()
@@ -496,20 +497,23 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     @validateParam(ResourceGeneralPropertiesSchema) payload: ResourceSettingsGeneralPropertiesRO,
     resourceId: number,
   ): Promise<number> {
-    const fetchedResource = await this.dao.get(resourceId);
+    const fetchedResource = await this.dao.get(resourceId, {
+      populate: ['settings'] as never,
+    });
     if (!fetchedResource) {
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
         variables: { resource: `${resourceId}` },
       });
     }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      settings: { ...fetchedResource.settings, ...payload },
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+    const settings = this.resourceSettingsService.wrapEntity(fetchedResourceSettings, {
+      ...fetchedResourceSettings,
+      ...payload,
     });
 
-    const updatedResourceResult = await this.dao.update(resource);
-    return updatedResourceResult.id;
+    await this.resourceSettingsService.update(settings);
+    return fetchedResource.id;
   }
 
   @log()
@@ -536,7 +540,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         variables: { resource: `${resourceId}` },
       });
     }
-
     const createdResourceRateResult = await this.resourceRateService.create({
       ...payload,
       fetchedResource,
