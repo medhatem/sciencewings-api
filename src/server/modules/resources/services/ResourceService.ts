@@ -192,6 +192,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       });
       return resources;
     }
+
     if (query) {
       await applyToAll(resourcesSettings, async (settings) => {
         let resource = (await this.dao.getByCriteria(

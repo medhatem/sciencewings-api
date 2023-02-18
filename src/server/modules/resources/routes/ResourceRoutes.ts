@@ -157,6 +157,7 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
     @QueryParam('query') query?: string,
   ): Promise<ResourcesGetDTO> {
     const result = await this.ResourceService.getAllLoanableResources(category || null, query || null);
+
     return new ResourcesGetDTO({
       body: { data: result, statusCode: 200 },
     });
