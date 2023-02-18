@@ -152,8 +152,12 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
   @Response<ResourcesGetDTO>(200, 'Loanable resource Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
   @Response<NotFoundError>(404, 'Not Found Error')
-  public async getAllLoanableResources(@QueryParam('query') query?: string): Promise<ResourcesGetDTO> {
-    const result = await this.ResourceService.getAllLoanableResources(query || null);
+  public async getAllLoanableResources(
+    @QueryParam('category') category?: string,
+    @QueryParam('query') query?: string,
+  ): Promise<ResourcesGetDTO> {
+    const result = await this.ResourceService.getAllLoanableResources(category || null, query || null);
+
     return new ResourcesGetDTO({
       body: { data: result, statusCode: 200 },
     });

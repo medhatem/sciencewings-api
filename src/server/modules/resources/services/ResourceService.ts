@@ -160,12 +160,39 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
    * Fetch all loanable resources and initialize all the collections
    */
   @log()
-  async getAllLoanableResources(query?: string): Promise<Resource[]> {
+  async getAllLoanableResources(category?: string, query?: string): Promise<Resource[]> {
     const resourcesSettings: ResourceSettings[] = (await this.resourceSettingsService.getByCriteria(
       { isLoanable: true },
       FETCH_STRATEGY.ALL,
     )) as ResourceSettings[];
     let resources: Resource[] = [];
+    if (category && query) {
+      await applyToAll(resourcesSettings, async (settings) => {
+        let resource = (await this.dao.getByCriteria(
+          { settings, resourceClass: category, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.SINGLE,
+          {
+            populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+          },
+        )) as Resource;
+        if (resource !== null) resources.push(resource);
+      });
+      return resources;
+    }
+    if (category) {
+      await applyToAll(resourcesSettings, async (settings) => {
+        let resource: Resource = (await this.dao.getByCriteria(
+          { settings, resourceClass: category },
+          FETCH_STRATEGY.SINGLE,
+          {
+            populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+          },
+        )) as Resource;
+        if (resource !== null) resources.push(resource);
+      });
+      return resources;
+    }
+
     if (query) {
       await applyToAll(resourcesSettings, async (settings) => {
         let resource = (await this.dao.getByCriteria(

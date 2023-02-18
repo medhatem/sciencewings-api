@@ -24,7 +24,7 @@ export abstract class IResourceService extends IBaseService<any> {
     query?: string,
   ) => Promise<ResourcesList>;
   getResourceById: (resourceId: number) => Promise<Resource>;
-  getAllLoanableResources: (query?: string) => Promise<Resource[]>;
+  getAllLoanableResources: (category?: string, query?: string) => Promise<Resource[]>;
   createResource: (userId: number, payload: ResourceRO) => Promise<number>;
   updateResource: (payload: UpdateResourceRO, resourceId: number) => Promise<number>;
 
