@@ -189,6 +189,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     }
   }
 
+
   @log()
   @validate
   public async createResource(
@@ -707,10 +708,5 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     managers = fetchedResource.managers.toArray();
 
     return managers;
-  }
-
-  @log()
-  public async getLonabaleResources(): Promise<any> {
-    return this.loanableResourceDao.getAll();
   }
 }

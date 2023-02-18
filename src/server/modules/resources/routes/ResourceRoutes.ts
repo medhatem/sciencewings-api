@@ -510,17 +510,4 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
 
     return new resourceManagersRequestDTO({ body: { data: result, statusCode: 200 } });
   }
-
-  @GET
-  @Path('lonableResources')
-  @Security()
-  @Response<ResourceRateBodyDTO>(201, 'Resource created Successfully')
-  @Response<InternalServerError>(500, 'Internal Server Error')
-  @Response<NotFoundError>(404, 'Not Found Error')
-  @LoggerStorage()
-  public async getLonabaleResources(): Promise<any> {
-    const result = await this.ResourceService.getLonabaleResources();
-
-    return result;
-  }
 }
