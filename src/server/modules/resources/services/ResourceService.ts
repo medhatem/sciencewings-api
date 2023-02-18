@@ -160,19 +160,33 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
    * Fetch all loanable resources and initialize all the collections
    */
   @log()
-  async getAllLoanableResources(): Promise<Resource[]> {
+  async getAllLoanableResources(query?: string): Promise<Resource[]> {
     const resourcesSettings: ResourceSettings[] = (await this.resourceSettingsService.getByCriteria(
       { isLoanable: true },
       FETCH_STRATEGY.ALL,
     )) as ResourceSettings[];
     let resources: Resource[] = [];
-    await applyToAll(resourcesSettings, async (settings) => {
-      let resource: Resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.SINGLE, {
-        populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
-      })) as Resource;
-      resources.push(resource);
-    });
-    return resources;
+    if (query) {
+      await applyToAll(resourcesSettings, async (settings) => {
+        let resource = (await this.dao.getByCriteria(
+          { settings, name: { $like: '%' + query + '%' } },
+          FETCH_STRATEGY.SINGLE,
+          {
+            populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+          },
+        )) as Resource;
+        if (resource !== null) resources.push(resource);
+      });
+      return resources;
+    } else {
+      await applyToAll(resourcesSettings, async (settings) => {
+        let resource: Resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.SINGLE, {
+          populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+        })) as Resource;
+        resources.push(resource);
+      });
+      return resources;
+    }
   }
 
 
@@ -201,7 +215,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       resourceClass: payload.resourceClass,
       active: true,
     });
-
     wrappedResource.infrastructure = fetchedInfrastructure;
     wrappedResource.organization = organization;
 
