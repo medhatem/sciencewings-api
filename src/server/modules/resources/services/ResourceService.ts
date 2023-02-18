@@ -56,6 +56,8 @@ import { User } from '@/modules/users/models/User';
 import { ResourcesList } from '@/types/types';
 import { KeycloakUtil } from '@/sdks/keycloak/KeycloakUtils';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
+import { ResourceSettings } from '@/modules/resources/models/ResourceSettings';
+import { LoanableResourceDao } from '@/modules/resources/daos/LoanableResourceDao';
 
 @provideSingleton(IResourceService)
 export class ResourceService extends BaseService<Resource> implements IResourceService {
@@ -73,6 +75,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     public infrastructureService: IInfrastructureService,
     public keycloakUtils: KeycloakUtil,
     public permissionService: IPermissionService,
+    public loanableResourceDao: LoanableResourceDao,
   ) {
     super(dao);
   }
@@ -152,6 +155,26 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     });
     return resource;
   }
+
+  /**
+   * Fetch all loanable resources and initialize all the collections
+   */
+  @log()
+  async getAllLoanableResources(): Promise<Resource[]> {
+    const resourcesSettings: ResourceSettings[] = (await this.resourceSettingsService.getByCriteria(
+      { isLoanable: true },
+      FETCH_STRATEGY.ALL,
+    )) as ResourceSettings[];
+    let resources: Resource[] = [];
+    await applyToAll(resourcesSettings, async (settings) => {
+      let resource: Resource = (await this.dao.getByCriteria({ settings }, FETCH_STRATEGY.SINGLE, {
+        populate: ['settings', 'status', 'infrastructure', 'managers', 'tags', 'calendar'] as never,
+      })) as Resource;
+      resources.push(resource);
+    });
+    return resources;
+  }
+
 
   @log()
   @validate
@@ -365,14 +388,15 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', { variables: { resource: `${resourceId}` } });
     }
 
-    const resource = this.wrapEntity(fetchedResource, {
-      ...fetchedResource,
-      settings: { ...fetchedResource.settings, ...payload },
+    const fetchedResourceSettings = await this.resourceSettingsService.get(fetchedResource.settings.id);
+    const settings = this.resourceSettingsService.wrapEntity(fetchedResourceSettings, {
+      ...fetchedResourceSettings,
+      ...payload,
     });
 
-    const updatedResourceResult = await this.dao.update(resource);
+    await this.resourceSettingsService.update(settings);
 
-    return updatedResourceResult.id;
+    return fetchedResource.id;
   }
 
   @log()

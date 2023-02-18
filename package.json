@@ -36,6 +36,7 @@
     "@/Exceptions": "dist/server/Exceptions",
     "@/interface": "dist/server/interface/*",
     "@/models": "dist/server/models",
+    "@/views": "dist/server/views",
     "@/routes": "dist/server/routes",
     "@/service": "dist/server/service",
     "@/dao": "dist/server/dao",
