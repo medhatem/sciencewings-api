@@ -4,7 +4,7 @@ export type KeycloakUserInfo = {
   email_verified: string;
   address: { [key: string]: any };
   name: string;
-  groups: string[];
+  //groups: string[];
   preferred_username: string;
   given_name: string;
   family_name: string;
