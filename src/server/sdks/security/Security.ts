@@ -41,10 +41,11 @@ export class Security {
     if (!groupById) {
       throw new NotFoundError('KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}');
     }
-    const groupMemberships = tokenInformation.groups;
-    if (groupMemberships.includes(`/${groupById.name}/${GROUP_PREFIX}-admins`)) {
-      return true; // the user is an admin which means he does have access to the given resource
-    }
+    //removed when remouving the groups from token it was an axtra check
+    // const groupMemberships = tokenInformation.groups;
+    // if (groupMemberships.includes(`/${groupById.name}/${GROUP_PREFIX}-admins`)) {
+    //   return true; // the user is an admin which means he does have access to the given resource
+    // }
 
     let doesUserHaveAccess = false;
     const userPermissions = tokenInformation.roles;

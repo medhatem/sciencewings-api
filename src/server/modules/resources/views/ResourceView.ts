@@ -3,7 +3,8 @@ import { Entity, Property } from '@mikro-orm/core';
 
 @Entity({
   expression:
-    'select * from resource, resource_settings where resource.settings_id=resource_settings.id and resource_settings.is_loanable =true',
+    'select * from resource, resource_settings ' +
+    'where resource.settings_id=resource_settings.id and resource_settings.is_loanable =true',
 })
 export class ResourceView {
   @Property()
