@@ -2,8 +2,7 @@ import { NotFoundError } from '@/Exceptions';
 import { container, provideSingleton } from '@/di/index';
 
 import { BadRequest } from '@/Exceptions/BadRequestError';
-import { KeycloakApi, UserInformationFromToken } from '../keycloak/keycloakApi';
-import jwt_decode from 'jwt-decode';
+import { KeycloakApi } from '../keycloak/keycloakApi';
 export const ORG_PREFIX = 'org';
 export const GROUP_PREFIX = 'grp';
 
@@ -30,14 +29,14 @@ export class Security {
     }
 
     //decode the token
-    const decodedToken = jwt_decode(token) as UserInformationFromToken;
-    const realmAccess = decodedToken?.realm_access;
+    const tokenInformation = await this.keycloakApi.extractInformationFromToken(token);
+    const realmAccess = tokenInformation?.realm_access;
 
     // Access the `roles` array within the `realm_access` claim
     const userRoles = realmAccess?.roles;
 
     //validate that the user is part of the current-org
-    const currentOrganizationId = decodedToken['current_org'];
+    const currentOrganizationId = tokenInformation['current_org'];
     if (!currentOrganizationId) {
       throw new BadRequest('KEYCLOAK.NO_CURRENT_ORG_PROVIDED');
     }
