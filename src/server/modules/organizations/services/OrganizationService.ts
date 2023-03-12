@@ -166,7 +166,10 @@ export class OrganizationService extends BaseService<Organization> implements IO
         this.keycloakUtils.addOwnerToGroup(keycloakOrganization, groupName, user.keycloakId),
       ]);
       await this.keycloakUtils.addMemberToGroup(adminGroup, user.keycloakId);
-
+      //create the role admin
+      const adminRole = await this.keycloakUtils.createRealmRole(`${keycloakOrganization}-admin`);
+      //assign it to the admin group
+      this.keycloakUtils.groupRoleMap(adminGroup, adminRole);
       //storing the KC groups ids
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
@@ -246,12 +249,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       { module: 'organization', operationDB: 'create' },
       FETCH_STRATEGY.ALL,
     )) as Permission[];
-    let currentRole;
     if (BDPermissions) {
       for (const permission of BDPermissions) {
-        await this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
-        currentRole = await this.keycloakUtils.findRoleByName(`${organization.kcid}-${permission.name}`);
-        this.keycloakUtils.groupRoleMap(adminGroup, currentRole);
+        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
       }
     }
     return organization.id;
