@@ -50,7 +50,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('/:id')
-  @Security(['{orgId}-view-organization'])
+  @Security(['{orgId}-view-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<GetOrganizationDTO>(200, 'Organization Settings Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -83,7 +83,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('updateOrganization/:id')
-  @Security(['{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateOrganizationDTO>(204, 'Organization updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -103,7 +103,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @DELETE
   @Path('delete/:id')
-  @Security(['{orgId}-delete-organization'])
+  @Security(['{orgId}-delete-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateResourceBodyDTO>(204, 'Organization delted Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -127,7 +127,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @POST
   @Path('phone/:id')
-  @Security(['{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<PhoneBaseBodyDTO>(204, 'Organization phone created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -148,7 +148,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @POST
   @Path('address/:id')
-  @Security(['{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<AddressBodyDTO>(204, 'Organization address created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -169,7 +169,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('getMembers/:id')
-  @Security(['{orgId}-view-organization-members'])
+  @Security(['{orgId}-view-organization-members', '{orgId}-admin'])
   @LoggerStorage()
   @Response<OrganizationMembersDTO>(200, 'Return organization members Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -204,7 +204,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('settings/:organizationId')
-  @Security(['{orgId}-view-organization-settings'])
+  @Security(['{orgId}-view-organization-settings', '{orgId}-admin'])
   @LoggerStorage()
   @Response<GetOrganizationSettingsBodyDTO>(200, 'Organization Settings Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -225,7 +225,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/member/:organizationId')
-  @Security(['{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -247,7 +247,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/reservation/:organizationId')
-  @Security(['{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization reservation  settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -269,7 +269,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/invoices/:organizationId')
-  @Security(['{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization invoices settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -291,7 +291,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/access/:organizationId')
-  @Security(['{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization access  settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -313,7 +313,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @PUT
   @Path('settings/localisation/:organizationId')
-  @Security(['admin', '{orgId}-update-organization'])
+  @Security(['{orgId}-update-organization', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateOrganizationSettingsBodyDTO>(204, 'Organization localisation  settings updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -334,7 +334,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
    */
   @GET
   @Path('localizationSettings/:organizationId')
-  @Security(['admin', '{orgId}-view-organization-localisation-settings'])
+  @Security(['{orgId}-view-organization-localisation-settings', '{orgId}-admin'])
   @LoggerStorage()
   @Response<GetOrganizationLoclisationSettingsDTO>(200, 'Organization localisation Settings Retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
