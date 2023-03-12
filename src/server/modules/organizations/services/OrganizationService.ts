@@ -167,7 +167,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
       ]);
       await this.keycloakUtils.addMemberToGroup(adminGroup, user.keycloakId);
       //create the role admin
-      const adminRole = await this.keycloakUtils.createRealmRole(`${keycloakOrganization}-admin`);
+      await this.keycloakUtils.createRealmRole(`${keycloakOrganization}-admin`);
+      const adminRole = await this.keycloakUtils.findRoleByName(`${keycloakOrganization}-admin`);
       //assign it to the admin group
       this.keycloakUtils.groupRoleMap(adminGroup, adminRole);
       //storing the KC groups ids
