@@ -180,6 +180,7 @@ export class OrganizationRoutes extends BaseRoutes<Organization> {
     @QueryParam('size') size?: number,
     @QueryParam('query') query?: string,
   ): Promise<OrganizationMembersDTO> {
+    await console.log("i am inside this route")
     const result = await this.OrganizationService.getMembers(
       payload,
       status || null,

@@ -131,6 +131,7 @@ volumes:
     driver: local
   smtp4dev-data:
 
+
 services:
   postgres:
     image: postgres
@@ -138,8 +139,8 @@ services:
     #   - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test1234
     ports:
       - '5432:5432'
   keycloak:
@@ -187,7 +188,7 @@ services:
       - '143:143'
     volumes:
       # This is where smtp4dev stores the database..
-        - smtp4dev-data:/smtp4dev
+      - smtp4dev-data:/smtp4dev
     environment:
       # Uncomment to customise these settings
 
@@ -196,7 +197,6 @@ services:
 
       #Specifies the server hostname. Used in auto-generated TLS certificate if enabled.
       - ServerOptions__HostName=smtp4dev
-
       #Specifies the path where the database will be stored relative to APPDATA env var on Windows or XDG_CONFIG_HOME on non-Windows. Specify "" to use an in memory database.
       #- ServerOptions__Database=database.db
 
