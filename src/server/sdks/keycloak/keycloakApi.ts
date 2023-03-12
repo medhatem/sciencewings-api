@@ -8,10 +8,10 @@ export type UserInformationFromToken = {
   sub: string;
   email_verified: boolean;
   name: string;
-  //removed to decrease the token size
-  //groups: string[];
-  roles: string[];
   current_org: string;
+  realm_access: {
+    roles: string[];
+  };
   locale: string;
   preferred_username: string;
   given_name: string;
