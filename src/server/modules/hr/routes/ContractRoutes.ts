@@ -68,7 +68,7 @@ export class ContractRoutes extends BaseRoutes<Contract> {
    */
   @POST
   @Path('create')
-  @Security(['{orgId}-create-contract'])
+  @Security(['{orgId}-create-contract', '{orgId}-admin'])
   @LoggerStorage()
   @Response<ContracBaseBodyDTO>(201, 'Contract created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')

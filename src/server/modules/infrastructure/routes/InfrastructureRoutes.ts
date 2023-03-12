@@ -35,7 +35,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @POST
   @Path('create')
-  @Security(['{orgId}-create-infrastructure'])
+  @Security(['{orgId}-create-infrastructure', '{orgId}-admin'])
   @LoggerStorage()
   @Response<infrastructureGetDTO>(204, 'infrastructure created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -53,7 +53,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @PUT
   @Path('update/:id')
-  @Security(['${orgId}-update-infrastructure'])
+  @Security(['${orgId}-update-infrastructure', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateInfrastructureDTO>(204, 'infrastructure updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -75,7 +75,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('getAll/:orgId')
-  @Security(['{orgId}-view-organization-infrastructure'])
+  @Security(['{orgId}-view-organization-infrastructure', '{orgId}-admin'])
   @LoggerStorage()
   @Response<GetAllInfrastructuresDTO>(200, 'Organization infrustructures retrived Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -111,7 +111,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('getAllInfrastructuresOfAgivenOrganization/:orgId')
-  @Security(['{orgId}-view-organization-infrastructure-list'])
+  @Security(['{orgId}-view-organization-infrastructure-list', '{orgId}-admin'])
   @LoggerStorage()
   @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -147,7 +147,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @DELETE
   @Path('/infraResources/:infrastructureId/:resourceId')
-  @Security(['{orgId}-delete-infrastructure-resource'])
+  @Security(['{orgId}-delete-infrastructure-resource', '{orgId}-admin'])
   @LoggerStorage()
   @Response<GetInfrastructureDTO>(204, 'infrastructure updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -168,7 +168,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @POST
   @Path('/infraResources/:infrastructureId/:resourceId')
-  @Security(['{orgId}-update-infrastructure-resources'])
+  @Security(['{orgId}-update-infrastructure-resources', '{orgId}-admin'])
   @LoggerStorage()
   @Response<GetInfrastructureDTO>(204, 'infrastructure updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -186,7 +186,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('/:id')
-  @Security(['{orgId}-view-infrastructure'])
+  @Security(['{orgId}-view-infrastructure', '{orgId}-admin'])
   @LoggerStorage()
   @Response<InfrastructureListRequestDTO>(200, 'Return infrastructure ')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -202,7 +202,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('/:id/resources')
-  @Security(['{orgId}-view-infrastructure-resources'])
+  @Security(['{orgId}-view-infrastructure-resources', '{orgId}-admin'])
   @LoggerStorage()
   @Response<InfrastructureResourcesRequestDTO>(200, 'Return infrastructure resources ')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -220,7 +220,7 @@ export class InfrastructureRoutes extends BaseRoutes<Infrastructure> {
    */
   @GET
   @Path('/:id/subInfrastructures')
-  @Security(['{orgId}-view-infrastructure-subInfras'])
+  @Security(['{orgId}-view-infrastructure-subInfras', '{orgId}-admin'])
   @LoggerStorage()
   @Response<subInfraListRequestDTO>(200, 'Return infrastructure sub infras ')
   @Response<NotFoundError>(404, 'Not Found Error')

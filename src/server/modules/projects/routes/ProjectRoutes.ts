@@ -37,7 +37,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @GET
   @Path('getOrganizationProjects/:id')
-  @Security(['{orgId}-view-organization-projects'])
+  @Security(['{orgId}-view-organization-projects', '{orgId}-admin'])
   @LoggerStorage()
   @Response<ProjectGetDTO>(200, 'Projects extract Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -57,7 +57,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @GET
   @Path('getOrganizationProjectById/:id')
-  @Security(['{orgId}-view-organization-projects'])
+  @Security(['{orgId}-view-organization-projects', '{orgId}-admin'])
   @LoggerStorage()
   @Response<GETProjectDTO>(200, 'Project extract Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -75,7 +75,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @POST
   @Path('create')
-  @Security(['{orgId}-create-project'])
+  @Security(['{orgId}-create-project', '{orgId}-admin'])
   @LoggerStorage()
   @Response<CreateProjectDTO>(201, 'Project created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -92,7 +92,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @PUT
   @Path('/updateProject/:id')
-  @Security(['{orgId}-update-project'])
+  @Security(['{orgId}-update-project', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateProjectDTO>(204, 'Project updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -111,7 +111,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @POST
   @Path('/:id/projectMembers/create')
-  @Security(['{orgId}-create-project-members'])
+  @Security(['{orgId}-create-project-members', '{orgId}-admin'])
   @LoggerStorage()
   @Response<CreateProjectMemberDTO>(201, 'Project member created Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -131,7 +131,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @GET
   @Path('getParticipant/:id')
-  @Security(['{orgId}-view-project-participants'])
+  @Security(['{orgId}-view-project-participants', '{orgId}-admin'])
   @LoggerStorage()
   @Response<ProjectMemberRequestDTO>(200, 'Return project participants Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
@@ -152,7 +152,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @PUT
   @Path('update/projectParticipant/:projectId')
-  @Security(['{orgId}-update-project-participants'])
+  @Security(['{orgId}-update-project-participants', '{orgId}-admin'])
   @LoggerStorage()
   @Response<UpdateProjectMemberDTO>(204, 'Project pariticipant updated Successfully')
   @Response<InternalServerError>(500, 'Internal Server Error')
@@ -174,7 +174,7 @@ export class ProjectRoutes extends BaseRoutes<Project> {
    */
   @GET
   @Path('getProjectList/:id')
-  @Security(['{orgId}-view-organization-project-list'])
+  @Security(['{orgId}-view-organization-project-list', '{orgId}-admin'])
   @LoggerStorage()
   @Response<ProjectListRequestDTO>(200, 'Return project list Successfully')
   @Response<NotFoundError>(404, 'Not Found Error')
