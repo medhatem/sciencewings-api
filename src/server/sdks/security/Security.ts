@@ -3,7 +3,6 @@ import { container, provideSingleton } from '@/di/index';
 
 import { BadRequest } from '@/Exceptions/BadRequestError';
 import { KeycloakApi } from '../keycloak/keycloakApi';
-
 export const ORG_PREFIX = 'org';
 export const GROUP_PREFIX = 'grp';
 
@@ -29,9 +28,14 @@ export class Security {
       throw new BadRequest('KEYCLOAK.NO_PERMISSIONS_PROVIDED');
     }
 
+    //decode the token
     const tokenInformation = await this.keycloakApi.extractInformationFromToken(token);
-    //validate that the user is part of the current-org
+    const realmAccess = tokenInformation?.realm_access;
 
+    // Access the `roles` array within the `realm_access` claim
+    const userRoles = realmAccess?.roles;
+
+    //validate that the user is part of the current-org
     const currentOrganizationId = tokenInformation['current_org'];
     if (!currentOrganizationId) {
       throw new BadRequest('KEYCLOAK.NO_CURRENT_ORG_PROVIDED');
@@ -41,17 +45,15 @@ export class Security {
     if (!groupById) {
       throw new NotFoundError('KEYCLOAK.NON_EXISTANT_GROUP_BY_ID {{id}}');
     }
-    //removed when remouving the groups from token it was an axtra check
-    // const groupMemberships = tokenInformation.groups;
-    // if (groupMemberships.includes(`/${groupById.name}/${GROUP_PREFIX}-admins`)) {
-    //   return true; // the user is an admin which means he does have access to the given resource
-    // }
+    //
+    if (userRoles.includes(`${currentOrganizationId}-admin`)) {
+      return true; // the user is an admin which means he does have access to the given resource
+    }
 
     let doesUserHaveAccess = false;
-    const userPermissions = tokenInformation.roles;
     for (let permission of permissions) {
       permission = permission.replace('{orgId}', currentOrganizationId);
-      if (userPermissions.includes(permission)) {
+      if (userRoles.includes(permission)) {
         // break of the loop as soon as we find one matching role
         // this would mean that the user does have access to the route/resource
         doesUserHaveAccess = true;
