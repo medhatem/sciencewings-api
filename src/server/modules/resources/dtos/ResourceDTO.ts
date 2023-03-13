@@ -88,19 +88,19 @@ export class ResourceDTO extends BaseBodyDTO {
     type: ResourceCalendarDTO,
     beforeDeserialize,
   })
-  calendar: Array<ResourceCalendarDTO>;
+  calendar: ResourceCalendarDTO[];
 
   @JsonProperty({
     type: ResourceTagDTO,
     beforeDeserialize,
   })
-  tags: Array<ResourceTagDTO>;
+  tags: ResourceTagDTO[];
 
   @JsonProperty({
     type: MemberDTO,
     beforeDeserialize,
   })
-  managers: Array<MemberDTO>;
+  managers: MemberDTO[];
 }
 
 @JsonObject()
@@ -109,15 +109,20 @@ export class CreatedResourceBodyDTO extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 }
-
+@JsonObject()
+@unique
+export class ResourceGetDTO extends BaseRequestDTO {
+  @JsonProperty()
+  body: ResourceDTO;
+}
 @JsonObject()
 @unique
 export class GetResourcesBodyDTO extends BaseBodyDTO {
   @JsonProperty({
-    type: ResourceDTO,
+    type: ResourceGetDTO,
     beforeDeserialize,
   })
-  data: Array<ResourceDTO>;
+  data: ResourceGetDTO[];
 
   @JsonProperty()
   pagination?: PaginationBodyDTO;
@@ -128,13 +133,6 @@ export class GetResourcesBodyDTO extends BaseBodyDTO {
 export class ResourcesGetDTO extends BaseRequestDTO {
   @JsonProperty()
   body: GetResourcesBodyDTO;
-}
-
-@JsonObject()
-@unique
-export class ResourceGetDTO extends BaseRequestDTO {
-  @JsonProperty()
-  body: ResourceDTO;
 }
 
 @JsonObject()

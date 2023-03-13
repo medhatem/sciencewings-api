@@ -133,14 +133,21 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       size || null,
       query || null,
     );
+    console.log('finaaaaaaaaaaale');
     if (result?.pagination)
       return new ResourcesGetDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
       });
-    else
+    else {
+      const resourceDTOs = result.data.map((resource) => new ResourceGetDTO({ body: resource }));
+      console.log('resouuuuuuuuuuurces', resourceDTOs);
       return new ResourcesGetDTO({
-        body: { data: result.data, statusCode: 200 },
+        body: { data: resourceDTOs, statusCode: 200 },
       });
+    }
+    // return new ResourcesGetDTO({
+    //   body: { data: result.data, statusCode: 200 },
+    // });
   }
   /**
    * get loanable resources by id
