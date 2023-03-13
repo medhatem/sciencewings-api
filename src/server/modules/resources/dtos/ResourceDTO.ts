@@ -119,10 +119,10 @@ export class ResourceGetDTO extends BaseRequestDTO {
 @unique
 export class GetResourcesBodyDTO extends BaseBodyDTO {
   @JsonProperty({
-    type: ResourceGetDTO,
+    type: ResourceDTO,
     beforeDeserialize,
   })
-  data: ResourceGetDTO[];
+  data: Array<ResourceDTO>;
 
   @JsonProperty()
   pagination?: PaginationBodyDTO;

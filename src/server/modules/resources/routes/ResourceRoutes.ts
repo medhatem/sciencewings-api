@@ -133,7 +133,6 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       size || null,
       query || null,
     );
-    console.log('finaaaaaaaaaaale');
     if (result?.pagination)
       return new ResourcesGetDTO({
         body: { data: result.data, pagination: result.pagination, statusCode: 200 },
@@ -144,9 +143,8 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
         body: { data: resourceDTOs, statusCode: 200 },
       });
     }
-    // return new ResourcesGetDTO({
-    //   body: { data: result.data, statusCode: 200 },
-    // });
+
+    
   }
   /**
    * get loanable resources by id
