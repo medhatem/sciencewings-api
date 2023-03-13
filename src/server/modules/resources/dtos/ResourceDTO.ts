@@ -117,7 +117,7 @@ export class GetResourcesBodyDTO extends BaseBodyDTO {
     type: ResourceDTO,
     beforeDeserialize,
   })
-  data: Array<ResourceDTO>;
+  data: ResourceDTO[];
 
   @JsonProperty()
   pagination?: PaginationBodyDTO;
