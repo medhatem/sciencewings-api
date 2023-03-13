@@ -140,7 +140,6 @@ export class ResourceRoutes extends BaseRoutes<Resource> {
       });
     else {
       const resourceDTOs = result.data.map((resource) => new ResourceGetDTO({ body: resource }));
-      console.log('resouuuuuuuuuuurces', resourceDTOs);
       return new ResourcesGetDTO({
         body: { data: resourceDTOs, statusCode: 200 },
       });
