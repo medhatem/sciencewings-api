@@ -14,6 +14,12 @@ export class OrganizationLabelsDTO {
   @JsonProperty()
   name: string;
 }
+@JsonObject()
+@unique
+export class OrganizationId {
+  @JsonProperty()
+  id: number;
+}
 
 @JsonObject()
 @unique
