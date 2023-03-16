@@ -222,10 +222,16 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     userId: number,
     @validateParam(CreateResourceSchema) payload: ResourceRO,
   ): Promise<number> {
+    console.log('1111111111111111111111111');
     const forkedEntityManager = await this.dao.fork();
+
     forkedEntityManager.begin();
+    console.log('222222222222');
+
     let createdResource: Resource;
     try {
+      console.log('3333333333333333333333333333');
+
       const organization = await this.organizationService.get(payload.organization);
       if (!organization) {
         throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
@@ -237,6 +243,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
           variables: { infra: `${payload.infrastructure}` },
         });
       }
+      console.log('44444444444444444444');
 
       const wrappedResource = this.wrapEntity(Resource.getInstance(), {
         name: payload.name,
@@ -249,16 +256,19 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       wrappedResource.organization = organization;
 
       //use transactional instead
+      console.log('5555555555');
 
       const resourceStatus = await this.resourceStatusService.transactionalCreate({
         statusType: StatusCases.OPERATIONAL,
         statusDescription: '',
       });
       wrappedResource.status = resourceStatus;
+      console.log('666666666666666666');
 
       //use transactional instead
       const resourceSetting = await this.resourceSettingsService.transactionalCreate({});
       wrappedResource.settings = resourceSetting;
+      console.log('77777777777777777777');
 
       //use transactional instead
       const calendar = await this.resourceCalendarService.transactionalCreate({
@@ -266,21 +276,30 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         active: true,
         organization: organization,
       });
+      console.log('888888888888888');
 
       //use transactional instead
-      const createdResource = await this.dao.transactionalCreate(wrappedResource);
+      // createdResource = await this.dao.transactionalCreate(wrappedResource);
+      console.log('9999999999999999999');
+
       if (!payload.managers) {
+        console.log('after 999999999999999999999');
         const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
         const manager = (await this.memberService.getByCriteria(
           { organization, user },
           FETCH_STRATEGY.SINGLE,
         )) as Member;
+        console.log('after22222222222222222');
         if (!manager) {
           throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
             variables: { user: `${payload.managers}` },
           });
         }
-        await wrappedResource.managers.init();
+        console.log('after333333333333333');
+
+        // await wrappedResource.managers.init();
+        console.log('after4444444444444444');
+
         wrappedResource.managers.add(manager);
       } else {
         await wrappedResource.managers.init();
@@ -298,10 +317,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
           wrappedResource.managers.add(manager);
         });
       }
-      await wrappedResource.calendar.init();
+      console.log('101010101010011010101010');
+
+      // await wrappedResource.calendar.init();
       wrappedResource.calendar.add(calendar);
       //use transactional instead
-      await this.transactionalCreate(createdResource);
+      console.log('1111111111111111');
+
+      createdResource = await this.dao.transactionalCreate(wrappedResource);
       //TODO should create the ck permissions related to the created resource
       // const BDPermissions = (await this.permissionService.getByCriteria(
       //   { module: 'resource', operationDB: 'create' },
@@ -315,12 +338,20 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       //     this.keycloakUtils.groupRoleMap(organization.adminGroupkcid, currentRole);
       //   }
       // }
+      console.log('1212121212121212');
+
       forkedEntityManager.commit();
+      // throw console.error('error');
+
+      console.log('13131313131313131313');
     } catch (error) {
       forkedEntityManager.rollback();
       throw error;
     }
+    console.log('11414141414141414');
+    // forkedEntityManager.flush();
     this.dao.entitymanager.flush();
+    console.log('15151515');
     return createdResource.id;
   }
 
