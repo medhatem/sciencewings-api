@@ -10,6 +10,7 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ServerError } from '@/Exceptions/ServerError';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
+import { EntityManager } from '@mikro-orm/postgresql';
 
 @provideSingleton(IBaseService)
 export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
@@ -40,6 +41,15 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   @log()
   public async update(entry: T): Promise<any> {
     return this.dao.update(entry);
+  }
+  @log()
+  public async fork(): Promise<EntityManager> {
+    return this.dao.fork();
+  }
+
+  @log()
+  public async flush(): Promise<any> {
+    this.dao.entitymanager.flush();
   }
 
   @log()
