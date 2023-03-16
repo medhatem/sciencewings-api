@@ -223,16 +223,9 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     @validateParam(CreateResourceSchema) payload: ResourceRO,
   ): Promise<number> {
     const forkedEntityManager = await this.dao.fork();
-    const forkedresourceStatusEntityManager = await this.resourceStatusService.fork();
-    const forkedresourceSettingsEntityManager = await this.resourceSettingsService.fork();
-    const forkedresourceCalendarEntityManager = await this.resourceCalendarService.fork();
-
-    forkedEntityManager.begin();
-    forkedresourceStatusEntityManager.begin();
-    forkedresourceSettingsEntityManager.begin();
-    forkedresourceCalendarEntityManager.begin();
-
+    await forkedEntityManager.begin();
     let createdResource: Resource;
+
     try {
       const organization = await this.organizationService.get(payload.organization);
       if (!organization) {
@@ -319,21 +312,14 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       // }
 
       forkedEntityManager.commit();
-      forkedresourceStatusEntityManager.commit();
-      forkedresourceSettingsEntityManager.commit();
-      forkedresourceCalendarEntityManager.commit();
     } catch (error) {
       forkedEntityManager.rollback();
-      forkedresourceStatusEntityManager.rollback();
-      forkedresourceSettingsEntityManager.rollback();
-      forkedresourceCalendarEntityManager.rollback();
       throw error;
     }
     this.dao.entitymanager.flush();
-    this.resourceStatusService.flush();
-    this.resourceSettingsService.flush();
-    this.resourceCalendarService.flush();
 
+    console.log('resource detailes', createdResource);
+    console.log('log resource id ', createdResource.id);
     return createdResource.id;
   }
 
