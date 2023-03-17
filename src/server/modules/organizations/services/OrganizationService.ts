@@ -283,7 +283,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       if (adminRole) {
         this.keycloakUtils.deleteRealmRole(`${keycloakOrganization}-admin`);
       }
-      if (keycloakpermissions.length != null) {
+      if (keycloakpermissions.length !== null) {
         for (const permission of keycloakpermissions) {
           this.keycloakUtils.deleteRealmRole(permission.name);
         }
