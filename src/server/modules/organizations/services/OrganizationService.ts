@@ -164,10 +164,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
        * create keycloak admin group as well as members group
        * and add the owner attribute to the organization in keycloak
        */
-      let adminGroup;
-      let membersGroup;
+
       // try {
-      [adminGroup, membersGroup] = await Promise.all([
+      const [adminGroup, membersGroup] = await Promise.all([
         this.keycloakUtils.createGroup(`${grpPrifix}admin`, keycloakOrganization),
         this.keycloakUtils.createGroup(`${grpPrifix}members`, keycloakOrganization),
         this.keycloakUtils.addOwnerToGroup(keycloakOrganization, groupName, user.keycloakId),
