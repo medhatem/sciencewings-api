@@ -1,5 +1,4 @@
 import { AssignOptions, FindOneOptions, FindOptions } from '@mikro-orm/core';
-
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 

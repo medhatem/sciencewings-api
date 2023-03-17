@@ -10,7 +10,6 @@ import { NotFoundError } from '@/Exceptions/NotFoundError';
 import { ServerError } from '@/Exceptions/ServerError';
 import { log } from '@/decorators/log';
 import { provideSingleton } from '@/di';
-import { EntityManager } from '@mikro-orm/postgresql';
 
 @provideSingleton(IBaseService)
 export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
