@@ -32,4 +32,14 @@ export class OrganizationLabelService extends BaseService<OrganizationLabel> imp
 
     this.dao.repository.persistAndFlush(labels);
   }
+  @log()
+  async createBulkLabelwithoutFlush(payload: string[], organization: Organization): Promise<void> {
+    const labels = payload.map((name: string) => {
+      const label = this.wrapEntity(new OrganizationLabel(), { name });
+      label.organization = organization;
+      return label;
+    });
+
+    this.dao.repository.persist(labels);
+  }
 }

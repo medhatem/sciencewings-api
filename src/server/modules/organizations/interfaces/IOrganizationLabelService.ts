@@ -5,4 +5,5 @@ import { OrganizationLabel } from '@/modules/organizations/models/OrganizationLa
 export abstract class IOrganizationLabelService extends IBaseService<any> {
   createLabel: (payload: OrganizationLabel) => Promise<OrganizationLabel>;
   createBulkLabel: (payload: string[], organization: Organization) => Promise<void>;
+  createBulkLabelwithoutFlush: (payload: string[], organization: Organization) => Promise<void>;
 }

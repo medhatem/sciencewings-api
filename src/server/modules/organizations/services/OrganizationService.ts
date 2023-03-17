@@ -45,6 +45,7 @@ import { MembersList } from '@/types/types';
 import { Permission } from '@/modules/permissions/models/permission';
 import { IPermissionService } from '@/modules/permissions/interfaces/IPermissionService';
 import { localisationSettingsType } from '@/modules/organizations/organizationtypes';
+import RoleRepresentation from '@keycloak/keycloak-admin-client/lib/defs/roleRepresentation';
 
 @provideSingleton(IOrganizationService)
 export class OrganizationService extends BaseService<Organization> implements IOrganizationService {
@@ -105,61 +106,67 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(CreateOrganizationSchema) payload: CreateOrganizationRO,
     userId: number,
   ): Promise<number> {
-    const existingOrg = (await this.dao.getByCriteria({
-      name: payload.name,
-    })) as Organization;
-    if (existingOrg) {
-      throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: payload.name }, friendly: true });
-    }
-    let parent: Organization;
-    let keycloakOrganization;
-    if (payload.parent) {
-      const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
-      if (!org) {
-        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
-      }
-      parent = org;
-      // create keycloak sub_organization if the parent existe
-      keycloakOrganization = await this.keycloakUtils.createGroup(`${grpPrifix}${payload.name}`, org.kcid);
-    }
-    const user = await this.userService.get(userId);
-    if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
-    }
-    const wrappedOrganization = this.wrapEntity(new Organization(), {
-      name: payload.name,
-      email: payload.email,
-      type: payload.type,
-      socialFacebook: payload.socialFacebook || null,
-      socialInstagram: payload.socialInstagram || null,
-      socialYoutube: payload.socialYoutube || null,
-      socialGithub: payload.socialGithub || null,
-      socialTwitter: payload.socialTwitter || null,
-      socialLinkedin: payload.socialLinkedin || null,
-    });
-    const organizationPhone = await this.phoneService.create({
-      phoneLabel: payload.phone.phoneLabel,
-      phoneCode: payload.phone.phoneCode,
-      phoneNumber: payload.phone.phoneNumber,
-    });
-
-    wrappedOrganization.phone = organizationPhone;
-    wrappedOrganization.parent = parent;
-    wrappedOrganization.owner = user;
-    const groupName = `${orgPrifix}${payload.name}`;
-
-    // create keycloak organization in case it has no parent
-    if (!payload.parent) {
-      keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
-    }
-    /**
-     * create keycloak admin group as well as members group
-     * and add the owner attribute to the organization in keycloak
-     */
-    let adminGroup;
-    let membersGroup;
+    const forkedEntityManager = await this.dao.fork();
+    forkedEntityManager.begin();
     let organization: Organization;
+    let keycloakOrganization;
+    let adminRole;
+    let keycloakpermissions: RoleRepresentation[];
     try {
+      const existingOrg = (await this.dao.getByCriteria({
+        name: payload.name,
+      })) as Organization;
+      if (existingOrg) {
+        throw new ConflictError('{{name}} ALREADY_EXISTS', { variables: { name: payload.name }, friendly: true });
+      }
+      let parent: Organization;
+      if (payload.parent) {
+        const org = (await this.dao.getByCriteria({ id: payload.parent }, FETCH_STRATEGY.SINGLE)) as Organization;
+        if (!org) {
+          throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG', { friendly: true });
+        }
+        parent = org;
+        // create keycloak sub_organization if the parent existe
+        keycloakOrganization = await this.keycloakUtils.createGroup(`${grpPrifix}${payload.name}`, org.kcid);
+      }
+      const user = await this.userService.get(userId);
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
+      }
+      const wrappedOrganization = this.wrapEntity(new Organization(), {
+        name: payload.name,
+        email: payload.email,
+        type: payload.type,
+        socialFacebook: payload.socialFacebook || null,
+        socialInstagram: payload.socialInstagram || null,
+        socialYoutube: payload.socialYoutube || null,
+        socialGithub: payload.socialGithub || null,
+        socialTwitter: payload.socialTwitter || null,
+        socialLinkedin: payload.socialLinkedin || null,
+      });
+      //use tansactional operation ///////////////////////////////////
+      const organizationPhone = await this.phoneService.transactionalCreate({
+        phoneLabel: payload.phone.phoneLabel,
+        phoneCode: payload.phone.phoneCode,
+        phoneNumber: payload.phone.phoneNumber,
+      });
+
+      wrappedOrganization.phone = organizationPhone;
+      wrappedOrganization.parent = parent;
+      wrappedOrganization.owner = user;
+      const groupName = `${orgPrifix}${payload.name}`;
+
+      // create keycloak organization in case it has no parent
+      if (!payload.parent) {
+        keycloakOrganization = await this.keycloakUtils.createGroup(groupName);
+      }
+      /**
+       * create keycloak admin group as well as members group
+       * and add the owner attribute to the organization in keycloak
+       */
+      let adminGroup;
+      let membersGroup;
+      // try {
       [adminGroup, membersGroup] = await Promise.all([
         this.keycloakUtils.createGroup(`${grpPrifix}admin`, keycloakOrganization),
         this.keycloakUtils.createGroup(`${grpPrifix}members`, keycloakOrganization),
@@ -168,17 +175,20 @@ export class OrganizationService extends BaseService<Organization> implements IO
       await this.keycloakUtils.addMemberToGroup(adminGroup, user.keycloakId);
       //create the role admin
       await this.keycloakUtils.createRealmRole(`${keycloakOrganization}-admin`);
-      const adminRole = await this.keycloakUtils.findRoleByName(`${keycloakOrganization}-admin`);
+      adminRole = await this.keycloakUtils.findRoleByName(`${keycloakOrganization}-admin`);
       //assign it to the admin group
       this.keycloakUtils.groupRoleMap(adminGroup, adminRole);
       //storing the KC groups ids
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
-      const organizationSetting = await this.organizationSettingsService.create({
+      ///////////////////////////////use transactional oper<ation
+      const organizationSetting = await this.organizationSettingsService.transactionalCreate({
         hideAccountNumberWhenMakingReservation: AccountNumberVisibilty.EVERYONE,
       });
-      const address = await this.addressService.create({
+      ///////////////////////////////use transactional oper<ation
+
+      const address = await this.addressService.transactionalCreate({
         city: payload.address.city,
         apartment: payload.address.apartment,
         country: payload.address.country,
@@ -189,21 +199,24 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
       wrappedOrganization.address = address;
       wrappedOrganization.settings = organizationSetting;
-      organization = await this.create(wrappedOrganization);
+      ///////////////////////////////use transactional oper<ation
+      organization = await this.dao.transactionalCreate(wrappedOrganization);
 
-      const DBAdminGroup = await this.groupService.create({
+      ///////////////////////////////use transactional oper<ation
+      const DBAdminGroup = await this.groupService.transactionalCreate({
         organization,
         kcid: adminGroup,
         name: `${grpPrifix}admin`,
       });
 
-      await this.groupService.create({
+      ///////////////////////////////use transactional oper<ation
+      await this.groupService.transactionalCreate({
         organization,
         kcid: membersGroup,
         name: `${grpPrifix}member`,
       });
-
-      await this.memberService.create({
+      ///////////////////////////////use transactional oper<ation
+      await this.memberService.transactionalCreate({
         name: user.firstname + ' ' + user.lastname,
         user,
         active: true,
@@ -215,46 +228,67 @@ export class OrganizationService extends BaseService<Organization> implements IO
         workEmail: user.email,
         group: DBAdminGroup.id,
       });
-    } catch (error) {
-      await Promise.all<any>(
-        [
-          keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
-          organization && this.remove(organization.id),
-        ].filter(Boolean),
-      );
-      throw new InternalServerError('SOMETHING_WENT_WRONG');
-    }
+      // } catch (error) {
+      //   await Promise.all<any>(
+      //     [
+      //       keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
+      //       organization && this.remove(organization.id),
+      //     ].filter(Boolean),
+      //   );
+      //   throw new InternalServerError('SOMETHING_WENT_WRONG');
+      // }
 
-    if (payload.labels?.length) {
-      await this.labelService.createBulkLabel(payload.labels, organization);
-    }
-
-    //create a default infastructure
-
-    const responsable = (await this.memberService.getByCriteria(
-      { user, organization },
-      FETCH_STRATEGY.SINGLE,
-    )) as Member;
-
-    const defaultInfrastructure = this.infraService.wrapEntity(Infrastructure.getInstance(), {
-      name: `${organization.name}_defaultInfra`,
-      key: `${organization.name}_defaultInfra`,
-      default: true,
-    });
-    defaultInfrastructure.responsible = responsable;
-    defaultInfrastructure.organization = organization;
-    await this.infraService.create(defaultInfrastructure);
-
-    // create the necessary CK Permissions
-    const BDPermissions = (await this.permissionService.getByCriteria(
-      { module: 'organization', operationDB: 'create' },
-      FETCH_STRATEGY.ALL,
-    )) as Permission[];
-    if (BDPermissions) {
-      for (const permission of BDPermissions) {
-        this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
+      if (payload.labels?.length) {
+        ///////////////////////////////use transactional oper<ation
+        await this.labelService.createBulkLabelwithoutFlush(payload.labels, organization);
       }
+
+      //create a default infastructure
+
+      const responsable = (await this.memberService.getByCriteria(
+        { user, organization },
+        FETCH_STRATEGY.SINGLE,
+      )) as Member;
+
+      const defaultInfrastructure = this.infraService.wrapEntity(Infrastructure.getInstance(), {
+        name: `${organization.name}_defaultInfra`,
+        key: `${organization.name}_defaultInfra`,
+        default: true,
+      });
+      defaultInfrastructure.responsible = responsable;
+      defaultInfrastructure.organization = organization;
+      ///////////////////////////////use transactional oper<ation
+      await this.infraService.transactionalCreate(defaultInfrastructure);
+
+      // create the necessary CK Permissions
+      const BDPermissions = (await this.permissionService.getByCriteria(
+        { module: 'organization', operationDB: 'create' },
+        FETCH_STRATEGY.ALL,
+      )) as Permission[];
+      if (BDPermissions) {
+        for (const permission of BDPermissions) {
+          this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}`);
+          const role = this.keycloakUtils.findRoleByName(
+            `${organization.kcid}-${permission.name}`,
+          ) as RoleRepresentation;
+          keycloakpermissions.push(role);
+        }
+      }
+
+      forkedEntityManager.commit();
+    } catch (error) {
+      //rolback any keycloak operation
+      if (keycloakOrganization) {
+        this.keycloakUtils.deleteGroup(keycloakOrganization);
+      }
+      if (adminRole) {
+        this.keycloakUtils.deleteRealmRole(`${keycloakOrganization}-admin`);
+      }
+      forkedEntityManager.rollback();
+      //rollback keycloak changes
+      throw error;
     }
+    this.dao.entitymanager.flush();
     return organization.id;
   }
 
