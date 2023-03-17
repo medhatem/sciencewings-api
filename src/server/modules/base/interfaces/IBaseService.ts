@@ -17,8 +17,6 @@ export abstract class IBaseService<T extends BaseModel> {
 
   public transactionalCreate: (entry: T) => Promise<any>;
 
-  public fork: () => Promise<EntityManager>;
-
   public flush: () => Promise<any>;
 
   public update: (entry: T) => Promise<any>;

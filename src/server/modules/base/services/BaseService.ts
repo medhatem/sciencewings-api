@@ -42,10 +42,6 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   public async update(entry: T): Promise<any> {
     return this.dao.update(entry);
   }
-  @log()
-  public async fork(): Promise<EntityManager> {
-    return this.dao.fork();
-  }
 
   @log()
   public async flush(): Promise<any> {
