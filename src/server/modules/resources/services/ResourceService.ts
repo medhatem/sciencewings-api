@@ -278,19 +278,21 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
         wrappedResource.managers.add(manager);
       } else {
-        await applyToAll(payload.managers, async (managerId) => {
-          const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
-          const manager = (await this.memberService.getByCriteria(
-            { organization, user },
-            FETCH_STRATEGY.SINGLE,
-          )) as Member;
-          if (!manager) {
-            throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
-              variables: { user: `${payload.managers}` },
-            });
-          }
-          wrappedResource.managers.add(manager);
-        });
+        await Promise.all(
+          payload.managers.map(async (managerId: any) => {
+            const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
+            const manager = (await this.memberService.getByCriteria(
+              { organization, user },
+              FETCH_STRATEGY.SINGLE,
+            )) as Member;
+            if (!manager) {
+              throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+                variables: { user: `${payload.managers}` },
+              });
+            }
+            wrappedResource.managers.add(manager);
+          }),
+        );
       }
 
       wrappedResource.calendar.add(calendar);
@@ -310,15 +312,13 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       //   }
       // }
 
-      forkedEntityManager.commit();
+      await forkedEntityManager.commit();
     } catch (error) {
-      forkedEntityManager.rollback();
+      await forkedEntityManager.rollback();
       throw error;
     }
 
     await this.dao.entitymanager.flush();
-    console.log('resource detailes', createdResource);
-    console.log('log resource id ', createdResource.id);
     return createdResource.id;
   }
 
