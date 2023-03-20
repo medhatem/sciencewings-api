@@ -111,7 +111,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     let organization: Organization;
     let keycloakOrganization;
     let adminRole;
-    let keycloakpermissions: RoleRepresentation[];
+    let keycloakpermissions: RoleRepresentation[] = [];
     try {
       const existingOrg = (await this.dao.getByCriteria({
         name: payload.name,
@@ -144,7 +144,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         socialTwitter: payload.socialTwitter || null,
         socialLinkedin: payload.socialLinkedin || null,
       });
-      //use tansactional operation ///////////////////////////////////
+
       const organizationPhone = await this.phoneService.transactionalCreate({
         phoneLabel: payload.phone.phoneLabel,
         phoneCode: payload.phone.phoneCode,
@@ -165,7 +165,6 @@ export class OrganizationService extends BaseService<Organization> implements IO
        * and add the owner attribute to the organization in keycloak
        */
 
-      // try {
       const [adminGroup, membersGroup] = await Promise.all([
         this.keycloakUtils.createGroup(`${grpPrifix}admin`, keycloakOrganization),
         this.keycloakUtils.createGroup(`${grpPrifix}members`, keycloakOrganization),
@@ -181,11 +180,9 @@ export class OrganizationService extends BaseService<Organization> implements IO
       wrappedOrganization.kcid = keycloakOrganization;
       wrappedOrganization.adminGroupkcid = adminGroup;
       wrappedOrganization.memberGroupkcid = membersGroup;
-      ///////////////////////////////use transactional oper<ation
       const organizationSetting = await this.organizationSettingsService.transactionalCreate({
         hideAccountNumberWhenMakingReservation: AccountNumberVisibilty.EVERYONE,
       });
-      ///////////////////////////////use transactional oper<ation
 
       const address = await this.addressService.transactionalCreate({
         city: payload.address.city,
@@ -198,23 +195,21 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
       wrappedOrganization.address = address;
       wrappedOrganization.settings = organizationSetting;
-      ///////////////////////////////use transactional oper<ation
+
       organization = await this.dao.transactionalCreate(wrappedOrganization);
 
-      ///////////////////////////////use transactional oper<ation
       const DBAdminGroup = await this.groupService.transactionalCreate({
         organization,
         kcid: adminGroup,
         name: `${grpPrifix}admin`,
       });
 
-      ///////////////////////////////use transactional oper<ation
       await this.groupService.transactionalCreate({
         organization,
         kcid: membersGroup,
         name: `${grpPrifix}member`,
       });
-      ///////////////////////////////use transactional oper<ation
+
       await this.memberService.transactionalCreate({
         name: user.firstname + ' ' + user.lastname,
         user,
@@ -227,18 +222,8 @@ export class OrganizationService extends BaseService<Organization> implements IO
         workEmail: user.email,
         group: DBAdminGroup.id,
       });
-      // } catch (error) {
-      //   await Promise.all<any>(
-      //     [
-      //       keycloakOrganization && this.keycloakUtils.deleteGroup(keycloakOrganization),
-      //       organization && this.remove(organization.id),
-      //     ].filter(Boolean),
-      //   );
-      //   throw new InternalServerError('SOMETHING_WENT_WRONG');
-      // }
 
       if (payload.labels?.length) {
-        ///////////////////////////////use transactional oper<ation
         await this.labelService.createBulkLabelwithoutFlush(payload.labels, organization);
       }
 
@@ -256,7 +241,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
       });
       defaultInfrastructure.responsible = responsable;
       defaultInfrastructure.organization = organization;
-      ///////////////////////////////use transactional oper<ation
+
       await this.infraService.transactionalCreate(defaultInfrastructure);
 
       // create the necessary CK Permissions
@@ -276,23 +261,23 @@ export class OrganizationService extends BaseService<Organization> implements IO
 
       forkedEntityManager.commit();
     } catch (error) {
-      //rolback any keycloak operation
       if (keycloakOrganization) {
-        this.keycloakUtils.deleteGroup(keycloakOrganization);
+        await this.keycloakUtils.deleteGroup(keycloakOrganization);
       }
       if (adminRole) {
-        this.keycloakUtils.deleteRealmRole(`${keycloakOrganization}-admin`);
+        await this.keycloakUtils.deleteRealmRole(`${keycloakOrganization}-admin`);
       }
       if (keycloakpermissions.length !== null) {
-        for (const permission of keycloakpermissions) {
-          this.keycloakUtils.deleteRealmRole(permission.name);
-        }
+        await Promise.all(
+          keycloakpermissions.map((permission: any) => {
+            this.keycloakUtils.deleteRealmRole(permission.name);
+          }),
+        );
       }
       forkedEntityManager.rollback();
-      //rollback keycloak changes
       throw error;
     }
-    this.dao.entitymanager.flush();
+    await this.dao.entitymanager.flush();
     return organization.id;
   }
 
