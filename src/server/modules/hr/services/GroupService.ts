@@ -115,7 +115,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   @validate
   public async createGroup(@validateParam(CreateGroupSchema) payload: GroupRO): Promise<number> {
     const forkedGroupEntityManager = await this.dao.fork();
-    forkedGroupEntityManager.begin();
+    await forkedGroupEntityManager.begin();
     let createdGroup: Group;
     let organization: Organization;
     let id: string;

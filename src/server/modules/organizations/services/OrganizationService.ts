@@ -107,7 +107,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     userId: number,
   ): Promise<number> {
     const forkedEntityManager = await this.dao.fork();
-    forkedEntityManager.begin();
+    await forkedEntityManager.begin();
     let organization: Organization;
     let keycloakOrganization;
     let adminRole;
@@ -590,7 +590,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
     organizationId: number,
   ): Promise<number> {
     const forkedEntityManager = await this.dao.fork();
-    forkedEntityManager.begin();
+    await forkedEntityManager.begin();
     try {
       const fetchedOrganization = await this.dao.get(organizationId);
       if (!fetchedOrganization) {
@@ -613,12 +613,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
         ...payload,
       });
       await this.organizationSettingsService.transactionalUpdate(newSettings);
-      forkedEntityManager.commit();
+      await forkedEntityManager.commit();
     } catch (error) {
-      forkedEntityManager.rollback();
+      await forkedEntityManager.rollback();
       throw error;
     }
-    this.dao.entitymanager.flush();
+    await this.dao.entitymanager.flush();
     return organizationId;
   }
 
