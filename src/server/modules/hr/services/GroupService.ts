@@ -176,14 +176,13 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       forkedGroupEntityManager.commit();
     } catch (error) {
       if (id) {
-        this.keycloakUtils.deleteGroup(id);
+        await this.keycloakUtils.deleteGroup(id);
       }
-      forkedGroupEntityManager.rollback();
+      await forkedGroupEntityManager.rollback();
       throw error;
     }
-    this.dao.entitymanager.flush();
-    const group = (await this.dao.getByCriteria({ kcid: createdGroup.kcid })) as Group;
-    return group.id;
+    await this.dao.entitymanager.flush();
+    return createdGroup.id;
   }
 
   @log()
