@@ -278,7 +278,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
 
         wrappedResource.managers.add(manager);
       } else {
-        await wrappedResource.managers.init();
         await applyToAll(payload.managers, async (managerId) => {
           const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
           const manager = (await this.memberService.getByCriteria(
@@ -316,8 +315,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       forkedEntityManager.rollback();
       throw error;
     }
-    this.dao.entitymanager.flush();
 
+    this.dao.entitymanager.flush();
     console.log('resource detailes', createdResource);
     console.log('log resource id ', createdResource.id);
     return createdResource.id;
