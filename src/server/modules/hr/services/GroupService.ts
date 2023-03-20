@@ -178,7 +178,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       this.keycloakUtils.deleteGroup(createdGroup.kcid);
       throw error;
     }
-    this.dao.entitymanager.flush();
+    await this.dao.entitymanager.flush();
     return createdGroup.id;
   }
 

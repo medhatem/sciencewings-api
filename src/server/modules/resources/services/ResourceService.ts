@@ -316,7 +316,7 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
       throw error;
     }
 
-    this.dao.entitymanager.flush();
+    await this.dao.entitymanager.flush();
     console.log('resource detailes', createdResource);
     console.log('log resource id ', createdResource.id);
     return createdResource.id;
