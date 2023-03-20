@@ -259,7 +259,7 @@ export class OrganizationService extends BaseService<Organization> implements IO
         }
       }
 
-      forkedEntityManager.commit();
+      await forkedEntityManager.commit();
     } catch (error) {
       if (keycloakOrganization) {
         await this.keycloakUtils.deleteGroup(keycloakOrganization);
@@ -269,12 +269,12 @@ export class OrganizationService extends BaseService<Organization> implements IO
       }
       if (keycloakpermissions.length !== null) {
         await Promise.all(
-          keycloakpermissions.map((permission: any) => {
-            this.keycloakUtils.deleteRealmRole(permission.name);
+          keycloakpermissions.map(async (permission: any) => {
+            await this.keycloakUtils.deleteRealmRole(permission.name);
           }),
         );
       }
-      forkedEntityManager.rollback();
+      await forkedEntityManager.rollback();
       throw error;
     }
     await this.dao.entitymanager.flush();
