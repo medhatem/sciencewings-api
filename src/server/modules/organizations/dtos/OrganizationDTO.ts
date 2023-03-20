@@ -16,7 +16,7 @@ export class OrganizationLabelsDTO {
 }
 @JsonObject()
 @unique
-export class OrganizationIdName {
+export class OrganizationDetails extends BaseBodyDTO {
   @JsonProperty()
   id: number;
 

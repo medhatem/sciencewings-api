@@ -2,7 +2,7 @@ import { BaseBodyDTO, BaseDTO, BaseRequestDTO } from '@/modules/base/dtos/BaseDT
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { beforeDeserialize } from '@/utils/utilities';
 import { unique } from '@/decorators/unique';
-import { OrganizationIdName, OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
+import { OrganizationDetails, OrganizationInformationDTO } from '@/modules/organizations/dtos/OrganizationDTO';
 import { UserDTO } from '@/modules/users/dtos/UserDTO';
 import { PaginationBodyDTO } from '@/modules/organizations/dtos/GetOrganizationsMembersDTO';
 import { GetResourceSettingsBodyDTO } from '@/modules/resources/dtos/ResourceSettingsDTO';
@@ -61,7 +61,7 @@ export class ResourceDTO extends BaseBodyDTO {
   description: string;
 
   @JsonProperty()
-  organization: OrganizationIdName;
+  organization: OrganizationDetails;
 
   @JsonProperty()
   active: boolean;
