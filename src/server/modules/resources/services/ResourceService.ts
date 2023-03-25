@@ -444,8 +444,8 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
   ): Promise<number> {
-    const forkedGroupEntityManager = await this.dao.fork();
-    await forkedGroupEntityManager.begin();
+    const forkedEntityManager = await this.dao.fork();
+    await forkedEntityManager.begin();
     let resourceStatusHistory;
     try {
       const resource = await this.dao.get(resourceId);
@@ -473,9 +473,9 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
         resource,
         member,
       });
-      await forkedGroupEntityManager.commit();
+      await forkedEntityManager.commit();
     } catch (error) {
-      await forkedGroupEntityManager.rollback();
+      await forkedEntityManager.rollback();
       throw error;
     }
     await this.dao.entitymanager.flush();
