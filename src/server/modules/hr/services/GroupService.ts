@@ -208,13 +208,21 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
   @log()
   public async deleteGroup(groupId: number): Promise<number> {
-    const fetchedGroup = await this.dao.get(groupId);
-    if (!fetchedGroup) {
-      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
+    const forkedEntityManager = await this.dao.fork();
+    await forkedEntityManager.begin();
+    try {
+      const fetchedGroup = await this.dao.get(groupId);
+      if (!fetchedGroup) {
+        throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
+      }
+      await this.dao.transactionalRemove(fetchedGroup);
+      await this.keycloakUtils.deleteGroup(fetchedGroup.kcid);
+      await forkedEntityManager.commit();
+    } catch (error) {
+      await forkedEntityManager.rollback();
+      throw error;
     }
-    await this.keycloakUtils.deleteGroup(fetchedGroup.kcid);
-    await this.dao.remove(fetchedGroup);
-
+    await this.dao.entitymanager.flush();
     return groupId;
   }
 

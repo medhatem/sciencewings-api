@@ -93,9 +93,15 @@ export class BaseDao<T extends BaseModel<T>> {
     await this.repository.nativeDelete(entry);
     return entry;
   }
+
   @log()
   public async removeEntity(entity: T): Promise<void> {
     await this.repository.removeAndFlush(entity);
+  }
+
+  @log()
+  public async transactionalRemove(entity: T): Promise<void> {
+    await this.repository.remove(entity);
   }
 
   @log() async fork(): Promise<EntityManager> {
