@@ -92,43 +92,54 @@ export class ProjectService extends BaseService<Project> implements IProjectServ
    */
   @log()
   public async createProject(userId: number, @validateParam(CreateProjectSchema) payload: ProjectRO): Promise<number> {
-    //check if the project key is unique
-    const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
-    if (ifProjectKeyIsUnique) {
-      throw new ValidationError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', {
-        variables: { key: `${payload.key}` },
-        friendly: true,
+    const forkedEntityManager = await this.dao.fork();
+    await forkedEntityManager.begin();
+    let project: Project;
+    try {
+      //check if the project key is unique
+      const ifProjectKeyIsUnique = await this.dao.getByCriteria({ key: payload.key });
+      if (ifProjectKeyIsUnique) {
+        throw new ValidationError('PROJECT.KEY_IS_NOT_UNIQUE {{key}}', {
+          variables: { key: `${payload.key}` },
+          friendly: true,
+        });
+      }
+      const organization = await this.organizationService.get(payload.organization);
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
+      }
+      const user = await this.userService.get(userId);
+      if (!user) {
+        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
+      }
+      // add the user who create the project as a manager of project
+      const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
+      if (!member) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT');
+      }
+      const wrappedProject = this.wrapEntity(Project.getInstance(), {
+        title: payload.title,
+        key: payload.key,
+        description: payload.description,
+        status: ProjectStatus.TODO,
       });
-    }
-    const organization = await this.organizationService.get(payload.organization);
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
-    }
-    const user = await this.userService.get(userId);
-    if (!user) {
-      throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', { variables: { user: `${userId}` } });
-    }
-    // add the user who create the project as a manager of project
-    const member = await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE);
-    if (!member) {
-      throw new NotFoundError('MEMBER.NON_EXISTANT');
-    }
+      wrappedProject.organization = organization.id;
+      project = await this.dao.transactionalCreate(wrappedProject);
+      const participant = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
+        role: RolesList.MANAGER,
+        status: ProjectMemberStatus.ACTIVE,
+      });
+      const createdProject = (await this.dao.getByCriteria({ key: payload.key }, FETCH_STRATEGY.SINGLE)) as Project;
+      participant.member = member;
+      participant.project = createdProject.id;
+      await this.projectMemberService.transactionalCreate(participant);
 
-    const wrappedProject = this.wrapEntity(Project.getInstance(), {
-      title: payload.title,
-      key: payload.key,
-      description: payload.description,
-      status: ProjectStatus.TODO,
-    });
-    wrappedProject.organization = organization.id;
-    const project = await this.create(wrappedProject);
-    const participant = this.projectMemberService.wrapEntity(ProjectMember.getInstance(), {
-      role: RolesList.MANAGER,
-      status: ProjectMemberStatus.ACTIVE,
-    });
-    participant.member = member;
-    participant.project = project.id;
-    await this.projectMemberService.create(participant);
+      await forkedEntityManager.commit();
+    } catch (error) {
+      await forkedEntityManager.rollback();
+      throw error;
+    }
+    await this.dao.entitymanager.flush();
     return project.id;
   }
 
