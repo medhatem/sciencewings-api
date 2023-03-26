@@ -222,57 +222,50 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     userId: number,
     @validateParam(CreateResourceSchema) payload: ResourceRO,
   ): Promise<number> {
-    const organization = await this.organizationService.get(payload.organization);
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
-    }
+    const forkedEntityManager = await this.dao.fork();
+    await forkedEntityManager.begin();
+    let createdResource: Resource;
 
-    const fetchedInfrastructure = (await this.infrastructureService.get(payload.infrastructure)) as Infrastructure;
-    if (!fetchedInfrastructure) {
-      throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
-        variables: { infra: `${payload.infrastructure}` },
-      });
-    }
+    try {
+      const organization = await this.organizationService.get(payload.organization);
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${payload.organization}` } });
+      }
 
-    const wrappedResource = this.wrapEntity(Resource.getInstance(), {
-      name: payload.name,
-      description: payload.name || null,
-      resourceType: payload.resourceType,
-      resourceClass: payload.resourceClass,
-      active: true,
-    });
-    wrappedResource.infrastructure = fetchedInfrastructure;
-    wrappedResource.organization = organization;
-
-    const resourceStatus = await this.resourceStatusService.create({
-      statusType: StatusCases.OPERATIONAL,
-      statusDescription: '',
-    });
-    wrappedResource.status = resourceStatus;
-
-    const resourceSetting = await this.resourceSettingsService.create({});
-    wrappedResource.settings = resourceSetting;
-    const calendar = await this.resourceCalendarService.create({
-      name: `${wrappedResource.name}-calendar`,
-      active: true,
-      organization: organization,
-    });
-
-    const createdResource = await this.create(wrappedResource);
-    if (!payload.managers) {
-      const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
-      const manager = (await this.memberService.getByCriteria({ organization, user }, FETCH_STRATEGY.SINGLE)) as Member;
-      if (!manager) {
-        throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
-          variables: { user: `${payload.managers}` },
+      const fetchedInfrastructure = (await this.infrastructureService.get(payload.infrastructure)) as Infrastructure;
+      if (!fetchedInfrastructure) {
+        throw new NotFoundError('INFRA.NON_EXISTANT_DATA {{infra}}', {
+          variables: { infra: `${payload.infrastructure}` },
         });
       }
-      await wrappedResource.managers.init();
-      wrappedResource.managers.add(manager);
-    } else {
-      await wrappedResource.managers.init();
-      await applyToAll(payload.managers, async (managerId) => {
-        const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
+
+      const wrappedResource = this.wrapEntity(Resource.getInstance(), {
+        name: payload.name,
+        description: payload.name || null,
+        resourceType: payload.resourceType,
+        resourceClass: payload.resourceClass,
+        active: true,
+      });
+      wrappedResource.infrastructure = fetchedInfrastructure;
+      wrappedResource.organization = organization;
+
+      const resourceStatus = await this.resourceStatusService.transactionalCreate({
+        statusType: StatusCases.OPERATIONAL,
+        statusDescription: '',
+      });
+      wrappedResource.status = resourceStatus;
+
+      const resourceSetting = await this.resourceSettingsService.transactionalCreate({});
+      wrappedResource.settings = resourceSetting;
+
+      const calendar = await this.resourceCalendarService.transactionalCreate({
+        name: `${wrappedResource.name}-calendar`,
+        active: true,
+        organization: organization,
+      });
+
+      if (!payload.managers) {
+        const user = await this.userService.getByCriteria({ id: userId }, FETCH_STRATEGY.SINGLE);
         const manager = (await this.memberService.getByCriteria(
           { organization, user },
           FETCH_STRATEGY.SINGLE,
@@ -282,25 +275,50 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
             variables: { user: `${payload.managers}` },
           });
         }
+
         wrappedResource.managers.add(manager);
-      });
+      } else {
+        await Promise.all(
+          payload.managers.map(async (managerId: any) => {
+            const user = await this.userService.getByCriteria({ id: managerId }, FETCH_STRATEGY.SINGLE);
+            const manager = (await this.memberService.getByCriteria(
+              { organization, user },
+              FETCH_STRATEGY.SINGLE,
+            )) as Member;
+            if (!manager) {
+              throw new NotFoundError('USER.NON_EXISTANT {{user}}', {
+                variables: { user: `${payload.managers}` },
+              });
+            }
+            wrappedResource.managers.add(manager);
+          }),
+        );
+      }
+
+      wrappedResource.calendar.add(calendar);
+
+      createdResource = await this.dao.transactionalCreate(wrappedResource);
+      //TODO should create the ck permissions related to the created resource
+      // const BDPermissions = (await this.permissionService.getByCriteria(
+      //   { module: 'resource', operationDB: 'create' },
+      //   FETCH_STRATEGY.ALL,
+      // )) as Permission[];
+      // if (BDPermissions) {
+      //   for (const permission of BDPermissions) {
+      //     this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}-${createdResource.id}`);
+      //     const currentRole = await this.keycloakUtils.findRoleByName(
+      //         `${organization.kcid}-${permission.name}-${createdResource.id}`);
+      //     this.keycloakUtils.groupRoleMap(organization.adminGroupkcid, currentRole);
+      //   }
+      // }
+
+      await forkedEntityManager.commit();
+    } catch (error) {
+      await forkedEntityManager.rollback();
+      throw error;
     }
-    await wrappedResource.calendar.init();
-    wrappedResource.calendar.add(calendar);
-    await this.update(createdResource);
-    //TODO should create the ck permissions related to the created resource
-    // const BDPermissions = (await this.permissionService.getByCriteria(
-    //   { module: 'resource', operationDB: 'create' },
-    //   FETCH_STRATEGY.ALL,
-    // )) as Permission[];
-    // if (BDPermissions) {
-    //   for (const permission of BDPermissions) {
-    //     this.keycloakUtils.createRealmRole(`${organization.kcid}-${permission.name}-${createdResource.id}`);
-    //     const currentRole = await this.keycloakUtils.findRoleByName(
-    //         `${organization.kcid}-${permission.name}-${createdResource.id}`);
-    //     this.keycloakUtils.groupRoleMap(organization.adminGroupkcid, currentRole);
-    //   }
-    // }
+
+    await this.dao.entitymanager.flush();
     return createdResource.id;
   }
 

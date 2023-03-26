@@ -43,6 +43,11 @@ export class BaseService<T extends BaseModel<T>> implements IBaseService<any> {
   }
 
   @log()
+  public async flush(): Promise<any> {
+    this.dao.entitymanager.flush();
+  }
+
+  @log()
   public async transactionalUpdate(entry: T): Promise<any> {
     return this.dao.transactionalUpdate(entry);
   }

@@ -1,5 +1,4 @@
 import { AssignOptions, FindOneOptions, FindOptions } from '@mikro-orm/core';
-
 import { BaseModel } from '@/modules/base/models/BaseModel';
 import { FETCH_STRATEGY } from '@/modules/base/daos/BaseDao';
 
@@ -16,6 +15,10 @@ export abstract class IBaseService<T extends BaseModel> {
   public transactionalCreate: (entry: T) => Promise<any>;
 
   public transactionalCreate: (entry: T) => Promise<any>;
+
+  public transactionalCreate: (entry: T) => Promise<any>;
+
+  public flush: () => Promise<any>;
 
   public update: (entry: T) => Promise<any>;
 
