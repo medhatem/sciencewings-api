@@ -292,63 +292,71 @@ export class OrganizationService extends BaseService<Organization> implements IO
     @validateParam(UpdateOrganizationSchema) payload: UpdateOrganizationRO,
     orgId: number,
   ): Promise<number> {
-    const organization = await this.dao.get(orgId);
-    if (!organization) {
-      throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
-    }
-
-    if (organization.name !== payload.name) {
-      //update the Kc group name
-      await this.keycloakUtils.updateGroup(organization.kcid, {
-        name: `${orgPrifix}${payload.name}`,
-      });
-    }
-
-    const wrappedOrganization = this.wrapEntity(organization, {
-      ...payload,
-    });
-
-    if (payload.owner) {
-      const owner = await this.userService.get(payload.owner);
-      if (!owner) {
-        throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
-          variables: { user: `${payload.owner}` },
-          friendly: false,
-        });
+    const forkedEntityManager = await this.dao.fork();
+    await forkedEntityManager.begin();
+    let nameUpdated = false;
+    let organization;
+    try {
+      organization = await this.dao.get(orgId);
+      if (!organization) {
+        throw new NotFoundError('ORG.NON_EXISTANT_DATA {{org}}', { variables: { org: `${orgId}` }, friendly: false });
       }
-      wrappedOrganization.owner = owner;
-    }
 
-    if (payload.phone) {
-      const phone = await this.phoneService.get(payload.phone.id);
-      const updatedPhone = this.phoneService.wrapEntity(phone, {
-        ...phone,
-        phoneLabel: payload.phone.phoneLabel,
-        phoneCode: payload.phone.phoneCode,
-        phoneNumber: payload.phone.phoneNumber,
-      });
-      await this.phoneService.update(updatedPhone);
-    }
-
-    if (payload.parent) {
-      const parent = await this.dao.get(payload.parent);
-      if (!parent) {
-        throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG');
-      }
-      wrappedOrganization.parent = parent;
-    }
-
-    const updateResult = await this.dao.update(wrappedOrganization);
-    if (!updateResult) {
-      //in case we update the name of the org
       if (organization.name !== payload.name) {
-        //rolback the keyclock updated group name
+        //update the Kc group name
+        await this.keycloakUtils.updateGroup(organization.kcid, {
+          name: `${orgPrifix}${payload.name}`,
+        });
+        nameUpdated = true;
+      }
+
+      const wrappedOrganization = this.wrapEntity(organization, {
+        ...payload,
+      });
+
+      if (payload.owner) {
+        const owner = await this.userService.get(payload.owner);
+        if (!owner) {
+          throw new NotFoundError('USER.NON_EXISTANT_USER {{user}}', {
+            variables: { user: `${payload.owner}` },
+            friendly: false,
+          });
+        }
+        wrappedOrganization.owner = owner;
+      }
+
+      if (payload.phone) {
+        const phone = await this.phoneService.get(payload.phone.id);
+        const updatedPhone = this.phoneService.wrapEntity(phone, {
+          ...phone,
+          phoneLabel: payload.phone.phoneLabel,
+          phoneCode: payload.phone.phoneCode,
+          phoneNumber: payload.phone.phoneNumber,
+        });
+        await this.phoneService.transactionalUpdate(updatedPhone);
+      }
+
+      if (payload.parent) {
+        const parent = await this.dao.get(payload.parent);
+        if (!parent) {
+          throw new NotFoundError('ORG.NON_EXISTANT_PARENT_ORG');
+        }
+        wrappedOrganization.parent = parent;
+      }
+
+      await this.dao.transactionalUpdate(wrappedOrganization);
+      await forkedEntityManager.commit();
+    } catch (error) {
+      //rollback the keycoak organization name changing
+      if (nameUpdated == true) {
         await this.keycloakUtils.updateGroup(organization.kcid, {
           name: `${orgPrifix}${organization.name}`,
         });
       }
+      await forkedEntityManager.rollback();
+      throw error;
     }
-
+    await this.dao.entitymanager.flush();
     return orgId;
   }
 
