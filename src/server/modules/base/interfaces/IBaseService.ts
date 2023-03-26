@@ -13,6 +13,7 @@ export abstract class IBaseService<T extends BaseModel> {
   public create: (entry: T) => Promise<T>;
 
   public transactionalUpdate: (entry: T) => Promise<any>;
+  public transactionalCreate: (entry: T) => Promise<any>;
 
   public transactionalCreate: (entry: T) => Promise<any>;
 

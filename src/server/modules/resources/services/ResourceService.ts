@@ -216,7 +216,6 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     }
   }
 
-
   @log()
   @validate
   public async createResource(
@@ -445,32 +444,41 @@ export class ResourceService extends BaseService<Resource> implements IResourceS
     @validateParam(ResourceGeneralStatusSchema) payload: ResourceSettingsGeneralStatusRO,
     resourceId: number,
   ): Promise<number> {
-    const resource = await this.dao.get(resourceId);
+    const forkedEntityManager = await this.dao.fork();
+    await forkedEntityManager.begin();
+    let resourceStatusHistory;
+    try {
+      const resource = await this.dao.get(resourceId);
 
-    if (!resource) {
-      throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
-        variables: { resource: `${resourceId}` },
+      if (!resource) {
+        throw new NotFoundError('RESOURCE.NON_EXISTANT {{resource}}', {
+          variables: { resource: `${resourceId}` },
+        });
+      }
+
+      const organization = await this.organizationService.get(payload.organization);
+      const user = await this.userService.getByCriteria({ id: payload.user }, FETCH_STRATEGY.SINGLE);
+
+      const member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
+
+      if (!member) {
+        throw new NotFoundError('MEMBER.NON_EXISTANT');
+      }
+      resource.status.statusType = payload.statusType;
+      resource.status.statusDescription = payload.statusDescription;
+      await this.dao.transactionalUpdate(resource);
+
+      resourceStatusHistory = await this.resourceStatusHistoryService.transactionalCreate({
+        ...payload,
+        resource,
+        member,
       });
+      await forkedEntityManager.commit();
+    } catch (error) {
+      await forkedEntityManager.rollback();
+      throw error;
     }
-
-    const organization = await this.organizationService.get(payload.organization);
-    const user = await this.userService.getByCriteria({ id: payload.user }, FETCH_STRATEGY.SINGLE);
-
-    const member = await this.memberService.getByCriteria({ user, organization }, FETCH_STRATEGY.SINGLE);
-
-    if (!member) {
-      throw new NotFoundError('MEMBER.NON_EXISTANT');
-    }
-    resource.status.statusType = payload.statusType;
-    resource.status.statusDescription = payload.statusDescription;
-    await this.dao.update(resource);
-
-    const resourceStatusHistory = await this.resourceStatusHistoryService.create({
-      ...payload,
-      resource,
-      member,
-    });
-
+    await this.dao.entitymanager.flush();
     return resourceStatusHistory.id;
   }
 
