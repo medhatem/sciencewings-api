@@ -188,21 +188,36 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   @log()
   @validate
   public async updateGroup(@validateParam(UpdateGroupSchema) payload: GroupRO, groupId: number): Promise<number> {
-    const fetchedGroup = await this.dao.get(groupId);
-    if (!fetchedGroup) {
-      throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
+    const forkedEntityManager = await this.dao.fork();
+    await forkedEntityManager.begin();
+    let fetchedGroup;
+    let nameUpdated = false;
+    try {
+      fetchedGroup = await this.dao.get(groupId);
+      if (!fetchedGroup) {
+        throw new NotFoundError('GROUP.NON_EXISTANT {{group}}', { variables: { group: `${groupId}` } });
+      }
+
+      if (fetchedGroup.name !== payload.name) {
+        await this.keycloakUtils.updateGroup(fetchedGroup.kcid, { name: `${grpPrifix}${payload.name}` });
+        nameUpdated = true;
+      }
+
+      const wrappedGroup = this.wrapEntity(fetchedGroup, {
+        ...fetchedGroup,
+        ...payload,
+      });
+      await this.dao.transactionalUpdate(wrappedGroup);
+      await forkedEntityManager.commit();
+    } catch (error) {
+      //rolback keycloak changes
+      if (nameUpdated == true) {
+        await this.keycloakUtils.updateGroup(fetchedGroup.kcid, { name: `${grpPrifix}${fetchedGroup.name}` });
+      }
+      await forkedEntityManager.rollback();
+      throw error;
     }
-
-    if (fetchedGroup.name !== payload.name) {
-      await this.keycloakUtils.updateGroup(fetchedGroup.kcid, { name: `${grpPrifix}${payload.name}` });
-    }
-
-    const wrappedGroup = this.wrapEntity(fetchedGroup, {
-      ...fetchedGroup,
-      ...payload,
-    });
-    await this.dao.update(wrappedGroup);
-
+    await this.dao.entitymanager.flush();
     return fetchedGroup.id;
   }
 
