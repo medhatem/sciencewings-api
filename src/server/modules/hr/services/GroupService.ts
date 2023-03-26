@@ -115,9 +115,10 @@ export class GroupService extends BaseService<Group> implements IGroupService {
   @validate
   public async createGroup(@validateParam(CreateGroupSchema) payload: GroupRO): Promise<number> {
     const forkedGroupEntityManager = await this.dao.fork();
-    forkedGroupEntityManager.begin();
+    await forkedGroupEntityManager.begin();
     let createdGroup: Group;
     let organization: Organization;
+    let id: string;
     try {
       organization = (await this.organizationService.get(payload.organization)) as Organization;
       if (!organization) {
@@ -141,14 +142,14 @@ export class GroupService extends BaseService<Group> implements IGroupService {
         wrappedGroup.parent = fetchedGroup;
 
         // add the new group as a subgroup of the parent grp
-        const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, fetchedGroup.kcid);
+        id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, fetchedGroup.kcid);
         wrappedGroup.kcid = id;
       } else {
         // add org group as parent
-        const id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
+        id = await this.keycloakUtils.createSubGroup(`${grpPrifix}${payload.name}`, organization.kcid);
         wrappedGroup.kcid = id;
       }
-      createdGroup = await this.dao.transactionalCreate(wrappedGroup);
+      createdGroup = await this.transactionalCreate(wrappedGroup);
 
       if (payload.members) {
         //await createdGroup.members.init();
@@ -166,7 +167,7 @@ export class GroupService extends BaseService<Group> implements IGroupService {
 
           if (fetchedMember !== null) {
             createdGroup.members.add(fetchedMember);
-            await this.dao.transactionalUpdate(createdGroup);
+            await this.transactionalUpdate(createdGroup);
             await this.keycloakUtils.addMemberToGroup(wrappedGroup.kcid, fetchedMember.user.keycloakId);
           }
           //return fetchedMember;
@@ -174,11 +175,13 @@ export class GroupService extends BaseService<Group> implements IGroupService {
       }
       forkedGroupEntityManager.commit();
     } catch (error) {
-      forkedGroupEntityManager.rollback();
-      this.keycloakUtils.deleteGroup(createdGroup.kcid);
+      if (id) {
+        await this.keycloakUtils.deleteGroup(id);
+      }
+      await forkedGroupEntityManager.rollback();
       throw error;
     }
-    this.dao.entitymanager.flush();
+    await this.dao.entitymanager.flush();
     return createdGroup.id;
   }
 
