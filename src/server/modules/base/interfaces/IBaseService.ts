@@ -15,8 +15,6 @@ export abstract class IBaseService<T extends BaseModel> {
   public transactionalUpdate: (entry: T) => Promise<any>;
   public transactionalCreate: (entry: T) => Promise<any>;
 
-  public transactionalCreate: (entry: T) => Promise<any>;
-
   public update: (entry: T) => Promise<any>;
 
   public updateRoute: (id: number, payload: any) => Promise<any>;
