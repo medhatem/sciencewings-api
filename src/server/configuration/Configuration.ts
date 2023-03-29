@@ -61,21 +61,21 @@ export class Configuration {
       staging: {
         baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
         DB: {
-          host: 'api-dev.ctxnpdpnlwqz.ca-central-1.rds.amazonaws.com',
-          dbUsername: 'postgres',
-          dbPassword: 'Qv3eLFNm3i90',
-          dbName: 'sciencewings_api_dev',
+          host: 'cirta-api-dev.cbyy2lglj2jc.ca-central-1.rds.amazonaws.com',
+          dbUsername: 'cirta_api_dev',
+          dbPassword: 'Py8zKnZwkWvDqVOa1ebVCjJDuYdBkIn9',
+          dbName: 'postgres',
           port: 5432,
         },
         keycloak: {
           username: 'admin',
-          password: 'Pa55w0rd',
+          password: 'keycloak',
           grantType: 'password',
           clientId: 'admin-cli',
           realmName: 'master',
-          baseUrl: 'https://keycloak.zonesinnovation.ca/auth',
+          baseUrl: 'https://keycloak.sharili.com/auth',
           clientValidation: {
-            realmName: 'sciencewings-web',
+            realmName: 'sharili-web',
           },
         },
         logger: {
@@ -92,20 +92,21 @@ export class Configuration {
       prod: {
         baseConfig: { port: ((process.env.PORT as any) as number) || 3000 },
         DB: {
-          host: '127.0.0.1',
-          dbUsername: 'admin',
-          dbPassword: 'mana',
-          dbName: 'mana',
+          host: 'cirta-api-dev.cbyy2lglj2jc.ca-central-1.rds.amazonaws.com',
+          dbUsername: 'cirta_api_dev',
+          dbPassword: 'Py8zKnZwkWvDqVOa1ebVCjJDuYdBkIn9',
+          dbName: 'postgres',
           port: 5432,
         },
         keycloak: {
           username: 'admin',
-          password: 'Pa55w0rd',
+          password: 'keycloak',
           grantType: 'password',
           clientId: 'admin-cli',
-          baseUrl: 'https://sciencewings-keycloak.herokuapp.com',
+          realmName: 'master',
+          baseUrl: 'https://keycloak.sharili.com/auth',
           clientValidation: {
-            realmName: 'sciencewings-web',
+            realmName: 'sharili-web',
           },
         },
         logger: {
