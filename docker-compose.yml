@@ -147,7 +147,7 @@ services:
     volumes:
       - ./devops/keycloak:/opt/jboss/keycloak/imports
     command:
-      - '-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json'
+      - '-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export-v5.json'
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
