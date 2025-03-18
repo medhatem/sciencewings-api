@@ -1,10 +1,57 @@
 # 🚀 ScienceWings - Node.js Backend  
 
-![current version](badges/version.svg) ![typescript](https://img.shields.io/badge/built%20with-typescript-3178C6.svg)
+![current version](badges/version.svg) ![typescript](https://img.shields.io/badge/built%20with-typescript-3178C6.svg)  
 
 ScienceWings is a **multitenant and multilanguage** resource-sharing marketplace. This repository contains the **backend API**, responsible for handling authentication, resource management, and API communication.
 
-It leverages **Keycloak for authentication** and **OpenAPI (Swagger) for API documentation and automatic client generation**.
+It leverages **Keycloak for authentication**, **PostgreSQL for data storage**, and **OpenAPI (Swagger) for automatic API documentation and client generation**.
+
+---
+
+## 🏛️ Architecture Overview  
+
+ScienceWings follows a **modular, layered architecture** to ensure scalability, maintainability, and separation of concerns.
+
+### **🧩 Modular Structure**  
+
+Each domain (such as **organizations**, **resources**, **users**) is treated as a separate module, containing its own **data access layer, business logic, and API routes**.
+
+Example: The **Organizations Module** (`src/server/modules/organizations/`):
+
+```plaintext
+/src/server/modules/organizations/
+│── daos/            # Data access layer (database queries)
+│── dtos/            # Data transfer objects (request/response validation)
+│── interfaces/      # TypeScript interfaces for type safety
+│── models/          # ORM models (database schema definitions)
+│── routes/          # API endpoints for the module
+│── schemas/         # Database schema definitions
+│── services/        # Business logic for the module
+│── index.ts         # Entry point for the module
+│── organizationtypes.ts # Enum/constants related to organizations
+```
+
+### **🏗️ Layered Architecture**  
+
+ScienceWings API is structured into **four primary layers**:
+
+1️⃣ **Controllers (Routes)**:  
+   - Handles HTTP requests and calls the corresponding service methods.  
+   - Example: `src/server/modules/organizations/routes/organizationRoutes.ts`  
+
+2️⃣ **Services (Business Logic)**:  
+   - Implements core functionality and interacts with DAOs.  
+   - Example: `src/server/modules/organizations/services/organizationService.ts`  
+
+3️⃣ **DAOs (Data Access Layer)**:  
+   - Responsible for database operations (CRUD).  
+   - Example: `src/server/modules/organizations/daos/organizationDao.ts`  
+
+4️⃣ **Models & Schemas (Data Layer)**:  
+   - Defines PostgreSQL tables using MikroORM.  
+   - Example: `src/server/modules/organizations/models/organizationModel.ts`  
+
+This modular approach allows for **scalability**, **easier maintenance**, and **independent testing** of each module.
 
 ---
 
@@ -14,68 +61,9 @@ It leverages **Keycloak for authentication** and **OpenAPI (Swagger) for API doc
 ✅ **Multilanguage support** – Built-in localization with i18n.  
 ✅ **Keycloak Authentication** – Secure login and authorization.  
 ✅ **Swagger Documentation** – Auto-generated API docs using OpenAPI.  
+✅ **MikroORM** – Object-Relational Mapping for PostgreSQL.  
 ✅ **Docker Support** – Easily deploy the backend with `docker-compose`.  
-✅ **PostgreSQL Integration** – Uses a relational database for structured data.  
-✅ **Seeding System** – Pre-populates essential data into the database.  
-
----
-
-## 📂 Project Structure  
-
-```plaintext
-/sciencewings-api
-│── .github/workflows/      # CI/CD workflows
-│── .vscode/                # VS Code settings
-│── badges/                 # Badges and versioning
-│── devops/                 # DevOps configurations
-│── docker-images/          # Docker image builds
-│── postman/                # API testing collection
-│── src/                    # Source code
-│   ├── client/             # OpenAPI client
-│   ├── server/             # Main backend logic
-│   ├── server-test/        # API tests
-│── target/                 # Compiled output
-│── .eslint.json            # ESLint configuration
-│── .example.env            # Environment variables template
-│── .gitignore              # Ignored files
-│── .prettierrc.json        # Prettier formatting rules
-│── Dockerfile              # Docker build instructions
-│── README.md               # Documentation
-│── bitbucket-pipelines.yml # CI/CD pipeline
-│── docker-compose.yml      # Docker services
-│── docker.yml              # Docker deployment script
-│── init.js                 # Initialization script
-│── nodemon.json            # Nodemon configuration
-│── package-lock.json       # Dependency lockfile
-│── package.json            # Project dependencies and scripts
-│── swaggerConfig.json      # Swagger configuration
-```
-
----
-
-## 💻 Requirements  
-
-Before running the project, ensure you have:  
-
-- [Node.js 14+](https://nodejs.org/en/download/) (Consider using **nvm** for version management)
-- [Docker](https://www.docker.com/) for containerized services
-- [Docker VS Code Extension](https://code.visualstudio.com/docs/containers/overview) (Recommended)
-- [PostgreSQL](https://www.postgresql.org/) (If running outside Docker)
-- [Keycloak](https://www.keycloak.org/) for authentication
-
-### 🛠 Optional: Developer Tools  
-
-- [iterm2](https://iterm2.com/) for a better terminal experience  
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) for linting  
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for code formatting  
-- [Sort Imports](https://marketplace.visualstudio.com/items?itemName=amatiasq.sort-imports) for clean imports  
-- **VS Code Extensions**:  
-  - [TODO Tree](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree)  
-  - [Bracket Pair Colorizer](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer-2)  
-  - [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens)  
-  - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)  
-
----
+✅ **Permission System** – Fine-grained RBAC for access control.  
 
 ## 🚀 Getting Started  
 
@@ -193,4 +181,18 @@ This project is licensed under the **GPLv3**. See [LICENSE.md](LICENSE.md) for d
 For further assistance, run:  
 ```sh
 npm help
+```
+
+---
+
+### 🚀 Final Notes  
+
+This **README** now:  
+✅ Defines **ScienceWings API** as a **modular, multitenant, multilanguage** backend  
+✅ Explains **Keycloak authentication** flow  
+✅ Highlights **OpenAPI Generator benefits**  
+✅ Provides **modular architecture breakdown**  
+✅ Includes **Dockerized development** for easier deployment  
+
+Let me know if you need any refinements! 🚀
 ```
